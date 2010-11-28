@@ -1,0 +1,48 @@
+
+# ignore unneeded OS, backup and tempfiles
+
+*~
+.DS_Store
+Thumbs.db
+*.tmp
+tmp.pot
+
+# ignore temp files from merge
+
+*.orig
+*.rej
+*.swp
+
+# ignore unneeded rails stuff
+
+app/views/taglibs/auto
+config/database.yml
+config/rest-graph.yml
+config/deployconfig.yml
+coverage/
+db/*.sqlite3
+doc/api
+log/
+public/javascripts/all.js
+public/stylesheets/all.css
+public/stylesheets/facebook.css
+tmp/
+
+# ignore Textmate, Komodo, cscope, Eclipse, RubyMine and Quanta Plus files
+
+nbproject
+projfiles
+.classpath
+.project
+.settings
+.buildpath
+.idea
+*.kpf
+*.launch
+*.tmproj
+*.session
+*.webprj
+cscope.out
+tm_cscope.files
+tags
+
