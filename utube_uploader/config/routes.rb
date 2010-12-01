@@ -17,7 +17,7 @@ ActionController::Routing::Routes.draw do |map|
 
   # Sample resource route with sub-resources:
   #   map.resources :products, :has_many => [ :comments, :sales ], :has_one => :seller
-  
+
   # Sample resource route with more complex sub-resources
   #   map.resources :products do |products|
   #     products.resources :comments
@@ -40,4 +40,10 @@ ActionController::Routing::Routes.draw do |map|
   # consider removing or commenting them out if you're using named routes and resources.
   map.connect ':controller/:action/:id'
   map.connect ':controller/:action/:id.:format'
+
+  map.connect 'upload.:format', :controller => 'front', :action => 'upload_form', :conditions => { :method => :post}
+  map.connect 'ready.:format', :controller => 'front', :action => 'ready', :conditions => { :method => :get}
+
+  map.root :controller => 'front', :action => 'start'
 end
+
