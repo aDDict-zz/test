@@ -134,7 +134,7 @@ Gmap.init = function(){
     if(GBrowserIsCompatible()){
         Gmap.map = new GMap2(document.getElementById("map"));
         Gmap.map.addControl(new GLargeMapControl());
-        Gmap.map.setCenter(new GLatLng(47.50, 19.06), 4);
+        Gmap.map.setCenter(new GLatLng(GlobalEventHandler.datas[0]["location"][1][0], GlobalEventHandler.datas[0]["location"][1][1]), 4);
         Gmap.setMarkers();
     }
 }
@@ -156,8 +156,6 @@ Gmap.getMarkers = function(){
         if(typeof(GlobalEventHandler.datas[i]["location"]) == "object"){
             var latlng = new GLatLng(GlobalEventHandler.datas[i]["location"][1][0], GlobalEventHandler.datas[i]["location"][1][1]);
             marker[i] = new GMarker(latlng);
-            marker[i].location = GlobalEventHandler.datas[i]["location"][0];
-            marker[i].latlng = GlobalEventHandler.datas[i]["location"][1];
             marker[i].index = i;
             marker[i].seek = GlobalEventHandler.datas[i]["seek_from"];
             GEvent.bind(marker[i], "click", marker[i], function(){ Gmap.doAction(this); });
@@ -174,14 +172,12 @@ Gmap.doAction = function(obj){
 var Tline = {};
 /** ez a kezdeti init, illetve, ha valtozik a global event, akkor is ez hivodik, gyakorlatilag ujrarendelem folyamatosan a timeline-t */
 Tline.init = function(index){
-
-    if(index == undefined)
-        index = 0;
-
-    var eventSource = new Timeline.DefaultEventSource();
-    var d = Timeline.DateTime.parseGregorianDateTime(GlobalEventHandler.datas[index]["start"]);
-    Tline.resizeTimerID = null;
-    var bandInfos = [
+        if(index == undefined)
+            index = 0;
+        var eventSource = new Timeline.DefaultEventSource();
+        var d = Timeline.DateTime.parseGregorianDateTime(GlobalEventHandler.datas[index]["start"]);
+        Tline.resizeTimerID = null;
+        var bandInfos = [
         Timeline.createBandInfo({
             eventSource:    eventSource,
             width:          "100%",
