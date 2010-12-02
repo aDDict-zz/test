@@ -3,12 +3,15 @@ $(document).ready(function(){
 });
 
 var GlobalEventHandler = {};
+/** beallitja a nevtereket, elinditja az initializalast */
 GlobalEventHandler.init = function(){
     onYouTubePlayerReady = Flash.onYouTubePlayerReady;
     onPlayerStateChange = Flash.onPlayerStateChange;
+    // primitiv megoldas, mindegyik lib betoltodeskor megnoveli az erteket 1-el, aztan ellenorzom a vegosszeget
     GlobalEventHandler.listener = 0;
     GlobalEventHandler.loadDatas();
 }
+/** ajax post a server fele az adatokert */
 GlobalEventHandler.loadDatas = function(){
     $.post(
         "/datas",
@@ -17,25 +20,30 @@ GlobalEventHandler.loadDatas = function(){
         "text"
     );
 }
+/** az ajax onLoadja */
 GlobalEventHandler.onLoadDatas = function(resp){
     GlobalEventHandler.datas = eval("(" + resp + ")");
     if(typeof(GlobalEventHandler.datas) == "object"){
+        // setinterval a GlobalEventHandler.loader-re
         timer.addToDEPO({"function" : GlobalEventHandler.loader, "interval" : 2});
+        // initializalja a lulonbozo widgeteket
         Gmap.init();
         Flash.init();
         Tline.init();
     }
 }
+/** ellenorzi, hogy megvan e minden, siker eseten lelovi a setintervalt, valojaban nincs ra szukseg..... */
 GlobalEventHandler.loader = function(){
     if(GlobalEventHandler.listener == 2){
         timer.deleteFromDEPO(GlobalEventHandler.loader);
-        GlobalEventHandler.setup();
+        //GlobalEventHandler.setup();
     }
 }
 GlobalEventHandler.setup = function(){
 }
 
 var Flash = {};
+/** swfobject init */
 Flash.init = function(){
     Flash.currentEventIndex = -1;
     var flashvars = {};
@@ -50,33 +58,42 @@ Flash.init = function(){
 Flash.getSrcForEmbedSWF = function(videoId){
     return "http://www.youtube.com/v/" + videoId + "?enablejsapi=1"
 }
+/**  az swf betoltodesekor fut le, beemeli a nevterbe a player referenciat, beallitja a player eventjeit */
 Flash.onYouTubePlayerReady = function(){
     Flash.player = $("#utubeVideo").get(0);
     GlobalEventHandler.listener ++;
     Flash.player.addEventListener("onStateChange", "onPlayerStateChange");
     //Flash.player.playVideo();
 }
+/** ezt hivja a timer periodikusan, ha lejatszik a player, elkeri a playertol hogy hol tart */
 Flash.currentTime = function(){
     var arrayIndex = Flash.getApproximateVal(Math.floor(Flash.player.getCurrentTime()));
     if(arrayIndex != -1){
         if(Flash.currentEventIndex != arrayIndex){
+            //beallitja a lejatszaskor hogy milyen globalis eventnel tart a player eppen
             Flash.currentEventIndex = arrayIndex;
+            // ha eppen valtozott a global event, akkor a flash hivja a tobbi widgetet
             Flash.doAction();
         }
     }
 }
 Flash.doAction = function(){
+    // atrendezi a gmapet a flash aktualis eventje alapjan
     if(typeof(GlobalEventHandler.datas[Flash.currentEventIndex]["location"]) == "object"){
         Gmap.renderNewLocation(GlobalEventHandler.datas[Flash.currentEventIndex]["location"][1]);
     }
+    // atrendezi a timeline-t a flash aktualis eventje alapjan
     Tline.init(Flash.currentEventIndex);
 }
+/**  a widgetek hivjak, atallitja a lejatszasi poziciot */
 Flash.playerSeek = function(position){
     Flash.player.stopVideo();
     Flash.player.seekTo(position);
 }
+/** megallapitja hogy melyik event ido tartomanyahoz tartozik az aktualis player pozicio */
 Flash.getApproximateVal = function(currentTime){
     var thisLength = GlobalEventHandler.datas.length;
+    // gyorsitani szerettem volna azzal, hogy nem az egesz intervallumon iteralok, hanem elfelezem, nem ellenoriztem, hogy van e tenyleges gyorsulas
     var mid = Math.ceil(thisLength / 2);
     if(currentTime < GlobalEventHandler.datas[mid]["seek_from"]){
         for(var i = mid;i >= 0; i--){
@@ -93,6 +110,7 @@ Flash.getApproximateVal = function(currentTime){
     }
     return -1;
 }
+/**  a player eventjere hookolas */
 Flash.onPlayerStateChange = function(state){
     switch(state){
         case 1:
@@ -123,6 +141,7 @@ Gmap.init = function(){
 Gmap.renderNewLocation = function(arr){
     Gmap.map.setCenter(new GLatLng(arr[0], arr[1]), arr[2]);
 }
+/** ezek nem pont setterek es getterek, csak majdnem */
 Gmap.setMarkers = function(){
     Gmap.mgr = new MarkerManager(Gmap.map);
     Gmap.getMarkers();
@@ -146,12 +165,14 @@ Gmap.getMarkers = function(){
         }
     }
 }
+/**  a map hivja a widgeteket */
 Gmap.doAction = function(obj){
     Flash.playerSeek(obj.seek);
     Tline.init(obj.index);
 }
 
 var Tline = {};
+/** ez a kezdeti init, illetve, ha valtozik a global event, akkor is ez hivodik, gyakorlatilag ujrarendelem folyamatosan a timeline-t */
 Tline.init = function(index){
 
     if(index == undefined)
@@ -172,7 +193,7 @@ Tline.init = function(index){
     tl = Timeline.create(document.getElementById("timeline"), bandInfos);
     // az eredeti loadJSON method felulirasa az attracskolt eredetivel
     eventSource.loadJSON = Tline.loadJSON;
-    eventSource.loadJSON(Tline.getJson());
+    eventSource.loadJSON(Tline.getEventObj());
 
     if (Tline.resizeTimerID == null) {
         Tline.resizeTimerID = window.setTimeout(function() {
@@ -229,20 +250,22 @@ Tline.loadJSON = function (H/*, B*/) {
         this._fire("onAddMany", []);
     }
 }
-Tline.getJson = function(){
-    var json = {};
-    json.events = [];
+/** beallitja a timeline idopontjait */
+Tline.getEventObj = function(){
+    var obj = {};
+    obj.events = [];
     for(var i in GlobalEventHandler.datas){
-        json.events[i] = {};
+        obj.events[i] = {};
         var arr = GlobalEventHandler.datas[i]["text"].split(" - ");
-        json.events[i].start = GlobalEventHandler.datas[i]["start"];
-        json.events[i].end = GlobalEventHandler.datas[i]["end"];
-        json.events[i].title = arr[0];
-        json.events[i].description = arr[1];
-        json.events[i].link = "javascript:Tline.doAction(" + i + ");";
+        obj.events[i].start = GlobalEventHandler.datas[i]["start"];
+        obj.events[i].end = GlobalEventHandler.datas[i]["end"];
+        obj.events[i].title = arr[0];
+        obj.events[i].description = arr[1];
+        obj.events[i].link = "javascript:Tline.doAction(" + i + ");";
     }
-    return json;
+    return obj;
 }
+/**  a timeline hivja a widgeteket */
 Tline.doAction = function(index){
     Flash.playerSeek(GlobalEventHandler.datas[index]["seek_from"]);
     if(typeof(GlobalEventHandler.datas[index]["location"]) == "object"){
@@ -250,7 +273,7 @@ Tline.doAction = function(index){
     }
 }
 
-/** singleton */
+/** singleton, egyszerre tobb timingot illetve fuggvenyt kepes kezelni */
 var timer = new function(){
 	this.constructor = null;
 	this.DEPO = [];
