@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title>Video</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script src="http://static.simile.mit.edu/timeline/api-2.3.0/timeline-api.js?bundle=true" type="text/javascript"></script>
+    <script src="3rdparty/jquery/jquery-1.4.2.min.js" type="text/javascript"></script>
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=true&amp;key=ABQIAAAA5hCw4ho81Je5h8quprRMAhTUnRhPGanUoUw2RvFfXmmpPb0txRRuHDrQkcVefeMsGgvuR_GXJWnc5w" type="text/javascript"></script>
+    <script src="http://gmaps-utility-library.googlecode.com/svn/trunk/markermanager/release/src/markermanager.js" type="text/javascript"></script>
+    <script src="3rdparty/swfobject/swfobject.js" type="text/javascript"></script>
+    <script src="lib/globals.js" type="text/javascript"></script>
+    <script src="lib/main.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      var cfg = {};
+      cfg.developerKey = "<%= @developer_key %>";
+      cfg.userMail = "<%= @user_mail %>";
+      cfg.password = "<%= @password %>";
+      cfg.videoId = "<%= @video_id %>";
+    </script>
+  </head>
+  <body>
+    <div id="cont" style="width:980px;height:356px;margin-top:10px;display:block;">
+      <div id="flashCont" style="float:left;width:425px;height:356px;display:block;">
+        <div id="flash">
+        </div>
+      </div>
+      <div id="map" style="float:left;width:500px;height:356px;margin-left:10px;display:block;">
+      </div>
+    </div>
+    <div id="timeline" style="width:980px;height:150px;margin-top:10px;display:block;">
+    </div>
+  </body>
+</html>
+

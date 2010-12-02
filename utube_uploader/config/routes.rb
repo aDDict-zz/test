@@ -43,6 +43,7 @@ ActionController::Routing::Routes.draw do |map|
 
   map.connect 'upload.:format', :controller => 'front', :action => 'upload_form', :conditions => { :method => :post}
   map.connect 'ready.:format', :controller => 'front', :action => 'ready', :conditions => { :method => :get}
+  map.connect 'datas.:format', :controller => 'front', :action => 'datas', :conditions => { :method => :post}
 
   map.root :controller => 'front', :action => 'start'
 end
