@@ -1,0 +1,7 @@
+Amazon:
+  img: "//img[@id='prodImage']"
+  price: "//b[@class='priceLarge']"
+  title: "//span[@id='btAsinTitle']"
+  timeout: "//div[@class='buying']//span//a"
+  products: "//td[@class='dataColumn']"
+
