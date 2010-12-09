@@ -13,7 +13,7 @@ class BookStore # < ActiveRecord::Base
         @linx = @Schema.getLinxToTheProducts;
         @linx.each do |link|
           # van ahol csak relativan van megadva az url( valojaban eloszor rossz linkeket is kovettem, de vegul benne hagytam, who knows )
-          !Regexp.new(/#{@domains[params[:bookStores]]}.*/).match(link) ? link = "#{@domains[params[:bookStores]]}#{link}" : ""
+          !Regexp.new(/http:\/\//).match(link) ? link = "#{@domains[params[:bookStores]]}#{link}" : ""
           @Schema = eval(params[:bookStores]).new(open(link))
           @resArray.push({
             "poduct" => link,
@@ -51,6 +51,15 @@ class String
   def removeHtmlContent(element)
     self.gsub(/(<#{element}.*#{element}>)/, "")
   end
+
+  def removeBracketContent
+    str = self.to_s
+    if(Regexp.new(/(\()/).match(str))
+      str = str.gsub(/(\(.*\))/, "")
+    end
+	str
+  end
+
   # Hpricot bug - img.attributes["src"] nem mukodik
   def getImageSource
     self.split('src="')[1].to_s.split('" ')[0]
@@ -73,8 +82,7 @@ class String
     '&#x9C;'=>'&#x0153;', '&#x9D;'=>'?',        '&#x9E;'=>'&#x017E;', '&#x9F;'=>'&#x0178;'
     }
     entities.each do |k, v|
-      sstr = str.gsub(/(#{k})/, v)
-      str = sstr
+      str = str.gsub(/(#{k})/, v)
     end
     str
   end
@@ -148,7 +156,9 @@ class AmazonRequest < HttpartyRequest
     { "field-keywords" => "#{pmeters[:title]}, #{pmeters[:author]}",
       "field-title" => pmeters[:title],
       "field-author" => pmeters[:author],
-      "search-alias" => "stripbooks" }
+      "search-alias" => "stripbooks",
+      "unfiltered" => 1,
+      "Adv-Srch-Books-Submit.y" => 11 }
   end
 
   def getFullContent(pmeters)

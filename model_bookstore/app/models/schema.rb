@@ -4,7 +4,7 @@ class Schema
 
   def initialize(doc)
     @xpaths = loadYaml
-    @doc = createHpricotInstance(doc)
+    @doc = getHpricotInstance(doc)
     @linkToTheProduct = getLinxToTheProducts
     @img = getImgUrl
     @price = getPrice
@@ -21,7 +21,7 @@ class Schema
     hash[self.class.to_s]
   end
 
-  def createHpricotInstance(doc)
+  def getHpricotInstance(doc)
     Hpricot(doc)
   end
 
@@ -70,7 +70,6 @@ end
 class Amazon < Schema
 
   def getLinxToTheProducts
-    path = @xpaths["linkToTheProduct"]
     elements = []
     @doc.search(@xpaths["linkToTheProduct"]).each do |a|
       elements.push(Hpricot(a.to_s).search("//a")[0].attributes["href"])
@@ -87,7 +86,7 @@ class Amazon < Schema
   end
 
   def getTitle
-    @doc.search(@xpaths["title"]).inner_html.removeHtmlContent("span").removeHtmlGarbage
+    @doc.search(@xpaths["title"]).inner_html.removeHtmlContent("span").removeBracketContent.removeHtmlGarbage
   end
 
   def getAuthor

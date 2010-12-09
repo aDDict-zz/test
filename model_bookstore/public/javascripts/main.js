@@ -6,7 +6,7 @@ function init(){
             "/search",
             "author=" + $("#author").val() + "&title=" + $("#title").val() + "&bookStores=" + $("#bookStores").val(),
             function(resp){
-                if(typeof(resp) == "object"){
+                if(typeof(resp) == "object" && resp.length > 0){
                     main.datas = resp;
                     main.setup();
                 } else {
@@ -21,6 +21,7 @@ function init(){
 var main = {};
 main.datas = {};
 main.setup = function(){
+    $("#content").html("");
     for(var i in main.datas){
         var a = document.createElement("a");
         var br = document.createElement("br");
@@ -35,8 +36,9 @@ main.setup = function(){
 main.openWindow = function(obj){
     var thisObj = main.datas[$(obj).attr("rel")];
 
+    var html = "";
     if(thisObj["poduct"] != "" && thisObj["img"] != ""){
-        var html = "<a href='" + thisObj["poduct"] + "' target='_blank'><img src='" + thisObj["img"] + "' /></a>";
+        html = "<a href='" + thisObj["poduct"] + "' target='_blank'><img src='" + thisObj["img"] + "' /></a>";
     } else if(thisObj["poduct"] == "" && thisObj["img"] != ""){
         html += "<img src='" + thisObj["img"] + "' />";
     }
@@ -47,13 +49,13 @@ main.openWindow = function(obj){
         html += "<p>price:  <span> no data </span></p>";
     }
 
-    if(thisObj["ISBN"]["ISBN-10"] != ""){
+    if(undefined != thisObj["ISBN"]["ISBN-10"]){
         html += "<p>ISBN-10:  <span>" + thisObj["ISBN"]["ISBN-10"] + "</span></p>";
     } else {
         html += "<p>ISBN-10:  <span> no data </span></p>";
     }
 
-    if(thisObj["ISBN"]["ISBN-13"] != ""){
+    if(undefined != thisObj["ISBN"]["ISBN-13"]){
         html += "<p>ISBN-13:  <span>" + thisObj["ISBN"]["ISBN-13"] + "</span></p>";
     } else {
         html += "<p>ISBN-13:  <span> no data </span></p>";
@@ -88,7 +90,7 @@ main.openWindow = function(obj){
     } else {
         html += "<p>description:  <span> no data </span></p>";
     }
-
+    console.log(html);
     Window1 = window.open("", "Window1", "width=800,height=1000,scrollbars=yes");
     Window1.document.writeln(html);
 }
