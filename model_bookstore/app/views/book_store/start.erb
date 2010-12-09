@@ -2,24 +2,26 @@
 <html>
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <script type="text/javascript"src="http://www.google.com/jsapi?key=AI39si5uZEI44_km0CHuO2gRt7earOQPqK-MkaXgC14yyOh3bnxxLWVdIb2yQIK_XF0h30wnyCxsa_SuoF36TL6REKdlMcc_zA">
-    <script type="text/javascript"charset="utf-8">google.load("jquery","1.4.1");</script>
+    <script type="text/javascript" src="/javascripts/jquery-1.4.2.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/javascripts/main.js" charset="utf-8"></script>
     <title>Kereső:</title>
   </head>
   <body>
     <div id="container">
-      <form action="/search" method="post">
+<!--      <form action="/search" method="post">-->
         <label for "author">Author:</label>
         <input type="text" id="author" name="author" />
         <label for "title">Title:</label>
         <input type="text" id="title" name="title" />
         <select id="bookStores" name="bookStores">
-          <option value="">Könyvesboltok</option>
+<!--          <option value="">Könyvesboltok</option>-->
           <option value="Amazon">Amazon</option>
-          <option value="Bookline">Bookline</option>
+<!--          <option value="Bookline">Bookline</option>-->
         </select>
-        <input type="submit" value="search" />
-      </form>
+        <input id="submit" type="submit" value="search" />
+<!--      </form>-->
+    </div>
+    <div id="content">
     </div>
   </body>
 </html>
