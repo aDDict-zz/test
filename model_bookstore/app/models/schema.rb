@@ -1,60 +1,72 @@
 class Schema
 
-  attr_accessor :xpaths, :doc, :linkToTheProduct, :img, :price, :title, :author, :description, :ISBN, :publisher, :reviews
+  attr_accessor :xpaths, :doc, :linkToTheProduct, :img, :publicationdate, :price, :title, :author, :description, :ean, :ISBN, :publisher, :reviews, :items
 
   def initialize(doc)
     @xpaths = loadYaml
-    @doc = createHpricotInstance(doc)
-    @linkToTheProduct = getLinxToTheProducts
-    @img = getImgUrl
-    @price = getPrice
-    @title = getTitle
-    @author = getAuthor
-    @description = getDescription
-    @ISBN = getISBN
-    @publisher = getPublisher
-    @reviews = getReviews
+    @doc = setHpricotInstance(doc)
+    @linkToTheProduct = setLinxToTheProducts
+    @img = setImgUrl
+    @price = setPrice
+    @title = setTitle
+    @author = setAuthor
+    @description = setDescription
+    @ean = setEan
+    @ISBN = setISBN
+    @publisher = setPublisher
+    @reviews = setReviews
+    @items = setItems
+    @publicationdate = setPublicationdate
   end
 
   def loadYaml
     hash = File.open("config/xpaths.yml") do |y| YAML::load(y) end
-    hash[self.class.to_s]
+    hash[self.class.to_s.split(/Schema/)[0]]
   end
 
-  def createHpricotInstance(doc)
+  def setHpricotInstance(doc)
     Hpricot(doc)
   end
 
-  def getLinxToTheProducts
+  def setLinxToTheProducts
   end
 
-  def getImgUrl
+  def setImgUrl
   end
 
-  def getPrice
+  def setPrice
   end
 
-  def getTitle
+  def setTitle
   end
 
-  def getAuthor
+  def setAuthor
   end
 
-  def getDescription
+  def setDescription
   end
 
-  def self.getLinxToTheProducts
+  def self.setLinxToTheProducts
   end
 
-  def getISBN
+  def setISBN
+  end
+
+  def setEan
+  end
+
+  def setPublisher
+  end
+
+  def setReviews
     {}
   end
 
-  def getPublisher
+  def setItems
+    []
   end
 
-  def getReviews
-    {}
+  def setPublicationdate
   end
 
   def self.class_exists?(name)
@@ -67,75 +79,86 @@ class Schema
 
 end
 
-class Amazon < Schema
+class WikipediaSchema < Schema
 
-  def getLinxToTheProducts
-    path = @xpaths["linkToTheProduct"]
-    elements = []
-    @doc.search(@xpaths["linkToTheProduct"]).each do |a|
-      elements.push(Hpricot(a.to_s).search("//a")[0].attributes["href"])
+  def setItems
+    res = {}
+    @doc.search(@xpaths["item"]).each do |item|
+      if Regexp.new(/#{@xpaths["matcher"]}/).match(item.attributes["class"])
+        if item.at(@xpaths["nameSpan"])
+          @name = item.at(@xpaths["nameSpan"]).inner_html
+        elsif item.at(@xpaths["nameTh"])
+          @name = item.at(@xpaths["nameTh"]).inner_html
+        end
+
+        res = {
+          "name" => @name
+        }
+      end
     end
-    elements
-  end
+    res
+   end
 
-  def getImgUrl
-    @doc.at(@xpaths["img"]).to_s.getImageSource
-  end
+end
 
-  def getPrice
-    @doc.at(@xpaths["price"]).to_s.removeHtmlGarbage
-  end
+class AmazonSchema < Schema
 
-  def getTitle
-    @doc.search(@xpaths["title"]).inner_html.removeHtmlContent("span").removeHtmlGarbage
-  end
-
-  def getAuthor
-    @doc.search(@xpaths["author"])[0].to_s.removeHtmlGarbage
-  end
-
-  def getDescription
-    str = ""
-    @doc.search(@xpaths["description"]).each do |description|
-      str += description.to_s.removeHtmlGarbage
+  def setItems
+    res_array = []
+    @doc.search(@xpaths["item"]).each do |item|
+    res_array.push({
+        "author" => item.search(@xpaths["author"])[0].to_s.removeHtmlGarbage,
+        "title" => item.at(@xpaths["title"]).to_s.removeHtmlGarbage,
+        "linkToTheProduct" => item.at(@xpaths["detailpageurl"]).inner_html,
+        "img" => item.at(@xpaths["mediumimage"]).to_s.removeHtmlGarbage,
+        "publicationdate" => item.at(@xpaths["publicationdate"]).to_s.removeHtmlGarbage,
+        "publisher" => item.at(@xpaths["publisher"]).to_s.removeHtmlGarbage,
+        "ean" => item.at(@xpaths["ean"]).to_s.removeHtmlGarbage,
+        "isbn" => item.at(@xpaths["isbn"]).to_s.removeHtmlGarbage,
+        "price" => item.at(@xpaths["lowestnewprice"]).to_s.gsub(/\$/, "").removeHtmlGarbage
+      })
     end
+    res_array
+  end
+
+end
+
+class BooklineSchema < Schema
+
+  def setItems
+    @base_uri = "http://bookline.hu"
+    res_array = []
+    items = @doc.search(@xpaths["item"])
+    @iter = 1
+    items.each do |item|
+      if Regexp.new(/#{@xpaths["matcher"]}/).match(item.to_s)
+        if @iter < 11
+          link = "#{@base_uri}#{item.at(@xpaths["linkToTheProduct"]).attributes["href"]}"
+          doc = Hpricot(open(link))
+          res_array.push({
+            "author" => setOriginalNameFormat(doc.at(@xpaths["author"]).inner_html.removeGarbage.removeHtmlGarbage).removeBracketContent,
+            "title" => doc.at(@xpaths["title"]).inner_html.removeHtmlGarbage,
+            "linkToTheProduct" => link,
+            "img" => doc.at(@xpaths["img"]).to_s.getImageSource,
+            "publicationdate" => doc.at(@xpaths["publicationdate"]).inner_html.to_s.removeHtmlGarbage.split(", ")[1],
+            "publisher" => doc.at(@xpaths["publicationdate"]).inner_html.removeHtmlGarbage.split(", ")[0],
+            "ean" => "no data",
+            "isbn" => doc.search(@xpaths["isbn"])[2] ? doc.search(@xpaths["isbn"])[2].to_s.split("ISBN: ")[1].removeHtmlGarbage.removeGarbage : "no data",
+            "price" => doc.at(@xpaths["price"]).to_s.removeHtmlGarbage.split("Ft")[0]
+          })
+          @iter += 1
+        end
+      end
+    end
+    res_array
+  end
+
+  def setOriginalNameFormat(str)
+    if Regexp.new(/,/).match(str)
+    "#{str.split(",")[1].to_s.split} #{str.split(",")[0].to_s.split}"
+  else
     str
   end
-
-  def getPublisher
-    str = ""
-    @doc.search(@xpaths["publisher"]).each do |publisher|
-      if Regexp.new(/Publisher/).match(publisher.inner_html)
-        str = publisher.inner_html.removeHtmlContent("b").removeHtmlGarbage
-      end
-    end
-    str
-  end
-
-  def getISBN
-    hash = {}
-    @doc.search(@xpaths["ISBN"]).each do |isbn|
-      if Regexp.new(/ISBN-10/).match(isbn.inner_html)
-        hash["ISBN-10"] = isbn.inner_html.removeHtmlContent("b")
-      end
-      if Regexp.new(/ISBN-13/).match(isbn.inner_html)
-        hash["ISBN-13"] = isbn.inner_html.removeHtmlContent("b")
-      end
-    end
-    hash
-  end
-
-  def getReviews
-    hash = {}
-    @doc.search(@xpaths["reviews"]).each do |a|
-      if Regexp.new(/customer reviews/).match(a.inner_html)
-        hash = {
-          "link" => a.attributes["href"],
-          "content" => a.inner_html
-          }
-      end
-    end
-    hash
   end
 
 end

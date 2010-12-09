@@ -43,6 +43,7 @@ ActionController::Routing::Routes.draw do |map|
 
   # bookStores
   map.connect 'search.:format', :controller => 'book_store', :action => 'search', :conditions => { :method => :post}
+  map.connect 'searchInWiki.:format', :controller => 'book_store', :action => 'searchInWiki', :conditions => { :method => :post}
   map.connect 'showpage.:format', :controller => 'book_store', :action => 'showpage', :conditions => { :method => :get}
 
   map.root :controller => 'book_store', :action => 'start'

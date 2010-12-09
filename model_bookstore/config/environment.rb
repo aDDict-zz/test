@@ -43,5 +43,8 @@ Rails::Initializer.run do |config|
   config.gem 'hpricot', :lib => 'hpricot'
   config.gem 'httparty', :lib => 'httparty'
   config.gem 'htmlentities', :lib => 'htmlentities'
+  config.gem 'amazon-ecs', :lib => '/home/vvv/.rvm/gems/ruby-1.8.7-p302/gems/amazon-ecs-1.1.0/lib/amazon/ecs.rb'
+  config.gem 'wikipedia-client', :lib => '/home/vvv/.rvm/gems/ruby-1.8.7-p302/gems/wikipedia-client-1.0.0/lib/wikipedia.rb'
+  config.gem 'mediacloth', :lib => 'mediacloth'
 end
 
