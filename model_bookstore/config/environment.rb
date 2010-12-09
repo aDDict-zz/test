@@ -42,5 +42,6 @@ Rails::Initializer.run do |config|
   # crawler stuff
   config.gem 'hpricot', :lib => 'hpricot'
   config.gem 'httparty', :lib => 'httparty'
+  config.gem 'htmlentities', :lib => 'htmlentities'
 end
 

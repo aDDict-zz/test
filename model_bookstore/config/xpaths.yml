@@ -1,7 +1,18 @@
 Amazon:
+  linkToTheProduct: "//td[@class='dataColumn']"
   img: "//img[@id='prodImage']"
   price: "//b[@class='priceLarge']"
   title: "//span[@id='btAsinTitle']"
-  timeout: "//div[@class='buying']//span//a"
+  author: "//div[@class='buying']//span//a"
   products: "//td[@class='dataColumn']"
+  description: "//div[@id='productDescription']//div[@class='productDescriptionWrapper']"
+  ISBN: "//td[@class='bucket']//li"
+  publisher: "//td[@class='bucket']//li"
+  reviews: "//td[@class='bucket']//span[@class='crAvgStars']//a"
+Bookline:
+  img: "valami"
+  price: "valami"
+  title: "valami"
+  author: "valami"
+  products: "valami"
 
