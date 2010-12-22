@@ -22,7 +22,8 @@ Bookline:
   price: "//div[@class='priceblockleft']//strong"
 Wikipedia:
   item: "//table"
-  matcher: "infobox"
+  matcher: "infobox.*vcard"
   nameSpan: "//span[@class='fn']"
   nameTh: "//th[@class='fn']"
+  infoItem: "//tr"
 

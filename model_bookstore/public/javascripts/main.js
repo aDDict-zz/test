@@ -50,9 +50,7 @@ main.wiki = function(obj){
     $.post(
         "/searchInWiki",
         "type=" + main.getHashByQueryStr($(obj).attr("rel"))["type"] + "&key=" + unescape(main.getHashByQueryStr($(obj).attr("rel"))["key"]),
-        function(resp){
-            //console.log(resp);
-        },
+        main.modalOn,
         "json"
     );
     return false;
@@ -65,6 +63,27 @@ main.getHashByQueryStr = function(qstr){
         hash[arr[i].split("=")[0]] = arr[i].split("=")[1];
     }
     return hash;
+}
+
+main.modalOn = function(json){
+    if(json != null && typeof(json) == "object"){
+        $("#modalContent").setTemplateElement("modalDatas");
+        $("#modalContent").processTemplate(json);
+        var html = $("#modalContent").html();
+        $("#modalContainer").css("display", "block");
+        $.blockUI.defaults.css = { backgroundColor: "black", cursor: "default", color: "white" };
+        $("#modalContainer").block({ message: html });
+        $("#modalContainer").css("left", $(document).width() / 2 - 200);
+        $("#modalContainer").css("top", $(document).scrollTop());
+        $("#modalContainer").click(function(e){ e.stopPropagation(); });
+        $("body").click(function(){ main.modalOff(); });
+    } else {
+        alert("no data");
+    }
+}
+main.modalOff = function(){
+    $("#modalContainer").css("display", "none ");
+    $.unblockUI();
 }
 
 $(document).ready(main.init);

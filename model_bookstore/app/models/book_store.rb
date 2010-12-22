@@ -39,6 +39,8 @@ class String
     garbage.each do |item|
       str = str.gsub(/#{item}/, "")
     end
+    str = str.gsub(/\n/, " ")
+    str = str.gsub(/\r\n/, " ")
     str
   end
 
@@ -60,7 +62,7 @@ class String
     str = HTMLEntities.new.decode(self)
     str
   end
-  # a HTMLEntities spaceket hagy a stringben
+
   def removeNBSP
     str = self.to_s
     str = str.gsub(/&nbsp;/, "")
@@ -98,7 +100,7 @@ class HttpartyRequest
     @body = setBody
     @query = setQuery
     @urlPart = setUrlPart
-    @result = setFullContent
+    @result = setResult
   end
 
   def loadYaml
@@ -119,7 +121,7 @@ class HttpartyRequest
   def setUrlPart
   end
 
-  def setFullContent
+  def setResult
   end
 
   def post
@@ -141,14 +143,13 @@ class BooklineRequest < HttpartyRequest
 
   def setQuery
     { "keywords" => "#{@pmeters[:title]}, #{@pmeters[:author]}",
-#      "author" => @pmeters[:author],
       "keywordOption" => "AND",
       "includeSimilarKeywords" => 1,
       "includeSimilarAuthors" => 1,
       "includeAntique" => 1 }
   end
 
-  def setFullContent
+  def setResult
     post.to_s
   end
 end
@@ -170,8 +171,8 @@ class WikipediaRequest < HttpartyRequest
       "search" => @pmeters[:key] }
   end
 
-  def setFullContent
-    post
+  def setResult
+    post.to_s
   end
 
 end
@@ -195,7 +196,7 @@ class AmazonRequest < HttpartyRequest
     Amazon::Ecs.prepare_url(@opts)
   end
 
-  def setFullContent
+  def setResult
     get.body.to_s
   end
 

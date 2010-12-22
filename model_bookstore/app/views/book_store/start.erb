@@ -10,16 +10,21 @@
     <script type="text/javascript" src="/javascripts/jquery-1.4.2.min.js" charset="utf-8"></script>
     <script type="text/javascript" src="javascripts/jquery.ui.core.js"></script>
     <script type="text/javascript" src="javascripts/jquery.ui.widget.js"></script>
+    <script type="text/javascript" src="javascripts/jquery.blockUI.js"></script>
     <script type="text/javascript" src="javascripts/jquery-jtemplates.js"></script>
     <script type="text/javascript" src="javascripts/ui.ariaSorTable.js"></script>
     <script type="text/javascript" src="/javascripts/main.js" charset="utf-8"></script>
     <style>
-        #results td   { width:70px;text-align:center; }
-        #results td   { width:70px;text-align:center; }
-        #results img  { margin:0 auto;border-style:none; }
-        #content      { margin-top:20px; }
-        #template     { display:none; }
-        #results td a { text-decoration:none; }
+        #results td     { width:70px;text-align:center; }
+        #results td     { width:70px;text-align:center; }
+        #results img    { margin:0 auto;border-style:none; }
+        #content        { margin-top:20px; }
+        #template       { display:none; }
+        #modalContent   { display:none; }
+        #modalDatas     { display:none; }
+        #results td a   { text-decoration:none; }
+        #modalContainer { display:none;position:absolute;top:100px;text-align:center;padding:10px; }
+        .modalFont      { font-size: 0.75em; }
     </style>
   </head>
   <body>
@@ -57,12 +62,12 @@
 			{#foreach $T as item}
 			  <tbody>
 			    <tr>
-					    <td>{#if $T.item.title != ""}<a href="#" onclick="main.wiki(this);" rel="type=title&key={escape($T.item.title)}">{$T.item.title}</a>{#else}no data{#/if}</td>
-					    <td>{#if $T.item.author != ""}<a href="#" onclick="main.wiki(this);" rel="type=author&key={escape($T.item.author)}">{$T.item.author}</a>{#else}no data{#/if}</td>
-					    <td>{#if $T.item.isbn != ""}<a href="#" onclick="main.wiki(this);" rel="type=isbn&key={escape($T.item.isbn)}">{$T.item.isbn}</a>{#else}no data{#/if}</td>
+					    <td>{#if $T.item.title != ""}{$T.item.title}{#else}no data{#/if}</td>
+					    <td>{#if $T.item.author != ""}<a href="#_" onclick="main.wiki(this);" rel="type=author&key={escape($T.item.author)}">{$T.item.author}</a>{#else}no data{#/if}</td>
+					    <td>{#if $T.item.isbn != ""}{$T.item.isbn}{#else}no data{#/if}</td>
 					    <td>{$T.item.ean}</td>
 					    <td>{#if $T.item.publicationdate.length == 4}{$T.item.publicationdate}-01-01{#else}{$T.item.publicationdate}{#/if}</td>
-					    <td>{#if $T.item.publisher != ""}<a href="#" onclick="main.wiki(this);" rel="type=publisher&key={escape($T.item.publisher)}">{$T.item.publisher}</a>{#else}no data{#/if}</td>
+					    <td>{#if $T.item.publisher != ""}{$T.item.publisher}{#else}no data{#/if}</td>
 					    <td>{$T.item.price}</td>
 					    <td><a href="{$T.item.linkToTheProduct}" target='_blank'><img src="{#if $T.item.img != ""}{$T.item.img}{#else}{main.table.noImage}{#/if}" /></a></td>
 			    </tr>
@@ -71,6 +76,18 @@
 		</table>
 	</textarea>
 
+  <div id="modalContent"></div>
+
+  <textarea id="modalDatas">
+    <h4>{$T.name}</h4>
+    <img src="{$T.img}" />
+    {#foreach $T.attributes as item}
+      <h4>{$T.item.name}:</h4>
+      <span class="modalFont">{$T.item.value}</span>
+    {#/for}
+  </textarea>
+
+  <div id="modalContainer"></div>
 
   </body>
 </html>

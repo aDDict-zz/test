@@ -31,6 +31,9 @@ class Schema
   def setLinxToTheProducts
   end
 
+  def self.setLinxToTheProducts
+  end
+
   def setImgUrl
   end
 
@@ -44,9 +47,6 @@ class Schema
   end
 
   def setDescription
-  end
-
-  def self.setLinxToTheProducts
   end
 
   def setISBN
@@ -85,19 +85,70 @@ class WikipediaSchema < Schema
     res = {}
     @doc.search(@xpaths["item"]).each do |item|
       if Regexp.new(/#{@xpaths["matcher"]}/).match(item.attributes["class"])
+#        puts "wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"
+#        puts item.search("//img").to_s.getImageSource
         if item.at(@xpaths["nameSpan"])
-          @name = item.at(@xpaths["nameSpan"]).inner_html
+          res["name"] = item.at(@xpaths["nameSpan"]).inner_html
         elsif item.at(@xpaths["nameTh"])
-          @name = item.at(@xpaths["nameTh"]).inner_html
+          res["name"] = item.at(@xpaths["nameTh"]).inner_html
         end
 
-        res = {
-          "name" => @name
-        }
+        res["img"] = item.search("//img").to_s.getImageSource
+
+        res["attributes"] = []
+        item.search(@xpaths["infoItem"]).each do |tr|
+          if Regexp.new(/Born/).match(tr.to_s)
+            res["attributes"].push(
+              "name" => "Born",
+              "value" => tr.at("//td").to_s.removeHtmlGarbage.removeGarbage
+            )
+          end
+          if Regexp.new(/Died/).match(tr.to_s)
+            res["attributes"].push(
+              "name" => "Died",
+              "value" => tr.at("//td").to_s.removeHtmlGarbage.removeGarbage
+            )
+          end
+          if Regexp.new(/Occupation/).match(tr.to_s)
+            res["attributes"].push(
+              "name" => "Occupation",
+              "value" => tr.at("//td").to_s.removeHtmlGarbage.removeGarbage
+            )
+          end
+          if Regexp.new(/Language/).match(tr.to_s)
+            res["attributes"].push(
+              "name" => "Language",
+              "value" => tr.at("//td").to_s.removeHtmlGarbage.removeGarbage
+            )
+          end
+          if Regexp.new(/Notable work/).match(tr.to_s)
+            str = ""
+            tr.search("//i").each do |i|
+              str += " #{i.to_s.removeHtmlGarbage.removeGarbage} "
+            end
+            res["attributes"].push(
+              "name" => "Notable work",
+              "value" => str
+            )
+          end
+          if Regexp.new(/Years active/).match(tr.to_s)
+            res["attributes"].push(
+              "name" => "Years active",
+              "value" => tr.at("//td").to_s.removeHtmlGarbage.removeGarbage
+            )
+          end
+
+        end
       end
     end
-    res
-   end
+
+    if res.size > 0
+      res
+    else
+      ""
+    end
+
+  end
 
 end
 
@@ -107,7 +158,7 @@ class AmazonSchema < Schema
     res_array = []
     @doc.search(@xpaths["item"]).each do |item|
     res_array.push({
-        "author" => item.search(@xpaths["author"])[0].to_s.removeHtmlGarbage,
+        "author" => item.search(@xpaths["author"])[0].to_s.removeHtmlGarbage.removeBracketContent,
         "title" => item.at(@xpaths["title"]).to_s.removeHtmlGarbage,
         "linkToTheProduct" => item.at(@xpaths["detailpageurl"]).inner_html,
         "img" => item.at(@xpaths["mediumimage"]).to_s.removeHtmlGarbage,
