@@ -157,17 +157,17 @@ class AmazonSchema < Schema
   def setItems
     res_array = []
     @doc.search(@xpaths["item"]).each do |item|
-    res_array.push({
-        "author" => item.search(@xpaths["author"])[0].to_s.removeHtmlGarbage.removeBracketContent,
-        "title" => item.at(@xpaths["title"]).to_s.removeHtmlGarbage,
-        "linkToTheProduct" => item.at(@xpaths["detailpageurl"]).inner_html,
-        "img" => item.at(@xpaths["mediumimage"]).to_s.removeHtmlGarbage,
-        "publicationdate" => item.at(@xpaths["publicationdate"]).to_s.removeHtmlGarbage,
-        "publisher" => item.at(@xpaths["publisher"]).to_s.removeHtmlGarbage,
-        "ean" => item.at(@xpaths["ean"]).to_s.removeHtmlGarbage,
-        "isbn" => item.at(@xpaths["isbn"]).to_s.removeHtmlGarbage,
-        "price" => item.at(@xpaths["lowestnewprice"]).to_s.gsub(/\$/, "").removeHtmlGarbage
-      })
+      res_array.push({
+	  "author" => item.search(@xpaths["author"])[0].to_s.removeHtmlGarbage.removeBracketContent,
+	  "title" => item.at(@xpaths["title"]).to_s.removeHtmlGarbage,
+	  "linkToTheProduct" => item.at(@xpaths["detailpageurl"]).inner_html,
+	  "img" => item.at(@xpaths["mediumimage"]).to_s.removeHtmlGarbage,
+	  "publicationdate" => item.at(@xpaths["publicationdate"]).to_s.removeHtmlGarbage,
+	  "publisher" => item.at(@xpaths["publisher"]).to_s.removeHtmlGarbage,
+	  "ean" => item.at(@xpaths["ean"]).to_s.removeHtmlGarbage,
+	  "isbn" => item.at(@xpaths["isbn"]).to_s.removeHtmlGarbage,
+	  "price" => item.at(@xpaths["lowestnewprice"]).to_s.gsub(/\$/, "").removeHtmlGarbage
+	})
     end
     res_array
   end
