@@ -1,0 +1,15 @@
+#edit-mimoxId label{
+	display:block;
+}
+#domContainer{
+	cursor:pointer;
+}
+#newLayer{
+	font-size:10px;
+}
+#thisList{
+	font-size:10px;
+}
+#thisList span{
+	cursor:pointer;
+}
