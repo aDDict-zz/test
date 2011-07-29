@@ -13,3 +13,5 @@ mysql depo -u root --password=v  < /home/vvv/Desktop/sql/mem_filter_items.sql
 mysql depo -u root --password=v  < /home/vvv/Desktop/sql/mem_product_keyword.sql
 mysql depo -u root --password=v  < /home/vvv/Desktop/sql/mem_products_filter.sql
 mysql depo -u root --password=v  < /home/vvv/Desktop/sql/mem_products.sql
+
+terminator -x vim &

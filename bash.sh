@@ -51,3 +51,6 @@ then
 else
     export PS1="\n$CLBLUE[$CLLGREY\u$CLBLUE@$CLCYAN\h$CLBLUE][$CLCYAN\w$CLBLUE]: $CLBLUE     \$(__git_ps1) \n$CLSYS\$ "
 fi
+
+export EDITOR="vim"
+

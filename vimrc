@@ -1,4 +1,4 @@
-:colorscheme  tir_black  "matrix  relaxedgreen colorer
+:color tango 
 :set number
 :set tabstop=2
 
