@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-:color tango 
-=======
 :color  mustang "dante 
->>>>>>> cdcc9b7... init
 :set number
 :set tabstop=2
 
