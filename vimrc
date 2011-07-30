@@ -82,6 +82,6 @@ set mouse=a         " Enable the use of the mouse.
 filetype plugin indent on
 syntax on
 
-map <F2> \c
+map <F2> \c 
 imap <f3> <c-n>
 map <f12> :NERDTree <enter>
