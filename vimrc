@@ -1,4 +1,4 @@
-:color  mustang "dante 
+:colorscheme  night
 :set number
 :set tabstop=2
 
