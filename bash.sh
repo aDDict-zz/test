@@ -53,4 +53,3 @@ else
 fi
 
 export EDITOR="vim"
-

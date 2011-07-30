@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 :color tango 
+=======
+:color  mustang "dante 
+>>>>>>> cdcc9b7... init
 :set number
 :set tabstop=2
 
@@ -82,5 +86,6 @@ set mouse=a         " Enable the use of the mouse.
 filetype plugin indent on
 syntax on
 
-map <F2> \c 
+map <F2> \c
+imap <f3> <c-n>
 map <f12> :NERDTree <enter>
