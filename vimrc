@@ -1,4 +1,4 @@
-:color tango 
+:color  gw_green   " tango 
 :set number
 :set tabstop=2
 
