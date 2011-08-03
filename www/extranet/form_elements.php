@@ -33,7 +33,7 @@ if ($res && mysql_num_rows($res))
 else
     exit;
 
-//print_r($formdata);
+//print_r($formdata); die();
 
 $error=array();
 
