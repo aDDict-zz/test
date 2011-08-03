@@ -1,0 +1,28 @@
+<?
+$word["month1"]="január";
+$word["month2"]="február";
+$word["month3"]="március";
+$word["month4"]="április";
+$word["month5"]="május";
+$word["month6"]="június";
+$word["month7"]="július";
+$word["month8"]="augusztus";
+$word["month9"]="szeptember";
+$word["month10"]="október";
+$word["month11"]="november";
+$word["month12"]="december";
+$word["day1"]="hétfő";
+$word["day2"]="kedd";
+$word["day3"]="szerda";
+$word["day4"]="csütörtök";
+$word["day5"]="péntek";
+$word["day6"]="szombat";
+$word["day0"]="vasárnap";
+$word["dg_period"]="-- periódus --";
+$word["dg_all"]="minden nap";
+$word["dg_lastmonth"]="a legutóbbi hónap";
+$word["dg_lastweek"]="a legutóbbi hét";
+$word["dg_yesterday"]="tegnap";
+$word["dg_today"]="ma";
+$word["dg_go"]="mehet";
+?>

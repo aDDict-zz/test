@@ -1,0 +1,308 @@
+@charset "UTF-8";
+
+html, body {height: 100%; margin: 0; padding: 0;background-color:#edebd9;
+/*background-image: url(/images/bg_2szin2.jpg); background-repeat:repeat-x;*/
+font-family: Verdana, Geneva, sans-serif; font-size: 12px; font-style: normal; color:#343434;}
+
+body a:focus {outline: none;}
+
+
+a:link {text-decoration: none;color:#827861 }
+a:visited {text-decoration: none; color:#827861}
+a:hover { text-decoration:none; color:#827861}
+
+object{outline: none;}
+img { border: 0px; }
+p {padding: 0 0 0 0; text-align:justify;line-height:18px;}
+
+ul { list-style: none; list-style-image:url(/images/list_dot.gif);
+padding: 0 0 0 15px;
+!padding-left: 0px; /*IE7*/
+/*_padding-top: 20px; //IE6*/
+line-height:1.5em; display: inline-block;}
+li {line-height:18px;text-align:justify;}
+/*element {
+	cursor: pointer;
+	cursor: hand;
+}
+*/
+ol { list-style: decimal;
+padding: 0 0 0 20px;
+!padding-left: 0px; /*IE7*/
+/*_padding-top: 20px; //IE6*/
+line-height:1.5em; display: inline-block;}
+
+strong, b {
+	font-weight: bold;
+}
+
+
+h1, h2, h3, h4, h5, h6 {font-weight:normal;padding: 0 0 0 0;}
+
+/*MOTTO*/
+h1 {font-size:22px;line-height:22px;color:#343434;}
+
+/*Bejelentkezés */
+h2 {font-size:13px; color:#343434;}
+h2 a:link{font-size:13px;color:#343434;display: inline-block; cursor: pointer;}
+h2 a:hover{font-size:13px;color:#343434;display: inline-block; cursor: pointer;}
+h2 a:visited{font-size:13px;color:#343434;display: inline-block; cursor: pointer;}
+
+/*MENÜ*/
+h3 {font-size:15px;line-height:15px; color:#343434; margin:0 0 5px 0;display: inline-block;}/**/
+h3 a:link{font-size:15px;line-height:15px; color:#343434;margin:0 0 5px 0;display: inline-block; cursor: pointer;}
+h3 a:hover{font-size:15px;line-height:15px; color:#343434;margin:0 0 5px 0;display: inline-block; cursor: pointer;}
+h3 a:visited{font-size:15px;line-height:15px; color:#343434;margin:0 0 5px 0;display: inline-block; cursor: pointer;}
+
+/*HEADER*/
+h4 {font-size:18px;line-height:20px; margin:8px 0 5px 0;color:#343434;}
+
+/*HEADER ALOLDAL*/
+h5 {font-size:18px;line-height:18px;color:#343434;}
+
+h6 {font-size:1.45em;line-height:1.5em;margin-bottom:1em; margin-top:1em; color:#27a8df;}
+h1 img, h2 img, h3 img, h4 img, h5 img, h6 img {margin:0;}
+
+p {padding: 0 0 0 0;}
+ul { list-style: none; list-style-image:url(/images/list_dot.gif);
+padding: 0 0 0 15px;
+!padding-left: 0px; /*IE7*/
+/*_padding-top: 20px; //IE6*/
+line-height:1.5em; display: inline-block; text-align:justify;}
+
+div#wrapper {background:#d1ceab;width: 100%;clear: both;top: 0; position: relative;/*height: 680px;*/}
+
+div.wrapper_content {margin:0 auto;width: 930px;background-color:#606060;
+				/*background-image: url(/images/nyitolap_30wrapper_bg2.png);
+				background-repeat: no-repeat;*/}
+				
+div.top_holder {float:left; width:100%; height:61px; padding:0 0 0 0; background-image: url(/images/top_bg.gif);background-repeat: repeat-x;}	
+
+/*GOMB ALAP*/
+div.gomb_holder{width:auto; height:25px;padding:0 0 0 10px;}
+div.gomb_left{float:left; width:10px; height:25px;padding:0 0 0 0; background-image: url(/images/gomb_alap_left.gif);background-repeat: no-repeat;}
+div.gomb_right{float:left; width:10px; height:25px;padding:0 0 0 0; background-image: url(/images/gomb_alap_right.gif);background-repeat: no-repeat;}
+div.gomb_mid{float:left; width:auto; height:19px;padding:6px 0 0 0; font-size: 11px; color:#fff; background-image: url(/images/gomb_alap_mid.gif);background-repeat: repeat-x; }
+div.gomb_mid a:link,div.gomb_mid a:visited,div.gomb_mid a:active,div.gomb_mid a:hover {font-size: 11px; color:#fff; text-decoration:none}
+
+/*LEFT BOXOK*/
+div.left_box{float:left; width:235px; height:auto; padding:0 0 0 0;}
+div.left_box_ajanlat{float:left; width:235px; height:148px; padding:0 0 0 0; background-image: url(/images/left_box_ajanlatkeres_bg.gif);background-repeat: no-repeat;}
+div.left_box_login{float:left; width:235px; height:229px; padding:0 0 0 0; background-image: url(/images/left_box_login_bg.gif);background-repeat: no-repeat;}
+
+/*FORM*/
+div.left_box_login_td{float:left; width:235px; height:auto; padding:0 0 0 0;}
+
+label{width: auto;float: left;text-align: left;display: block; }
+input{color: #2d2d2c; background: #ffffff; border: 1px solid #e8e8e8; width: 190px; height: 15px; }
+.input_error{color: #2d2d2c; background: #ffffff; border: 1px solid #FF8E14; width: 190px; height: 15px; }
+
+/*.submit input{width: 90px; height:30px; background-image: url(/images/btn_reg.gif);background-repeat: no-repeat; text-align: right; }*/
+fieldset{border: 0px; line-height:14px}
+#gyorsreg td{height:22px}
+
+/*LEFT header*/
+div.left_header_holder{width:auto; height:22px;padding:0 0 0 0;}
+div.left_header{float:left; width:190px; height:19px; padding:3px 5px 0 5px; background-color:#a29e76;color:#fff;}
+div.left_header_right{float:left; width:22px; height:22px;padding:0 0 0 0; background-image: url(/images/left_header_right_bg.gif);background-repeat: no-repeat;}
+
+/*LOGO ÉS MENÜ*/
+div.top_logo_menu{margin:0 auto;width:930px; height:61px;}
+
+div.logo{float:left; width:151px; height:61px;padding:0 0 0 0;}
+div.menu{float:right; width:478px; height:26px;padding:35px 0 0 23px; background-image: url(/images/menu_bg.gif);background-repeat: no-repeat;}
+
+/*MOTTO + bejelentkezés*/
+div.motto_login_holder{float:left; width:100%;height:58px;padding:0 0 0 0;background-image: url(/images/motto_bg.png);background-repeat: repeat-x;}
+div.motto_login_content{margin:0 auto; width:930px;height:58px;padding:0 0 0 0;}
+div.motto{float:left;width:auto; height:56px;padding:2px 0 0 0;}
+div.login{float:right;width:156px; height:47px;padding:11px 0 0 0;}
+
+/*REFERENCIÁK*/
+div.content_ref_header{float:left;width:auto; height:auto;padding:8px 0 0 5px;}
+div.motto_ref_holder{float:left; width:100%;height:58px;padding:0 0 0 0;background-image: url(/images/motto_ref_bg.png);background-repeat: repeat-x;}
+div.content_right_ref{float:left;width:660px; height:auto;padding:0 20px 0 15px; }
+div.content_ref_holder{float:left;width:660px; height:auto;padding:10px 0 10px 0; border-top:1px dotted #544d46; border-bottom:1px dotted #544d46;}
+
+div.ref_item_holder {float:left;width:68px; height:68px; padding:0 0 0 0; }
+/*
+div.ref_item {width:68px; height:68px;background-image: url(/images/ref_item_01.gif);background-repeat: no-repeat; }
+
+div.ref_item a:hover{width:68px; height:68px;background-image: url(/images/ref_item_01_over.gif);background-repeat: no-repeat;}
+
+div.ref_item_thumb{float:left;width:47px; height:47px;padding:11px 0 0 11px; border:none; }
+*/
+
+
+/*REF MENÜ*/
+#accHolder {width: 220px; }
+
+.accordionButton {	width: 220px;float: left;cursor: pointer;}
+	
+.accordionContent {	width: 220px;float: left;background: #fff; display: none; /*display: block;*/}
+
+/*PORTFOLIO SLIDE*/
+div.slide_holder{float:left; width:100%;height:179px;padding:0 0 0 0;background-image: url(/images/slide_bg.png);background-repeat: repeat-x;}
+div.slide{margin:0 auto; width:930px; height:179px;padding:0 0 0 0;}
+/*div.slide_content{float:left; width:830px; height:179px;padding:0 0 0 0;overflow: hidden;}*/
+#wrap {
+	width:930px;
+}
+
+#slider{
+float:left; width: 830px; height: 179px; overflow: hidden;}
+
+#slider ul, #slider li{
+	margin:0;
+	padding:0;
+/*	list-style:none;*/
+	}
+#slider li{ 
+	width:830px;
+	height:179px;
+	overflow:hidden; 
+	}	
+#prevBtn{ 
+float:left;
+	display:block;
+	width:50px;
+	height:179px;
+	left:0px;
+	top:0px;
+	background:url(/images/btn_prev.png) no-repeat 0 0;
+	}
+#nextBtn{ 
+	display:block;
+	width:50px;
+	height:179px;
+	float:right;
+	left:0px;
+	top:0px;
+background:url(/images/btn_next.png) no-repeat 0 0;
+	}		
+														
+#prevBtn a, #nextBtn a{  
+	display:block;
+	width:50px;
+	height:179px;
+	
+	}	
+#nextBtn a{ 
+		
+	}
+
+/*TARTALOM RÉSZ*/
+div.content_holder{float:left; width:100%;height:auto;padding:0 0 0 0; background-color:#fff;}
+div.content{margin:0 auto; width:930px;height:auto;padding:0 0 0 0;background-image: url(/images/content_bg.gif);background-repeat: repeat-y;}
+div.content_bottom{margin:0 auto; width:930px; height:60px;padding:0 0 0 0;background-image: url(/images/content_bg_bottom.gif);background-repeat: no-repeat;}
+
+div.content_left{float:left;width:235px; height:auto;padding:0 0 0 0;background-image: url(/images/content_left_bg.png);background-repeat: repeat-y;}
+div.content_left_bottom{float:left;width:235px; height:60px;padding:0 0 0 0;background-image: url(/images/content_left_bg_bottom.png);background-repeat: no-repeat;}
+div.content_right{float:right;width:695px; height:auto;padding:0 0 0 0;}
+div.content_right_header{float:left;width:auto; height:auto;padding:8px 0 0 15px;}
+div.content_right_text{float:left;width:660px; height:auto;padding:0 20px 0 15px;}
+
+/*ALOLDAL KISFEJLÉCEK*/
+div.aloldal_fejlec_holder{float:left;width:auto; height:auto;padding:0 0 0 0;background-image: url(/images/kiemelt_bg.gif);background-repeat: no-repeat;}
+div.aloldal_fejlec_header{float:left; width:628px; height:19px; padding:3px 5px 0 5px;background-color:#c4c1a1;}
+div.aloldal_fejlec_right{float:left; width:22px; height:22px;padding:0 0 0 0; background-image: url(/images/kiemelt_right.gif);background-repeat: no-repeat;}
+
+/*KIEMELT ADATOK*/
+div.kiemeltadatok_holder{float:left;width:680px; height:180px;padding:0 0 0 15px;}
+div.kiemeltadatok_header{float:left; width:638px; height:19px; padding:3px 5px 0 5px;background-color:#c4c1a1;}
+div.kiemeltadatok_right{float:left; width:22px; height:22px;padding:0 0 0 0; background-image: url(/images/kiemelt_right.gif);background-repeat: no-repeat;}
+
+div.kiemelt_adat_nev_box{float:left; width:630px; height:auto;padding:0 0 0 40px;}
+div.kiemelt_adat_nev{float:left; width:410px; height:22px;padding:6px 0 5px 10px; background-image: url(/images/kiemelt_adat_bg.gif);background-repeat: no-repeat;}
+
+div.kiemelt_adat_box{float:right; width:140px; height:auto;padding:0 0 0 0;}
+div.kiemelt_adat{float:left; width:130px; height:22px;padding:6px 0 5px 40px;}
+
+/*FOOTER*/
+div.footer_holder {float:left; width:100%;height:auto;background-image: url(/images/footer_bg.png);background-repeat: repeat-x;}
+div.footer{margin:0 auto; width:930px;height:162px;padding:0 0 0 0;font-size: 11px;}
+
+
+div.footer_box1{float: left; width: 210px; height: auto; text-align:left; line-height:14px;
+padding: 12px 12px 12px 13px !important;/*IE doesn't understands this*/
+padding: 12px 12px 12px 13px;
+}
+div.footer_box1 a:link{ text-decoration:none; color:#403d37; font-weight:normal}
+div.footer_box1 a:visited {text-decoration: none; color:#403d37; font-weight:normal}
+div.footer_box1 a:hover { text-decoration: underline; color:#403d37; font-weight:normal}
+
+div.footer_box2{float: right; width: 500px; height: auto; text-align:right;}
+
+div.footer_box3{float: right; width: 300px; height: auto; text-align:right; font-size:14px; line-height:20px; color:#958b7e;
+padding: 12px 23px 12px 12px !important;/*IE doesn't understands this*/
+padding: 12px 23px 12px 12px;
+}
+div.footer_box3 a{color:#958b7e; text-decoration:none; font-weight:normal;}
+div.footer_box4{float: left; width: 930px; height: auto; text-align:left;}
+div.footer_box5{float: left; width: 160px; height: 40px;}
+div.footer_box51{float: left; width: 244px; height: 77px;
+padding: 12px 0 0 0 !important;/*IE doesn't understands this*/
+padding: 12px 0 0 0;}
+
+div.footer_box6{float: left; width: 930px; height: auto;
+padding: 10px 0 0 0 !important;/*IE doesn't understands this*/
+padding: 10px 0 0 0;
+}
+
+div.box6left{float: left; width: auto; height: auto;
+padding: 0 0 0 13px !important;/*IE doesn't understands this*/
+padding: 0 0 0 13px;
+}
+div.box6right{float: right; width: auto; height: auto; text-align:right;
+padding: 0 23px 0 0 !important;/*IE doesn't understands this*/
+padding: 0 23px 0 0;
+}
+
+			
+	/*SZOLGÁLTATÁSOK */		
+/*NAVIGÁCIÓ*/
+div.menudiv {float:left; width:181px; height:290px; padding:0px 0px 0px 0px; font-size:10px;}
+
+ul#primaryNav { float: left; height: 251px; list-style: none; margin: 0; padding:0; position: absolute; top: 316px; width: 181px; 
+}
+ul#primaryNav li { background: none; float: left; padding-left: 0; }
+ul#primaryNav li#Nav08 { margin-right: 0; }
+ul#primaryNav a {font-size: 1.2em;color: #999;display: block;height: 25px;overflow: hidden;position: relative;text-indent: 5px;}
+ul#primaryNav span {display: block;height: 100%;left: 0;position: absolute;top: 0;width: 100%; background: url(/images/menu_szolg2.gif) no-repeat top left;
+	/*background: url(/images/menu_alap.gif) no-repeat top left;*/}
+	
+ul#primaryNav li#Nav01 a {background-position: 0 0; width: 208px; height: 26px; }
+ul#primaryNav li#Nav02 a {background-position: 0 0; width: 208px; height: 29px; }
+ul#primaryNav li#Nav03 a {background-position: 0 0; width: 208px; height: 43px; }
+ul#primaryNav li#Nav04 a {background-position: 0 0; width: 208px; height: 29px; }
+ul#primaryNav li#Nav05 a {background-position: 0 0; width: 208px; height: 29px; }
+ul#primaryNav li#Nav06 a {background-position: 0 0; width: 208px; height: 29px; }
+ul#primaryNav li#Nav07 a {background-position: 0 0; width: 208px; height: 29px; }
+ul#primaryNav li#Nav08 a {background-position: 0 0; width: 208px; height: 37px; }
+/*ALAP ÁLLAPOT*/
+/*ul#primaryNav li#Nav01 span { background-position: 0 0; background: url(/images/menu_01.gif) no-repeat top left;}
+ul#primaryNav li#Nav02 span { background-position: 0 0; background: url(/images/menu_02.gif) no-repeat top left;}
+ul#primaryNav li#Nav03 span { background-position: 0 0; background: url(/images/menu_03.gif) no-repeat top left;}
+ul#primaryNav li#Nav04 span { background-position: 0 0; background: url(/images/menu_04.gif) no-repeat top left;}
+ul#primaryNav li#Nav05 span { background-position: 0 0; background: url(/images/menu_05.gif) no-repeat top left;}
+ul#primaryNav li#Nav06 span { background-position: 0 0; background: url(/images/menu_06.gif) no-repeat top left;}
+ul#primaryNav li#Nav07 span { background-position: 0 0; background: url(/images/menu_07.gif) no-repeat top left;}*/
+
+ul#primaryNav li#Nav01 span { background-position: -208px 0px; }
+ul#primaryNav li#Nav02 span { background-position: -208px -26px; }
+ul#primaryNav li#Nav03 span { background-position: -208px -55px; }
+ul#primaryNav li#Nav04 span { background-position: -208px -98px;}
+ul#primaryNav li#Nav05 span { background-position: -208px -127px; }
+ul#primaryNav li#Nav06 span { background-position: -208px -156px;}
+ul#primaryNav li#Nav07 span { background-position: -208px -185px; }
+ul#primaryNav li#Nav08 span { background-position: -208px -214px; }
+
+/*OVER ÁLLAPOT  és  BEKAPCSOLT ÁLLAPOT*/
+ul#primaryNav li#Nav01 a:hover span, body#Nav01 ul#primaryNav li#Nav01 a span { background-position: 0 0; }
+ul#primaryNav li#Nav02 a:hover span, body#Nav02 ul#primaryNav li#Nav02 a span { background-position: 0 -26px; }
+ul#primaryNav li#Nav03 a:hover span, body#Nav03 ul#primaryNav li#Nav03 a span { background-position: 0 -55px; }
+ul#primaryNav li#Nav04 a:hover span, body#Nav04 ul#primaryNav li#Nav04 a span { background-position: 0 -98px; }
+ul#primaryNav li#Nav05 a:hover span, body#Nav05 ul#primaryNav li#Nav05 a span { background-position: 0 -127px; }
+ul#primaryNav li#Nav06 a:hover span, body#Nav06 ul#primaryNav li#Nav06 a span { background-position: 0 -156px; }
+ul#primaryNav li#Nav07 a:hover span, body#Nav07 ul#primaryNav li#Nav07 a span { background-position: 0 -185px; }
+ul#primaryNav li#Nav08 a:hover span, body#Nav08 ul#primaryNav li#Nav08 a span { background-position: 0 -214px; }

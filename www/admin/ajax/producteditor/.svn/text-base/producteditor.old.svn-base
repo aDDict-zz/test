@@ -1,0 +1,51 @@
+<?
+session_start();
+
+include "/var/www/www.depo.hu.confs/_config.php";
+mysql_connect("$_db_change_host","$_dbuser","$_dbpass");
+mysql_select_db("$_dbname");
+ 
+sleep(1);
+
+if(isset($_REQUEST["mode"]))
+{
+    switch($_REQUEST["mode"])
+    {
+	case "update":
+	    mysql_query("UPDATE products SET p_name='".iconv("UTF-8","ISO-8859-2",$_REQUEST["p_name"])."',
+					     p_attributes='".iconv("UTF-8","ISO-8859-2",$_REQUEST["p_attributes"])."',
+					     p_url='".iconv("UTF-8","ISO-8859-2",$_REQUEST["p_url"])."',
+					     p_description='".iconv("UTF-8","ISO-8859-2",$_REQUEST["p_description"])."'
+					WHERE p_id='".$_REQUEST["p_id"]."'
+
+			");
+
+	break;
+
+    }
+}
+
+
+if($_REQUEST["p_id"])
+ $p=mysql_fetch_array(mysql_query("SELECT * FROM products WHERE p_id='".$_REQUEST["p_id"]."'"));
+
+
+ $tart='<?xml version="1.0" encoding="UTF-8"?>
+<message success="true">
+<product> 
+    <p_id><![CDATA['.$_REQUEST["p_id"].']]></p_id>
+    <p_name><![CDATA['.stripslashes($p["p_name"]).']]></p_name> 
+    <p_mid><![CDATA['.stripslashes($p["p_mid"]).']]></p_mid> 
+    <p_attributes><![CDATA['.stripslashes($p["p_attributes"]).']]></p_attributes> 
+    <p_url><![CDATA['.stripslashes($p["p_url"]).']]></p_url> 
+    <p_description><![CDATA['.stripslashes($p["p_description"]).']]></p_description> 
+    <p_reference><![CDATA['.stripslashes($p["p_reference"]).']]></p_reference> 
+</product> 
+</message>
+';
+ 
+mysql_close();
+header ("Content-Type:text/xml");
+echo iconv("ISO-8859-2","UTF-8",$tart);
+
+?>

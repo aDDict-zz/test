@@ -1,0 +1,13 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["num_of_memb"]="Members";
+$word["num_of_mess"]="Messages";
+$word["mails_total"]="Mails total";
+$word["ct"]="Clickthrough";
+$word["whole_group"]="The whole group";
+$word["not_validated"]="Not validated";
+$word["unsubbed"]="Unsubscribed";
+$word["affs"]="Affiliates";
+$word["unsuccessful_subscribes"]="Unsuccessful subscribes"; 
+$word["bounced"]="Bounced back emails";
+?>

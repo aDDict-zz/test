@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.maxima.hu/WsIndex.php" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="WsSubscribe" targetNamespace="http://www.maxima.hu/WsIndex.php">
+<types>
+<xsd:schema targetNamespace="http://www.maxima.hu/WsIndex.php"/>
+</types>
+<portType name="WsSubscribePort">
+<operation name="Subscribe">
+<documentation>Subscribes to the given group. Returns 1 on success 0 otherwise</documentation>
+<input message="tns:SubscribeIn"/>
+<output message="tns:SubscribeOut"/>
+</operation>
+<operation name="UnSubscribe">
+<documentation>Unsubscribes from the given group. Returns string</documentation>
+<input message="tns:UnSubscribeIn"/>
+<output message="tns:UnSubscribeOut"/>
+</operation>
+</portType>
+<binding name="WsSubscribeBinding" type="tns:WsSubscribePort">
+<soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+<operation name="Subscribe">
+<soap:operation soapAction="http://www.maxima.hu/WsIndex.php#Subscribe"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/WsIndex.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/WsIndex.php"/>
+</output>
+</operation>
+<operation name="UnSubscribe">
+<soap:operation soapAction="http://www.maxima.hu/WsIndex.php#UnSubscribe"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/WsIndex.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/WsIndex.php"/>
+</output>
+</operation>
+</binding>
+<service name="WsSubscribeService">
+<port name="WsSubscribePort" binding="tns:WsSubscribeBinding">
+<soap:address location="http://www.maxima.hu/WsIndex.php"/>
+</port>
+</service>
+<message name="SubscribeIn">
+<part name="group" type="xsd:string"/>
+<part name="idname" type="xsd:string"/>
+<part name="hidden" type="xsd:string"/>
+<part name="affiliate" type="xsd:string"/>
+<part name="grouplist" type="soap-enc:Array"/>
+<part name="values" type="soap-enc:Array"/>
+</message>
+<message name="SubscribeOut">
+<part name="return" type="xsd:int"/>
+</message>
+<message name="UnSubscribeIn">
+<part name="group" type="xsd:string"/>
+<part name="email" type="xsd:string"/>
+</message>
+<message name="UnSubscribeOut">
+<part name="return" type="xsd:string"/>
+</message>
+</definitions>

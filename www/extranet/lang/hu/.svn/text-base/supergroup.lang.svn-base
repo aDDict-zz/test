@@ -1,0 +1,11 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["groups"]="Csoportok";
+$word["multi_delete"]="Tagcsoport eltávolítása";
+$word["multi_no_members"]="Nincs egyetlen tagcsoport sem.";
+$word["not_specified"]="- válasszon -";
+$word["multi_addgroup"]="Csoport hozzáadása";
+$word["group_page"]="csoport / oldal";
+$word["by_groupname_asc"]="A csoport elnevezése alapján - növekvő";
+$word["by_groupname_desc"]="A csoport elnevezése alapján - csökkenő";
+?>

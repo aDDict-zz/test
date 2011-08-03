@@ -1,0 +1,27 @@
+<?
+
+$word['au_view'] = "View:";
+$word['au_user_page'] = "user/page";
+$word['au_order'] = "Order:";
+$word['au_by_email_addr_asc'] = "by email address - ascending";
+$word['au_by_email_addr_desc'] = "by email address - descending";
+$word['au_by_name_asc'] = "by name - ascending";
+$word['au_by_name_desc'] = "by name - descending";
+$word['au_filter'] = "Filter:";
+$word['au_email'] = "Email:";
+$word['au_nick'] = "Nickname:";
+$word['au_go'] = "Go";
+$word['au_del_filter'] = "Remove filter";
+$word['au_new_user'] = "New user";
+$word['au_email'] = "E-mail address";
+$word['au_name'] = "Name";
+$word['au_operations'] = "Operations";
+$word['au_edit'] = "Edit";
+$word['au_delete'] = "Delete";
+$word['au_sure_delete'] = "Are you sure you want to delete this item?";
+$word['au_sum'] = "Total";
+$word['au_user'] = "user";
+
+$word['au_no_user'] = "No such user.";
+
+?>

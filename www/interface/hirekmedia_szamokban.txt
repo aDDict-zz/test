@@ -1,0 +1,52 @@
+Maxima - "Permission alapú B2C adatbázis"
+tagok száma: 427383
+
+Maxima B2B - "Permission alapú B2B adatbázis"
+tagok száma: 25854
+
+KutatóCentrum kutatási panel
+tagok száma: 134336
+
+Egypercesek - "E-mail alapú szórakoztató magazincsalád"
+Állatbarát: 41222 tag
+Autó: 39013 tag
+Baba-mama: 23022 tag
+Gazdaság: 21305 tag
+Egészség és fitnesz: 71938 tag
+Érdekes honlapok: 55058 tag
+Hogyan működik?: 29387 tag
+Horoszkóp: 53912 tag
+Hölgyklub: 60598 tag
+Jog: 21785 tag
+Lakás: 37606 tag
+Mozi: 33781 tag
+Program: 20847 tag
+Receptek: 53793 tag
+Sport: 17845 tag
+Szerelem: 48181 tag
+Tudomány: 28988 tag
+Union Jack: 9275 tag
+Utazás: 36657 tag
+Viccek: 87021 tag
+Sztárvilág: 20136 tag
+Divat és Stílus: 57778 tag
+Könyvajánló: 40977 tag
+Trendi kütyük: 62484 tag
+Erotika: 41661 tag
+Cégvezetés: 21826 tag
+Férfizóna: 26038 tag
+Gamer: 18416 tag
+Média és marketing: 17620 tag
+Kreatív percek: 24859 tag
+Zene: 13958 tag
+Nyereményjáték: 78483 tag
+
+Depo Ajánló - "Akciós termékek a Depo.hu kínálatából"
+tagok száma: 83577
+
+Jobinfo hírlevél - "Álláskeresők napi értesítője, testreszabott ajánlatokkal"
+tagok száma: 208647
+
+Terminal hírlevél -"Válogatott hírek és érdekességek az informatika minden területéről"
+Terminal hírlevél: 43012 tag
+

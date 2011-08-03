@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2" />
+<title>maxima</title>
+<link rel="shortcut icon" href="favicon2.ico" />
+<link href="maxima_style.css" rel="stylesheet" type="text/css" />
+<!--
+  jCarousel skin stylesheet
+-->
+<link rel="stylesheet" type="text/css" href="skin.css">
+
+<!--
+  jQuery library
+-->
+<script type="text/javascript" src="js/jquery-1.js"></script>
+<!--
+  jCarousel library
+-->
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript">
+
+function mycarousel_initCallback(carousel)
+{
+    // Disable autoscrolling if the user clicks the prev or next button.
+    carousel.buttonNext.bind('click', function() {
+        carousel.startAuto(0);
+    });
+
+    carousel.buttonPrev.bind('click', function() {
+        carousel.startAuto(0);
+    });
+
+    // Pause autoscrolling if the user moves with the cursor over the clip.
+    carousel.clip.hover(function() {
+        carousel.stopAuto();
+    }, function() {
+        carousel.startAuto();
+    });
+};
+
+jQuery(document).ready(function() {
+    jQuery('#mycarousel').jcarousel({
+        auto: 2,
+        wrap: 'last',
+        initCallback: mycarousel_initCallback
+    });
+});
+
+</script>
+<script src="js/cufon-yui.js" type="text/javascript"></script>	
+        	
+        <script src="fonts/ITCAvantGardeGothicCondCEMed_400.font.js" type="text/javascript"></script>
+        <script src="fonts/ITCAvantGardeGothicCondCE_400.font.js" type="text/javascript"></script>
+
+        <script type="text/javascript">
+			Cufon.set('fontFamily', 'ITCAvantGardeGothicCondCEMed').replace('h4')('h5');
+			Cufon.set('fontFamily', 'ITCAvantGardeGothicCondCE').replace('h3')('h1')('h2');
+		</script>
+        
+        <script type="text/javascript">
+
+/***********************************************
+* Bookmark site script- C Dynamic Drive DHTML code library (www.dynamicdrive.com)
+* This notice MUST stay intact for legal use
+* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+***********************************************/
+
+/* Modified to support Opera */
+function bookmarksite(title,url){
+if (window.sidebar) // firefox
+	window.sidebar.addPanel(title, url, "");
+else if(window.opera && window.print){ // opera
+	var elem = document.createElement('a');
+	elem.setAttribute('href',url);
+	elem.setAttribute('title',title);
+	elem.setAttribute('rel','sidebar');
+	elem.click();
+} 
+else if(document.all)// ie
+	window.external.AddFavorite(url, title);
+}
+</script>
+
+</head>
+
+<body>
+<div id="wrapper"><!--WRAPPER START-->
+
+<div class="top_holder"><!--TOP HOLDER START-->
+
+	<div class="top_logo_menu"><!--TOP LOGO MENU START-->
+		<div class="logo"><img src="images/logo_maxima.gif" width="151" height="61" alt="logo" /></div>
+
+			<div class="menu"><!--MENÜ START--> 
+      
+   			  <h3>
+       			<a href="szolgaltatasok01.html">Szolg&aacute;ltat&aacute;saink</a> |
+                <a href="ugyfeleink.html">Ügyfeleink</a> |
+                <a href="referenciak.html">Referenci&aacute;k</a> |
+       			<a href="kapcsolat.html">Kapcsolat</a> |
+       			<a href="adatkezeles.html">Adatkezel&eacute;s</a> |
+				<a href="szotar.html">Sz&oacute;t&aacute;r</a>
+   			  </h3>
+      
+			</div><!--MENÜ END-->  
+
+	</div><!--TOP LOGO MENU END-->
+
+<!--MOTTO RÉSZ-->
+
+<div class="motto_login_holder">
+<div class="motto_login_content">
+<div class="motto"><h1>Gyors &eacute;s hat&eacute;kony direkt marketing megold&aacute;s!</h1></div>
+<div class="login">
+  <h2><a href="#">Bejelentkez&eacute;s | &Uuml;gyf&eacute;lkapu</a></h2></div>
+</div>
+</div>
+
+<!--SLIDE RÉSZ-->
+<div class="slide_holder">
+<div class="slide">
+<!--CAROUSEL start-->
+<div id="wrap">
+
+  <div class=" jcarousel-skin-tango">
+  <div style="position: relative; display: block;" class="jcarousel-container jcarousel-container-horizontal">
+  <div style="overflow: hidden; position: relative;" class="jcarousel-clip jcarousel-clip-horizontal">
+  <ul style="list-style: none; overflow: hidden; position: relative; top: 0px; left: 0; margin: 0px; padding: 0px; width: 850px;" id="mycarousel" class="jcarousel-list jcarousel-list-horizontal">
+    <li jcarouselindex="1" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal">
+    <img src="images/ref_pw01.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="2" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-2 jcarousel-item-2-horizontal">
+    <img src="images/ref_pw02.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="3" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-3 jcarousel-item-3-horizontal">
+    <img src="images/ref_pw03.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="4" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-4 jcarousel-item-4-horizontal">
+    <img src="images/ref_pw04.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="5" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-5 jcarousel-item-5-horizontal">
+    <img src="images/ref_pw05.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="6" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-6 jcarousel-item-6-horizontal">
+    <img src="images/ref_pw06.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="7" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-7 jcarousel-item-7-horizontal">
+    <img src="images/ref_pw01.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="8" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-8 jcarousel-item-8-horizontal">
+    <img src="images/ref_pw02.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="9" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-9 jcarousel-item-9-horizontal">
+    <img src="images/ref_pw03.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="10" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-10 jcarousel-item-10-horizontal">
+    <img src="images/ref_pw04.png" alt="" width="123" height="158"></li>
+     <li jcarouselindex="11" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-10 jcarousel-item-10-horizontal">
+    <img src="images/ref_pw05.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="12" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-10 jcarousel-item-10-horizontal">
+    <img src="images/ref_pw06.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="13" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-7 jcarousel-item-7-horizontal">
+    <img src="images/ref_pw01.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="14" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-8 jcarousel-item-8-horizontal">
+    <img src="images/ref_pw02.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="15" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-9 jcarousel-item-9-horizontal">
+    <img src="images/ref_pw03.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="16" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-10 jcarousel-item-10-horizontal">
+    <img src="images/ref_pw04.png" alt="" width="123" height="158"></li>
+     <li jcarouselindex="17" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-10 jcarousel-item-10-horizontal">
+    <img src="images/ref_pw05.png" alt="" width="123" height="158"></li>
+    <li jcarouselindex="18" style="float: left; list-style: none outside none;" class="jcarousel-item jcarousel-item-horizontal jcarousel-item-10 jcarousel-item-10-horizontal">
+    <img src="images/ref_pw06.png" alt="" width="123" height="158"></li>
+  </ul>
+  </div>
+  
+  <div disabled="false" style="display: block;" class="jcarousel-prev jcarousel-prev-horizontal"></div>
+  <div disabled="false" style="display: block;" class="jcarousel-next jcarousel-next-horizontal"></div>
+  </div>
+  </div>
+
+</div>
+<!--CAROUSEL END-->
+</div>
+</div>
+
+<div class="content_holder"><!--TARTALOM START-->
+  <div class="content" style="height:950px;">
+    <div class="content_left">
+    
+    <div class="left_box_ajanlat">
+    <h4 style="color:#ff8b0e; padding:8px 0 0 10px;">Direkt marketing<br />kampányt tervez?</h4>
+    <h3 style="color:#ff8b0e; padding:0 0 0 10px;">Kérjen árajánlatot!</h3><br /><br />
+
+    <div class="gomb_holder">
+      <div class="gomb_left"></div>
+      <div class="gomb_mid"><a href="#">Aj&aacute;nlatk&eacute;r&eacute;s</a></div>
+      <div class="gomb_right"></div>
+    </div>
+    </div>
+    <div class="left_box">
+      <div class="left_header_holder">
+  <div class="left_header"><h3 style="color:#fff;">Az e-DM szab&aacute;lyoz&aacute;sa</h3></div>
+  <div class="left_header_right"></div>
+</div>
+<p style="padding-left:5px;">A let&ouml;lt&eacute;shez regisztr&aacute;ci&oacute; <br />sz&uuml;ks&eacute;ges!</p>
+<div class="gomb_holder">
+      <div class="gomb_left"></div>
+      <div class="gomb_mid"><a href="#">PDF let&ouml;lt&eacute;se</a></div>
+      <div class="gomb_right"></div>
+    </div>
+</div>
+    </div>
+    <div class="content_right">
+      <div class="content_right_header"><h4>Adatkezelés</h4></div>
+      <div class="content_right_text">
+      <p>A MAXIMA Klubba történő regisztráció és a MAXIMA által szervezett nyereményjátékokra való jelentkezés során megadott adatokat a Hírek Kft. (1024 Budapest, Margit krt. 5/b, adatkezelési szám: 634-0001) által működtetett MAXIMA rendszer kezeli. A regisztrálók adataik megadásával ingyenesen a MAXIMA Klub tagjává válnak.<br /><br />
+
+Az adatkezelés célja, hogy a regisztrált adatait tároljuk, és a megadott információk alapján kívánságainak megfelelően üzleti ajánlatokról, akciókról tájékoztassuk. Amennyiben a regisztrációt követően valamely regisztrált adatai további felhasználását meg kívánja szüntetni, ezt a Hírek Kft. fenti címén bármikor jelezheti, és ez esetben adatait azonnal töröljük.<br /><br />
+
+Ennek megfelelően a játék résztvevői elfogadják, hogy a Hírek Kft. a résztvevők adatait marketing célokra felhasználhatja. <br /><br />
+
+Amennyiben a személyes adatok között a regisztráló megadja pontos postai címét, mobil hívószámát és e-mail címét, úgy hozzájárul ahhoz, hogy üzleti ajánlatokkal faxon, levélben, SMS-ben, MMS-ben és e-mailben is megkereshető legyen. 
+</p>
+
+      
+      </div>
+      <div class="content_right_header"><h4>Adatvédelem</h4></div>
+            <div class="content_right_text">
+      <p>A rendszerünkben tárolt adatokat bizalmasan kezeljük. Adatokat harmadik személynek nem adunk ki. Az adatok kezelése mindenben megfelel a 2001. dec. 24-én megjelent 2001. évi CVIII. törvénynek ill. a személyes adatok védelméről és a közérdekű adatok nyilvánosságáról szóló 1992. évi LXIII. törvényben és a Kutatás és közvetlen üzletszerzés célját szolgáló név- és lakcímadatok kezeléséről szóló 1995. évi CXIX. törvényben foglalt valamennyi kötelezettségnek. Az adatvédelmi elvek kialakításakor különös tekintettel vettük figyelembe az 1998. évi VI. törvényt az egyének védelméről a személyes adatok gépi feldolgozása során, illetőleg az "ONLINE PRIVACY ALLIANCE" ajánlásait. 
+</p>
+ </div>
+ 
+       <div class="content_right_header"><h4>Működési alapelvek</h4></div>
+            <div class="content_right_text">
+      <ol>
+      <li>A tulajdonosa által nem szándékosan közölt egyéni adatot nem őrizzük meg, és nem adjuk tovább.</li>
+      <li>A Hírek Kft. a számára tudatosan átadott magántermészetű adatokat csakis arra a célra használja fel, amire azt tulajdonosa a rendelkezésére bocsátotta. Az adatokat más célra történő felhasználás céljából senkinek, semmikor nem adja tovább.</li>
+      <li>Felhasználói adatokat csakis statisztikailag feldolgozott formában, egyedi azonosítókhoz nem kapcsolhatóan hozunk nyilvánosságra.</li>
+      
+      <li>A Hírek Kft. az általa őrzött magántermészetű adatokat a tőle elvárható gondossággal és módszerrel védi attól, hogy azok részben vagy egészben illetéktelen kezekbe kerüljenek. Gondoskodik az adatok biztonságáról, és megakadályozza azok jogosulatlan felhasználását.</li>
+      
+      <li>Annak érdekében, hogy a MAXIMA Klubtagjai számára pontos, egyedi igények alapján megfogalmazott, személyre szóló ajánlatokat adhasson, esetenként ún. cookie-kat használ, melyek segítségével információkat rögzít felhasználóiról. A cookie egy rövid adatsor, melyet a Web szerver küld a felhasználó böngészőjének és a merevlemezen tárolódik. A cookie-k használata segíti a MAXIMA-t, hogy a felhasználók reakciói alapján mérje az egyes kampányok sikerességét és az eredményeket felhasználva még magasabb színvonalú szolgáltatást nyújtson a Klubtagok részére. A cookie-kal kapcsolatban az Ön kezében van a választás lehetősége. Kereső beállításaival elfogadhat minden cookie-t, jelzést kérhet a cookie érkezéséről vagy akár el is utasíthatja őket. Amennyiben az elutasítást választja, úgy megfosztja magát azon MAXIMA szolgáltatások igénybevételétől, melyek a cookie-k használatára épülnek. A Hírek Kft. azonban nem felelős ezen internet oldalak adatkezelési eljárásmódjáért, illetve tartalmáért.</li>
+</ol>
+
+ </div>
+      
+      
+    </div>
+  </div>
+  <div class="content_bottom"></div>
+</div><!--TARTALOM END-->
+<div class="footer_holder">
+  <div class="footer">
+  <div class="footer_box1">
+    <a href="#">Médiaajánlat</a><br />
+    <a href="#">Impresszum</a><br />
+    <a href="#">Oldalt&eacute;rk&eacute;p
+    </a></div>
+    
+    <div class="footer_box51"><img src="images/footer_tag_logok.gif" alt="" width="244" height="77" />
+    
+    </div>
+    
+    <div class="footer_box3">Ügyfélszolgálat: (06/1) 373-0939<br />
+    <a href="mailto:info@maxima.hu">info@maxima.hu</a></div>
+    
+    <div class="footer_box4"><div class="footer_box5"><img src="images/footer_logo.gif" alt=""/></div> 
+    <div class="box6right"><img src="images/footer_faces.gif" alt="" width="90" height="40" usemap="#Map" />
+    <map name="Map" id="Map">
+        <area shape="rect" coords="16,18,34,34" href="#" target="_blank" alt="" />
+        <area shape="rect" coords="39,17,55,34" href="#" target="_blank" alt="" />
+        <area shape="rect" coords="60,17,77,35" href="javascript:bookmarksite('MAXIMA', 'http://www.maxima.hu')" alt="" />
+      </map>
+    </div></div>
+    
+    <div class="footer_box6">
+    
+    <div class="box6left">&copy; 1990-2010, H&iacute;rek M&eacute;dia | Minden jog fenntartva.</div>
+    
+    </div>
+  
+  
+  </div>
+</div>
+</div><!--TOP CONTENT END-->
+
+
+</div><!--WRAPPER END-->
+
+
+<script type="text/javascript">Cufon.now();</script>
+</body>
+</html>

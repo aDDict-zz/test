@@ -1,0 +1,19 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["t_title"]="Név";
+$word["t_actions"]="Műveletek";
+$word["dg_delete"]="Törlés";
+$word["dg_confirm"]="Biztos töröjem?";
+$word["dg_new"]="Új demog kategória";
+$word["dg_title"]=" demog kategória";
+$word["dg_name"]="Név";
+$word["by_name_asc"]="név szerint növekvő";
+$word["by_name_desc"]="név szerint csökenő";
+$word["total_of"]="Összesen";
+$word["dg_change"]="Alapadatok";
+$word["e_success"]="A bevitel sikeres volt.";
+$word["e_name"]="A név mezőt kötelező kitölteni";
+$word["ft_common"]="Általános";
+
+
+?>

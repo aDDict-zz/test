@@ -1,0 +1,38 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["multi_title_error"]="Hibás csoportok csoportja név. Csak alfanumerikus karaktereket tartalmazhat.";
+$word["multi_exists_error"]="Már létezik ilyen csoport név. Válasszon másikat.";
+$word["val_subunsub"]="Beiratkozás / kiiratkozás hitelesítése";
+$word["prefix_subscribe"]="Beiratkozás";
+$word["suffix_subscribe"]="csoportba";
+$word["prom_regist"]="Feliratkozási kérelmét regisztráltuk.";
+$word["prom_sent"]="Az érvényesítéshez szükséges tennivalókat emailben elküldtük.";
+$word["prom_check"]="Ellenőrizze postaládáját most!";
+$word["prom_back"]="Vissza";
+$word["multi_already_subs"]="Már feliratkozott a csoportokra";
+$word["select_group"]="Kiválaszt";
+$word["multi_delete_confirm"]="Biztosan törölni szeretné ezt a csoportok csoportját?";
+$word["multi_count"]="Csoportok száma";
+$word["multi_add"]="Új 'csoportok csoportja' létrehozása";
+$word["your_groups"]="Az Ön által alkotott (és&nbsp;moderált) csoportok";
+$word["moderated_groups"]="Csoportok, amelyekben moderátorként működik";
+$word["client_groups"]="Kliens csoportok";
+$word["support_groups"]="Support csoportok";
+$word["affiliate_groups"]="Affiliate csoportok";
+$word["admin_groups"]="Admin csoportok";
+$word["members_aff"]="Tagok (affiliate)";
+$word["advanced_members"]="Kiemelt tagok";
+$word["last_message"]="Utolsó üzenet";
+$word["no_hits"]="Nincs";
+$word["by_groupname_asc"]="A csoport elnevezése alapján - növekvő";
+$word["by_groupname_desc"]="A csoport elnevezése alapján - csökkenő";
+$word["actions"]="Müveletek";
+$word["index_cache"]="Az alábbi adatok cache-ből származnak.";
+$word["index_cache_refresh"]="Frissítés";
+$word["kedvencek_unset"]="Minden csoportot mutat";
+$word["kedvencek_set"]="Kedvenceket mutat";
+$word["kedvencek_add"]="Kedvencekhez ad";
+$word["kedvencek_remove"]="Kedvencekből töröl";
+$word["other_groups"]="Egyéb csoportok";
+$word["aff_multi_groups"]="Szolgáltatás csoportok";
+?>

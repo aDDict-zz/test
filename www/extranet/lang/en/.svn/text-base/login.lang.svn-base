@@ -1,0 +1,10 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["login_incorrect"]="Login incorrect";
+$word["username"]="Username";
+$word["password"]="Password";
+$word["password_change_reminder"]="Reminder for changing password";
+$word["password_change_warn1"]="Your password is going to expire in";
+$word["password_change_warn2"]="days.<br> The password can be changed on the <a href='$_MX_var->baseUrl/password.php?language=en'>My data</a> page";
+$word["dear_user"]="Dear User!";
+?>

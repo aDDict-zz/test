@@ -1,0 +1,11 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["groups"]="Groups";
+$word["multi_delete"]="Remove group";
+$word["multi_no_members"]="No groups in this group of groups.";
+$word["not_specified"]="- select one -";
+$word["multi_addgroup"]="Add group";
+$word["group_page"]="group / page";
+$word["by_groupname_asc"]="By the name of the group asc";
+$word["by_groupname_desc"]="By the name of the group desc";
+?>

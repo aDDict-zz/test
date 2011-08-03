@@ -1,0 +1,76 @@
+<?
+include_once "./lang/$language/common.lang";
+# sms.lang is used by send_sms.php,sms_list.php,sms_threads.php
+$word["sms_validate"]="&nbsp;Nemsokára jön a hitelesítő levél az ÉLES küldéshez.";
+$word["sms_validate_test"]="&nbsp;Nemsokára jön a hitelesítő levél a TESZT küldéshez.";
+$word["sms_nomessage"]="Hiba: Nem adta meg az üzenet szövegét.";
+$word["sms_date_err"]="Hibás dátum / idő";
+$word["no_filter"]="Nincs szűkítés";
+$word["filter"]="filter";
+$word["member_group"]="alcsoport";
+$word["sms_message"]="Üzenet";
+$word["sms_warn"]="Visszajelzés küldése az üzenet továbbításakor";
+$word["sms_new"]="Új SMS üzenet szerkesztése";
+$word["filterlist"]="Szűkítés";
+$word["sms_delivery_time"]="Későbbi továbbítás:";
+$word["sms_obsolete"]="Ne küldje el ha nem küldte el";
+$word["sms_hours"]="órán belül";
+$word["sms_forward1"]="Ha válasz érkezik az üzenetre, küldje el a user adatait a(z)";
+$word["sms_forward2"]="email-re";
+$word["sms_forward3"]="Ha válasz érkezik az üzenetre, küldje el a következő emailt a válaszolónak:";
+$word["thread"]="Téma";
+$word["body"]="Tartalom";
+$word["submit"]="Tovább";
+$word["sms_not_yet"]="Még nem küldött egy SMS-t sem.";
+$word["lfilter"]="Filter";
+$word["lmemgr"]="Alcsoport";
+$word["mess_page"]="üzenet / oldal";
+$word["by_date_asc"]="Dátum szerint növekvő";
+$word["by_date_desc"]="Dátum szerint csökkenő";
+$word["sms_automat"]="A válaszautomata definíciója";
+$word["sms_help"]="segítség";
+$word["sms_wrongparms"]="Kevesebb/több mint 4 paraméter";
+$word["sms_wrongid"]="Üres vagy már létező válasz id";
+$word["sms_wrongresp"]="Válasz nemlétező id-re";
+$word["sms_help_text"]="A válaszautomata az A1|B1|C1|D1 ... An|Bn|Cn|Dn rendezett négyesekkel definiálható, ahol<br><br>
+az egyes négyeseket az &lt;enter&gt; karakter választja el,<br>
+A: az üzenet azonosítója, pozitív egész szám,<br>
+az első üzenet azonosítója mindig 1.<br>
+B,C,D: ha a user a B azonosítójú üzenetre C-vel válaszolt, küldje a D üzenetet.<br>
+C lehet bármely string, ha *, bármely választ jelenti, megadható értékhatár, pl 25-40<br>
+D szintén tetszőleges string, ha alakja #n, ahol n valamely üzenet azonosítója,<br>
+az n azonosítójú üzenetre mutat vissza.<br>
+D lehet üres, ez azt jelenti hogy a user nem kap valaszt<br><br>
+Pl.<br>
+2|1|A|<br>
+3|1|B|Hany eves?<br>
+4|3|20-25|Egyik valasz<br> 
+5|3|26-40|Ujabb kerdes<br> 
+6|5|Y|Info: www.xx.ww<br>
+7|5|*|#3<br>
+8|*|*|Köszönjük";
+$word["st_nousers"]="Senkinek sem ment ki az üzenet";
+$word["st_no_automat_response"]="nem válaszolt";
+$word["st_threads"]="SMS válasz statisztika";
+$word["conversation"]="A user válaszai - dátum, válasz [az automata válasza]";
+$word["email"]="Email cím";
+$word["mobil"]="Mobilszám";
+$word["messnum_asc"]="üzenetek száma szerint növekvő";
+$word["messnum_desc"]="üzenetek száma szerint csökkenő";
+$word["lastmess_asc"]="utolsó üzenet szerint növekvő";
+$word["lastmess_desc"]="utolsó üzenet szerint csökenő";
+$word["user_page"]="user / oldal";
+$word["st_noresponse"]="Nem válaszolt";
+$word["sms_s2"]=" üzenet, összesen ";
+$word["sms_s3"]=" válasz";
+$word["sms_s5"]=" user válaszolt egyszer vagy többször";
+$word["messparts_explain"]="Elválasztó (delimiter) karakter a több részből álló üzenet részei között";
+$word["not_delivered"]="Nem sikerült elküldeni";
+$word["t_not_delivered"]="sms - sikertelen kézbesítések";
+$word["t_phone"]="szám";
+$word["t_status"]="státusz";
+$word["test_numbers"]="Teszt számok, vesszőkkel elválasztva";
+$word["test"]="Teszt";
+$word["sms_testnum_err"]="Legalább egy számot meg kell adni az sms teszthez, +36xxxxx[,+36yyyyy,+36zzzzz...] formában";
+$word["sms_no_filter"]="Nem adott meg filtert az éles kiküldéshez.";
+?>

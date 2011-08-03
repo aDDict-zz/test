@@ -1,0 +1,38 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["multi_title_error"]="Invalid name for group of groups, it may contain only alfanumeric characters.";
+$word["multi_exists_error"]="Group by this name already exists. Choose another name.";
+$word["val_subunsub"]="Subscription / unsubscription validation";
+$word["prefix_subscribe"]="Subscribe to the group:";
+$word["suffix_subscribe"]="";
+$word["prom_regist"]="We have registered your request for subscription.";
+$word["prom_sent"]="We have sent you an email explaining how to validate your membership.";
+$word["prom_check"]="Check your mailbox now!";
+$word["prom_back"]="Back";
+$word["multi_already_subs"]="you are already subscribed to groups";
+$word["select_group"]="Select";
+$word["multi_delete_confirm"]="Are you sure you want to delete this multigroup?";
+$word["multi_count"]="Number of groups";
+$word["multi_add"]="New multigroup";
+$word["your_groups"]="Owned (and moderated) groups";
+$word["moderated_groups"]="Moderated groups";
+$word["client_groups"]="Client groups";
+$word["support_groups"]="Support groups";
+$word["affiliate_groups"]="Affiliate groups";
+$word["admin_groups"]="Admin groups";
+$word["members_aff"]="Members (affiliates)";
+$word["advanced_members"]="Advanced members";
+$word["last_message"]="Last message";
+$word["no_hits"]="None";
+$word["by_groupname_asc"]="Name of the group - ascending";
+$word["by_groupname_desc"]="Name of the group - descending";
+$word["actions"]="Actions";
+$word["index_cache"]="The data listed is from cache.";
+$word["index_cache_refresh"]="Refresh";
+$word["kedvencek_unset"]="Show all";
+$word["kedvencek_set"]="Show favourites";
+$word["kedvencek_add"]="Add to favourites";
+$word["kedvencek_remove"]="Remove from favourires";
+$word["other_groups"]="Other groups";
+$word["aff_multi_groups"]="Service groups";
+?>

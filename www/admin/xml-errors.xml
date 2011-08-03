@@ -1,0 +1,10 @@
+<message success="false"> 
+<errors> 
+    <field> 
+        <id>p_name</id> 
+        <msg><![CDATA[ 
+            Invalid name. ><br /><i>This is a test validation message from the server </i> 
+         ]]></msg> 
+    </field> 
+</errors> 
+</message>

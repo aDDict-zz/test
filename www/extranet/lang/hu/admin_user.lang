@@ -1,0 +1,27 @@
+<?
+
+$word['au_view'] = "Nézet:";
+$word['au_user_page'] = "felhasználó/oldal";
+$word['au_order'] = "Sorrend:";
+$word['au_by_email_addr_asc'] = "E-mail cím szerint - növekvő";
+$word['au_by_email_addr_desc'] = "E-mail cím szerint - csökkenő";
+$word['au_by_name_asc'] = "Név szerint - növekvő";
+$word['au_by_name_desc'] = "Név szerint - csökkenő";
+$word['au_filter'] = "Szűrő:";
+$word['au_email'] = "Email:";
+$word['au_nick'] = "Becenév:";
+$word['au_go'] = "Mehet";
+$word['au_del_filter'] = "Szűrő törlése";
+$word['au_new_user'] = "Új felhasználó";
+$word['au_email'] = "E-mail cím";
+$word['au_name'] = "Név";
+$word['au_operations'] = "Műveletek";
+$word['au_edit'] = "Változtatás";
+$word['au_delete'] = "Törlés";
+$word['au_sure_delete'] = "Biztosan töröjem?";
+$word['au_sum'] = "Összesen";
+$word['au_user'] = "felhasználó";
+
+$word['au_no_user'] = "Nincs ilyen felhasználó.";
+
+?>

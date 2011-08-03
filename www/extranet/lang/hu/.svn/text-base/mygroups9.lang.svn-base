@@ -1,0 +1,22 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["title_error"]="Hibás alcsoport-név. Csak alfanumerikus karaktereket tartalmazhat és betűvel kell hogy kezdődjön";
+$word["ug_allmembers"]="A csoport összes tagja";
+$word["not_specified"]="- válasszon -";
+$word["ug_"]="Alcsoportok";
+$word["ug_delete"]="Alcsoport törlése";
+$word["ug_no_ug"]="Nincs még egy alcsoport sem";
+$word["ug_ug_members"]="alcsoport tagjai";
+$word["ug_newgroup"]="Új alcsoport";
+$word["email"]="Email cím";
+$word["no"]="No.";
+$word["ug_delfrom_ug"]="Törlés";
+$word["ug_addto"]="Hozzáadás";
+$word["ug_copyto"]="Másolás";
+$word["select_all"]="Mindent kojelöl";
+$word["select_none"]="Mindent megszüntet";
+$word["ug_no_members"]="Ez az alcsoport üres";
+$word["member_page"]="tag / oldal";
+$word["email_asc"]="Email szerint növekvő";
+$word["email_desc"]="Email szerint csökkenő";
+?>

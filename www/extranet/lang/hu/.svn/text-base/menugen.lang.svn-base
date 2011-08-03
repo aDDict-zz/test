@@ -1,0 +1,86 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["menu_language_version"]="English version";
+$word["menu_what_multi"]="csoportok csoportja";
+$word["menu_what_list"]="lista";
+$word["menu_what_none"]="[nincs kiválasztott lista]";
+$word["menu_select"]="Lista választás"; #weare=23!
+$word["menu_active"]="Aktív";
+$word["menu_mydata"]="Saját adatok";
+$word["menu_logout"]="Kijelentkezés";
+$word["menu_main1"]="Üzenetek";
+$word["menu_main12"]=$word["menu_main2"]="Beállítások";
+$word["menu_main13"]=$word["menu_main3"]="Statisztikák";
+$word["menu_main15"]=$word["menu_main4"]="Tagok";
+$word["menu_main5"]="Kérdőívek";
+$word["menu_main6"]="Offline feladatok";
+$word["menu_main7"]="Levélküldő";
+$word["menu_4"]="Tagok";
+$word["menu_sg151"]=$word["menu_5"]="Felhasználók";
+$word["menu_6"]="Jogok";
+$word["menu_12"]="Alcsoportok";
+$word["menu_13"]="Automatikus emailek";
+$word["menu_14"]="Figyelmeztető emailek";
+$word["menu_15"]="Tagok importálása";
+$word["menu_16"]="Knorr sms válaszok";
+$word["menu_17"]="Demographic info beállítások";
+$word["menu_18"]="Demographic";
+$word["menu_19"]="Filter";
+$word["menu_20"]="Emailek archívuma";
+$word["menu_21"]="Átkattintási statisztika";
+$word["menu_22"]="Automatikus web oldalak";
+$word["menu_24"]="Levélküldő keret";
+$word["menu_80"]="Levélküldő tartalom";
+$word["menu_81"]="Levélküldő időzítő";
+$word["menu_82"]="Üzenet kategóriák";
+$word["menu_25"]="SMS-ek archívuma";
+$word["menu_26"]="SMS küldő";
+$word["menu_27"]="SMS válasz statisztika";
+$word["menu_29"]="Azonnali felvétel";
+$word["menu_31"]="Átkattintások";
+$word["menu_34"]="Kérdőívek";
+$word["menu_35"]="Tagok exportálása";
+$word["menu_sg241"]=$word["menu_41"]="Tagok száma";
+$word["menu_sg242"]=$word["menu_42"]="Új tagok";
+$word["menu_43"]="Leiratkozott tagok";
+$word["menu_44"]="Nem hitelesített feliratkozások";
+$word["menu_45"]="Üzenetek";
+$word["menu_46"]="Knorr tagok";
+$word["menu_47"]="Knorr nyeremények";
+$word["menu_main14"]="Tag kereső";
+$word["menu_50"]="Tag kereső";
+$word["menu_51"]="Visszapattanó emailek";
+$word["menu_60"]="Demog kategóriák";
+$word["menu_70"]="Offline feladatok";
+$word["menu_sg101"]="Tagcsoportok";
+$word["menu_sg102"]="Automatikus emailek";
+$word["menu_sg103"]="Automatikus web oldalak";
+$word["menu_sg114"]="Figyelmeztető emailek";
+$word["menu_sg144"]="Feliratkozások";
+$word["admin_user"]="Felhasználók";
+$word["admin_statistic"]="Csoportok";
+$word["menu_145"]="Alapadatok";
+$word["menu_sg146"]="Alapadatok";
+$word["menu_147"]="Live export";
+$word["menu_148"]="Kiküldött üzenetek";
+$word["menu_150"]="Kérdőív statisztika";
+
+$word["menu_23"]="Lista választás";
+$word["menu_100"]="Csoportok csoportjai";
+$word["menu_200"]="Log";
+$word["menu_201"]="Csoportok";
+$word["menu_202"]="Felhasználók";
+
+$word["menu_top_log"]="Log";
+
+$word["nogroup_message"]="Ehhez a művelethez először listát kell választania!";
+$word["no_file_selected"]="Válasszon fájlt a folytatáshoz!";
+
+//help texts
+$word['insert_help_text'] = "Help szöveg bevitele a(z)";
+$word['help_for_page'] = "oldalhoz";
+$word['help_save_success'] = "Sikeresen elmentve";
+$word['help_save_fail'] = "A mentés sikertelen volt";
+$word['help_text_for'] = "Help a(z)";
+$word['no_help'] = "Ehhez az oldalhoz jelenleg nem található help szöveg az adatbázisban!";
+?>

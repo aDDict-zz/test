@@ -1,0 +1,14 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["success1"]="is successfully unsubscribed from group";
+$word["success3"]="is successfully deleted from group";
+$word["success2"]="";
+$word["select1"]="User";
+$word["select2"]="will be unsubscribed from those groups you select from the above list";
+$word["none"]="Select none";
+$word["all"]="Select all";
+$word["find_user"]="Find user in groups";
+$word["email"]="Email";
+$word["member_of"]="User with above email is member of the following groups";
+$word["go"]="Go";
+?>

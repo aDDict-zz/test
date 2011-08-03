@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.maxima.hu/soap/Universal.php" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="WS_SB_UniversalMusic" targetNamespace="http://www.maxima.hu/soap/Universal.php">
+<types>
+<xsd:schema targetNamespace="http://www.maxima.hu/soap/Universal.php"/>
+</types>
+<portType name="WS_SB_UniversalMusicPort">
+<operation name="NewUser">
+<documentation>New user</documentation>
+<input message="tns:NewUserIn"/>
+<output message="tns:NewUserOut"/>
+</operation>
+<operation name="UpdateUser">
+<documentation>Send user status information to Universal Music</documentation>
+<input message="tns:UpdateUserIn"/>
+<output message="tns:UpdateUserOut"/>
+</operation>
+<operation name="Unsubscribe">
+<documentation>Unsubscribes the given user</documentation>
+<input message="tns:UnsubscribeIn"/>
+<output message="tns:UnsubscribeOut"/>
+</operation>
+</portType>
+<binding name="WS_SB_UniversalMusicBinding" type="tns:WS_SB_UniversalMusicPort">
+<soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+<operation name="NewUser">
+<soap:operation soapAction="http://www.maxima.hu/soap/Universal.php#NewUser"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Universal.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Universal.php"/>
+</output>
+</operation>
+<operation name="UpdateUser">
+<soap:operation soapAction="http://www.maxima.hu/soap/Universal.php#UpdateUser"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Universal.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Universal.php"/>
+</output>
+</operation>
+<operation name="Unsubscribe">
+<soap:operation soapAction="http://www.maxima.hu/soap/Universal.php#Unsubscribe"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Universal.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Universal.php"/>
+</output>
+</operation>
+</binding>
+<service name="WS_SB_UniversalMusicService">
+<port name="WS_SB_UniversalMusicPort" binding="tns:WS_SB_UniversalMusicBinding">
+<soap:address location="http://www.maxima.hu/soap/Universal.php"/>
+</port>
+</service>
+<message name="NewUserIn">
+<part name="client_id" type="xsd:string"/>
+<part name="username" type="xsd:string"/>
+<part name="password" type="xsd:string"/>
+<part name="timestamp" type="xsd:int"/>
+</message>
+<message name="NewUserOut">
+<part name="return" type="xsd:int"/>
+</message>
+<message name="UpdateUserIn">
+<part name="client_id" type="xsd:string"/>
+<part name="username" type="xsd:string"/>
+<part name="password" type="xsd:string"/>
+<part name="timestamp" type="xsd:int"/>
+</message>
+<message name="UpdateUserOut">
+<part name="return" type="xsd:int"/>
+</message>
+<message name="UnsubscribeIn">
+<part name="client_id" type="xsd:string"/>
+<part name="username" type="xsd:string"/>
+<part name="password" type="xsd:string"/>
+</message>
+<message name="UnsubscribeOut">
+<part name="return" type="xsd:int"/>
+</message>
+</definitions>

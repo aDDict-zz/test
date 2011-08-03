@@ -1,0 +1,33 @@
+<?
+# in this file are project-wide language vars.
+$word["az"]="";
+$word["az_lower"]="";
+$word["delete"]="Delete";
+$word["submit3"]="Save";
+$word["multi_groups"]="Multigroups";
+$word["members"]="Members";
+$word["groups"]="Groups";
+$word["sort_order"]="Sort by";
+$word["messages"]="Messages";
+$word["group"]="Group";
+$word["group_lower"]="group";
+$word["filt_engine_error"]="Filter engine error";
+$word["filt_syntax_error"]="Filter syntax error";
+$word["view"]="View";
+$word["owner"]="Owner";
+$word["moderator"]="Moderator";
+$word["support"]="Support";
+$word["client"]="Client";
+$word["admin"]="Admin";
+$word["affiliate"]="Affiliate";
+$word["pdf_report"]="PDF Report";
+$word["html_report"]="HTML Report";
+$word["maxima_report"]="Maxima Report";
+$word["by_asc"]="- ascending";
+$word["by_desc"]="- descending";
+$word["proc_list"]="Processes list:";
+$word["run_proc"]="running process(es),";
+$word["sent"]="sent";
+$word["keep_list_open"]="Keep process list open";
+$word["open_list"]="Open list";
+?>

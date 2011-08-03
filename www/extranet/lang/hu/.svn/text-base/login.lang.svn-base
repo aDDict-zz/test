@@ -1,0 +1,13 @@
+<?
+include_once $_MX_var->baseDir . "/lang/$language/common.lang";
+$word["login_incorrect"]="Hibás felhasználónév vagy jelszó";
+$word["login_expired"]="Jelszava lejárt, jelszava megváltoztatását a <a href='mailto:toth.tamas@hirek.hu'>toth.tamas@hirek.hu</a> címen kérheti.";
+$word["login_exp_warn1"]="Jelszava";
+$word["login_exp_warn2"]="napon belül lejár.\\n A jelszó a \\'Saját adatok\\' oldalon változtatható meg";
+$word["username"]="Felhasználónév";
+$word["password"]="Jelszó";
+$word["password_change_reminder"]="Jelszócsere-emlékeztető";
+$word["password_change_warn1"]="Jelszava";
+$word["password_change_warn2"]="napon belül lejár.<br> A jelszó a <a href='$_MX_var->baseUrl/password.php'>Saját adatok</a> oldalon változtatható meg";
+$word["dear_user"]="Tisztelt Felhasználónk!";
+?>

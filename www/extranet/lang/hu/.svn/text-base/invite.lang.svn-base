@@ -1,0 +1,20 @@
+<?
+include_once "./lang/$language/common.lang";
+# invite.lang is used by mygroups6.php,mygroups17.php,invite.php
+$word["mail_invited"]="A csoport tulajdonosa meghívta Önt ebbe a csoportba.";
+$word["self_email_addr"]="Hiba! Ez egy lista címe:";
+$word["is_already_member"]="már tagja ennek a csoportnak";
+$word["is_already_invited"]="már kapott meghívót";
+$word["mail_ensure"]="Kérjük válaszoljon erre a levélre, hogy érvényesítse tagságát a csoportban. Köszönjük.";
+$word["mail_subscr_pref"]="Beiratkozás a(z)";
+$word["mail_subscr_suff"]="csoportba";
+$word["invite_success"]="A meghívók küldése sikeres volt";
+$word["wrong_email_addr"]="Hibás email cím";
+$word["prefix_invite"]="Meghívó a";
+$word["sufix_invite"]="csoportba";
+$word["invite_description"]="Itt megadhatja azoknak az e-mail címeit, akiket meghív a csoportba, szóközökkel elválasztva.";
+$word["submit"]="Tovább";
+$word["invite_text"]="Meghívás szöveg";
+$word["take_new_member"]="Új tag azonnali felvétele a csoportba";
+$word["new_member"]="Új tag";
+?>

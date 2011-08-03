@@ -1,0 +1,10 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["upload_error_nomove"]="Nem sikerült átmásolni a fájlt a temp könyvtárból!";
+$word["upload_error_nodir"]="Nem sikerült létrehozni az új könyvtárat!";
+$word["preview_image"]="Kép megtekintése";
+$word["preview_file"]="Fájl megtekintése";
+$word["image_tag_paste"]="Kép beszúrása a HTML-be";
+$word["delete_error_uploaded"]="Hiba történt a fájl törlésekor, próbálja újra.";
+$word["will_insert_to_end"]="A kép a HTML kód végére lesz beszúrva; ha máshová szeretné elhelyezni, előbb kattintson a megfelelő pozícióra a HTML szövegmezőben. Folytatja?";
+?>

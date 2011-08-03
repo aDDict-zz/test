@@ -1,0 +1,85 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["menu_language_version"]="Magyar nyelven";
+$word["menu_what_multi"]="multigroup";
+$word["menu_what_list"]="list";
+$word["menu_what_none"]="[no list is selected]";
+$word["menu_select"]="List selection"; #weare=23!
+$word["menu_active"]="Active";
+$word["menu_mydata"]="My data";
+$word["menu_logout"]="Log out";
+$word["menu_main1"]="Messages";
+$word["menu_main12"]=$word["menu_main2"]="Settings";
+$word["menu_main13"]=$word["menu_main3"]="Statistics";
+$word["menu_main14"]=$word["menu_main4"]="Members";
+$word["menu_main5"]="Invite";
+$word["menu_main6"]="Jobs";
+$word["menu_main7"]="Mail sender";
+$word["menu_4"]="Members";
+$word["menu_sg151"]=$word["menu_5"]="Advanced members";
+$word["menu_6"]="Rights";
+$word["menu_12"]="Groups of members";
+$word["menu_13"]="Automatic emails";
+$word["menu_14"]="Alert emails";
+$word["menu_15"]="Member list import";
+$word["menu_17"]="Demographic info settings";
+$word["menu_18"]="Demographic";
+$word["menu_19"]="Filter";
+$word["menu_20"]="Email archive";
+$word["menu_21"]="Clickthrough statistics";
+$word["menu_22"]="Automatic web pages";
+$word["menu_24"]="Base";
+$word["menu_80"]="Contents";
+$word["menu_81"]="Timer";
+$word["menu_82"]="Message categories";
+$word["menu_25"]="SMS archive";
+$word["menu_26"]="Send new SMS";
+$word["menu_27"]="SMS response statistics";
+$word["menu_29"]="Insert into group";
+$word["menu_31"]="Clickthrough";
+$word["menu_34"]="Query forms";
+$word["menu_35"]="Member list export";
+$word["menu_sg241"]=$word["menu_41"]="Members";
+$word["menu_sg242"]=$word["menu_42"]="New members";
+$word["menu_43"]="Unsubscribed";
+$word["menu_44"]="Not validated";
+$word["menu_45"]="Messages";
+$word["menu_46"]="Knorr users";
+$word["menu_47"]="Knorr winners";
+$word["menu_main14"]="Search members";
+$word["menu_50"]="Search members";
+$word["menu_51"]="Bounced emails";
+$word["menu_60"]="Demographic categories";
+$word["menu_70"]="Jobs";
+$word["menu_sg101"]="Subgroups";
+$word["menu_sg102"]="Automatic emails";
+$word["menu_sg103"]="Automatic web pages";
+$word["menu_sg114"]="Alert emails";
+$word["menu_sg144"]="Subscriptions";
+$word["admin_user"]="Users";
+$word["admin_statistic"]="Groups";
+$word["menu_145"]="Settings";
+$word["menu_sg146"]="Settings";
+$word["menu_147"]="Live export";
+$word["menu_148"]="Sent messages";
+$word["menu_150"]="Form statistic";
+
+$word["menu_23"]="List selection";
+$word["menu_100"]="Multigroups";
+$word["menu_200"]="Log";
+$word["menu_201"]="Groups";
+$word["menu_202"]="Users";
+
+$word["menu_top_log"]="Log";
+
+$word["nogroup_message"]="For this operation you must choose a list first!";
+$word["no_file_selected"]="Please choose a file before continue!";
+
+//help texts
+$word['insert_help_text'] = "Add help text for the";
+$word['help_for_page'] = "page";
+$word['help_save_success'] = "Successfully saved";
+$word['help_save_fail'] = "Saving failed";
+$word['help_text_for'] = "Help for the";
+$word['no_help'] = "Momentarily there is no help for this page!";
+?>

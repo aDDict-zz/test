@@ -1,0 +1,7 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["msettings"]="Settings";
+$word["st_index_grouping"]="Appears on the 'list selection' page";
+$word["st_subscribe_id"]="Subscribe ID";
+$word["st_check_subscribe_id"]="Checked at subscribe";
+?>

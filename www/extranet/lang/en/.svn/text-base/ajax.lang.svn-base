@@ -1,0 +1,10 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["upload_error_nomove"]="The file couldn't be moved from the temp directory!";
+$word["upload_error_nodir"]="The directory couldn't be created!";
+$word["preview_image"]="Preview image";
+$word["preview_file"]="Preview file";
+$word["image_tag_paste"]="Paste image into HTML";
+$word["delete_error_uploaded"]="An error occured during delete process. Please, try again.";
+$word["will_insert_to_end"]="Image will be appended to the end of HTML code; in order to paste it somewhere else, you have to insert the cursor to the proper place in the HTML textarea. Do you want to continue?";
+?>

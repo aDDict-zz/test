@@ -1,0 +1,39 @@
+<?
+include_once "./lang/$language/common.lang";
+# bounce.lang is used by bounce.php,bounce_detail.php
+$word["total_of"]="Összesen";
+$word["b_emails"]="visszapattanó email cím";
+$word["t_email"]="Email cím";
+$word["t_bounced"]="Visszapattant levelek";
+$word["t_first"]="Els&#337;";
+$word["t_last"]="Utolsó";
+$word["select_all"]="Mindent kijelöl";
+$word["select_none"]="Mindent megszüntet";
+$word["delete_sure"]="Ez a müvelet törli a kijelölt usereket minden csoportjából. Folytassam?";
+$word["sign_sure"]="Ez a müvelet minden csoportjában megjelöli a kiválasztott usereket. Folytassam?";
+$word["delete"]="Törlés";
+$word["sign"]="Megjelölés";
+$word["in_this"]="ebben a csoportban";
+$word["select"]="--válasszon--";
+$word["filterr"]="Hiba filter";
+$word["del_filterr"]="Hiba filter törlése";
+$word["filt"]="Email filter";
+$word["del_filt"]="Filter törlése";
+$word["sel_notsigned"]="Csak a nem kijelölt userek";
+$word["sel_all"]="A kijelölt userek is";
+$word["go"]="mehet";
+$word["email_page"]="email/oldal";
+$word["email_asc"]="Email szerint növekvő";
+$word["email_desc"]="Email szerint csökkenő";
+$word["last_asc"]="Utolsó levél szerint növekvő";
+$word["last_desc"]="Utolsó levél szerint csökkenő";
+$word["first_asc"]="Első levél szerint növekvő";
+$word["first_desc"]="Első levél szerint csökkenő";
+$word["bounced_mails"]="visszapatant levelei";
+$word["inall"]="minden csoportban, összesen";
+$word["t_error"]="Hiba";
+$word["t_date"]="Dátum";
+$word["t_group"]="Csoport";
+$word["date_desc"]="Dátum szerint növekvő";
+$word["date_asc"]="Dátum szerint csökkenő";
+?>

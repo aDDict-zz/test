@@ -1,0 +1,138 @@
+.jcarousel-skin-tango .jcarousel-container {
+  /*  -moz-border-radius: 10px;
+    background: #F0F6F9;
+    border: 1px solid #346F97;*/
+}
+
+.jcarousel-skin-tango .jcarousel-container-horizontal {
+    width: 830px;
+    padding: 0 50px 0 50px;
+}
+
+
+.jcarousel-skin-tango .jcarousel-clip-horizontal {
+    width:  800px;
+    height: 179px;
+	margin:0 0 0 15px;
+}
+
+
+
+.jcarousel-skin-tango .jcarousel-item {
+    width: 123px;
+    height: 158px;
+}
+
+.jcarousel-skin-tango .jcarousel-item-horizontal {
+    margin-right: 12px;
+	margin-top: 10px;
+}
+
+
+
+.jcarousel-skin-tango .jcarousel-item-placeholder {
+    background: #fff;
+    color: #000;
+}
+
+/**
+ *  Horizontal Buttons
+ */
+.jcarousel-skin-tango .jcarousel-next-horizontal {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50px;
+    height: 179px;
+    cursor: pointer;
+    background: url(/images/btn_next.png) no-repeat 0 0;
+}
+/*
+.jcarousel-skin-tango .jcarousel-next-horizontal:hover {
+    background-position: -32px 0;
+}
+
+.jcarousel-skin-tango .jcarousel-next-horizontal:active {
+    background-position: -64px 0;
+}
+
+.jcarousel-skin-tango .jcarousel-next-disabled-horizontal,
+.jcarousel-skin-tango .jcarousel-next-disabled-horizontal:hover,
+.jcarousel-skin-tango .jcarousel-next-disabled-horizontal:active {
+    cursor: default;
+    background-position: -96px 0;
+}
+*/
+.jcarousel-skin-tango .jcarousel-prev-horizontal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 179px;
+    cursor: pointer;
+    background: transparent url(/images/btn_prev.png) no-repeat 0 0;
+}
+/*
+.jcarousel-skin-tango .jcarousel-prev-horizontal:hover {
+    background-position: -32px 0;
+}
+
+.jcarousel-skin-tango .jcarousel-prev-horizontal:active {
+    background-position: -64px 0;
+}
+
+.jcarousel-skin-tango .jcarousel-prev-disabled-horizontal,
+.jcarousel-skin-tango .jcarousel-prev-disabled-horizontal:hover,
+.jcarousel-skin-tango .jcarousel-prev-disabled-horizontal:active {
+    cursor: default;
+    background-position: -96px 0;
+}
+*/
+DIV.felpalya {
+	width: 330px;
+	float: left;
+}
+
+FORM#contact {
+	width: 330px;
+	overflow: hidden;
+	margin: 10px 0px 0px 0px;
+	padding: 0px;
+}
+
+FORM#contact LABEL {
+	width: 90px;
+	text-align: right;
+	font-weight: bold;
+	padding: 12px 10px 0px 0px;
+
+	float: left;
+	clear: both;
+}
+
+FORM#contact INPUT.itext {
+	float: left;
+	width: 200px;
+	background: #FFFFFF;
+	border: 1px solid #E8E8E8;
+
+	padding: 2px;
+	margin: 10px 0px 0px 0px;
+}
+
+FORM#contact TEXTAREA {
+	float: left;
+	width: 200px;
+	height: 120px;
+	background: #FFFFFF;
+	border: 1px solid #E8E8E8;
+
+	padding: 2px;
+	margin: 10px 0px 0px 0px;
+}
+
+DIV.errormsg {
+	padding: 10px;
+	color: red;
+	font-weight: bold;
+}

@@ -1,0 +1,11 @@
+<?php
+header('Content-Type: text/html; charset=utf-8');
+
+$_dbhost="localhost";
+$_dbuser="roto";
+$_dbpass="barto2k6";
+$_dbname="maxima_public";
+
+$_homedir = "/var/www/maxima/www/www/";
+
+?>
