@@ -122,6 +122,14 @@ if ($res && $count=mysql_num_rows($res)) {
     }
 }
 
+
+//exceptions
+
+if($_POST["left_td_width"] == 0 || $_POST["left_td_width"] == ""){
+  $_POST["left_td_width"] = 120;
+}
+
+
 $updates=array();
 if ($_POST["action"]=="change") {
     while (list($object,$properties)=each($_MX_form->css_objects)) {
@@ -133,6 +141,7 @@ if ($_POST["action"]=="change") {
             else {
                 $value=$_POST["${object}_$property"];
             }
+
             $value=slasher($value,0);
             if ($property=="border") {
                 $vals=explode(" ",$value);
@@ -153,7 +162,7 @@ if ($_POST["action"]=="change") {
                 }
             }
             elseif ($property=="padding" || $property=="width" || $property=="height" || $property=="fontsize" || $property=="margin-left" || $property=="margin-right") {
-                if (!ereg("^[0-9]+$",$value)) {
+                if (!ereg("^[0-9]+$",$value)) { 
                     $errorlist.="$object - $property erteke pozitiv egesz lehet.<br>";
                 }
             }
