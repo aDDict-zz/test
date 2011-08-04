@@ -427,10 +427,12 @@ if ($res && $count=mysql_num_rows($res)) {
         }
         if ($z["variable_type"]=="enum") {
             if ($z["multiselect"]=="yes") {
-                $widgeto=array("multiselect","checkbox");
+                //$widgeto=array("multiselect","checkbox"); 
+                $widgeto=array("checkbox","multiselect");
             }
             else {
-                $widgeto=array("select","radio");
+                //$widgeto=array("select","radio");
+                $widgeto=array("radio","select");
             }
         }
         elseif ($z["variable_type"]=="matrix") {
