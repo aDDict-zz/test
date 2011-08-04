@@ -29,7 +29,7 @@ else
     exit;
 
 $debug=0;
-
+//print_r($formdata["header"]); die();
 $supported_codepages=array();
 $rec=mysql_query("select codepage,description from codepages order by sortorder");
 while ($kec=mysql_fetch_array($rec)) {
@@ -172,7 +172,7 @@ include "menugen.php";
 include "./lang/$language/form.lang";
     
 $_MX_form->MakeMenu($subweare,$formdata);
-
+//die();
 $hiddens = "<input type='hidden' name='form_id' value='$form_id'><input type='hidden' name='group_id' value='$group_id'>";
 $getlink = "form_generate.php?form_id=$form_id&group_id=$group_id";
 

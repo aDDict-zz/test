@@ -1,5 +1,7 @@
 <?php
 
+include "../main.php";
+
 $action = $_GET['action'];
 if (empty($action)) { $action = $_POST['action']; }
 $id = $_GET['id'];

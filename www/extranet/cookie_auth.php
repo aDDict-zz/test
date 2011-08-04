@@ -1,8 +1,8 @@
 <?php
 
 	//temporary stuff
-  $cuser_id= 79950;   //intval($_COOKIE["cuser_id"]);
-  $cunique_id= "c9bf707a74173ec91d41ae6441b8e071"; //addslashes($_COOKIE["cunique_id"]);
+  $cuser_id= intval($_COOKIE["cuser_id"]); //59446;
+  $cunique_id= addslashes($_COOKIE["cunique_id"]); //toth.robert@hirekmedia.hu  "2e8ce76be42749849fdf5fb07bc1613d";
   $active_userid = 0;
   $active_username  = "";
   $active_useremail = "";

@@ -536,7 +536,7 @@ function mx_create(w,pws) {
                 }
             }
             encryptedCaptchaCode = encryptString(captchaCode);
-            z("<div class='captcha' style='margin-top:6px;'><input class='capinput' alt='"+encryptedCaptchaCode + "' style='vertical-align:top;' name='"+w.id+"'><img class='capimg' src='http://www.maxima.hu/captcha/captcha.php?action=create&id="+w.id+"&value="+encryptedCaptchaCode+"' alt='Maxima Captcha' style='vertical-align:top;'/></div>\n"); 
+            z("<div class='captcha' style='margin-top:6px;'><input class='capinput' alt='"+encryptedCaptchaCode + "' style='vertical-align:top;' name='"+w.id+"'><img class='capimg' src='http://localhost/maxima/extranet/captcha/captcha.php?action=create&id="+w.id+"&value="+encryptedCaptchaCode+"' alt='Maxima Captcha' style='vertical-align:top;'/></div>\n"); 
         }
         if (w.type=='password') {
             if (pws) {

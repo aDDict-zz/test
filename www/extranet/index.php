@@ -79,7 +79,7 @@ else {
           from members m,groups g
           where g.id=m.group_id and m.user_id='$active_userid' $union $order";
 }
-
+//print_r($sql); die();
 //$jognames=array("owner"=>"T","moderator"=>"M","support"=>"S","admin"=>"A","client"=>"K","affiliate"=>"AFF");
 $jognames=array("owner"=>"$word[owner]","moderator"=>"$word[moderator]","support"=>"$word[support]","admin"=>"$word[admin]","client"=>"$word[client]","affiliate"=>"$word[affiliate]","sender"=>"$word[sender]");
 
@@ -88,9 +88,9 @@ $gfareal=array();
 
 $notother=0;
 $bgi=0;
-$res = mysql_query($sql);
-if ($res && mysql_num_rows($res)) {
-    while($row=mysql_fetch_array($res)) {
+$res = mysql_query($sql); //print_r($sql); print_r(mysql_num_rows($res)); die();
+if ($res && mysql_num_rows($res)) {  //echo "xxxxxxxxxxxxxxxxx<br />";  die();
+    while($row=mysql_fetch_array($res)) { //print_r($row); echo "xxxxxxxxxxxxxxxxx<br />"; 
         $affiliate="";
         $tmod="";
         $num_of_mess="";
@@ -149,7 +149,7 @@ if ($res && mysql_num_rows($res)) {
 }
 
 ######################## PRINT
-
+//echo "foooooooooooooooooooooooook<br />";print_r($bgi); die();
 printhead();
 if ($bgi) {
     PrintNavigation("Csoportok");

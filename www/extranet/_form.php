@@ -102,18 +102,18 @@ class MxForm
     }
 
     function InitForm($form_id,$user_id=0) 
-    {
-        $svt=mysql_query("select demog_id from form_viral where group_id='$this->group_id'");
+    { //echo "fokk"; die();
+        $svt=mysql_query("select demog_id from form_viral where group_id='$this->group_id'"); //echo "select demog_id from form_viral where group_id='$this->group_id'"; die();
         if ($svt && mysql_num_rows($svt)) {
             while ($svtt=mysql_fetch_array($svt)) {
                 $this->readonly[]=$svtt["demog_id"];
             }
-        }
-        $svt->finish;
+        } //print_r($svt); die();
+        $svt->finish;  //print_r(get_class_methods($svt)); die();
         $this->form_id=slasher($form_id);
         $this->updater?$uadd=" and updater='yes'":$uadd="";
         $res=mysql_query("select * from form where id='$this->form_id' and group_id='$this->group_id'$uadd");
-        if ($res && mysql_num_rows($res)) {
+        if ($res && mysql_num_rows($res)) { //echo "fokk"; die();
             $this->SetFormDefaults($res);
         }
         elseif ($this->updater) { // no form set, try to find an updater form, needed only for live, hence the active='yes' check.
@@ -122,7 +122,7 @@ class MxForm
                 $this->SetFormDefaults($res);
             }
             else { // no updater form is available, try to get some reasonable defaults.
-                $res=mysql_query("select header,footer from groups where id='$this->group_id'");
+                $res=mysql_query("select header,footer from groups where id='$this->group_id'"); //echo "select header,footer from groups where id='$this->group_id'";die();
                 if ($res && mysql_num_rows($res)) {
                     $k=mysql_fetch_array($res);
                     $this->header=$k["header"];
@@ -158,7 +158,7 @@ class MxForm
     // sets defaults if a form is available.
     function SetFormDefaults($myres) {
     
-        $k=mysql_fetch_array($myres);
+        $k=mysql_fetch_array($myres); //print_r($k); die();
         $this->form_id=$k["id"];
         $this->header=$k["header"];
         $this->footer=$k["footer"];
@@ -170,17 +170,17 @@ class MxForm
         $this->viral=$k["viral"];
         $this->megszolitas=$k["megszolitas"];
         $this->save_data_to_cookie=$k["save_data_to_cookie"];
-        $this->sqlres=$k;
+        $this->sqlres=$k; //echo $this->header; die();
     }
 
     function MakeForm() 
     {
         global $_MX_var,$word,$_GET,$_MX_var;
-
+//echo $this->header . "<br />";
         $this->header=eregi_replace("{TITLE}",$this->title,$this->header);
         $this->header=eregi_replace("{pagenumber}","<div id='__hpnum__' style='display:inline;'>1</div>",$this->header);
-        $set_currentdate="";
-        if (ereg("{currentdate}","$this->header$this->footer")) {
+        $set_currentdate=""; //echo $this->footer . "<br />";  die();
+        if (ereg("{currentdate}","$this->header$this->footer")) { //echo "QEQWEWQEWQEQWE"; die();
             $this->header=eregi_replace("{currentdate}","<div id='__hcdate__' style='display:inline;'></div>",$this->header);
             $this->footer=eregi_replace("{currentdate}","<div id='__fcdate__' style='display:inline;'></div>",$this->footer);
             $set_currentdate="
@@ -212,7 +212,7 @@ var cdtn=new Date();var cdt=cdtn.getFullYear();var cdtt=cdtn.getMonth();cdt+=' '
                 $specpages_div .= str_replace("{BUTTON}","<span id='navr$sp'></span>","<div id='$sp' style='display:none;'>" . $this->sqlres["$sp"] . "</div>\n");
             }
             $specpages .= "var $sp=$issp;\n";
-        }
+        } //echo $this->header; die();
         $res=mysql_query("select * from form_endlink where form_id='$this->form_id' order by id");
         $endlink_pages = array();
         $endlink_data = array();
@@ -288,7 +288,7 @@ var cdtn=new Date();var cdt=cdtn.getFullYear();var cdtt=cdtn.getMonth();cdt+=' '
 		}
 		else {
 			$this->output.=$jstemp;
-		}
+		} //echo $jstemp; die();
         ob_start();
         include("form_xmlreq.js");            
         $this->output .= ob_get_contents();
