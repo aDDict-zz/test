@@ -297,12 +297,17 @@ echo "
 			else
 				print "<form action='form_select.php'><td nowrap><input type='hidden' name='form_id' value='$form_id'>
 				<input type='hidden' name='group_id' value='$group_id'><input type='hidden' name='perpage' value='$perpage'><input type='hidden' name='pagenum' value='$pagenum'><input type='text' name='sword' value='$sword' size='18'></td></form>";
+    
+    if(isset($_GET["enum"])){
+      $displayAllEnum = $_GET["enum"];
+    }
+    
     print "</tr>
            </table>
            </td>
            </tr>
            </table></td></tr>\n
-			<form id='form_in' name='form_in' method='post' action='form_in.php'>
+			<form id='form_in' name='form_in' method='post' action='" . ($displayAllEnum ? "form_in.php?enum={$displayAllEnum}" : 'form_in.php') . "'>
 			<input type='hidden' name='action' value='addtoform'>
 			<input type='hidden' name='form_id' value='$form_id'>
 			<input type='hidden' name='group_id' value='$group_id'>
@@ -311,7 +316,7 @@ echo "
 			<input type='hidden' name='pagenum' value='$pagenum'>";
 
 
-}
+} //" . ($displayAllEnum == "true" ? "?enum=true" : "") . " //form_in.php
 
 function printfoot() {
 

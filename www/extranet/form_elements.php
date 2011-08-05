@@ -299,7 +299,7 @@ echo "<tr><td class='bgkiemelt2' align=left width=13%><span class=szovegvastag>$
         &nbsp;
       <a href='#' onClick='window.open(\"form_element_verify.php?form_id=$form_id&group_id=$group_id\", \"fefr\", \"width=650,height=500,scrollbars=yes,resizable=yes\"); return false;'>$word[fe_verify]</a>
         &nbsp;
-      <a href='#' onClick='window.open(\"form_select.php?form_id=$form_id&group_id=$group_id\", \"dfr\", \"width=760,height=500,left=0,top=0,scrollbars=yes,resizable=yes\"); return false;'>$word[fe_new]</a>
+      <a href='#' onClick='windowOpen(\"form_select.php?form_id=$form_id&group_id=$group_id\", \"dfr\", \"width=760,height=500,left=0,top=0,scrollbars=yes,resizable=yes\"); return false;'>$word[fe_new]</a>
         <br>
       <a href='#' onClick='toggle_mandatory(1); return false;'>$word[fe_mandatory_all]</a>
         &nbsp;
@@ -363,7 +363,7 @@ if ($res && $count=mysql_num_rows($res)) {
                 $modpage="<a name='form_page_$pg' href='form_page_ch.php?group_id=$group_id&form_id=$form_id&page_id=$pg'>$word[iform_page_change]</a>&nbsp;<a $hasdep href='form_element_options.php?form_id=$form_id&group_id=$group_id&page_id=$pg\'>$word[fe_depend]</a> <a onClick=\"window.open('form_generate.php?group_id=$group_id&form_id=$form_id&preview=1&show_page=$pg','preview');\" HREF='#'>$word[iform_preview]</a>";
                 if ($pg>0) echo "</table></li>";
                 echo "<li style='list-style-type: none;' id='".$pg."'><table cellSpacing=1 cellPadding=0 width=\"100%\" class='bgcolor addborder' border=0><tr>";
-                echo "<td colspan='2' class='bgvilagos2'><span name='pagenum' class='szovegvastag'>$pg</span><span class='szovegvastag'>. $word[fe_page]</span><span class='szovegvastag'>&nbsp;&nbsp;<a href='form_elements.php?group_id=$group_id&form_id=$form_id&del_page=$pg'>$word[form_specdel]</a>&nbsp;&nbsp;<a href='form_elements.php?group_id=$group_id&form_id=$form_id&ins_page=$pg'>$word[new_page]</a> </span></td>";
+                echo "<td colspan='2' class='bgvilagos2'><span name='pagenum' class='szovegvastag'>$pg</span><span class='szovegvastag'>. $word[fe_page]</span><span class='szovegvastag'>&nbsp;&nbsp;<a href='form_elements.php?group_id=$group_id&form_id=$form_id&del_page=$pg'>$word[form_specdel]</a>&nbsp;&nbsp;<a href='form_elements.php?group_id=$group_id&form_id=$form_id&ins_page=$pg'>$word[new_page]</a> </span><br /><span class='szovegvastag'>Display all enum:   <input id='enumSetter' type='checkbox' value='On' name='enum' checked='yes' /></span></td>";
                 echo preg_replace("/>\s+</","><","<td class='bgvilagos2' style='vertical-align:middle;'>
                             <a style='cursor:pointer;' onclick='edit_content(\"bold\",false);'><img src='" . $_MX_var->baseUrl . "/" . $_MX_var->application_instance . "/gfx/edit_bold.png' width='16' height='16' border='0' /></a>
                             <a style='cursor:pointer;' onclick='edit_content(\"italic\",false);'><img src='" . $_MX_var->baseUrl . "/" . $_MX_var->application_instance . "/gfx/edit_italic.png' width='16' height='16' border='0' /></a>
@@ -467,7 +467,7 @@ if ($res && $count=mysql_num_rows($res)) {
         $demog_id=$k["demog_id"];
         //$dependent=mx_display_dep($k);
         if ($z['variable_type'] == 'enum_other' || $z['variable_type'] == 'enum' || $z['variable_type'] == 'matrix') {
-            $felements = "<a href='#' onClick='window.open(\"form_element_enum.php?group_id=$group_id&form_element_id=$k[id]\", \"deefr$k[id]\", \"width=650,height=550,scrollbars=yes,resizable=yes\"); return false;'>$word[fe_elements]</a>";
+            $felements = "<a href='#' onClick='windowOpen(\"form_element_enum.php?group_id=$group_id&form_element_id=$k[id]\", \"deefr$k[id]\", \"width=650,height=550,scrollbars=yes,resizable=yes\"); return false;'>$word[fe_elements]</a>";
         } else {
             $felements = '';
         }

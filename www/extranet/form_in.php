@@ -7,6 +7,11 @@ include "common.php";
 $language=select_lang();
 include "./lang/$language/form.lang";
 
+/*print_r($_POST);
+print_r($_GET);
+
+die();*/
+
 $mres = mysql_query("select title,num_of_mess,membership,question_position 
                      from groups,members where groups.id=members.group_id
                      and groups.id='$group_id' and (membership='owner' or membership='moderator' $admin_addq)

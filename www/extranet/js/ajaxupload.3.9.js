@@ -1,4 +1,12 @@
 /**
+ * 
+ * extra stuff for form_element_enum.php enum default values
+ */
+function windowOpen(url){
+	window.open(($("#enumSetter").attr('checked') == true ? url = [url,"&enum=true"].join("") : url = [url,"&enum=false"].join("")), "deefr3063", "width=650,height=550,scrollbars=yes,resizable=yes");
+}
+
+/**
  * AJAX Upload ( http://valums.com/ajax-upload/ ) 
  * Copyright (c) Andris Valums
  * Licensed under the MIT license ( http://valums.com/mit-license/ )
