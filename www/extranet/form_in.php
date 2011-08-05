@@ -332,10 +332,10 @@ function add_element($demog_id, $page_id, $box_id, $where, $new = false)
             $row = mysql_fetch_array($query);
             $question = mysql_escape_string($row["question"]);
             if ($row["variable_type"] == "enum") {
-                $widget = $row["multiselect"] == "yes"? "multiselect": "select";
+                $widget = $row["multiselect"] == "yes"? "checkbox": "radio";
             } elseif ($row["variable_type"] == "enum_other") {
-                $widget = $row["multiselect"] == "yes"? "checkbox_other": "radio_other";
-            } elseif ($row["variable_type"] == "matrix") {
+                $widget = $row["multiselect"] == "yes"? "checkbox_other": "radio_other"; 
+            } elseif ($row["variable_type"] == "matrix") { 
                 $widget = $row["multiselect"] == "yes"? "checkbox_matrix": "radio_matrix";
             } elseif ($row["variable_type"] == "date") {
                 $widget = "datum";
