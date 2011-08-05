@@ -462,7 +462,15 @@ if ($res && $count=mysql_num_rows($res)) {
         for ($wa=0;$wa<count($widgeto);$wa++) {
             $wdg=$widgeto[$wa];
             $wdg==$k["widget"]?$sel="selected":$sel="";
-            $widgets.="<option $sel>$wdg</option>";
+            
+            if($z["variable_type"]=="enum"){
+              if($wa==0)
+                $widgets.="<option selected='selected'>$wdg</option>";
+              else
+                $widgets.="<option>$wdg</option>";
+            } else {
+              $widgets.="<option $sel>$wdg</option>"; 
+            }
         }        
         $demog_id=$k["demog_id"];
         //$dependent=mx_display_dep($k);
