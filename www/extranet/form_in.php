@@ -7,11 +7,6 @@ include "common.php";
 $language=select_lang();
 include "./lang/$language/form.lang";
 
-/*print_r($_POST);
-print_r($_GET);
-
-die();*/
-
 $mres = mysql_query("select title,num_of_mess,membership,question_position 
                      from groups,members where groups.id=members.group_id
                      and groups.id='$group_id' and (membership='owner' or membership='moderator' $admin_addq)
@@ -354,6 +349,11 @@ function add_element($demog_id, $page_id, $box_id, $where, $new = false)
                                  '$demog_id', '$question', '$widget', '$row[mandatory]','".trim($rowg["question_position"]
 )."')";
             mysql_query($query);
+            
+            if ($row["variable_type"] == "enum" && $_GET["enum"] == "true"){ 
+              setEnumValuesOn(mysql_insert_id(),$demog_id);
+            }
+            
 			logger($query,$group_id,"","","form_element");                                 
         }
     } else {
@@ -363,6 +363,24 @@ function add_element($demog_id, $page_id, $box_id, $where, $new = false)
         mysql_query($query);
 		logger($query,$group_id,"","form_element_id=$form_id","form_element");                                                       
     }   
+}
+
+function setEnumValuesOn($formElementId,$demogId){
+  $PDO = getPDO::get();
+  $res = $PDO->query("select id from demog_enumvals where demog_id = {$demogId} and deleted = 'no'")->fetchAll(PDO::FETCH_ASSOC);
+    //print_r($res);
+  foreach($res as $arr){
+    //echo $arr["id"] . "<br />";
+    $PDO->query("
+      insert into 
+        form_element_enumvals
+          (form_element_id,demog_enumvals_id,sortorder,break_after,excludes_others)
+      values
+        ('{$formElementId}','{$arr["id"]}','{$arr["id"]}','no','no');
+    ");
+  }
+  
+  //die();
 }
 
 function next_sortorder($page_id, $box_id)
