@@ -243,10 +243,16 @@ echo "
 	       <table border='0' cellspacing='0' cellpadding='0'>
 
 	       <tr>";
+    
+    if(isset($_GET["enum"])){
+        $displayAllEnum = $_GET["enum"];
+    }     
+   
     if ($off>0) {
+      
         print "<td nowrap align='right'>
-               <a href='form_select.php?form_id=$form_id&group_id=$group_id&off=0&perpage=$perpage&sword=$sword'><img src='$_MX_var->application_instance/gfx/down2.gif' width='20' height='14' border='0'></a>
-               <a href='form_select.php?form_id=$form_id&group_id=$group_id&off=$prevpage&perpage=$perpage&sword=$sword'><img src='$_MX_var->application_instance/gfx/down1.gif' width='20' height='14' border='0'></a>
+               <a href='form_select.php?form_id=$form_id&group_id=$group_id&off=0&perpage=$perpage&sword=$sword" . ($displayAllEnum ? "&enum={$displayAllEnum}" : '') . "'><img src='$_MX_var->application_instance/gfx/down2.gif' width='20' height='14' border='0'></a>
+               <a href='form_select.php?form_id=$form_id&group_id=$group_id&off=$prevpage&perpage=$perpage&sword=$sword" . ($displayAllEnum ? "&enum={$displayAllEnum}" : '') . "'><img src='$_MX_var->application_instance/gfx/down1.gif' width='20' height='14' border='0'></a>
                </td>";
     }
     else {
@@ -260,8 +266,8 @@ echo "
            <td nowrap class='formmezo'>&nbsp;/ $pages_total</td>";
     if ($off<$pages_total-1) {
         print "<td nowrap align='right'>
-               <a href='form_select.php?form_id=$form_id&group_id=$group_id&off=$pagenum&perpage=$perpage&sword=$sword'><img src='$_MX_var->application_instance/gfx/up1.gif' width='20' height='14' border='0'></a>
-               <a href='form_select.php?form_id=$form_id&group_id=$group_id&off=$lastpage&perpage=$perpage&sword=$sword'><img src='$_MX_var->application_instance/gfx/up2.gif' width='20' height='14' border='0'></a>
+               <a href='form_select.php?form_id=$form_id&group_id=$group_id&off=$pagenum&perpage=$perpage&sword=$sword" . ($displayAllEnum ? "&enum={$displayAllEnum}" : '') . "'><img src='$_MX_var->application_instance/gfx/up1.gif' width='20' height='14' border='0'></a>
+               <a href='form_select.php?form_id=$form_id&group_id=$group_id&off=$lastpage&perpage=$perpage&sword=$sword" . ($displayAllEnum ? "&enum={$displayAllEnum}" : '') . "'><img src='$_MX_var->application_instance/gfx/up2.gif' width='20' height='14' border='0'></a>
                </td>";
     }
     else {
@@ -316,7 +322,7 @@ echo "
 			<input type='hidden' name='pagenum' value='$pagenum'>";
 
 
-} //" . ($displayAllEnum == "true" ? "?enum=true" : "") . " //form_in.php
+}
 
 function printfoot() {
 
