@@ -2,7 +2,7 @@
 :set number
 :set tabstop=2
 
-
+:highlight Normal ctermfg=green ctermbg=black
 
 " .vimrc
 " See: http://vimdoc.sourceforge.net/htmldoc/options.html for details
