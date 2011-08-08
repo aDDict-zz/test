@@ -27,7 +27,7 @@ git config --global color.diff.new "green bold"
 git config --global color.status.added "yellow"
 git config --global color.status.changed "green"
 git config --global color.status.untracked "cyan"
-git config --global core.editor "gedit"
+git config --global core.editor "medit"
 
 source /home/vvv/scripts/git-completion.bash
 
