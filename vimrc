@@ -1,4 +1,4 @@
-:color  dw_green   " tango 
+:color tango "dw_green   " tango 
 :set number
 :set tabstop=2
 
@@ -85,3 +85,4 @@ syntax on
 map <F2> \c 
 imap <f3> <c-n>
 map <f12> :NERDTree <enter>
+map <F4> :tabnew <enter>
