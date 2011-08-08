@@ -26,7 +26,10 @@ end
 
 def getTableNames  
   Dir[@thisDir + "*.sql"].each do |file|
-    @tablesNames.push file.match(/(maxima_sql\/)(.*)(\.sql)/)[2]
+		if file.match(/(.*)(form)(.*)/)
+    	@tablesNames.push file.match(/(maxima_sql\/)(.*)(\.sql)/)[2]
+		end
+# 		@tablesNames.push file.match(/(maxima_sql\/)(.*)(\.sql)/)[2]
   end
 end
 
@@ -61,7 +64,7 @@ end
 
 @schema.each_key do |key|
   @table.push(
-    "\n",
+    (@table.length == 0 ? "" : "\n"),
     "<table name=\"#{key}\" >\n"
   )
   @schema[key].each do |column|
@@ -71,20 +74,22 @@ end
       	"<datatype>",
       	column["DATA_TYPE"],
       	"</datatype>\n",
-      	"<default>NULL</default>\n",
+#       	"<default>NULL</default>\n",
       	"</row>\n"
     )
   end
   @table.push(
-			"\n<key type=\"PRIMARY\" name=\"\">\n",
-			"\<part>id</part>\n",
-	  	"\</key>\n",
+# 			"\n<key type=\"PRIMARY\" name=\"\">\n",
+# 			"\<part>id</part>\n",
+# 	  	"\</key>\n",
 		"\n</table>\n"
 	)
 end
    # x=\"100\" y=\"200\"
-puts "
-<?xml version=\"1.0\" encoding=\"utf-8\" ?>
+	 
+# 	 puts @tablesNames.length
+	 
+puts "<?xml version=\"1.0\" encoding=\"utf-8\" ?>
 <sql>
   <datatypes db=\"mysql\">
 	  <group label=\"Numeric\" color=\"rgb(238,238,170)\">
