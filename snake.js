@@ -2,18 +2,18 @@ var canvas = {
   cache   : {},
 
   getDom  : function(selectorStr) {
-    if(documenthis.querySelectorAll)
-      return documenthis.body.querySelectorAll(selectorStr);
+    if(document.querySelectorAll)
+      return document.body.querySelectorAll(selectorStr);
     else {
       var re_turn;
       if(selectorStr.match(/\[.*\]/)){
         var matches = selectorStr.match(/(.*)(\[)(.*)(\=)(.*)(\])/);
         switch(matches[3]){
           case "id":
-            re_turn = documenthis.getElementById(matches[5]);
+            re_turn = document.getElementById(matches[5]);
           break;
           case "class":
-            var arr = documenthis.getElementsByTagName(matches[1]),
+            var arr = document.getElementsByTagName(matches[1]),
                 thisClass,
                 obj;
 
@@ -27,9 +27,13 @@ var canvas = {
         }
         return re_turn;
       } else {
-        return documenthis.getElementsByTagName(selectorStr)
+        return document.getElementsByTagName(selectorStr)
       }
     }
+  },
+
+  getParent : function(el, tag, prop, name){ console.log(arguments.length);
+
   },
 
   getCssProperty : function(el,attr) {
@@ -55,9 +59,9 @@ var canvas = {
 
   createEl: function(cfg,thisParent) {
 
-    var parent = thisParent || documenthis.body,
+    var parent = thisParent || document.body,
         thisEl,
-        thisEl = documenthis.createElement(cfg.tag);
+        thisEl = document.createElement(cfg.tag);
 
     for(var i in cfg) {
       switch(i) {
@@ -92,7 +96,7 @@ var canvas = {
 
     this.cache[cfg.id] = thisEl;
 
-    parenthis.appendChild(thisEl);
+    parent.appendChild(thisEl);
 
     if(cfg.arr && cfg.arr.length > 0) {
       for(var i in cfg.arr) {
@@ -198,6 +202,47 @@ var manager = {
 //      "method"    : this.test,
 //      "interval"  : 50
 //    });
+
+    canvas.createEl({
+			tag 	: "div",
+			style : "",
+			id 		: "container",
+			cls 	: "containder",
+			arr 	: [{
+				tag		: "div",
+				id 		: "left",
+				cls 	: "left",
+				arr 	: [{
+          tag   : "label",
+          html  : "search:"
+        }, {
+          tag   : "br"
+        }, {
+          tag   : "input",
+          type  : "text",
+          id    : "search",
+          cls   : "input"
+        }, {
+          tag   : "br"
+        }, {
+          tag     : "input",
+          id      : "thisSubmit",
+          value   : "GO!",
+          type    : "button",
+          command : ["click", function(e){
+            form.submit();
+          }]
+        }]
+			}, {
+        tag   : "div",
+        id    : "right",
+        cls   : "right",
+        arr   : []
+      }]
+		});
+
+		canvas.getParent("sadsadas","sss");
+
   },
   test : function(){
     console.log("valami");
