@@ -30,12 +30,14 @@
 		  <type label="SET" length="1" sql="SET" quote=""/>
 		  <type label="Bit" length="0" sql="bit" quote=""/>
 	  </group>
-  </datatypes><table x="1249" y="580" name="form_page">
+  </datatypes><table x="1158" y="1086" name="form_page">
 <row name="group_id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
+<relation table="groups" row="id" />
 </row>
 <row name="form_id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
+<relation table="form" row="id" />
 </row>
 <row name="page_id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
@@ -71,7 +73,7 @@
 <datatype>INTEGER</datatype>
 </row>
 </table>
-<table x="977" y="785" name="form_endlink_dep">
+<table x="1619" y="1325" name="form_endlink_dep">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -88,7 +90,7 @@
 <datatype>INTEGER</datatype>
 </row>
 </table>
-<table x="1053" y="580" name="form_email">
+<table x="1436" y="788" name="form_email">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -115,7 +117,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="790" y="598" name="form_page_box">
+<table x="854" y="657" name="form_page_box">
 <row name="group_id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 <relation table="groups" row="id" />
@@ -146,7 +148,7 @@
 <datatype>INTEGER</datatype>
 </row>
 </table>
-<table x="1356" y="421" name="form_social_network">
+<table x="1574" y="1068" name="form_social_network">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -163,7 +165,7 @@
 <datatype>INTEGER</datatype>
 </row>
 </table>
-<table x="519" y="450" name="form_element">
+<table x="797" y="908" name="form_element">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -182,6 +184,7 @@
 </row>
 <row name="demog_id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
+<relation table="demog" row="id" />
 </row>
 <row name="question" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
@@ -247,7 +250,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="759" y="328" name="form_element_subscribe">
+<table x="1206" y="526" name="form_element_subscribe">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -266,6 +269,7 @@
 </row>
 <row name="form_element_id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
+<relation table="form_element" row="id" />
 </row>
 <row name="dependency" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
@@ -274,7 +278,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="1085" y="408" name="form_element_parent_dep">
+<table x="1548" y="583" name="form_element_parent_dep">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -292,7 +296,7 @@
 <datatype>INTEGER</datatype>
 </row>
 </table>
-<table x="1424" y="633" name="form_save_temporary_11_7">
+<table x="1806" y="993" name="form_save_temporary_11_7">
 <row name="cid" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -306,7 +310,7 @@
 <datatype>INTEGER</datatype>
 </row>
 </table>
-<table x="794" y="110" name="form_page_dep">
+<table x="1104" y="50" name="form_page_dep">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -330,7 +334,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="1437" y="798" name="form_element_subscribe_dep">
+<table x="1802" y="1155" name="form_element_subscribe_dep">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -347,7 +351,7 @@
 <datatype>INTEGER</datatype>
 </row>
 </table>
-<table x="583" y="10" name="form_endlink">
+<table x="940" y="13" name="form_endlink">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -368,7 +372,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="266" y="15" name="form">
+<table x="549" y="475" name="form">
 <row name="id" null="0" autoincrement="1">
 <datatype>INTEGER</datatype>
 </row>
@@ -491,7 +495,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="974" y="17" name="form_banner">
+<table x="1351" y="296" name="form_banner">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -512,7 +516,7 @@
 <datatype>INTEGER</datatype>
 </row>
 </table>
-<table x="1020" y="252" name="form_viral">
+<table x="1121" y="250" name="form_viral">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -526,12 +530,13 @@
 </row>
 <row name="demog_id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
+<relation table="demog" row="id" />
 </row>
 <row name="viralfunc" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
 </table>
-<table x="800" y="892" name="form_element_dep">
+<table x="1175" y="894" name="form_element_dep">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -549,7 +554,7 @@
 <datatype>INTEGER</datatype>
 </row>
 </table>
-<table x="1303" y="37" name="form_css">
+<table x="1410" y="56" name="form_css">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -567,7 +572,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="1647" y="407" name="form_element_enumvals">
+<table x="817" y="218" name="form_element_enumvals">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -577,6 +582,7 @@
 </row>
 <row name="demog_enumvals_id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
+<relation table="demog_enumvals" row="id" />
 </row>
 <row name="title" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
@@ -600,7 +606,7 @@
 <datatype>INTEGER</datatype>
 </row>
 </table>
-<table x="1475" y="33" name="form_email_dep">
+<table x="1610" y="182" name="form_email_dep">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -617,7 +623,7 @@
 <datatype>INTEGER</datatype>
 </row>
 </table>
-<table x="1521" y="239" name="form_images">
+<table x="1576" y="375" name="form_images">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -635,7 +641,7 @@
 <relation table="form" row="id" />
 </row>
 </table>
-<table x="38" y="18" name="groups">
+<table x="303" y="312" name="groups">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -808,241 +814,182 @@
 <part>id</part>
 </key>
 </table>
-
-<table name="vip_demog" >
-
-<row name="id">
-<datatype>int</datatype>
+<table x="-37" y="715" name="vip_demog">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="demog_id">
-<datatype>int</datatype>
+<row name="demog_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="group_id">
-<datatype>int</datatype>
+<row name="group_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="multi_id">
-<datatype>int</datatype>
+<row name="multi_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="mandatory">
-<datatype>enum</datatype>
+<row name="mandatory" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="dateadd">
-<datatype>date</datatype>
+<row name="dateadd" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="ask">
-<datatype>enum</datatype>
+<row name="ask" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="changeable">
-<datatype>enum</datatype>
+<row name="changeable" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="deleted">
-<datatype>enum</datatype>
+<row name="deleted" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="tstamp">
-<datatype>datetime</datatype>
+<row name="tstamp" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="demog_group_id">
-<datatype>int</datatype>
+<row name="demog_group_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="ordernum">
-<datatype>int</datatype>
+<row name="ordernum" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
 </table>
-
-<table name="demog_enumvals" >
-
-<row name="id">
-<datatype>int</datatype>
+<table x="67" y="356" name="demog_enumvals">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="demog_id">
-<datatype>int</datatype>
+<row name="demog_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="demog" row="id" />
 </row>
-
-<row name="enum_option">
-<datatype>text</datatype>
+<row name="enum_option" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="deleted">
-<datatype>enum</datatype>
+<row name="deleted" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="tstamp">
-<datatype>datetime</datatype>
+<row name="tstamp" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="optdesc">
-<datatype>text</datatype>
+<row name="optdesc" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="vertical">
-<datatype>enum</datatype>
+<row name="vertical" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="code">
-<datatype>varchar</datatype>
+<row name="code" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
 </table>
-
-<table name="temp_demog_enumvals" >
-
-<row name="id">
-<datatype>int</datatype>
+<table x="21" y="660" name="temp_demog_enumvals">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="old_id">
-<datatype>int</datatype>
+<row name="old_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="demog_id">
-<datatype>int</datatype>
+<row name="demog_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="enum_option">
-<datatype>text</datatype>
+<row name="enum_option" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="optdesc">
-<datatype>text</datatype>
+<row name="optdesc" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
 </table>
-
-<table name="demog" >
-
-<row name="id">
-<datatype>int</datatype>
+<table x="30" y="28" name="demog">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="question">
-<datatype>varchar</datatype>
+<row name="question" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="variable_name">
-<datatype>varchar</datatype>
+<row name="variable_name" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="variable_type">
-<datatype>varchar</datatype>
+<row name="variable_type" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="dateadd">
-<datatype>datetime</datatype>
+<row name="dateadd" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="multis">
-<datatype>varchar</datatype>
+<row name="multis" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="groups">
-<datatype>varchar</datatype>
+<row name="groups" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="multiselect">
-<datatype>enum</datatype>
+<row name="multiselect" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="tstamp">
-<datatype>datetime</datatype>
+<row name="tstamp" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="multi_append">
-<datatype>enum</datatype>
+<row name="multi_append" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="code">
-<datatype>varchar</datatype>
+<row name="code" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
 </table>
-
-<table name="demog_group" >
-
-<row name="id">
-<datatype>int</datatype>
+<table x="718" y="11" name="demog_group">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="group_id">
-<datatype>int</datatype>
+<row name="group_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="groups" row="id" />
 </row>
-
-<row name="name">
-<datatype>varchar</datatype>
+<row name="name" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
 </table>
-
-<table name="vip_demog_temp" >
-
-<row name="id">
-<datatype>int</datatype>
+<table x="105" y="692" name="vip_demog_temp">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="demog_id">
-<datatype>int</datatype>
+<row name="demog_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="group_id">
-<datatype>int</datatype>
+<row name="group_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="multi_id">
-<datatype>int</datatype>
+<row name="multi_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="mandatory">
-<datatype>enum</datatype>
+<row name="mandatory" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="dateadd">
-<datatype>date</datatype>
+<row name="dateadd" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="ask">
-<datatype>enum</datatype>
+<row name="ask" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="changeable">
-<datatype>enum</datatype>
+<row name="changeable" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="deleted">
-<datatype>enum</datatype>
+<row name="deleted" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="tstamp">
-<datatype>datetime</datatype>
+<row name="tstamp" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
 </table>
-
-<table name="data_forward_demog" >
-
-<row name="id">
-<datatype>int</datatype>
+<table x="1688" y="841" name="data_forward_demog">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="data_forward_id">
-<datatype>int</datatype>
+<row name="data_forward_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
-<row name="form_element_id">
-<datatype>int</datatype>
+<row name="form_element_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
 </row>
-
 </table>
-
 </sql>
