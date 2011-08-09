@@ -26,10 +26,10 @@ end
 
 def getTableNames  
   Dir[@thisDir + "*.sql"].each do |file|
-		if file.match(/(.*)(form)(.*)/)
-    	@tablesNames.push file.match(/(maxima_sql\/)(.*)(\.sql)/)[2]
-		end
-# 		@tablesNames.push file.match(/(maxima_sql\/)(.*)(\.sql)/)[2]
+# 		if file.match(/(.*)(form)(.*)/)
+#     	@tablesNames.push file.match(/(maxima_sql\/)(.*)(\.sql)/)[2]
+# 		end
+		@tablesNames.push file.match(/(maxima_sql\/)(.*)(\.sql)/)[2]
   end
 end
 
