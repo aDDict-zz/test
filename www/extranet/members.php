@@ -18,12 +18,13 @@ $sortm = (isset($_GET['sortm']) || empty($Amsortm)) ? get_http('sortm',4) : $Ams
 $show_user_list = (isset($_GET['show_user_list']) || empty($Am_show_user_list)) ? get_http('show_user_list',1) : $Am_show_user_list;
 $user_status = (isset($_GET['user_status']) || empty($Am_user_status)) ? get_http('user_status','') : $Am_user_status;
 $maxPerPage = (isset($_GET['maxPerPage']) || empty($Amperpage)) ? get_http('maxPerPage',25) : $Amperpage;
-
 if ($show_user_list!='no' && $show_user_list!='yes')
     $show_user_list='no';
 
 if ($user_status!='robinson' /*&& $user_status!='unval'*/ && $user_status!='all' && $user_status!='bounced')
     $user_status='normal';
+
+$user_status="yes";
 
 $filtaff=get_http('filtaff','');
 if (!strlen($filtaff) && !empty($Amfiltaff)) 

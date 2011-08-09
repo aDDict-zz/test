@@ -9,8 +9,8 @@ class MxVars {
 
     private $versions = array(
         "maxima"=>array("live"=>array(
-                            "mainDomain"=>"localhost",
-                            "publicBaseUrl"=>"http://localhost/maxima",
+                            "mainDomain"=>"192.168.0.107",
+                            "publicBaseUrl"=>"http://192.168.0.107/maxima",
                             "publicBaseDir"=>"/srv/http/maxima",
                         ),
                         "both"=>array(
