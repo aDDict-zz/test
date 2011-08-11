@@ -171,7 +171,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="789" y="1453" name="form_element">
+<table x="757" y="1495" name="form_element">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -384,7 +384,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="488" y="1136" name="form">
+<table x="528" y="1131" name="form">
 <row name="id" null="0" autoincrement="1">
 <datatype>INTEGER</datatype>
 </row>
@@ -1025,7 +1025,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="1638" y="1003" name="data_forward_demog">
+<table x="1535" y="879" name="data_forward_demog">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -1039,7 +1039,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="972" y="1868" name="sender_base_property">
+<table x="966" y="1979" name="sender_base_property">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -1061,7 +1061,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="993" y="1482" name="sender_base">
+<table x="995" y="1599" name="sender_base">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -1177,7 +1177,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="285" y="2097" name="users_permission">
+<table x="239" y="2218" name="users_permission">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 <relation table="user" row="id" />
@@ -1917,7 +1917,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="30" y="1449" name="user_group">
+<table x="36" y="1515" name="user_group">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 <relation table="user" row="id" />
@@ -1937,7 +1937,7 @@
 <part>group_id</part>
 </key>
 </table>
-<table x="248" y="1716" name="user_group_members">
+<table x="261" y="1718" name="user_group_members">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -1947,6 +1947,7 @@
 </row>
 <row name="user_id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
+<relation table="user" row="id" />
 </row>
 <row name="tstamp" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
@@ -1954,5 +1955,76 @@
 <key type="PRIMARY" name="">
 <part>id</part>
 </key>
+</table>
+<table x="250" y="1909" name="members">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="user_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="user" row="id" />
+</row>
+<row name="group_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="groups" row="id" />
+</row>
+<row name="membership" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="create_date" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="modify_date" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="affiliate_members" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="tstamp" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="trusted_affiliate" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="kedvenc" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="647" y="2174" name="multi_members">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="user_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="user" row="id" />
+</row>
+<row name="group_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="groups" row="id" />
+</row>
+<row name="membership" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="create_date" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="modify_date" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="affiliate_members" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="tstamp" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="trusted_affiliate" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="kedvenc" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
 </table>
 </sql>
