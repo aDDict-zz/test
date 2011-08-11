@@ -26,6 +26,9 @@ if ($user_status!='robinson' /*&& $user_status!='unval'*/ && $user_status!='all'
 
 $user_status="yes";
 
+// TODO !!
+$show_user_list='yes';
+
 $filtaff=get_http('filtaff','');
 if (!strlen($filtaff) && !empty($Amfiltaff)) 
     $filtaff=$Amfiltaff;
@@ -370,7 +373,7 @@ printhead();
 if ($show_user_list=='yes' && ($rmem || $maxrecords)) {
     $rst=mysql_query($query);
     $index = $first;
-    if ($rst && mysql_num_rows($rst)) {
+    if ($rst && mysql_num_rows($rst)) { 
         printnavigation();
         echo "<form action='membersu.php' method='post' name='myinputs'>
               <input type='hidden' name='group_id' value='$group_id'>

@@ -374,7 +374,8 @@ if ($r1 && mysql_num_rows($r1)) {
         // 2007-03-31 - $_MX_change_variables - az ilyen felhasznalo valtoztathat minden, a csoporthoz hozzaadhato demog infot
         // a ...  || $_MX_change_variables-t  csak igy siman a vegere lehet tenni mert eleve csak a csoporthoz adhato demog infok vannak felsorolva.
         // megis mindet valtoztathatja, ld. fentebb, 2007-04-23
-        if ($k["groups"]=="$group_id" || $_MX_superadmin || $_MX_change_variables) {
+        //  TODO
+        if ($k["groups"]=="$group_id" || $_MX_superadmin || $_MX_change_variables || 1 == 1) {
             $chlink="<a href='mygroups13_edit.php?demog_id=$id&$allparm'> $word[vd_change]</a>";
         }
         $dellink="";

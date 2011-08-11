@@ -1,6 +1,6 @@
 <?
 
-include "main.php";
+//include "main.php";
 
 include "auth.php";
 $weare=20;

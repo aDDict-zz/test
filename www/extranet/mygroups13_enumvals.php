@@ -44,7 +44,8 @@ else {
 if ($k["variable_type"]!="matrix" && $k["variable_type"]!="enum") {
     exit;
 }
-$readonly=1; 
+//!!!!!!!!!!!!!!!!! TODO
+$readonly=0;
 // 2007-03-31 - $_MX_change_variables - az ilyen felhasznalo valtoztathat minden, a csoporthoz hozzaadhato demog infot
 // a csoporthoz azok a demog infok adhatok hozza amelyek ehhez a csoporthoz vannak rendelve vagy nincsenek csoporthoz rendelve.
 //if ($_MX_superadmin || $k["groups"]==$group_id || ($_MX_change_variables && $k["groups"]=="")) {
@@ -130,6 +131,7 @@ print "</tbody>
 if (!$readonly) {
     print "<input name='enterx' type='button' value='$word[ev_save]' class='btn' onclick='v.submit();'>";
 }
+
 print "<input name='entery' type='button' value='$word[ev_close]' class='btn' onclick='$refr window.close();'></div>
 </form>
 <script language=\"javascript\">
@@ -153,6 +155,12 @@ function aeinit() {
 }
 aeinit();
 </script>
+
+<br /><br />"
+. (!$readonly ? getAnotherRelevantGroups($demog_id) : null) .
+"
+
 </body>
 </html>\n";
+
 ?>

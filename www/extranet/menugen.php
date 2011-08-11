@@ -321,11 +321,13 @@ foreach ($application_instance_js as $js) {?>
         $sg = 'sg';
     }
 		$TESTADDON="";
+    // TODO menugen by db
     $res=mysql_query("select p.id as pid,pg.id as pgid,p.php,p.inmenu from page p,pagegroup pg where pg.id=p.pagegroup 
                       $TESTADDON and p.type='protected' and p.multi='$multi' $dbpages
                       order by pg.sortorder,p.sortorder"); /*echo "select p.id as pid,pg.id as pgid,p.php,p.inmenu from page p,pagegroup pg where pg.id=p.pagegroup 
                       $TESTADDON and p.type='protected' and p.multi='$multi' $dbpages
                       order by pg.sortorder,p.sortorder"; die();*/
+                     
     $prev_pgid=-1;
     $found_menu=0;
     $menustr=array();

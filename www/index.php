@@ -1,6 +1,6 @@
 <?php
 
-include "extranet/main.php";
+//include "extranet/main.php";
 
 /*
 if(!isset($_COOKIE['sajto']))

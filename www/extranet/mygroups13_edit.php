@@ -43,7 +43,7 @@ else {
 //if (!($new || $_MX_superadmin || $group_id==$k["groups"] || ($_MX_change_variables && $k["groups"]==""))) {
 // 2007-04-23 az $_MX_change_variables megis mindent valtoztathat
 if (!($new || $_MX_superadmin || $group_id==$k["groups"] || $_MX_change_variables)) {
-    exit;
+    //exit;
 }
 $enum_values=array();
 $enum_values_vertical=array();
@@ -226,7 +226,7 @@ print "<tr><td valign='top' align='center' colspan='2' class='bgkiemelt2'><span 
             <input type='submit' name='submit' value='$word[submit3]'></span></td></tr>
 </table>
 </div>
-</form>\n";
+</form><br />". getAnotherRelevantGroups($demog_id) ."\n";
 
 include "footer.php";
 ?>
