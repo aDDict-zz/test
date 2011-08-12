@@ -367,7 +367,7 @@ $query = "select $distinct_qpart ui_$unique_col,users_$title.id,$date_type,last_
           $query $order limit $first,$limitend";
 
 printhead();
-
+$userIds = "";
 //echo nl2br(htmlspecialchars($query));
 
 if ($show_user_list=='yes' && ($rmem || $maxrecords)) {
@@ -375,6 +375,11 @@ if ($show_user_list=='yes' && ($rmem || $maxrecords)) {
     $index = $first;
     if ($rst && mysql_num_rows($rst)) { 
         printnavigation();
+      
+        while($row=mysql_fetch_array($rst)){
+          $userIds .= "{$row['id']}|";
+        }
+      
         echo "<form action='membersu.php' method='post' name='myinputs'>
               <input type='hidden' name='group_id' value='$group_id'>
               <input type='hidden' name='filt_demog' value='$filt_demog'>
@@ -386,6 +391,7 @@ if ($show_user_list=='yes' && ($rmem || $maxrecords)) {
               <td class='bgkiemelt2' align=left width=17%><span class=szovegvastag>$word[t_lastmess]</span></td>
               <td class='bgkiemelt2' align=left width=9%><span class=szovegvastag>&nbsp;</span></td>
               <td class='bgkiemelt2 tac' width=9%><span class=szovegvastag>
+              <td class='bgkiemelt2 tac' width=9%><span class=szovegvastag>
               <input type='submit' name='deluser' onClick=\"return(confirm('$word[sure_delete]'))\" value='$word[delete]'>
               <input type='submit' name='unsubuser' onClick=\"return(confirm('$word[sure_unsubscribe]'))\" value='$word[unsubscribe]'>
               <input type='submit' name='activateuser' onClick=\"return(confirm('$word[sure_activate]'))\" value='$word[activate]'><br>
@@ -393,6 +399,9 @@ if ($show_user_list=='yes' && ($rmem || $maxrecords)) {
               <a href=\"javascript:deselect_all()\"><img src='$_MX_var->baseUrl/$_MX_var->application_instance/gfx/selectnone.gif' border='0' alt='$word[select_none]'></a>
               </span></td>
               </tr>\n";
+        
+        $rst=mysql_query($query);
+        
         while($row=mysql_fetch_array($rst)) {
             $index++;
             if ($index%2)
@@ -426,12 +435,17 @@ if ($show_user_list=='yes' && ($rmem || $maxrecords)) {
 		          <td $bgrnd align=center width=9%><span class=szoveg>
                   <input type='checkbox' name='deluser_id[$row[id]]'>
                   </span></td>
+              <td $bgrnd align=center width=9%><span class=szoveg>
+                  <a href='#' onClick='window.open(\"$_MX_var->baseUrl/members_demog_info.php?group_id=$group_id&users={$userIds}&user_id=$row[id]\", \"m_d_i\", \"width=710,height=500,scrollbars=yes,resizable=yes\"); return false;'>mass demog change</a>
+                  </span></td>
 		          </tr>\n";
         }
         echo "</form>";
         printnavigation();
     }
 }
+
+
 
 printfoot();
 

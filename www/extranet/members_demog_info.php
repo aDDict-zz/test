@@ -59,8 +59,11 @@ include "menugen.php";
         $chdemog="";
         echo "<span class='szovegvastag'>$res[question]: </span>";
         $dvals[]=$res["id"];
-        if ($vch["$res[id]"]=="yes") 
-            $chdemog="&nbsp;<a href='members_demog_info_change.php?group_id=$group_id&demog_id=$res[id]&user_id=$user_id'>$word[change]</a>";
+        if ($vch["$res[id]"]=="yes"){
+            if(isset($_GET["users"]))
+              $massDemog = "&users={$_GET['users']}";
+            $chdemog="&nbsp;<a href='members_demog_info_change.php?group_id=$group_id{$massDemog}&demog_id=$res[id]&user_id=$user_id'>$word[change]</a>";
+        }
         $value="";
 	    if ($res["variable_type"]=="enum" || $res["variable_type"]=="matrix") {
            $enumvalues=explode(",",$ku["ui_$res[variable_name]"]);

@@ -6,6 +6,14 @@ include "common.php";
 $language=select_lang();
 include "./lang/$language/members_demog_info.lang";  
 
+if(isset($_GET["users"])){
+  $users  = array();  
+  $arr    = explode("|",$_GET["users"]);
+  foreach($arr as $user){
+    if($user != "")  
+      $users[] = $user;
+  }
+}
 
 $_MX_popup = 1;
 include "menugen.php";
@@ -77,7 +85,13 @@ if ($finished) {
         else 
            $value=$demvars["$variable_name"];
         $value=slasher($value);
-        mysql_query("update users_$title set ui_$variable_name='$value',tstamp=now() where id='$user_id'");
+        if(isset($users) && count($users) > 0){
+          foreach($users as $user){
+            mysql_query("update users_$title set ui_$variable_name='$value',tstamp=now() where id='$user'");
+          }
+        } else {
+          mysql_query("update users_$title set ui_$variable_name='$value',tstamp=now() where id='$user_id'"); 
+        }
      }        
 }
   
