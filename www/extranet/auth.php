@@ -53,7 +53,14 @@ function get_http($var,$default,$sql_escape=1) {
         return rawurldecode(slasher($_GET["$var"],$sql_escape));
     }
     elseif (isset($_POST["$var"])) {
-        return slasher($_POST["$var"],$sql_escape);
+      switch(gettype($_POST["$var"])){
+        case "string":
+          return slasher($_POST["$var"],$sql_escape);
+        break;
+        default:
+          return $_POST["$var"];
+        break;
+      }
     }
     else {
         return $default;
