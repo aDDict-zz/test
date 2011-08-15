@@ -1177,9 +1177,10 @@
 <part>id</part>
 </key>
 </table>
-<table x="239" y="2218" name="users_permission">
+<table x="247" y="2222" name="users_permission">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
+<relation table="user" row="id" />
 <relation table="user" row="id" />
 </row>
 <row name="old_user_id" null="0" autoincrement="0">
