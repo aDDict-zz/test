@@ -1,7 +1,4 @@
-<? 
-
-include "main.php";
-
+<?
 include "auth.php";
 $type=intval(get_http("type",1));
 if ($type<1 || $type>4) {
