@@ -23,10 +23,11 @@ else {
 
 $form_id = get_http("form_id",0);
 $res=mysql_query("select * from form where id='$form_id' and group_id='$group_id'");
-if ($res && mysql_num_rows($res))
-    $formdata=mysql_fetch_array($res);
-else
+if ($res && mysql_num_rows($res)){
+    $formdata=mysql_fetch_array($res); //print_r($formdata); die();
+} else {
     exit;
+}
 
 $debug=0;
 //print_r($formdata["header"]); die();

@@ -304,6 +304,9 @@ echo "<tr><td class='bgkiemelt2' align=left width=13%><span class=szovegvastag>$
       <a href='#' onClick='toggle_mandatory(1); return false;'>$word[fe_mandatory_all]</a>
         &nbsp;
       <a href='#' onClick='toggle_mandatory(0); return false;'>$word[fe_mandatory_none]</a>
+      
+      <a href='form_element_options.php?form_id=302&group_id={$group_id}&page_id=1&rule=global' style='color:#930;'>globális feltétel</a>
+      
       </span></td>
       </tr>\n";
 $r2=mysql_query("select * from form_email where form_id='$form_id' order by id");

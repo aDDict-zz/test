@@ -1,4 +1,4 @@
-<?
+<? //print_r($_POST); print_r($_GET); die();
 include "auth.php";
 include "decode.php";
 $weare=34;
@@ -23,7 +23,9 @@ $form_element_subscribe_id=get_http("form_element_subscribe_id",0);
 $page_id=get_http("page_id",0);
 $action=get_http("action","");
 
-$res=mysql_query("select * from form where id='$form_id' and group_id='$group_id'");
+$rule=get_http("rule","");
+
+$res=mysql_query("select * from form where id='$form_id' and group_id='$group_id'"); //echo "select * from form where id='$form_id' and group_id='$group_id'"; die();
 if ($res && mysql_num_rows($res))
     $formdata=mysql_fetch_array($res);
 else
@@ -321,7 +323,7 @@ if ($action=="enter") {
             }
         }
     }
-
+//print_r( $dependency_values ); die(); 
     if (count($error)==0) {
         $qys_list = array($qys);
         $dep_id_list = array($dep_id);
@@ -334,7 +336,7 @@ if ($action=="enter") {
             $dep_id_item = $dep_id_list[$qi];
             $dependency_ids = array();
             foreach ($dependency_values as $key=>$values) {
-                $r=mysql_query("select id from ".$dep_object."_dep where $qys_item and dependent_id=$key");
+                $r=mysql_query("select id from ".$dep_object."_dep where $qys_item and dependent_id=$key"); //echo "select id from ".$dep_object."_dep where $qys_item and dependent_id=$key<br />\n";
                 $fed=mysql_fetch_array($r);
                 $ng="";
                 if (in_array($key,$dependency_negation)) {
@@ -343,20 +345,34 @@ if ($action=="enter") {
                 $value = implode(",",$values);
                 if ($r && mysql_num_rows($r)) {
                     $query="update ".$dep_object."_dep set dependent_value='$value',neg='$ng' where $qys_item and dependent_id=$key";
-                    mysql_query($query);
+                    mysql_query($query); echo "ez simple: {$query}<br />";
                     $dependency_ids["$key"]=mysql_result($r,0,0);
                 }
                 else {
                     $query="insert into ".$dep_object."_dep set dependent_id='$key',dependent_value='$value'," . str_replace(" and ",",",$qys_item) . ", neg='$ng'";
-                    mysql_query($query);
+                    mysql_query($query); echo "az simple: {$query}<br />";
                     $dependency_ids["$key"]=mysql_insert_id();
                 }
             }
-            $query="delete from ".$dep_object."_dep where $qys_item";
-            if (count(array_keys($dependency_values))) {
-                $query .= " and dependent_id not in (" . implode(",",array_keys($dependency_values)) . ")";
+            
+            if(isset($rule) && $rule == "global"){
+              for($i=1;$i<=$pages;$i++) {
+                $query="delete from ".$dep_object."_dep where form_id = {$form_id} and page_id = {$i}";
+                if (count(array_keys($dependency_values))) {
+                    $query .= " and dependent_id not in (" . implode(",",array_keys($dependency_values)) . ")";
+                } echo "delete stuff : $query<br />";
+                mysql_query($query);
+              }
+            } else {
+              for($i=1;$i<=$pages;$i++) {
+                $query="delete from ".$dep_object."_dep where form_id = {$form_id} and page_id = {$i}";
+                if (count(array_keys($dependency_values))) {
+                    $query .= " and dependent_id not in (" . implode(",",array_keys($dependency_values)) . ")";
+                } echo "delete simple : $query<br />";
+                mysql_query($query);
+              }
             }
-            mysql_query($query);
+            
             $js_dependency = $_MX_form->set_dependency($_POST["dependency"],$dependency_ids,$dependency_negation);
             if (preg_match("/^error:(.+)$/i",$js_dependency,$regs)) {
                 $error[]= "Hiba: Logikai kapcsolat a feltételek között: $regs[1]";
@@ -369,7 +385,7 @@ if ($action=="enter") {
                 }
                 mysql_query($query);
             }
-        }
+        } //echo "dddddd:  {$form_id}"; die();
         if (count($error)==0) {
             print "<script>
             window.location='form_" . ($dep_object=="form_endlink"?"ch":"elements") . ".php?form_id=$form_id&group_id=$group_id#$dep_object" 
@@ -380,7 +396,7 @@ if ($action=="enter") {
     }
 }
 echo "<a href='form_elements.php?group_id=$group_id&form_id=$form_id'>&lt;-Vissza</a>";
-printhead();
+printhead($rule);
 
 if (count($error)) {
     echo "<tr>
@@ -407,7 +423,7 @@ if ($handle_parents) {
 
 $widget_list="";
 if ($form_element_subscribe_id) {
-    $widget_list="<input type='hidden' name='subscribe_dep' value='1'>
+    $widget_list.="<input type='hidden' name='subscribe_dep' value='1'>
                   $word[fe_depend_subscribe_groups]:<br><textarea name='groups'>". htmlspecialchars($fes_groups) ."</textarea><br>$word[fe_depend_subscribe_condition]:";
 }
 
@@ -624,7 +640,7 @@ printfoot();
 include "footer.php";
 // ------------ ------------- ------------- -------------
 
-function printhead() {
+function printhead($rule) {
 
     global $_MX_var,$stat_text,$userlist_yn,$filt_demog_options,$group_id,$pagenum,$word, $formdata, $form_element_id, $group_id, $page_id, $form_id,$form_endlink_id,$form_email_id,$word,$copy_dependency_ids,$copy_dependencies_to_names;
 
@@ -750,9 +766,9 @@ function find_object(id) {
     return pointers[id];
 }
 
-</script>
-<form method='post' action='form_element_options.php' name='fops'>
-<input type='hidden' name='action' value='seldep'>
+</script><form method='post' action='form_element_options.php' name='fops'>"
+ . ($rule == "global" ? "<input type='hidden' name='rule' value='global'>" : "") . 
+"<input type='hidden' name='action' value='seldep'>
 <input type='hidden' name='form_element_id' value='$form_element_id'>
 <input type='hidden' name='form_email_id' value='$form_email_id'>
 <input type='hidden' name='form_endlink_id' value='$form_endlink_id'>
