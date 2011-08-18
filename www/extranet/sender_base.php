@@ -1,7 +1,5 @@
 <? 
 
-include "main.php";
-
 include "auth.php";
 $weare=24;
 include "cookie_auth.php";

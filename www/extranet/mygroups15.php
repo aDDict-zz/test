@@ -113,7 +113,7 @@ $LastPage = (ceil($maxrecords / $maxPerPage)-1) * $maxPerPage;
 $OnePageLeft = $first - $maxPerPage; if($OnePageLeft<1) $OnePageLeft = -1;
 $OnePageRight = $maxPerPage + $first; if($OnePageRight>$LastPage) $OnePageRight = $LastPage;
 
-$res=mysql_query("select * $qmain order by name limit $first,$maxPerPage");
+$res=mysql_query("select * $qmain order by name limit $first,$maxPerPage"); //echo "select * $qmain order by name limit $first,$maxPerPage"; die();
   
 echo "<script>
         function f_go(letter) {

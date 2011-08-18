@@ -1,7 +1,5 @@
 <?
 
-include "main.php";
-
 include "auth.php";
 $weare=24;
 if (get_http('base_id','')) $subweare=241;
