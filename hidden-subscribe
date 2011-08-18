@@ -1,0 +1,226 @@
+#!/usr/bin/perl
+
+use MD5;
+use DBI;
+use MIME::QuotedPrint;
+use MIME::Base64;
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+require $MX_SCRIPT_ROOT . "/sub_engine";
+require $MX_SCRIPT_ROOT . "/common_functions.pl";
+require $MX_SCRIPT_ROOT . "/lang/lang_hu.inc";
+
+$sender = $ARGV[0];
+$group = $ARGV[1];
+
+# /var/www/maxima_engine/www/hidden-subscribe tbjanos@manufaktura.rs egyperces < testhiddenmulti
+
+$m_loguser = 0;
+$header = '';
+
+if ($group eq "jobinfo") {
+	#exit;
+}
+
+$switch=0;
+while (<STDIN>) {
+    $raw .= $_;
+    $switch=2 if (/^##endgroups##$/);
+    $buffer .= $_ if ($switch==1);
+    $switch=1 if (/^\n$/ and $switch<2);
+    if (!$switch && /^Subject: aff:(\d+)/) {
+        $aff = $1;
+    }
+    if (!$switch && /^Subject: man:([\da-fh]+)/) {
+        $manaff = $1;
+    }
+    if (!$switch) {
+        $header .= $_;
+    }
+    if (/^(# [^:]+:.+)$/) {
+        $rdemog .= "$1\n";
+    }
+}
+
+mx_get_subscribe_codeset(\$header,\$rdemog,\$buffer);
+
+$subscribe_id=$sender;
+$subscribe_action="new_hidden" . time() . "." . int(rand(99999));
+
+open (OUT, ">$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok");
+print OUT $raw;
+close OUT;
+
+if ($sender =~ /^#cid#(.*)\@$local_hostname$/) {
+    $sender="#cid#$1";
+}
+if ($sender =~ /^#cid_3#(.+)\@$local_hostname$/) {
+    $sender="#cid_3#$1";
+}
+
+if (($sender =~ /lx\.hu/) or ($sender =~ /$local_hostname/) or
+    ($sender =~ /subscribe/) or ($sender =~ /unsubscribe/) or
+    ($sender =~ /^list@/)) {
+    exit;
+}
+
+open (OUT, ">>$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok");
+print OUT "*\n";
+#if ($group eq "megajob") {
+#    print OUT "(aborted)\n";
+#    exit;
+#}
+close OUT;
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+# the utf8 connection is important for sub_engine
+$dbh->do("set names utf8");
+
+# hidden-subscribe assumes that the incoming data is validated, so just pass them to 'sub_verified' script.
+# subscribe/validate mechanism uses separate tables for single and multi groups, that is
+# the reason why this script queries the database about multi or single groups.
+
+open (OUT, ">>$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok");
+print OUT "*\n";
+close OUT;
+
+$multi=-1;
+
+$check_subscribe_id="yes";
+$group_subscribe_id="";
+
+$stt = $dbh->prepare("select id,owner_id,subscribe_id,check_subscribe_id,intro,welcome_yesno,welcome_subject,mail_sender,name from groups where title='$group'");
+$stt->execute;
+if (@row=$stt->fetchrow_array) {
+    $multi=0;
+    $aff=$row[1] if (!$aff && !length($manaff));
+    $group_id=$row[0];
+    $group_subscribe_id=$row[2];
+    $check_subscribe_id=$row[3];
+    $message = $row[4];
+    $welcome_yesno = $row[5];
+    $subject = $row[6];
+    $mail_sender= $row[7];
+    $group_description=$row[8];
+}
+$stt->finish;
+
+$sth = $dbh->prepare("select id,owner_id,subscribe_id,check_subscribe_id,welcome_message,welcome_yesno,welcome_subject,mail_sender,name from multi where title='$group'");
+$sth->execute;
+if (@row = $sth->fetchrow_array) {
+    $multi=1;
+    $aff=$row[1] if (!$aff && !length($manaff));
+    $group_subscribe_id=$row[2];
+    $check_subscribe_id=$row[3];
+    $message = $row[4];
+    $welcome_yesno = $row[5];
+    $subject = $row[6];
+    $mail_sender= $row[7];
+    $multigroup_id=$row[0];
+}
+$sth->finish;
+
+if ($check_subscribe_id eq "yes" and length($group_subscribe_id) and not $rdemog=~/subscribe-id: ?$group_subscribe_id/) {
+    open (OUT, ">>$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok");
+    print OUT "No or invalid subscribe id, exiting.";
+    close OUT;
+    exit;
+}
+
+exit if ($multi==-1);
+
+open (OUT, ">>$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok");
+print OUT "*\n";
+close OUT;
+
+sub_common();
+
+if ($group eq "betsson" and $welcome_yesno eq "yes") {
+    $DEBUG=0;
+    $from="postmaster\@$group.$local_hostname";
+    $message =~ s/\{group\}/$group_description/gi;
+    $subject =~ s/\{group\}/$group_description/gi;
+    $mail_sender =~ s/\{group\}/$group_description/gi;
+    $stt = $dbh->prepare("select ui_egyedi_kod,ui_keresztnev,ui_vezeteknev from users_$group where ui_email=" . $dbh->quote($sender));
+    $stt->execute;
+    if (@row=$stt->fetchrow_array) {
+        $message =~ s/\{egyedi_kod\}/$row[0]/gi;
+        $message =~ s/\{keresztnev\}/$row[1]/gi;
+        $message =~ s/\{vezeteknev\}/$row[2]/gi;
+    }
+    $stt->finish;
+    $dspfrom=$from;
+    if (length($mail_sender)) {
+        $dspfrom = mx_encode_header_tags($mail_sender,"utf8") . " <$from>";
+    }
+    $subject = mx_encode_header_tags($subject,"utf8");
+    if ($DEBUG) {
+        print "From: $dspfrom\nReply-To: $from\nTo: $sender\nSubject: $subject\nContent-Type: text/plain;
+                charset=\"utf-8\"\n\n$message\n";
+    }
+    else {
+        if (! open(SENDMAIL, "|/usr/lib/sendmail -oi -t -odb")) {
+            warn "error invoking sendmail: $!\n";
+        } 
+        else {
+            print SENDMAIL "From: $dspfrom\nReply-To: $from\nTo: $sender\nSubject: $subject\nContent-Type: text/plain;
+                    charset=\"utf-8\"\n\n$message\n";
+        }
+    }
+}
+
+@welcome_groups=("zigor2","superboxhirlevel","terminal","egyperces");
+if (grep(/^$group$/,@welcome_groups) and $welcome_yesno eq "yes") {
+    $DEBUG=0;
+    $from="postmaster\@$group.$local_hostname";
+    $message =~ s/\{group\}/$group_description/gi;
+    $subject =~ s/\{group\}/$group_description/gi;
+    $mail_sender =~ s/\{group\}/$group_description/gi;
+    $dspfrom=$from;
+    if (length($mail_sender)) {
+        $dspfrom = mx_encode_header_tags($mail_sender,"utf8") . " <$from>";
+    }
+    $subject = mx_encode_header_tags($subject,"utf8");
+    $mime = "From: $dspfrom\nReply-To: $from\nTo: $sender\nSubject: $subject\nContent-Type: text/plain; charset=\"utf-8\"\n\n$message\n";
+
+    $ssender = $dbh->quote($sender);
+    $sbuffer = $dbh->quote($buffer);
+    if ($multi) {
+        $sth = $dbh->prepare("insert into multioptin
+                  (email,group_id,date,groups,aff,tstamp) values 
+                  ($ssender,'$multigroup_id',now(),$sbuffer,'$aff',now())");
+	    $sth->execute;
+        $bounce_id = "i$multigroup_id-" . $sth->{mysql_insertid};
+		$groupname_list = getgroupnames($buffer);
+		$groupname_list =~ s/<br>/\n/gi;
+        $mime =~ s/\{subgroups\}/$groupname_list/gi;
+	    $mime =~ s/\{groups\}/$groupname_list/gi;
+    }
+    else {
+        $bounce_id = "h$group_id-$m_loguser";
+    }
+
+    if ($DEBUG) {
+        print $mime;
+    }
+    else {
+        if (! open(SENDMAIL, "|/usr/lib/sendmail -oi -t -odb -f postmaster$bounce_id\@maxima.hu")) {
+            warn "error invoking sendmail: $!\n";
+        } 
+        else {
+            print SENDMAIL $mime;
+        }
+    }
+}
+
+open (OUT, ">>$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok");
+print OUT "*\n";
+close OUT;
+
+$dbh->disconnect();
+
+rename("$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok", "$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.ok");
+

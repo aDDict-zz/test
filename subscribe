@@ -1,0 +1,193 @@
+#!/usr/bin/perl
+
+use MD5;
+use DBI;
+use MIME::QuotedPrint;
+use MIME::Base64;
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+require $MX_SCRIPT_ROOT . "/lang/lang_hu.inc";
+require $MX_SCRIPT_ROOT . "/common_functions.pl";
+
+$sender = $ARGV[0];
+$group = $ARGV[1];
+$header = '';
+$DEBUG=0;
+
+# group_description: group.name or multi.name field 
+$group_description=$group;
+
+$aff=0;
+$manaff="";
+$switch=0;
+while (<STDIN>) {
+    $raw .= $_;
+    $switch=2 if (/^##endgroups##$/);
+    $buffer .= $_ if ($switch==1);
+    $switch=1 if (/^\n$/ and $switch<2);
+    if (!$switch && /^Subject: aff:(\d+)/) {
+        $aff = $1;
+    }
+    if (!$switch && /^Subject: man:([\da-fh]+)/) {
+        $manaff = $1;
+    }
+    if (!$switch) {
+        $header .= $_;
+    }
+    if (/^(# [^:]+:.+)$/) {
+        $rdemog .= "$1\n";
+    }
+}
+
+mx_get_subscribe_codeset(\$header,\$rdemog,\$buffer);
+
+$subscribe_action="new_subscribe";
+$subscribe_id=$sender;
+
+open (OUT, ">$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok");
+print OUT $raw;
+close OUT;
+
+if (($sender =~ /lx\.hu/) or ($sender =~ /$local_hostname/) or
+    ($sender =~ /subscribe/) or ($sender =~ /unsubscribe/) or
+    ($sender =~ /^list@/) or ($sender =~ /media.hirek.hu/)) {
+    exit;
+}
+
+if ($group eq "superbox") {
+	exit;
+}
+
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+$dbh->do("set names utf8");
+
+$multi=-1;
+$rdemog=$dbh->quote($rdemog);
+$ssender=$dbh->quote($sender);
+$check_subscribe_id="yes";
+$group_subscribe_id="";
+
+# send validation letters for multigroup or single group.
+$stt = $dbh->prepare("select id,owner_id,subscribe_subject,subscribe_body,name,mail_sender,subscribe_id,check_subscribe_id,
+                      from_days(to_days(now())+subs_expiration_days) from groups where title='$group'");
+$stt->execute;
+if (@row = $stt->fetchrow_array) {
+    $multi=0;
+    $group_id=$row[0];
+    $aff=$row[1] if (!$aff && !length($manaff));
+    $subject=$row[2];
+    $message=$row[3];
+    $group_description=$row[4];
+    $mail_sender=$row[5];
+    $group_subscribe_id=$row[6];
+    $check_subscribe_id=$row[7];
+    $subs_expires_on_day = $row[8];
+    $unique_id = substr(MD5->hexhash("$aff$manaff?$group_id?$ssender!?".time()),0,20);
+    $message = &r('sub_validate') if (!length($message));
+    $message =~ s/\{url\}/http:\/\/$group.$local_hostname\/sub\/$unique_id/gi;
+    $groupname_list = getgroupnames($group);
+    $message =~ s/\{groups\}/$groupname_list/gi;
+    $message =~ s/\{subgroups\}/$groupname_list/gi;
+    $from="validate-sub-$unique_id\@$group.$local_hostname";
+    # we don't know yet in which encoding the data is, insert into (latin1) validation&valiadtemes tables without conversion.
+    log_sub("validate:$from\n");
+    $dbh->do("set names latin1");
+    $sth = $dbh->prepare("insert into validation 
+            (group_id,action,unique_id,date,aff,tstamp,rdemog,sender,manaff) values 
+            ('$group_id','sub','$unique_id',now(),'$aff',now(),$rdemog,$ssender,'$manaff')");
+    log_sub("data inserted into validation table\n");
+    $sth->execute;
+    $dbh->do("set names utf8");
+}
+$stt->finish;
+
+$sth = $dbh->prepare("select id,owner_id,subscribe_subject,subscribe_body,name,mail_sender,subscribe_id,check_subscribe_id,
+                      from_days(to_days(now())+subs_expiration_days) from multi where title='$group'");
+$sth->execute;
+if (@row = $sth->fetchrow_array) {
+    $multi=1;
+    $multiid=$row[0];
+    $aff=$row[1] if (!$aff && !length($manaff));
+    $subject=$row[2];
+    $message=$row[3];
+    $group_description=$row[4];
+    $mail_sender=$row[5];
+    $group_subscribe_id=$row[6];
+    $check_subscribe_id=$row[7];
+    $subs_expires_on_day = $row[8];
+    $unique_id = substr(MD5->hexhash("$aff$manaff?$group_id?$ssender?!".time()),0,20);
+    $message = &r('sub_validate') if (!length($message));
+    $message =~ s/\{url\}/http:\/\/$group.$local_hostname\/sub\/$unique_id/gi;
+    $groupname_list = getgroupnames($buffer);
+    $message =~ s/\{groups\}/$groupname_list/gi;
+    $message =~ s/\{subgroups\}/$groupname_list/gi;
+    #$message =~ s/\{subgroups\}/$buffer/gi;
+    $message =~ s/&337;/õ/g;
+    $message =~ s/&369;/û/g;
+    $from="validate-sub-$unique_id\@$group.$local_hostname";
+    log_sub("multivalidate:$from\n");
+    $buffer=$dbh->quote($buffer);
+    $dbh->do("set names latin1");
+    $sth = $dbh->prepare("insert into multivalidation 
+                          (email,group_id,action,unique_id,date,groups,aff,tstamp,rdemog,manaff) values 
+                          ($ssender,'$multiid','sub','$unique_id',now(),$buffer,'$aff',now(),$rdemog,'$manaff')");
+    $sth->execute;
+    log_sub("data inserted into multivalidation table\n");
+    $dbh->do("set names utf8");
+}
+$message =~ s/{validate-till}/$subs_expires_on_day/gmi;
+
+if ($check_subscribe_id eq "yes" and length($group_subscribe_id) and not $rdemog=~/subscribe-id:$group_subscribe_id/) {
+    open (OUT, ">>$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok");
+    print OUT "No or invalid subscribe id, exiting.";
+    close OUT;
+    exit;
+}
+
+$message =~ s/\{group\}/$group_description/gi;
+$subject =~ s/\{group\}/$group_description/gi;
+$mail_sender =~ s/\{group\}/$group_description/gi;
+
+$dspfrom=$from;
+if (length($mail_sender)) {
+    $dspfrom = mx_encode_header_tags($mail_sender,"utf8") . " <$from>";
+}
+
+if ($multi>-1) {
+    $subject = &r('sub_subject') if (!length($subject));
+    $subject = mx_encode_header_tags($subject,"utf8");
+    if ($DEBUG) {
+        print "From: $dspfrom\nReply-To: $from\nTo: $sender\nSubject: $subject\nContent-Type: text/plain;
+                charset=\"utf-8\"\n\n$message\n";
+    }
+    else {
+        if (! open(SENDMAIL, "|/usr/lib/sendmail -oi -t -odb")) {
+            warn "error invoking sendmail: $!\n";
+        } 
+        else {
+            print SENDMAIL "From: $dspfrom\nReply-To: $from\nTo: $sender\nSubject: $subject\nContent-Type: text/plain;
+                    charset=\"utf-8\"\n\n$message\n";
+        }
+    }
+}
+else {
+    open (OUT, ">>$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok");
+    print OUT "No or invalid group or multigroup, exiting.";
+    close OUT;
+    exit;
+}
+
+$dbh->disconnect();
+
+rename("$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok", "$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.ok");
+
+sub r {
+  $rr=$_[0];
+  &refresh();
+  $W{$rr};
+}

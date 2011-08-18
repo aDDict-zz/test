@@ -1,0 +1,282 @@
+#!/usr/bin/perl 
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+use DBI;
+use MD5;
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1;
+
+$VERIFY=1;                  # carefully with this, may produce many files.
+$verifyf = $MX_SEND_SMS_VERIFY_DIR . "/debug"; 
+
+opendir(SMSDIR,$MX_SMS_INCOMING_SPOOL) or die "Could not open dir $MX_SMS_INCOMING_SPOOL.";
+while ($filename = readdir(SMSDIR)) {
+    if ($filename=~/^(.+)\.sms$/) {
+        open(FROM, "< $MX_SMS_INCOMING_SPOOL/$filename");
+        $hdr=0;
+        $glue="";
+        undef ($phone);            # who has made a reply
+        undef ($insert_group_id);  # insert data into group $insert_group_id if>0
+        undef ($user_response);    # what did he say
+        while (<FROM>) {
+            chop;
+            if ($hdr==0) {
+                $phone=$_;
+            }
+            elsif ($hdr==1) {
+                $insert_group_id=$_;
+            }
+            else {
+                $user_response .= "$glue$_";
+            }
+            $hdr++;
+        }
+        close (FROM);
+        $vfilename=time() . ".$phone." . rand();
+        if ($VERIFY) {
+            open (OO, ">$verifyf/$vfilename.notok") || die("$verifyf/$vfilename.notok sms log ne valja");
+            print OO time()." Found file $MX_SMS_INCOMING_SPOOL/$filename\n";
+            close OO;
+        }
+        ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime((stat("$MX_SMS_INCOMING_SPOOL/$filename"))[9]);
+        $year += 1900;
+        $mon++;
+        $changedate =  "$year-$mon-$mday $hour:$min:$sec";
+        unlink ("$MX_SMS_INCOMING_SPOOL/$filename");
+        $phone =~ s/^00//;
+        $phone = '+'.$phone if (!($phone =~ /^\+/));
+        if ($VERIFY) {
+            open (OO, ">>$verifyf/$vfilename.notok");
+            print OO time()." phone: $phone\ninsert_group_id: $insert_group_id\nuser_response: $user_response\n";
+            close OO;
+        }
+        $user_id="";
+        if ($insert_group_id) {
+            $user_response_id=-1; 
+            $sth=$dbh->prepare("select title from groups where id='$insert_group_id'");
+            $sth->execute;
+            if (@row=$sth->fetchrow_array) {
+                $group_title=$row[0];
+                $group_id=$insert_group_id;
+            }
+            else {
+                exit;
+            }
+            $sth->finish;
+            $sth=$dbh->prepare("select id from users_$group_title where ui_mobil='$phone'");
+            $sth->execute;
+            if (@row=$sth->fetchrow_array) {
+                $user_id=$row[0];
+            }
+            else {
+                $sth2=$dbh->prepare("insert into users_$group_title 
+                                    (ui_mobil,validated,robinson,date,tstamp,validated_date)
+                                    values
+                                    ('$phone','yes','no',now(),now(),now())");
+                $sth2->execute;
+                $user_id=$sth2->{mysql_insertid};
+                $sth2->finish;
+            }
+            $sth->finish;
+            if ($VERIFY) {
+                open (OO, ">>$verifyf/$vfilename.notok");
+                print OO time()." user_id in users_$group_title: $user_id\n";
+                close OO;
+            }
+            if (!$user_id) {
+                exit;
+            }
+            # If the response is not the code only, try to find it in the message. 
+            # Regexp order is important because if we get a sentence it is more likely 
+            # that the code will be between non-word characters and nearer to the end of the string.
+            # Note that this can not be 100% accurate; for example this won't work: "6tYFg0 a kkodja" 
+            # this is why I described like this originally: 
+            # the script will TRY to find the code in the text if its longer than 6 chars.
+            # btw, this would be much easier if there was at least one digit in each code.
+            $smscode_regexp="[0-9a-zA-Z]{6}";
+            $smscode="";
+            if ($user_response =~ /^$smscode_regexp$/) {
+                $smscode=$user_response;
+            }
+            elsif ($user_response =~ /\W($smscode_regexp)\W/ or $user_response =~ /\W($smscode_regexp)$/ or $user_response =~ /^($smscode_regexp)\W/) {
+                $smscode=$1;
+            }
+            %answers=(
+                "1"=>"Sajnos most nem nyertél, de lehet legközelebb szerencsésebb leszel. Kérlek látogass el, és fedezd fel a www.lifestyles.hu-t!",
+                "2"=>"Ezt a kódot már használták.",
+                "3"=>"Gratulálunk! Kérlek látogass el a www.lifestyles.hu -ra, hogy megtud hogyan kaphatod meg a nyereményedet!"
+            );
+            $response_id=1;
+            $code_already=0;
+            $sth=$dbh->prepare("select user_id from sms_code_$group_title where smscode='$smscode'");
+            $sth->execute;
+            if (@row=$sth->fetchrow_array) {
+                $code_already=$row[0];
+                if ($code_already) {
+                    $response_id=2;
+                }
+                else {
+                    $response_id=3;
+                    $dbh->do("update sms_code_$group_title set user_id='$user_id',date_used=now() where smscode='$smscode'");
+                }
+            }
+            $sth->finish;
+            $answer=$answers{"$response_id"};
+            if ($VERIFY) {
+                open (OO, ">>$verifyf/$vfilename.notok");
+                print OO time()." answer $answer, answer_id $response_id, smscode $smscode\n";
+                close OO;
+            }
+        }
+        else {
+            # currently there is no way to find out the sms_send_id (the campaign) the user replied to.
+            # it is assumed therefore that only one campaign is run at a time,
+            # so user must have replied to the last one.
+            $sth=$dbh->prepare("select user_id,response_id,sms_send_id from sms_tracko 
+                                where sms_send_id>0 and ui_mobil='$phone' order by date desc limit 1");
+            $sth->execute;
+            if (@row=$sth->fetchrow_array) {
+                $user_id=$row[0];
+                $user_response_id=$row[1];               # id of last answer sent to the user
+                $sms_send_id = $row[2];
+                $user_response_id=1 if ($user_response_id==-1) # by -1 is signed the beginning of the campaign
+            }
+            $sth->finish;
+            if (!$user_id) {
+                $quser_response=$dbh->quote($user_response);
+                $sth=$dbh->prepare("insert into sms_tracko 
+                                    (group_id,user_id,date,ui_mobil,sms_send_id,user_response,received) values
+                                    ('-1','-1',now(),'$phone','-1',$quser_response,'$changedate')");
+                $sth->execute;
+                $sth->finish;
+                if ($VERIFY) {
+                    rename("$verifyf/$vfilename.notok","$verifyf/$vfilename.ok");
+                }
+                exit;   # didn't get necessary things
+            }
+            $sth=$dbh->prepare("select id,message,automat,group_id
+                                from sms_send where id='$sms_send_id'");
+            $sth->execute;
+            if (@row=$sth->fetchrow_array) {
+                $sms_send_id=$row[0];
+                $orig_message=$row[1];
+                $automat=$row[2];
+                $group_id=$row[3];
+            }
+            $sth->finish;
+            if ($VERIFY) {
+                open (OO, ">>$verifyf/$vfilename.notok");
+                print OO time()." user_id: $user_id\nsms_send_id: $sms_send_id\nresponse_id: $user_response_id\n";
+                close OO;
+            }
+            undef(%ahash);
+            undef($star);
+            undef($allstar);
+            $ahash{1}=$orig_message;
+            $answer="";
+            $response_id=0;
+            @rows=split /\r?\n/,$automat;
+            $found = 0;
+            while ($row=shift(@rows) and !$found) {
+                @cols=split /\|/,$row;
+                if ($cols[1] eq $user_response_id && $cols[2] =~ /^(-?[0-9]+\.?[0-9]+)-(-?[0-9]+\.?[0-9]+)$/) {
+                    $min=$1;
+                    $max=$2;
+                    if ($user_response =~ /^(-?[0-9]+\.?[0-9]+)$/ && $user_response>=$min && $user_response<=$max) {
+                        $answer=$cols[3];
+                        $response_id=$cols[0];
+                    }
+                }
+                elsif ($cols[1] eq $user_response_id && $cols[2] =~ /^\*.+\*$/i) {
+                    $cols[2] =~ s/\*//g;
+                    if ($user_response =~ /$cols[2]/i) {
+                        $answer=$cols[3];
+                        $response_id=$cols[0];
+                        $response_id=$cols[4] if $cols[4];
+                        $found = 1;
+                    }
+                }
+                elsif ((($cols[1] eq $user_response_id) or ($cols[1] eq '*')) && $cols[2] =~ /^$user_response$/i) {
+                    $answer=$cols[3];
+                    $response_id=$cols[0];
+                    $response_id=$cols[4] if $cols[4];
+                }
+                elsif ($cols[1] eq $user_response_id && $cols[2] eq "*") {
+                    $star=$cols[3];
+                    $star_id=$cols[0];
+                    $star_id=$cols[4] if $cols[4];
+                }
+                elsif ($cols[1] eq "*") {
+                    $allstar=$cols[3];
+                    $allstar_id=$cols[0];
+                }
+                $aid=$cols[0];
+                $ahash{$aid}=$cols[3];
+            }
+            if (!$response_id && length($star)) {
+                $answer=$star;
+                $response_id=$star_id;
+            }
+            elsif (!$response_id && length($allstar)) {
+                $answer=$allstar;
+                $response_id=$allstar_id;
+            }
+            if ($response_id == 3 or $response_id ==4) {
+                $sth = $dbh->prepare("insert into sms_clubtv (ui_mobil, date) values ('$phone',now())");
+                $sth->execute;
+                $seed = $sth->{'mysql_insertid'};
+                if ($seed / 10 != int($seed / 10)) {
+                    $answer = $ahash{2};
+                    $response_id = 2;
+                }
+            }
+            if ($answer =~ /#([0-9]+)\s*$/) {
+                $response_id = $1;
+                $answer =~ s/#[0-9]+\s$//;
+                $answer = $ahash{$response_id};
+            }
+            if ($VERIFY) {
+                open (OO, ">>$verifyf/$vfilename.notok");
+                print OO time()." answer: $response_id $answer\n";
+                close OO;
+            }
+        }
+        $quser_response=$dbh->quote($user_response);
+        $sth=$dbh->prepare("insert into sms_tracko 
+                            (group_id,user_id,date,ui_mobil,sms_send_id,response_id,user_response_id,user_response,received) values
+                            ('$group_id','$user_id',now(),'$phone','$sms_send_id','$response_id','$user_response_id',$quser_response,'$changedate')");
+        $sth->execute;
+        $sth->finish;
+
+        # I admit it is confusing what is what here, so here is the explanation, using column names of sms_tracko table:
+        # group_id, user_id  --  usual things, keep in mind the little bit unsure way how they are found out.
+        # sms_send_id        --  id of the current campaign, id in sms_send table
+        # response_id        --  what did we send to the user (may be 0, nothing sent, just recording user response, 
+        #                        by -1 is signed the beginning of the campaign)
+        # user_response_id   --  what was the previous message that the user has answered, needed for demog stats
+        #                        this is also -1 for the beginning of the campaign
+        # user_response      --  the string that came from the user
+
+        #print " answer: $response_id $answer";
+
+        if (length($answer) and ! ($phone =~ /362020220/) ) {
+            # send string $answer to $phone
+            $filename=substr(MD5->hexhash(rand().time().$filename),0,12);
+            open(TO, "> $MX_SMS_SEND_SPOOL/$filename.tmp");
+            print TO "DestinationAddress: $phone\n";
+            print TO "UserData:\n$answer\n";
+            close TO;
+            rename ("$MX_SMS_SEND_SPOOL/$filename.tmp","$MX_SMS_SEND_SPOOL/$filename.sms");
+        }
+        if ($VERIFY) {
+            rename("$verifyf/$vfilename.notok","$verifyf/$vfilename.ok");
+        }
+    }
+}
+$dbh->disconnect;
+exit(0);

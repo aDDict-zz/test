@@ -1,0 +1,117 @@
+#!/usr/bin/perl
+
+use MD5;
+use DBI;
+use MIME::QuotedPrint;
+use MIME::Base64;
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+require $MX_SCRIPT_ROOT . "/lang/lang_hu.inc";
+require $MX_SCRIPT_ROOT . "/common_functions.pl";
+
+$sender = $ARGV[0];
+$group = $ARGV[1];
+$header = '';
+$DEBUG=0;
+
+if ($group ne "megajob") {
+    # we do this for this group only
+    exit;
+}
+
+# group_description: group.name or multi.name field 
+$group_description=$group;
+
+$error="";
+$aff=0;
+$manaff="";
+$switch=0;
+$subsdata="";
+while (<STDIN>) {
+    $raw .= $_;
+    $switch=1 if (/^\n$/ and $switch<2);
+    if ($switch and /^# newmail:(.+)$/) {
+        $newmail = $1;
+    }
+    elsif ($switch and /^# verify:(.+)$/) {
+        $verify = $1;
+    }
+    elsif ($switch and /^(# [^:]+:.+)$/) {
+        $subsdata .= "$1\n";
+    }
+}
+
+$chemail_action="change_email";
+$chemail_id=$sender;
+
+open (OUT, ">$MX_SUBSCRIBE_LOG/$group-$chemail_id.$chemail_action.notok");
+print OUT $raw;
+close OUT;
+
+unless ($sender =~ /^[\.\+_a-z0-9-]+\@([0-9a-z][0-9a-z-]*\.)+[a-z]{2,4}$/i) {
+    $error .= "Invalid sender: $sender\n";
+}
+unless ($newmail =~ /^[\.\+_a-z0-9-]+\@([0-9a-z][0-9a-z-]*\.)+[a-z]{2,4}$/i) {
+    $error .= "Invalid newmail: $newmail\n";
+}
+($dt_sec,$dt_min,$dt_hour,$dt_mday,$dt_mon,$dt_year,$dt_wday,$dt_yday,$dt_isdst) = localtime;
+$dt_year+=1900;
+$dt_mon++;
+$md5=MD5->hexhash("$sender $newmail $dt_year $dt_mon $dt_mday");
+if ($md5 ne $verify) {
+    $error .= "Invalid verification code: $verify instead of $md5\n";
+}
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+$dbh->do("set names utf8");
+
+$stt = $dbh->prepare("select subscribe_id from groups where title='$group'");
+$stt->execute;
+if (@row = $stt->fetchrow_array) {
+    $sub_id = $row[0];
+}
+else {
+    $error .= "Nonexistent group: $group\n";
+}
+$stt->finish;
+$stt = $dbh->prepare("select id from users_$group where ui_email='$newmail'");
+$stt->execute;
+if (@row = $stt->fetchrow_array) {
+    $error .= "Cannot change to $newmail: already exists\n";
+}
+$stt->finish;
+$stt = $dbh->prepare("select id from users_$group where ui_email='$sender'");
+$stt->execute;
+unless (@row = $stt->fetchrow_array) {
+    $error .= "Cannot change $sender: doesn't exist\n";
+}
+$stt->finish;
+
+if (length($error)) {
+    open (OUT, ">>$MX_SUBSCRIBE_LOG/$group-$chemail_id.$chemail_action.notok");
+    print OUT $error;
+    close OUT;
+    exit;
+}
+else {
+    $sql="update users_$group set ui_email='$newmail' where ui_email='$sender'";
+    $dbh->do($sql);
+    open (OUT, ">>$MX_SUBSCRIBE_LOG/$group-$chemail_id.$chemail_action.notok");
+    print OUT $sql;
+    close OUT;
+    if (length($subsdata)) {
+        $subscribe="./hidden-subscribe $newmail $group";
+        open (OUT, ">>$MX_SUBSCRIBE_LOG/$group-$chemail_id.$chemail_action.notok");
+        print OUT "subscribing with data $subscribe\n$subsdata";
+        close OUT;
+        open (SUBS,"|$subscribe");
+        print SUBS "Subscribe spawned by the email change script\nSubject: aff:80383\n\n$subsdata# email:$newmail\n# subscribe-id:$sub_id\n";
+        close SUBS;
+    }
+}
+
+rename("$MX_SUBSCRIBE_LOG/$group-$chemail_id.$chemail_action.notok", "$MX_SUBSCRIBE_LOG/$group-$chemail_id.$chemail_action.ok");

@@ -1,0 +1,78 @@
+#!/usr/bin/perl
+
+use DBI;
+
+$dbh = DBI->connect('DBI:mysql:maxima:localhost:3306','root','bartok26') || die $DBI::errstr ; 
+$dbh->{RaiseError} = 1;
+$dbh->do("set names cp1250");
+
+@filters = (15547);
+
+for (@filters) {
+
+    $filter_id=$_;
+    $group_name="permission";
+    $group_id=543;
+
+    $filter_error="filter_ok";
+    $filtres="";
+    open FILTER, "/usr/local/maxima/filter_engine $filter_id|";
+    while (<FILTER>) {
+        $filtres .= $_;
+    }
+    close (FILTER);
+    @filtarr = split /\n/,$filtres;
+    if ($filtarr[0] eq "filter_ok") {
+            $filter_query=$filtarr[1];
+            $limitord=$filtarr[2];
+            $limitnum=$filtarr[3];
+            $syntax_error=$filtarr[4];
+            $syntax_error_text=$filtarr[5];
+    }
+    else {
+            $filter_error="error in filter engine: $filtarr[0]";
+            print "$filter_error\n";
+            exit;
+    }
+    if (length($limitord)) { 
+          $limitexp=" order by $limitord limit $limitnum";
+    }
+    else {
+          $limitexp="";
+    }
+
+    $sql="select id,substring(ui_mobil,4,8),upper(ui_vezeteknev)
+          from users_$group_name where validated='yes' and ($filter_query) and robinson='no' and bounced='no' $limitexp";
+    $sth = $dbh->prepare($sql);
+    $sth->execute;
+
+    print "$sql\n";
+
+    $i = 0;
+
+    $mfile="schober$filter_id";
+
+    open (OO,">$mfile");
+
+    while (@r = $sth->fetchrow_array) {
+        $i++;
+        if ($i/100 == int($i/100)) {
+            print "$i\n";
+        }
+
+        # - mobilszámnál a körzetszám (20/ 30/ 70) és az ezutáni 6 számjegy
+        # - a vezetéknév elsõ karaktere (ha lehet akkor elõtag nélkül! tehát ne legyen benne Dr., If. stb.)
+        my @ignore = ("DR\\.","IFJ\\.","ID\\.","OZV\\.","öZV\\.","ÖZV\\.");
+
+        for (@ignore) {
+            $r[2] =~ s/^$_\s*//i;
+        }
+        $r[2]=substr($r[2],0,1);
+
+        $mc=$dbh->quote("$r[1]$r[2]");
+        # $dbh->do("insert into linea_match_permission (id,matchcode) values ($r[5],upper($mc))");
+        print OO "$mc,$r[0]\n";
+    }
+    close OO;
+}
+

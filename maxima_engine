@@ -1,0 +1,1511 @@
+#!/usr/bin/perl 
+
+use DBI;
+use MD5;
+use POSIX qw(ceil strftime);
+use MIME::Base64;
+use MIME::QuotedPrint;
+use LWP::UserAgent;
+use Text::Iconv;
+Text::Iconv->raise_error(0);
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+require "./common_functions.pl";
+require "./spools.pl";
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1;
+
+# we will work in utf8, except when retrieving mail body and demog info
+$dbh->do("set names utf8");
+
+# message id
+$mid = $ARGV[0];
+# filters and user groups, remember that by default maxima0 reads them from ARGV (see below),
+# but with send_again, script reads them from the database.
+$filter_id = 0;
+$user_group_id = 0;
+# send_again is used if the script broke in the middle of sending messages.
+# if send_again=1, script looks for email addresses in corresponding .notok file,
+# and sends only for those users who did not get the message.
+# send_again reads the message from database instead of STDIN.
+# If there were no previous attempts to send the message, this (and reading filter parms) 
+# will be the only difference to sending the message in a regular way.
+$send_again = 0; # 0 or 1
+# in spool dirs will be the customization parameters, line 1 with recipient's email address,
+# line 2 with message_id, from line 3 the substitution parameters, in form:
+# what_to_substitute\twith_value\n ... Eventual newline or tab chars in value will be escaped 
+# as {NEWLINE} and {TAB} respectively, or whatever you set to.
+$message_val_subs_nl="{NEWLINE}";
+$message_val_subs_tab="{TAB}";
+# look for command line parameters, more convenient way to set debug values.
+$command_line_error="";
+$cl_switch=0;
+# has_contents means that maxima0 is called by sender_engine and we should substitute contents tags.
+# it is also used for scheduled send, in which case we should read the body and the header from mailarchive.
+$has_contents=0;
+$sender_member_id=0;
+for (@ARGV) {
+    if ($_ eq "just_log_addresses") {
+        $just_log_addresses=1;
+    }
+    elsif ($_ eq "nosql") {
+        $nosql=1;
+    }
+    elsif ($_ eq "send_again") {
+        $send_again=1;
+    }
+    elsif ($_ eq "has_contents") {
+        $has_contents=1;
+    }
+    elsif (/^filter-(\d+)$/) {
+        $filter_id=$1;
+    }
+    elsif (/^user_group-(\d+)$/) {
+        $user_group_id=$1;
+    }
+    elsif (/^sender_member-(\d+)$/) {
+        $sender_member_id=$1;  # for viral campaigns, group member sends mails for friends.
+    }
+    elsif (/^memberlist-/) {
+        $memberlist_send=1;  # for automatic sends triggered by forms
+    }
+    elsif ($cl_switch) {
+        $command_line_error.="Unknown parameter: $_ ";
+    }
+    $cl_switch=1;
+}
+
+$verifyf = $MX_SEND_VERIFY_DIR;
+
+# look for necessary data in the database.
+# it is assumed that the message has valid user_id and group_id.
+# we use 'html_codeset' as the message codeset, which is not entirely correct because in theory the text part may have
+# different codeset and also the mail can be text only. However, we always send html mails and the text and html parts 
+# usually have the same codeset so we'll not make much fuss about this.
+if ($sender_member_id) {
+    $mid =~ s/^member_//g; # double secutiry, ensure we don't send to everybody by some mistake
+    $bdq="select m.group_id,m.user_id,m.subject,'yes',m.maillist,g.title,g.use_tracko,'','',0,0,g.important,'',m.spool,m.create_date,
+          m.plain_codeset,m.html_codeset,''
+          from groups g,member_messages m where g.id=m.group_id and m.id='$mid'";
+    $member_part="member_";
+    $member_feedback="m";
+    $verifyf .= "/member";
+}
+elsif ($memberlist_send) {
+    $mid =~ s/^auto_//g; # double secutiry, ensure we don't send to everybody by some mistake
+    $bdq="select m.group_id,m.user_id,m.subject,'no',m.memberlist,g.title,g.use_tracko,
+          u.name,u.email,0,0,g.important,u.replyto,m.spool,m.create_date,
+          m.plain_codeset,m.html_codeset,''
+          from groups g,auto_messages m,user u where g.id=m.group_id and m.user_id=u.id and m.id='$mid'";
+    $member_part="auto_";
+    $member_feedback="u";
+    $verifyf .= "/auto";
+}
+else {
+    $bdq="select m.group_id,m.user_id,m.subject,m.test,m.test_email,g.title,g.use_tracko,
+          u.name,u.email,m.filter_id,m.user_group_id,g.important,u.replyto,m.spool,m.create_date,
+          m.plain_codeset,m.html_codeset,domains_linked_images
+          from groups g,messages m,user u where g.id=m.group_id and m.user_id=u.id and m.id='$mid'";
+    $member_part="";
+    $member_feedback="";
+}
+
+$just_log_filename="$just_log_addresses_root/$mid.".time();
+ 
+$sth = $dbh->prepare($bdq);
+$sth->execute;
+($gid,$sender_id,$subject,$test_message,$test_email,$group_name,$use_tracko,
+ $author_name,$author_email,$db_filter_id,$db_user_group_id,$important,$author_replyto,$message_spool,$message_create_date,
+ $plain_codeset,$html_codeset,$domains_linked_images)=$sth->fetchrow_array;
+$sth->finish;
+$title=$group_name;
+
+$sender_domain = $local_hostname;
+#if ($group_name eq "horoszkop") {
+#    $sender_domain = "sender.egyperces.hu";
+#}
+
+if (length($member_part)) {
+    @external_image_domains = ();
+}
+else {
+    @external_image_domains = split(",",$domains_linked_images);
+}
+
+# very important, this one sets up main_spooldir and templatedir* variables
+# spool may be already set by the sender engine or if this is a send_again.
+if (!length($spool)) {
+    $spool=mx_spool($title,$test_message);
+    $dbh->do("update ${member_part}messages set spool='$spool' where id='$mid'");
+}
+($main_spooldir,$templatedir,$templatedir_contents,$templatedir_banners)=mx_main_spooldir($spool);
+
+if ($send_again) {
+    $filter_id=$db_filter_id;
+    $user_group_id=$db_user_group_id;
+    if ($sender_member_id or $memberlist_send) {
+        exit; # does not work with member sendings.
+    }
+}
+if ($memberlist_send) {
+    $memberlist_send_ids=$test_email;
+}
+
+undef %demog_var_ids;
+undef %demog_var_types;
+undef %demog_var_neeeded;
+undef %demog_var_spec;
+undef %demog_var_groups;
+# this is needed for substitution of {demog...} to their values and for filter if any.
+$st = $dbh->prepare("select distinct demog.id,variable_name,variable_type,multiselect 
+                     from vip_demog,demog where vip_demog.demog_id=demog.id and vip_demog.group_id='$gid'");
+$st->execute;
+while (@row = $st->fetchrow_array) {
+    $demog_var_ids{$row[1]}=$row[0];
+    $demog_var_types{$row[1]}=$row[2];
+}
+$st->finish;
+$demog_var_ids{"spec-tstamp"}=0;
+$demog_var_types{"spec-tstamp"}="date";
+$demog_var_spec{"spec-tstamp"}="substring(data_changed,1,10)";
+
+# the following variable is important for non-test sendings only, it can stay 0 in other cases
+$total_number_of_mails=0;
+undef %notok_emails;
+undef %notok_ads;
+undef %spool_counts;    # count IN TOTAL, including send_again information, how much mails to send per spool
+undef %mails_to_queue;  # count how much mails to add to spoolfiles per spool - this can be less than %spool_counts in case of send_again
+undef %mails_queued;    # counter that will be used when creating the spool files
+if ($send_again) {
+    # look for email addresses of those users who have already got the message, do not send them again.
+    # FIXME check the processes, if the message is still being sent! 
+    open (NOTOK, "<$verifyf/$group_name.$mid.notok") or die "No .notok file, cannot resend.\n";
+    while (<NOTOK>) {
+        if ($_ =~ /^# (\d+) ([^ ]+) [^ ]+ ([C0-9:\\|]*)$/) {
+            $notok_emails{$2} = [$1,$3];
+            mx_spooldir($email,1,$spool,$test_message,$total_number_of_mails);
+            if (length($3)) {
+                @notok_bann = split(":",$3);
+                for (@notok_bann) {
+                    $notok_ads{$_}++;
+                }
+            }
+        }
+    }
+    close NOTOK;
+}
+
+# if .notok file already exists,it should be saved because it will be overwritten.
+rename ("$verifyf/$group_name.$mid.notok","$verifyf/$group_name.$mid.notok.".time()) if (-e "$verifyf/$group_name.$mid.notok");
+ 
+if ($VERIFY) {
+    open (OO, ">$verifyf/$group_name.$mid.notok") || system("logger MAXIMA0 - could not create $verifyf/$group_name.$mid.notok!");
+    print OO time()." group name: $group_name\nmessage id: $mid\nfilter id: $filter_id\nuser group id: $user_group_id\nspool: $spool\n";
+    system("chmod 644 $verifyf/$group_name.$mid.notok");
+    # write back already sent email addresses, what if script breaks again...
+    if ($send_again) {
+        while (($email,@ntime) = each %notok_emails) {        
+            print OO "# $ntime[0][0] $email [send_again:already_sent] $ntime[0][1]\n";
+        }
+    }            
+    close OO;
+}
+
+if (!length($group_name) || length($command_line_error)) {
+    if ($VERIFY) {
+        open (OO, ">>$verifyf/$group_name.$mid.notok");
+        print OO "Invalid message id $mid! (no group name)\n" if (!length($group_name));
+        print OO "Erronous parameters: $command_line_error\n" if (length($command_line_error));
+        close OO;
+    }
+    exit(0);
+}
+
+$contents="";
+$message_external_images="";
+if ($send_again==1 or $has_contents==1) {
+    # NOTE: ads are base64-encoded from an utf8 string, later in code there is no conversion because it is assumed
+    #       that sender_engine will store the ads in the right encoding which is the same that the message has.
+    #       contents are also assumed to be already in the right encoding, again set by the sender_engine correctly.
+    $dbh->do("set names latin1");
+    $st = $dbh->prepare("select addon,body,contents,ads from ${member_part}mailarchive where id='$mid'");
+    $st->execute;
+    if (@row = $st->fetchrow_array) {
+        $addon=$row[0];
+        $message=$row[1];
+        $contents=$row[2];
+        $ads=$row[3];
+        $st->finish;
+    }
+    else {
+        $st->finish;
+        $st = $dbh->prepare("select body from ${member_part}bodies where id='$mid'");
+        $st->execute;
+        if (@row = $st->fetchrow_array) {
+            $message=$row[0];
+        }
+        else {
+            # we have a problem, wrong message id, or something.
+            if ($VERIFY) {
+                open (OO, ">$verifyf/$group_name.$mid.notok") || system("logger ne valja");
+                print OO "Error: nothing in ${member_part}mailarchive or body for message_id $mid\n";
+                close OO;
+            }
+            exit (0);
+        }
+        $st->finish;
+    }
+    if (not length($member_part) and $has_contents) {
+        $st = $dbh->prepare("select body from mailarchive_external_images where id='$mid'");
+        $st->execute;
+        if (@row = $st->fetchrow_array) {
+            $message_external_images=$row[0];
+            $st->finish;
+        }
+        else {
+            # no external images version, we need that for the regular messages.
+            if ($VERIFY) {
+                open (OO, ">$verifyf/$group_name.$mid.notok") || system("logger ne valja");
+                print OO "Error: nothing in ${member_part}mailarchive_external_images for message_id $mid\n";
+                close OO;
+            }
+            exit (0);
+        }
+        $st->finish;
+    }
+    if (length($contents)) {   # case for send_again, it is called with no params.
+        $has_contents=1;
+    }
+    else {
+        $has_contents=0;
+    }
+    $dbh->do("set names utf8");
+    # feedback things might be done, find them in the feedback table, and replace in the message.
+    $st = $dbh->prepare("select url,unique_id,url_replace,name from ${member_part}feedback where message_id='$mid'");
+    $st->execute;
+    while (@row = $st->fetchrow_array) {
+        $url=$row[0];
+        $url="<$row[2]> $url" if (length($row[2])); # the original was this in this case
+        $unique_id=$row[1];
+        $link_name=$row[3];
+        $unique_url = "http://$group_name.$local_hostname/re/${member_feedback}".substr($unique_id,0,3).'{userid}'.substr($unique_id,-7);
+        $message =~ s/\{l\Q$link_name\E\}\Q$url\E\{\/l\}/$unique_url/gi;
+        $message_external_images =~ s/\{l\Q$link_name\E\}\Q$url\E\{\/l\}/$unique_url/gi;
+    }
+    $st->finish;
+}
+else {
+    $klick=1;
+    srand();
+    while (<STDIN>) {
+        if ($klick) {
+            if (/^##-##/) { $klick=0; }
+            else { $addon.=$_; }
+        } 
+        else { 
+            $message.=$_; 
+        }
+    }
+}
+$addon="\n".$addon;
+
+#find feedback links in the message, we should check this for send_again also.
+while ($message =~ /\{l([^}]*)\}([^{]+)\{\/l\}/i) {
+    $link_name = $1;
+    $realurl = $2;
+    $unique_id = substr(MD5->hexhash(rand().time()),0,10);
+    $unique_url = "http://$group_name.$local_hostname/re/${member_feedback}".substr($unique_id,0,3).'{userid}'.substr($unique_id,-7);
+    $message =~ s/\{l\Q$link_name\E\}\Q$realurl\E\{\/l\}/$unique_url/gi;
+    $message_external_images =~ s/\{l\Q$link_name\E\}\Q$realurl\E\{\/l\}/$unique_url/gi;
+    if ($realurl =~ /^<([^>]+)> (.*)/) {
+        $url_replace=$dbh->quote($1);
+        $qurl=$dbh->quote($2);
+    }
+    else {
+        $url_replace="''";
+        $qurl=$dbh->quote($realurl);
+    }
+    unless ($nosql) {
+        $link_name=$dbh->quote($link_name);
+        $sth = $dbh->prepare("insert into ${member_part}feedback (id,message_id,url,unique_id,group_id,tstamp,url_replace,name) 
+                              values ('0','$mid',$qurl,'$unique_id','$gid',now(),$url_replace,$link_name)");
+        $sth->execute;
+        $sth->finish;
+    }
+}  
+
+# well, the subject shouldn't contain any non-ASCII characters, but sometimes it does. 
+# Try body codeset, that has the best chances to work
+if ($html_codeset ne "utf8") {
+    $subject = mx_iconv($subject,"UTF8",$html_codeset);
+}
+$subject_cust="";
+$subject=mx_subject_decode($subject);
+# note that subject_decode returns the decoded subject in $html_codeset if the subject was properly encoded
+# and so the subject encoding could be checked. If the subject is not encoded and contains characters above 9F
+# we can just hope that there will not be encoding issues
+
+# find out which demog info are needed
+while (($variable_name,$demog_id) = each %demog_var_ids) {
+    # single demog var or multiple demog vars in braces separated by spaces
+    if ($message =~ /\{$variable_name\}/i) {
+        $demog_var_needed{$variable_name}=1;        # hash of demog vars to be selected from users_* tables
+        $demog_var_groups{"$variable_name"}=1;    # hash of demog groups to be substituted in custom messages
+    }
+    if ($message =~ /\{$variable_name-md5\}/i) {
+        $demog_var_needed{$variable_name}=1;        # hash of demog vars to be selected from users_* tables
+        $demog_var_groups{"$variable_name-md5"}=1;    # hash of demog groups to be substituted in custom messages
+    }
+    if ($message =~ /\{$variable_name-base64\}/i) {
+        $demog_var_needed{$variable_name}=1;        # hash of demog vars to be selected from users_* tables
+        $demog_var_groups{"$variable_name-base64"}=1;    # hash of demog groups to be substituted in custom messages
+    }
+    if ($message =~ /\{$variable_name-url\}/i) {
+        $demog_var_needed{$variable_name}=1;        # hash of demog vars to be selected from users_* tables
+        $demog_var_groups{"$variable_name-url"}=1;    # hash of demog groups to be substituted in custom messages
+    }
+    if ($message =~ /\{$variable_name( [<a-z][^}]*)\}/i) {
+        $demog_var_needed{$variable_name}=1;        # hash of demog vars to be selected from users_* tables
+        $demog_var_groups{"$variable_name$1"}=1;    # hash of demog groups to be substituted in custom messages
+        @otherdemogs = split(/ /, $1);
+        foreach $otherd (@otherdemogs) {
+            $demog_var_needed{$otherd}=1 if $demog_var_ids{$otherd};
+        }
+    }
+    if ($subject =~ /\{$variable_name\}/i) {
+        $demog_var_needed{$variable_name}=1;        # hash of demog vars to be selected from users_* tables
+        $demog_var_groups{"$variable_name"}=1;    # hash of demog groups to be substituted in custom messages
+        $subject_cust=$subject;
+    }
+    if ($subject =~ /\{$variable_name-md5\}/i) {
+        $demog_var_needed{$variable_name}=1;        # hash of demog vars to be selected from users_* tables
+        $demog_var_groups{"$variable_name-md5"}=1;    # hash of demog groups to be substituted in custom messages
+        $subject_cust=$subject;
+    }
+    if ($subject =~ /\{$variable_name-base64\}/i) {
+        $demog_var_needed{$variable_name}=1;        # hash of demog vars to be selected from users_* tables
+        $demog_var_groups{"$variable_name-base64"}=1;    # hash of demog groups to be substituted in custom messages
+        $subject_cust=$subject;
+    }
+    if ($subject =~ /\{$variable_name-url\}/i) {
+        $demog_var_needed{$variable_name}=1;        # hash of demog vars to be selected from users_* tables
+        $demog_var_groups{"$variable_name-url"}=1;    # hash of demog groups to be substituted in custom messages
+        $subject_cust=$subject;
+    }
+    if ($subject =~ /\{$variable_name( [<a-z][^}]*)\}/i) {
+        $demog_var_needed{$variable_name}=1;        # hash of demog vars to be selected from users_* tables
+        $demog_var_groups{"$variable_name$1"}=1;    # hash of demog groups to be substituted in custom messages
+        @otherdemogs = split(/ /, $1);
+        foreach $otherd (@otherdemogs) {
+            $demog_var_needed{$otherd}=1 if $demog_var_ids{$otherd};
+        }
+        $subject_cust=$subject;
+    }
+}
+# look at the real structure of corresponding users_[title] group.
+# we must be sure that the select from users_[title] succeeds.
+$sth = $dbh->prepare("desc users_$title");
+$sth->execute;
+while (@row = $sth->fetchrow_array) {
+    if ($row[0] =~ /ui_(.*)/i) {
+        $demog_var_real{$1}=1;
+    }
+}
+$sth->finish;
+# group member is the "sender"
+$sender_member_data="";
+if ($sender_member_id) {
+    $dbh->do("set names $html_codeset");
+    $ssm=$dbh->prepare("select * from users_$group_name where id='$sender_member_id'");
+    $ssm->execute;
+    if ($member_ref = $ssm->fetchrow_hashref) {
+        %sm_data=%$member_ref;
+        $author_email=$author_replyto=$sm_data{"ui_email"};
+        $sm_data{"ui_vezeteknev"}=mx_name_normalize($sm_data{"ui_vezeteknev"});
+        $sm_data{"ui_keresztnev"}=mx_name_normalize($sm_data{"ui_keresztnev"});
+        $author_name=$sm_data{"ui_vezeteknev"}." ".$sm_data{"ui_keresztnev"};
+        unless ($html_codeset eq "utf8") {
+            $author_name=mx_iconv($author_name,$html_codeset,"UTF8");
+        }
+        foreach $dvg (keys(%demog_var_groups)) {
+            @sm_repl=();
+            $sm_vars_ok=1;
+            foreach ( split(" ",$dvg) ) {
+                $sm_demog=$_;
+                if ($sm_demog ne "email" and $demog_var_real{$sm_demog}) {
+                    push (@sm_repl,$sm_data{"ui_$sm_demog"});
+                }
+                else {
+                    $sm_vars_ok=0;
+                }
+            }
+            if ($sm_vars_ok) {
+                # let tlb substitute because the sender engine may have reported that there are demogs in contents.
+                $sender_member_data.="{$dvg}\t". substitute_nltab(join(" ",@sm_repl)) ."\n";
+            }
+        }
+    }
+    else {
+        if ($VERIFY) {
+            open (OO, ">>$verifyf/$group_name.$mid.notok");
+            print OO time()." Viral campaign error: Nonexistent member! $sender_member_id\n";
+            close OO;
+        }
+        exit;
+    }
+    $ssm->finish;
+    $dbh->do("set names utf8");
+}
+
+# find out which tags to substitute and under which conditions
+undef @cont_subs;
+if ($has_contents) {
+    @contparts=split("\n",$contents);
+    $lcnt=0;
+    $c_data="";
+    $c_cond="";
+    $c_tag="";
+    $c_isimg=0;
+    for (@contparts) {
+        $line=$_;
+        $c_tag=$line if ($lcnt==0);
+        $c_cond=$line if ($lcnt==1);
+        if ($line =~ /^=_/) {
+            if ($c_cond =~ /^([^:]+):([^\r\n]+)/) {
+                $demog_var_needed{$1}=1;
+                $c_cond1=$1;
+                $c_cond2=$2;
+            }
+            else {
+                $c_cond1="";
+                $c_cond2="";
+            }
+            $c_tag =~ s/[\r\n]//g;
+            if ($c_tag =~ /^([^:]+):([^:]+)/) {
+                $c_tag=$1;
+                $c_isimg=$2;
+            }
+            push (@cont_subs,[ ($c_tag,$c_cond1,$c_cond2,$c_data,$c_isimg) ]);
+# print "$c_tag,$c_isimg,$c_cond1,$c_cond2,". substr($c_data,0,20) ."...". $#cont_subs ."\n";            
+            $lcnt=0;
+            $c_data="";
+            $c_cond="";
+            $c_tag="";
+            $c_isimg=0;
+        }
+        else {
+            $c_data.=$line if ($lcnt>1);
+            $lcnt++;
+        }
+    }
+}
+
+# prepare ads if there are any.
+$has_ads=0;
+if (length($ads)) {
+    $has_ads=1;
+    # campaign_id:campaign_adslot_id:$adslot_id:$weight:$banner_id:$filetype
+    # 979:5049:628:1:4142:gif|979:5050:628:1:4143:gif
+    @adlist=split("\n",$ads); 
+    @ad_subs = ();
+    for (@adlist) {
+        undef @ad_data;
+        @ad_data = ();
+        @adparts = split ("\\|");
+        for (@adparts) {
+            @adt = split(":");
+            if ($adt[5] eq "ctnet") {
+                # push (@result_data,"0:$ctnet_template:$ctslot_id:$weight:$banner_id:ctnet:$banner_file:".encode_base64($banner_code,""));
+                # http://ctnetwork.hu/partner/pump_av.php?a=2247|1298-7574|box_normal|0.0117|2:2247|6238-7515|box_normal|0.0128542|5:
+                $adservdata="C$adt[2]|$adt[4]|$adt[1]|$adt[3]";
+                $adt[3]=ceil($adt[3]*500);
+                $ctpart="ct";
+            }
+            else {
+                $adservdata="$adt[0]|$adt[1]|$adt[4]|$adt[2]";
+                $ctpart="";
+            }
+            if ($adt[5] eq "upload") {
+                $img_subs="$adt[6]";
+                $img_cid=$adt[6];
+                $img_cid=~s/^[^\/]+\/[0-9]*//;
+                $link_subs=mx_encode_string("<a href='$BANNERADMIN_LINK$adservdata'><img border='0' src=\"cid:$img_cid\"></a>","");
+            }
+            else {
+                $img_subs="$adt[6]";
+                $link_subs=substitute_nltab(mx_encode_string(decode_base64($adt[7])));
+            }
+            # counter, weight, data for adserver, img subs, link subs, adslot_id
+            $adt[3]+=0;
+            push (@ad_data, [ (0,$adt[3],$adservdata,$img_subs,$link_subs,"$adt[2]",$ctpart) ] );
+# print "(0,$adt[3],$adt[0]|$adt[1]|$adt[4]|$adt[2],$adt[4],$adt[5],$adt[2])\n";            
+        }
+        # array index pointer, banner counter (=melyiknel tart es abbol hany jelent meg),array total, ads data
+        push (@ad_subs,[ ( 0,1,$#ad_data,[ @ad_data ] ) ]); 
+    }
+}
+
+#substitute group name and 1x1 gifs.
+$message =~ s/{groupname}/$group_name/gi;
+$message_external_images =~ s/{groupname}/$group_name/gi;
+$go1x1="http://$group_name.$local_hostname/go1x1/$mid/{userid}";
+$message =~ s/\{1x1\}/$go1x1/gi;
+$message_external_images =~ s/\{1x1\}/$go1x1/gi;
+$message =~ s/\{unsubscribe\}/${unsubscribe_mail_prefix}-$mid\@$group_name.${local_hostname}/gi;
+$message_external_images =~ s/\{unsubscribe\}/${unsubscribe_mail_prefix}-$mid\@$group_name.${local_hostname}/gi;
+
+($dt_sec,$dt_min,$dt_hour,$dt_mday,$dt_mon,$dt_year,$dt_wday,$dt_yday,$dt_isdst) = localtime;
+@dt_months=("január","február","március","április","május","június","július","augusztus","szeptember","október","november","december");
+$dt_year+=1900;
+if ($html_codeset ne "utf8") {
+    $dt_months[$dt_mon] = mx_iconv($dt_months[$dt_mon],"UTF8",$html_codeset);
+}
+$dt_hu=mx_encode_string("$dt_year. $dt_months[$dt_mon] $dt_mday.");
+$message =~ s/\{-datum\}/$dt_hu/gi;
+$message_external_images =~ s/\{-datum\}/$dt_hu/gi;
+
+if ($VERIFY) {
+    open (OO, ">>$verifyf/$group_name.$mid.notok");
+    print OO time()." feedback passed\n";
+    close OO;
+}
+
+# make hashes of enum values of needed demographic vars
+# and create list of needed demographic vars for select.
+$k=0;
+while (($variable_name,$x) = each %demog_var_needed) {
+    if ($demog_var_spec{$variable_name}) {
+        $neededpart.="," . $demog_var_spec{$variable_name};
+        $neededlist{$variable_name}=$k;
+        $k++;
+    }
+    elsif ($demog_var_real{$variable_name}) {
+        $neededpart.=",ui_$variable_name";
+        $neededlist{$variable_name}=$k;
+        $k++;
+        if ($demog_var_types{$variable_name} eq "enum") {
+            $dbh->do("set names $html_codeset");
+            $demog_id=$demog_var_ids{$variable_name};
+            $q2="select id,enum_option from demog_enumvals where demog_id='$demog_id'";
+            $stdi2 = $dbh->prepare($q2);
+            $stdi2->execute;
+            while (@row = $stdi2->fetchrow_array) {
+                $enumid=$row[0];
+                $demog_var_enums{$variable_name}{$enumid}=$row[1];
+            }
+            $stdi2->finish;
+            $dbh->do("set names utf8");
+        }
+    }
+    else {
+        $demog_var_needed{$variable_name}=0;
+    }
+}
+
+if ($VERIFY) {
+    open (OO, ">>$verifyf/$group_name.$mid.notok");
+    print OO time()." demog list,hashes creation passed\n";
+    close OO;
+}
+
+# Return-path: this will be settable per message or per group. 
+# The information MUST NOT be added into this header, because it cannot be duplicated.
+# therefore we can not pass this parameter through the template, but through user data, see below.
+# if there will be more parameters like this, we should consider adding a third datasource for tlb, besaide the template and user data.
+$return_path="";
+if ($group_name eq "robintesco") {
+    $return_path="internet_feedback\@hu.tesco-europe.com";
+}
+
+if (length($subject_cust)) {
+    $subjectline="{subject-cust}";
+    $ntnl=substitute_nltab($subject_cust);
+    $subject_cust="{subject-c}\t$ntnl\n";
+}
+else {
+    $subjectline="Subject: " . mx_encode_header_tags($subject,$html_codeset);
+    if ($maxima_implementation eq "ROBIN") {
+        $subjectline="Subject: " . $subject;
+    }
+    $subject_cust="";
+}
+
+# make header for the message.
+$zone = "+0100";
+@time = localtime;
+$zone = "+0200" if ($time[8]);
+#$date = strftime("%a, %d %b %Y %T %z (%Z)", @time);
+$date = strftime("%a, %d %b %Y %H:%M:%S", @time);
+$received = "Received: by $sender_domain (MAXIMA v$release_version); $date $zone";
+$author_replyto=$author_email unless (length($author_replyto));
+if ($maxima_implementation ne "ROBIN") {
+    $author_name = mx_encode_header_tags($author_name,"utf8");
+}
+elsif ($html_codeset ne "utf8") {
+    $author_name=mx_iconv($author_name,"utf8",$html_codeset);
+}
+$message_head="$received
+From: $author_name <$author_email>
+Reply-To: $author_replyto
+Date: $date $zone
+To: {email}
+$subjectline
+Message-Id: <${gid}.${sender_member_id}.${mid}\@${group_name}.$sender_domain>$addon
+
+";
+$message="$message_head$message
+";
+$message_external_images="$message_head$message_external_images
+";
+
+# message template is ready, write it out to the template dir.
+$tfm=$mid%16;
+if ($sender_member_id) {
+    $template_filename="m${tfm}/${mid}";
+}
+elsif ($memberlist_send) {
+    $template_filename="m${tfm}/a${mid}";
+}
+else {
+    $template_filename="$mid";
+    $template_filename_external_images="ext/$mid";
+    open (SP, ">$templatedir/$template_filename_external_images") || die "Could not write: $templatedir/$template_filename_external_images\n";
+    print SP $message_external_images;
+    close SP;
+}
+open (SP, ">$templatedir/$template_filename") || die;
+print SP $message;
+close SP;
+            
+$sth=$dbh->prepare("select * from ${member_part}mailarchive where id='$mid'");
+$sth->execute;
+if (@mojrow=$sth->fetchrow_array) {
+   $fsource='mail'; 
+} 
+else {
+   $fsource='web';
+}
+$sth->finish;
+
+unless ($nosql) {
+    $sth=$dbh->prepare("lock table ${member_part}track write");
+    $sth->execute;
+    $sth->finish;
+    $sth=$dbh->prepare("insert into ${member_part}track (id,group_id,mails,date,members,psource,sender,message_id) values ('0','$gid','0',now(),'0','$fsource','$sender_id','$mid')");
+    $sth->execute;
+    $sth->finish;
+    $sth=$dbh->prepare("select max(id) from ${member_part}track where group_id='$gid' and sender='$sender_id'");
+    $sth->execute;
+    ($ttid) = $sth->fetchrow_array;
+    $sth->finish;
+    $sth=$dbh->prepare("unlock tables");
+    $sth->execute;
+    $sth->finish;
+}
+
+if ($user_group_id) {
+    $joinpart=",user_group_members where users_$group_name.id=user_group_members.user_id 
+               and user_group_members.user_group_id='$user_group_id' and";
+    $seldist="distinct";
+}
+else {
+    $joinpart=" where";
+    $seldist="";
+}
+
+$index_offset=2;
+$additional_cols="";
+$countsql="";
+undef ($limitord);
+if ($filter_id) {
+    undef ($filtres);
+    $filter_error="filter_ok";
+    open FILTER, "$MX_FILTER_ENGINE $filter_id|";
+    while (<FILTER>) {
+        $filtres .= $_;
+    }
+    close (FILTER);
+
+    @filtarr = split /\n/,$filtres;
+    if ($filtarr[0] eq "filter_ok") {
+        $filter_query=$filtarr[1];
+        $limitord=$filtarr[2];
+        $limitnum=$filtarr[3];
+        $syntax_error=$filtarr[4];
+        $syntax_error_text=$filtarr[5];
+    }
+    else {
+        $filter_error="error in filter engine: $filtarr[0]";
+    }
+    if ($syntax_error==1) {
+        $filter_error="filter syntax error: $syntax_error_text";
+    }
+
+    if ($VERIFY) {
+        open (OO, ">>$verifyf/$group_name.$mid.notok");
+        print OO time()." $filter_error\n";
+        close OO;
+    }
+    if (!($filter_error eq "filter_ok")) {
+        exit (0);
+    }
+
+    if (length($limitord)) { 
+        $limitexp=" order by $limitord limit $limitnum";
+        # not necessarily true, but we use this variable to decide if the mails should go through test spool or not
+        $total_number_of_mails=$limitnum;
+    }
+    else {
+        $limitexp="";
+        $countsql="select count($seldist ui_email) from users_$group_name$joinpart validated='yes' 
+            and ($filter_query) and robinson='no' and bounced='no' $limitexp";
+    }
+    $sql="select $seldist users_$group_name.id,ui_email$neededpart from users_$group_name$joinpart validated='yes' 
+            and ($filter_query) and robinson='no' and bounced='no' $limitexp";
+}
+else {
+    $st = $dbh->prepare("select title from groups where id='$gid'");
+    $st->execute;
+    if (@row = $st->fetchrow_array) {
+        $group_name=$row[0];
+    }
+    $st->finish;
+    if ($memberlist_send) {
+        if ($memberlist_send_ids eq "delete") {
+            $joinpart=",maint_notify_delete mn where mn.group_id='$gid' and mn.status='queued' and users_$group_name.id=mn.user_id and";
+            $seldist="distinct";
+            $index_offset=3;
+            $additional_cols=",mn.hashid";
+        }
+        else {
+            $joinpart .= " id in ($memberlist_send_ids) and ";
+        }
+    }
+    $sql = "select $seldist users_$group_name.id,ui_email$additional_cols$neededpart from users_$group_name$joinpart validated='yes' 
+            and robinson='no' and bounced='no'";
+    $countsql="select count($seldist ui_email) from users_$group_name$joinpart validated='yes' and robinson='no' and bounced='no'";
+}
+
+# sendings marked 'test' are sendings when the recipients aren't members in the group (needed a quick hack here...)
+# if sender_member_id=0, this is a regular test. If sender_member_id>0, than it has to be an id of a member of the group.
+if ($test_message eq "yes" or $sender_member_id) {
+    @test_email_list = split(",",$test_email);
+    $num_of_email=$#test_email_list+1;
+    # yes, this is a problem, because $sender_id is now id in user table, not in users_$group_name.
+    # yet, i think it is better to put here 0 then $sender_id, it would be rather confusing.
+    # same problem with userid, let it be 0 too.
+    if ($just_log_addresses==1) {
+        open (LOGADDR, ">$just_log_filename");
+        print LOGADDR "This was a test message, logging message.test_email\n\n";
+        print LOGADDR "$test_email\n";
+        close LOGADDR;        
+    }
+    if ($VERIFY) {
+        open (OO, ">>$verifyf/$group_name.$mid.notok");
+        print OO "N $num_of_email mails to send, start sending.\n";
+        close OO;
+    }
+    $test_email_num=0;
+    for (@test_email_list) {
+        $test_email=$_;
+        # $message_values will hold customisation data described in header.
+        if (length($return_path)) {
+            $m_return_path=$return_path;
+        }
+        else {
+            $m_return_path="postmasterv$mid-$sender_member_id\@$sender_domain";
+        }
+        $test_email =~ /^(.*)\@(.*)$/; 
+        $domain = $2;
+        if (grep(/^$domain$/,@external_image_domains)) { 
+            $use_template_filename = $template_filename_external_images;
+        }
+        else {
+            $use_template_filename = $template_filename;
+        }
+        $message_values="$test_email\n$use_template_filename\n$m_return_path\n{message-codeset}\t$html_codeset\n$subject_cust" . "{userid}\t$sender_member_id\n{email}\t$test_email\n";
+        if ($sender_member_id) {
+            $vct_id="${test_email_num}h".substr(MD5->hexhash("${test_email_num}Sebestyen${sender_member_id}Marta"),1,11).$sender_member_id;
+            $message_values .= "{vct-id}\t$vct_id\n";
+        }
+        # if content data is present, we will substitute all contents, to see if they work or not. 
+        if ($has_contents) {
+            for ($ci=0;$ci<=$#cont_subs;$ci++) {
+                $subscont=0;
+                if ($sender_member_id) {
+                    $c_cond1=$cont_subs[$ci][1];
+                    $c_cond2=$cont_subs[$ci][2];
+                    if ($c_cond1 eq "" or $sm_data{"ui_$c_cond1"} eq $c_cond2 or $sm_data{"ui_$c_cond1"} eq ",$c_cond2,") {
+                        $subscont=1;
+                    }
+                }
+                else {
+                    $subscont=1;
+                }
+                if ($subscont) {
+                    $c_tag=$cont_subs[$ci][0];
+                    $ntnl=substitute_nltab($cont_subs[$ci][3]);
+                    $message_values.="{$c_tag}\t$ntnl\n"; 
+                    if ($cont_subs[$ci][4]) {
+                        $message_values.="{$c_tag-i}\t$ntnl-i\n"; 
+                    }
+                }
+            }
+        }
+        if ($has_ads) {
+            for ($ci=0;$ci<=$#ad_subs;$ci++) {                    # for every adslot
+                $adslot_id=$ad_subs[$ci][3][0][5];                # use the first banner  
+                $ctpart=$ad_subs[$ci][3][0][6];
+                $message_values.="{ad-${ctpart}link-$adslot_id}\t".$ad_subs[$ci][3][0][4]."\n";
+                $message_values.="{ad-${ctpart}img-$adslot_id}\t".$ad_subs[$ci][3][0][3]."\n";
+            }
+        }
+        $spooldir=mx_spooldir($test_email,1,$spool,"yes",$total_number_of_mails);
+        $time=time();
+        $spooldir .= "/0".uc(substr(MD5->hexhash(rand().$time),0,1));
+        $filename="$gid-TEST$test_email_num-$mid-$time";
+        #$message_values .= "{html_version_link}\thttp://${group_name}.${local_hostname}/htmlview/" . mx_html_email_encode($mid,$test_email) . "\n";
+        $message_values .= "{html_version_link}\t \n";
+        if ($just_log_addresses==1) {
+            print LOGADDR "$test_email $spooldir/$filename\n";
+        }
+        else {
+            open (SP, ">$main_spooldir/$spooldir/$filename.temp") || die ">$main_spooldir/$spooldir/$filename.temp";
+            print SP "$message_values$sender_member_data";
+            close SP;
+            rename("$main_spooldir/$spooldir/$filename.temp","$main_spooldir/$spooldir/$filename.spool");
+            if ($VERIFY) {
+                open (OO, ">>$verifyf/$group_name.$mid.notok");
+                print OO "# ".time()." $test_email $spooldir/$filename\n";
+                close OO;
+            }        
+        }
+        if ($use_tracko eq "yes" && $nosql!=1) {
+            $sss=$dbh->prepare("insert into ${member_part}tracko values ('0','$ttid',0)");
+            $sss->execute;
+            $sss->finish;
+        }
+        unless ($nosql) {
+            $sth=$dbh->prepare("update ${member_part}track set mails=mails+1 where id='$ttid'");
+            $sth->execute;
+            $sth->finish;
+        }
+        $test_email_num++;
+    }
+    unless ($sender_member_id) {  # no such thing required for virus (and like) mails
+        $tlb_queue_plan="";
+        $tlb_queue_status="";
+        while (($scs,$scc) = each(%spool_counts)) {
+            $tlb_queue_plan.="$scs:$scc ";
+            $tlb_queue_status.="$scs:-1 ";
+        }
+        $stls=$dbh->prepare("update ${member_part}messages set send_plan='$num_of_email',tlb_queue_plan='$tlb_queue_plan',
+                             tlb_queue_status='$tlb_queue_status',send_date=now() where id='$mid'");
+        $stls->execute;    
+        $stls->finish;
+    }
+}
+else {
+    # if we do a resend, we should count those mails which were sent in previous attempt(s), too.
+    $num_of_email=keys(%notok_emails);
+    if ($just_log_addresses==1) {
+        open (LOGADDR, ">$just_log_filename");
+        print LOGADDR "List of users that would get the message with the following query:\n\n";
+        print LOGADDR "$sql\n\n";
+    }
+    if ($VERIFY) {
+        open (OO, ">>$verifyf/$group_name.$mid.notok");
+        print OO time()." query build passed: *****$sql***$syntax_error_text**\n";
+        close OO;
+    }        
+    if (length($countsql)) {
+        $sthc = $dbh->prepare($countsql);
+        $sthc->execute;
+        @resc=$sthc->fetchrow_array;
+        $total_number_of_mails=$resc[0];
+    }
+    $dbh->do("set names $html_codeset");
+    $sth = $dbh->prepare($sql);
+    $sth->execute;
+  
+    if ($VERIFY) {
+        open (OO, ">>$verifyf/$group_name.$mid.notok");
+    }        
+    undef %demog_subs;
+    undef @recipient_list;
+    undef %cloudmark;
+    $clc="select cloudmark_email from alapadatok where group_id='$gid'";
+    $clh = $dbh->prepare($clc);
+    $clh->execute;
+    if (@clr=$clh->fetchrow_array) {
+        if ($send_again==0 && $clr[0]=~/@/) {
+            push (@recipient_list,$clr[0]);
+            $demog_subs{$clr[0]}{"user-id"}=0;
+            $cloudmark{$clr[0]}=1;
+            mx_spooldir($clr[0],2,$spool,$test_message,$total_number_of_mails);
+        }
+    }
+    $clh->finish;
+    undef %blacklist;
+    $clc="select email from blacklist";
+    $clh = $dbh->prepare($clc);
+    $clh->execute;
+    while (@clr=$clh->fetchrow_array) {
+        $blacklist{$clr[0]}=1;
+    }
+    $clh->finish;
+    while (@row = $sth->fetchrow_array) {   # create list of email addresses with corresponding
+        $userid=$row[0];                    # demog expressions to substitute.
+        $email=$row[1];
+        # there are a few bad email addresses in the database;
+        # use this easy expandable list instead of cluttering up the sql queries
+        # we should log these addresses, so that we know they are ignored.
+        $bad_email=0;
+        $bad_email=1 if ($email=~/^$/);
+        $bad_email=1 if ($email=~/^\.\./);
+        $bad_email=1 unless ($email=~/@/);
+        if ($bad_email) {
+            print OO time()." ignored email:'$email' userid:'$userid'.\n";
+        }
+        elsif ($blacklist{"$email"}) {
+            print OO time()." blacklisted email:'$email' userid:'$userid'.\n";
+        }
+        elsif (!($send_again && $notok_emails{$email}[0])) {
+            push (@recipient_list,$email);
+            mx_spooldir($email,2,$spool,$test_message,$total_number_of_mails);
+            $demog_subs{$email}{"user-id"}=$userid;
+            if ($memberlist_send_ids eq "delete") {
+                $demog_subs{$email}{"maint-delete-link"}="http://www.$local_hostname/maint.php?a=${gid}d$row[2]";
+            }
+            while (($dvg,$x)=each %demog_var_groups) {
+                @dvgs = split(/ /, $dvg);
+                undef ($dvg_r);
+                undef ($glue);
+                $char_replace="";
+                foreach $dvgs_part (@dvgs) {
+                    $do_md5=0;
+                    if ($dvgs_part =~ /-md5$/i) {
+                        $dvgs_part =~ s/-md5$//i;
+                        $do_md5=1;
+                    }
+                    $do_url=0;
+                    if ($dvgs_part =~ /-url$/i) {
+                        $dvgs_part =~ s/-url$//i;
+                        $do_url=1;
+                    }
+                    $do_base64=0;
+                    if ($dvgs_part =~ /-base64$/i) {
+                        $dvgs_part =~ s/-base64$//i;
+                        $do_base64=1;
+                    }
+                    if (length($dvgs_part) && $demog_var_needed{$dvgs_part}) {
+                        $index=$neededlist{$dvgs_part};
+                        $subpart=$row[$index_offset+$index];    
+                        if ($dvgs_part eq "keresztnev" or $dvgs_part eq "vezeteknev") {
+                            $subpart=mx_name_normalize($subpart);
+                        }
+                        if ($demog_var_types{$dvgs_part} eq "enum") {
+                            $enumvals="";
+                            @enumids = split /,/,$subpart;
+                            $valui=shift(@enumids);
+                            while ($valui=shift(@enumids)) {
+                                $valui=int($valui);
+                                if ($valui) {
+                                    $enumvals.=";" if(length($enumvals));
+                                    $enumvals.=$demog_var_enums{$dvgs_part}{$valui};
+                                }
+                            }
+                            $subpart=$enumvals;
+                        }
+                        $dvg_r .= "$glue$subpart";
+                    }
+                    elsif ($dvgs_part =~ /^<([^>]+)>/) {
+                        $char_replace=$1;
+                    }
+                    else {
+                        $dvg_r .= "$glue$dvgs_part";
+                    }
+                    $glue=" ";
+                }
+                $dvg_r = MD5->hexhash($dvg_r) if ($do_md5); 
+                if ($do_url) {
+                    $dvg_r =~ s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+                    $dvg_r =~ s/%/_/g;
+                    $dvg_r = "__mue__" . $dvg_r;
+                }
+                if ($do_base64) {
+                    $dvg_r = encode_base64($dvg_r);
+                    $dvg_r =~ s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+                    $dvg_r =~ s/%/_/g;
+                    $dvg_r = "__mue__" . $dvg_r;
+                }
+                if (length($demog_subs{$email}{$dvg})) {
+                    $demog_subs{$email}{$dvg}.=", $dvg_r";
+                }
+                else {
+                    $demog_subs{$email}{$dvg}=$dvg_r;
+                }
+                $demog_subs{$email}{$dvg} = mx_char_replace($demog_subs{$email}{$dvg},$char_replace) if length($char_replace);
+            }
+            # now check who gets what - which is big difference compared to demog var groups
+            # where we ALWAYS substitute, but DIFFERENT values
+            # here we substitute UNDER CONDITION, but always the SAME thing if condition is satisfied
+            if ($has_contents) {
+                for ($ci=0;$ci<=$#cont_subs;$ci++) {
+                    $c_cond1=$cont_subs[$ci][1];
+                    $c_cond2=$cont_subs[$ci][2];
+                    if ($c_cond1 ne "") {
+                        $index=$neededlist{$c_cond1};
+                        $subpart=$row[$index_offset+$index];    
+#print "$c_cond1: ($subpart eq $c_cond2) {\n";
+                        $satisfied=0;
+                        if ($demog_var_types{$c_cond1} eq "enum" or $demog_var_types{$c_cond1} eq "matrix") {
+                            @orparts=split (/,/,$c_cond2);
+                            for (@orparts) {
+                                $satisfied=1 if ($_ ne "" and $subpart =~ /,$_,/i);
+                            }
+                        }
+                        elsif ($subpart eq $c_cond2) {
+                            $satisfied=1;
+                        }
+                        if ($satisfied) {   
+                            $demog_subs{$email}{"-c"}.=",$ci";
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $mails_in_list = $#recipient_list + 1 + $num_of_email;
+    if ($VERIFY) {
+        print OO "N $mails_in_list mails to send, start sending.\n";
+        close OO;
+    }
+    $tlb_queue_plan="";
+    $tlb_queue_status="";
+    while (($scs,$scc) = each(%spool_counts)) {
+        $tlb_queue_plan.="$scs:$scc ";
+        $tlb_queue_status.="$scs:-1 ";
+    }
+    if ($member_part eq "") {
+		$stls=$dbh->prepare("update ${member_part}messages set send_plan='$mails_in_list',tlb_queue_plan='$tlb_queue_plan',
+							 tlb_queue_status='$tlb_queue_status',send_date=now() where id='$mid'");
+		$stls->execute;    
+		$stls->finish;
+	}
+    # if the group is not important, we will not open the log file for every single user
+    # this is faster, and in the worst case, when we resend, at most 10 users will get the mail twice.
+    if ($important ne "yes" && $VERIFY) {
+        open (OO, ">>$verifyf/$group_name.$mid.notok");
+    }
+    @uids_tracko=();
+    %message_cluster=();
+    for (@recipient_list) {  #now send the messages
+        $email=$_;
+        $uids=$demog_subs{$email}{"user-id"};
+        @uidarr=split(/,/,$uids);
+        if (length($return_path)) {
+            $m_return_path=$return_path;
+        }
+        else {
+            $m_return_path="postmaster$mid-$uidarr[0]\@$sender_domain";
+        }
+        $email =~ /^(.*)\@(.*)$/; 
+        $domain = $2;
+        if (grep(/^$domain$/,@external_image_domains)) { 
+            $use_template_filename = $template_filename_external_images;
+        }
+        else {
+            $use_template_filename = $template_filename;
+        }
+        $message_values="$email\n$use_template_filename\n$m_return_path\n{message-codeset}\t$html_codeset\n$subject_cust";
+        # demog variables may appear in contents, so substitute contents first.
+        if ($has_contents) {
+            $satisfied=$demog_subs{$email}{"-c"}.",";
+            for ($ci=0;$ci<=$#cont_subs;$ci++) {
+                $c_tag=$cont_subs[$ci][0];
+                if ($cont_subs[$ci][1] eq "" or $satisfied =~ /,$ci,/) {
+                    $ntnl=substitute_nltab($cont_subs[$ci][3]);
+                    $ntnli=$ntnl."-i";
+                }
+                else {
+                    $ntnl="";
+                    $ntnli="";
+                }
+#print "$email*$ci*$ntnl\n";            
+                $message_values.="{$c_tag}\t$ntnl\n"; 
+                if ($cont_subs[$ci][4]) {               #  content b64 encoded images if any.
+                    $message_values.="{$c_tag"."-i}\t$ntnli\n"; 
+                }
+            }
+        }
+        $md5 = MD5->hexhash("$gid:$mid:mojnedapitas:$uidarr[0]");
+        $message_values .= "{userid}\t$uidarr[0]\n{email}\t$email\n";
+        $message_values .= "{unsubscribelink}\thttp://${unsubscribe_mail_prefix}.${local_hostname}/$gid/$mid/$uidarr[0]/$md5\n";
+        $message_values .= "{egyperceslink}\thttp://www.egyperces.hu/forum/uzenet/id/$mid/email/#forum\n";
+        $message_values .= "{html_version_link}\thttp://${group_name}.${local_hostname}/htmlview/" . mx_html_email_encode($mid,$uidarr[0]) . "\n";
+        while (($dvg,$x)=each %demog_var_groups) {
+            $subs_value=$demog_subs{$email}{$dvg};
+            $subs_value=mx_encode_string($subs_value) if ($has_contents);
+            $ntnl=substitute_nltab($subs_value);
+            $dvg="\Q$dvg\E" if ($dvg =~ /[<>]/);
+            $message_values .= "{$dvg}\t$ntnl\n" if ($dvg ne "email");  # because its already there
+        }
+        if ($memberlist_send_ids eq "delete") {
+            $subs_value=$demog_subs{$email}{"maint-delete-link"};
+            $message_values .= "{maint-delete-link}\t$subs_value\n";
+        }
+        # counter, weight, data for adserver, banner filename, file type, adslot_id
+        #push (@ad_data, [ (0,$adt[3],"$adt[0]|$adt[1]|$adt[4]","$adt[4]","$adt[5]","$adt[2]") ] )
+        # array index pointer, banner counter, array total, ads data
+        #push (@ad_subs,[ ( 0,1,$#ad_data,@ad_data ) ]); 
+        # the aim is to be fast, not readable ......
+        @uads = ();
+        if ($has_ads) {
+            for ($ci=0;$ci<=$#ad_subs;$ci++) {                    # for every adslot
+                $aindex=$ad_subs[$ci][0];
+                if ($ad_subs[$ci][1]>$ad_subs[$ci][3][$aindex][1]) { # reached weight, got to the next banner in the adslot
+                    $ad_subs[$ci][1]=1;
+                    $aindex++;
+                    if ($aindex>$ad_subs[$ci][2]) {
+                        $aindex=0;
+                    }
+                }
+                $adslot_id=$ad_subs[$ci][3][$aindex][5];
+                $ctpart=$ad_subs[$ci][3][$aindex][6];
+                $message_values.="{ad-${ctpart}link-$adslot_id}\t".$ad_subs[$ci][3][$aindex][4]."\n"; 
+                push (@uads,$ad_subs[$ci][3][$aindex][2]);
+                $message_values.="{ad-${ctpart}img-$adslot_id}\t".$ad_subs[$ci][3][$aindex][3]."\n"; 
+                $ad_subs[$ci][3][$aindex][0]++; # count AV
+                $ad_subs[$ci][1]++;
+                $ad_subs[$ci][0]=$aindex;
+            }
+        }
+        $spoolbase=$spooldir=mx_spooldir($email,0,$spool,$test_message,$total_number_of_mails);
+        $time=time();
+        if ($memberlist_send and $memberlist_send_ids ne "delete") { # make these fast.
+            $spooldir.="/0".uc(substr(MD5->hexhash(rand().$time),0,1));
+            $filename="$gid-$uidarr[0]-aTEST$mid-$time";
+        }
+        else {
+            # email addresses beginning with a dot, only qmail machines are able to send those.
+            # sender1, a qmail machine, usually reads from the beginning of the queue
+            if ($email =~ /^\./) {
+                $spooldir.="/00";
+            }
+            else {
+                $spooldir.="/".uc(substr(MD5->hexhash(rand().$time),0,2));
+            }
+            $filename="$gid-$uidarr[0]-$mid-$time";
+        }
+        $uadslist=join(":",@uads); # which banners did the user get
+        if ($just_log_addresses==1) {
+            print LOGADDR "$email $spooldir/$filename $uadslist\n";
+        }
+        else {
+            push (@{$message_cluster{"$spoolbase"}},$message_values);
+            $is_spool_file="";
+            $mails_queued{"$spoolbase"}++;
+            if ($mails_queued{"$spoolbase"}%10==0 or $mails_queued{"$spoolbase"} == $mails_to_queue{"$spoolbase"}) {
+                $is_spool_file=" SPOOLFILE";
+                open (SP, ">$main_spooldir/$spooldir/$filename.temp") || die ">$main_spooldir/$spooldir/$filename.temp";
+                print SP join ("{---separator---}\n",@{$message_cluster{"$spoolbase"}});
+                close SP;
+                rename("$main_spooldir/$spooldir/$filename.temp","$main_spooldir/$spooldir/$filename.spool");
+                @{$message_cluster{"$spoolbase"}}=();
+            }
+            if ($VERIFY) {
+                if ($important eq "yes") {
+                    open (OO, ">>$verifyf/$group_name.$mid.notok");
+                }        
+                # log exactly like this, logs are used by send_again!
+                print OO "# ".time()." $email $spooldir/$filename $uadslist$is_spool_file\n";
+                if ($important eq "yes") {
+                    close OO;
+                }        
+            }        
+        }
+        $num_of_email++;
+        unless ($nosql or $memberlist_send) {
+            # update parameters after the message is really written to spool dirs, in chunks of 250 messages.
+            # update for all table in one query is wrong if the execution of the script is broken in the middle.
+            if ($use_tracko eq 'yes') {
+                push (@uids_tracko,$uidarr[0]);
+                if ($#uids_tracko>250) {
+                    $q2="update users_$group_name set last_sent=now(), mess_total=mess_total+1,
+                         messagelist=concat(messagelist,',$mid,'),tstamp=now() where id in (" . join(",",@uids_tracko) . ")";
+                    $dbh->do("$q2");
+                    # sleep(3);
+                    if (0) {
+                        # removed 2007-01-16 due to performance reasons. Data can be found in /var/www/maxima_engine/www/verify*.ok tables if needed.
+                        # ... $q3="insert into tracko values ('0','$ttid','". join something ."')";
+                        # ... $dbh->do("$q2");
+                    }
+                    @uids_tracko=();
+                    if ($VERIFY) {
+                        if ($important eq "yes") { open (OO, ">>$verifyf/$group_name.$mid.notok"); }        
+                        print OO "- ".time()." $q2\n"; 
+                        if ($important eq "yes") { close OO; }        
+                    }        
+                }
+            }
+        }
+        if ($memberlist_send_ids eq "delete") {
+            $sss=$dbh->prepare("update maint_notify_delete set status='sent' where user_id in ($uids)
+                                and group_id='$gid' and status='queued'");
+            $sss->execute;
+            $sss->finish;
+        }
+        # to test what happens if script is broken
+        # exit if ($num_of_email>10);
+    }
+    if ($#uids_tracko>-1) {
+        $q2="update users_$group_name set last_sent=now(), mess_total=mess_total+1,
+             messagelist=concat(messagelist,',$mid,'),tstamp=now() where id in (" . join(",",@uids_tracko) . ")";
+        $dbh->do("$q2");
+        if ($VERIFY) {
+            if ($important eq "yes") { open (OO, ">>$verifyf/$group_name.$mid.notok"); }        
+            print OO "- ".time()." $q2\n";
+            if ($important eq "yes") { close OO; }        
+        }        
+    }
+    if ($important ne "yes" && $VERIFY) {
+        print OO "+ ".time()." Sending ended. \n";
+        close OO;
+    }
+    open (OO, ">>$verifyf/$group_name.$mid.notok");
+    print OO "+ ".time()." Update track table..... \n";
+    close OO;
+    unless ($nosql) {
+        my $dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+        $sth=$dbh->prepare("update ${member_part}track set mails='$num_of_email' where id='$ttid'");
+        $sth->execute;
+        $sth->finish;
+    }
+    open (OO, ">>$verifyf/$group_name.$mid.notok");
+    print OO "+ ".time()." Track table updated. \n";
+    close OO;
+    if ($just_log_addresses==1) {
+      close LOGADDR;
+    }
+    $sth->finish;
+    $dbh->do("set names utf8");
+}
+
+# all the mails are sent out, now we can send reports for Banneradmin about inserted banners if any.
+if ($has_ads and $test_message ne "yes") {
+    undef @baargs;
+    for ($ci=0;$ci<=$#ad_subs;$ci++) {                          # for every adslot
+        for ($aindex=0;$aindex<=$ad_subs[$ci][2];$aindex++) {   # and then every banner in it
+            $badata = $ad_subs[$ci][3][$aindex][2];             # banner id, campaign id etc
+            $av = $ad_subs[$ci][3][$aindex][0];                 # AV for it
+            push (@baargs,"$badata|$av");
+        }
+    }
+    while (($badata,$av) = each %notok_ads) {   # some may be retreived from send_again.
+        push (@baargs,"$badata|$av");
+    }
+    undef @ba_report;
+    undef @ctnet_report;
+    for (@baargs) {
+        $brg=$_;
+        if ($brg =~ /^C/) {
+            $brg =~ s/^C//;
+            push (@ctnet_report,$brg);
+        }
+        else {
+            push (@ba_report,$brg);
+        }
+    }
+    $baarg=join(":",@ba_report);
+    $baarg=$baarg .":". MD5->hexhash("$baarg$banner_avreport_spice"); 
+    if ($VERIFY) {
+        open (OO, ">>$verifyf/$group_name.$mid.notok");
+        print OO "+ ".time()." Passing data for banneradmin: $banner_avreport_page$baarg \n";
+        close OO;
+    }
+    $baargct=join(":",@ctnet_report);
+    $baargct=$baargct .":". MD5->hexhash("$baargct$ctnet_avreport_spice"); 
+    if ($VERIFY) {
+        open (OO, ">>$verifyf/$group_name.$mid.notok");
+        print OO "+ ".time()." Passing data for ctnetwork: $ctnet_avreport_page$baargct \n";
+        close OO;
+    }
+    if ($#ba_report>-1) {
+        my $ua = new LWP::UserAgent;
+        my $res = $ua->get("$banner_avreport_addr$banner_avreport_page$baarg");
+        unless ($res->is_success && $res->content=~/^Success/) {
+            if ($VERIFY) {
+                open (OO, ">>$verifyf/$group_name.$mid.notok");
+                print OO "+ ".time()." Could not open connection: ". $res->as_string ." \n";
+                close OO;
+            }
+            exit;
+        }
+    }
+    if ($#ctnet_report>-1) {
+        my $ua = new LWP::UserAgent;
+        my $res = $ua->get("$ctnet_avreport_page$baargct");
+        unless ($res->is_success && $res->content=~/^Success/) {
+            if ($VERIFY) {
+                open (OO, ">>$verifyf/$group_name.$mid.notok");
+                print OO "+ ".time()." Could not open connection: ". $res->as_string ." \n";
+                close OO;
+            }
+            exit;
+        }
+    }
+}
+
+$clc="select groupid from multigroup where groupid='$gid' and multiid=3";
+$clh = $dbh->prepare($clc);
+$clh->execute;
+if (@clr=$clh->fetchrow_array) {
+    my $ua = new LWP::UserAgent;
+    my $res = $ua->get("http://www.egyperces.hu/forum/uzenet/id/$mid");
+    unless ($res->is_success) {
+        if ($VERIFY) {
+            open (OO, ">>$verifyf/$group_name.$mid.notok");
+            print OO "+ ".time()." Could not open connection: ". $res->as_string ." \n";
+            close OO;
+        }
+        exit;
+    }
+}
+        
+if ($VERIFY) {
+    open (OO, ">>$verifyf/$group_name.$mid.notok");
+    $infostring=" nosql:$nosql send_again:$send_again";
+    if ($just_log_addresses) {
+        print OO time()." listed $num_of_email mails to $just_log_filename$infostring\n";
+    }
+    else {
+        print OO time()." added $num_of_email mails to spool dirs$infostring\n";
+    }
+    close OO;
+    rename("$verifyf/$group_name.$mid.notok","$verifyf/$group_name.$mid.ok");
+    system("chmod 644 $verifyf/$group_name.$mid.ok");
+}
+
+exit(0);
+
+################## Subroutines
+
+sub substitute_nltab ($) {
+
+    $valstring=shift;
+    $valstring=~s/\t/$message_val_subs_tab/gi;
+    $valstring=~s/\n/$message_val_subs_nl/gi;
+    $valstring=~s/\r//gi;
+    return $valstring;
+}
+
+# sender_engine for now uses 8bit encoding, we'll return to quoted printable if we REALLY have to
+# quoted printeble is very problematic when we substitute variuos {l}{/l} and {demog} things.
+sub mx_encode_string($) {
+
+    my $str=shift;
+    # return mx_ encode_qp($str);
+    return $str;
+}
+
+sub mx_char_replace($,$) {
+
+    my $data=shift;
+    my $replace=shift;
+    for (my $i=0;$i<length($replace);$i+=2) {
+        if (length(substr($replace,$i+1,1))) {
+            my $from = substr($replace,$i,1);
+            my $to = substr($replace,$i+1,1);
+            $data =~ s/\Q$from\E/$to/g;
+        }
+    }
+    return $data;
+}
+
+sub mx_html_email_encode($,$) {
+
+    my $message_id=shift;
+    my $email=shift;
+
+    $md5=substr(MD5->hexhash("${message_create_date}DombosFest2007$email$message_id"),3,17);
+    return substr($md5,0,5) . sprintf("%x",$message_id) . substr($md5,5) . "," . $email;
+}
+
+sub mx_subject_decode($) {
+
+    my $charenc;
+    my $mimeenc;
+    my @subjparts=split(/\r?\n[\s]*/,shift);
+    my $subject="";
+    foreach (@subjparts) {
+        $spa=$_;
+        while ($spa =~ /=\?([^?]+)\?(B|Q)\?([^?]+)\?=/) {
+            $orig=$&;
+            $charenc=$1;
+            $mimeenc=$2;
+            $mtext=$3;
+            if ($mimeenc eq "B") {
+                $mtext=decode_base64($mtext);
+            }
+            if ($mimeenc eq "Q") {
+                $mtext=decode_qp($mtext);
+                $mtext =~ s/_/ /g;
+            }
+            # the user demog data is in the same codeset as the message,
+            # therefore we need the customizable subject in that codeset too.
+            $charenc=mx_get_supported_charset($charenc);
+            if ($charenc ne $html_codeset) {
+                $mtext=mx_iconv($mtext,$charenc,$html_codeset);
+            }
+            $spa =~ s/\Q$orig\E/$mtext/;
+        }
+        $subject .= $spa;
+    }
+    return $subject;
+}
+
+sub mx_name_normalize($) {
+
+    # works for hungarian only so far, ucfirst(lc(... unfortunately does not work even with utf8 as expected.
+    $to = shift;
+    if ($html_codeset ne "utf8") {
+        $to=mx_iconv($to,$html_codeset,"utf8");
+    }
+    @rri = split (/ /, $to);
+    $final_subs_text = '';
+    for (@rri) {
+        $subs_text = $_;
+        $subs_text =~ tr/A-Z/a-z/;
+        $subs_text =~ s/Á/á/g;
+        $subs_text =~ s/É/é/g;
+        $subs_text =~ s/Í/í/g;
+        $subs_text =~ s/Ó/ó/g;
+        $subs_text =~ s/Ö/ö/g;
+        $subs_text =~ s/Ő/ő/g;
+        $subs_text =~ s/Ú/ú/g;
+        $subs_text =~ s/Ü/ü/g;
+        $subs_text =~ s/Ű/ű/g;
+        $subs_text =~ s/^(\w)/\u$1/;
+        $subs_text =~ s/^á/Á/;
+        $subs_text =~ s/^é/É/;
+        $subs_text =~ s/^í/Í/;
+        $subs_text =~ s/^ó/Ó/;
+        $subs_text =~ s/^ö/Ö/;
+        $subs_text =~ s/^ő/Ő/;
+        $subs_text =~ s/^ú/Ú/;
+        $subs_text =~ s/^ü/Ü/;
+        $subs_text =~ s/^ű/Ű/;
+        $final_subs_text .= "$subs_text ";
+    }
+    $final_subs_text =~ s/ +$//;
+    $final_subs_text =~ s/ +/ /g;
+    if ($html_codeset ne "utf8") {
+        $final_subs_text=mx_iconv($final_subs_text,"utf8",$html_codeset);
+    }
+    return $final_subs_text;
+}

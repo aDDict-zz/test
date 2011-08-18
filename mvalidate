@@ -1,0 +1,67 @@
+#!/usr/bin/perl
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+use DBI;
+
+$sender = $ARGV[0];
+$group = $ARGV[1];
+$validation = $ARGV[2];
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+
+$validation =~ /mvalidate-(.+)/;
+
+$unique_id = $1;
+
+# ./mvalidate x x mvalidate-3459be7bae
+
+# check for the user is commented out because it is possible that the message will be validated by somebody else, not the sender.
+# the unique_id should be enough to identify the message (?), the group also comes from this.
+
+#$sth = $dbh->prepare("select id from user where email='$sender'");
+#$sth->execute;
+
+# this line should ensure that we get the message from vmailarchive without any conversion (as it is latin1) 
+# see comments in stripmime about set names' too
+$dbh->do("set names latin1");
+
+#if (($user_id) = $sth->fetchrow_array) {
+    $sth = $dbh->prepare("select id from validatemes where unique_id='$unique_id'");
+    $sth->execute;
+    if (@row=$sth->fetchrow_array) {
+      $mid = $row[0];
+      $stt=$dbh->prepare("select groups.title, vmailarchive.header, vmailarchive.body,validatemes.filter_id,validatemes.timer from 
+                          groups, vmailarchive, validatemes where group_id=groups.id and validatemes.id=vmailarchive.id and validatemes.id='$mid'");
+      $stt->execute;
+      $st=$dbh->prepare("delete from validatemes where id='$mid'");
+      $st->execute;
+      $st=$dbh->prepare("delete from vbodies where id='$mid'");
+      $st->execute;
+      $st=$dbh->prepare("delete from vmailarchive where id='$mid'");
+      $st->execute;
+      if (@row=$stt->fetchrow_array) {
+        $group = $row[0];
+        $header = $row[1];
+        $body = $row[2];
+        $filter_id = $row[3];
+        $timer = $row[4];
+        $stf= $dbh->prepare("select name from filter where id='$filter_id'");
+        $stf->execute;
+        if (@rof=$stf->fetchrow_array) {
+            $filtpar="filter-$rof[0]$timer";
+        }
+        else {
+            $filtpar="list$timer";
+        }
+        open (OUT, "|$MX_SCRIPT_ROOT/stripmime $group validated $filtpar");
+        print OUT "$header$body";
+        close OUT;
+      }
+    }
+#}
+

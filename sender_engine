@@ -1,0 +1,1034 @@
+#!/usr/bin/perl
+
+use DBI;
+use Digest::MD5;
+#use MD5;
+use MIME::Base64;
+use LWP::UserAgent;
+use HTTP::Date;
+use Text::Iconv;
+Text::Iconv->raise_error(0);
+
+
+$md5 = Digest::MD5->new;
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "common.pl";
+require "common_functions.pl";
+require "spools.pl";
+
+$VERIFY = 1; # 1 or maybe 0, it should always be 1.
+$send_time=time();
+$verifyd = $MX_SEND_VERIFY_DIR . "/";
+$verifyf = "sender-engine-$send_time-" . rand();
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1;
+$dbh->do("set names utf8");
+
+@job_errors=();
+$timer_send=0;             # the send is based on timer_id or not (regular sending or send based on base_id - virus mails etc.)
+$from_cron=0;              # script is called by a cron job
+$direct_send=0;            # immediate sending from the php interface
+%mail_formats=("mime"=>1,"html"=>1,"plain"=>1);
+%mail_outputs=("pipe"=>1,"maxima0"=>1);
+$member_part="";
+$member_feedback="";
+$sender_id=0;              # custom sender (from the user table)
+$memberlist="";            # list of members to send to (kind of a filter)
+$member_send=0;            # the sender is a group member,
+$maillist="";              # sends to these emails
+$mail_format="";           # target format
+$mail_output="";           # where does the output go
+$base_id=0;                # set when test is requested from php and means that the call is not coming from cron.
+$timer_id=0;               # set when this script is called from php requesting immediate send
+%cid_list=();              # list of cid's used for the html mails, to avoid duplicates
+for (@ARGV) {              # cron calls this script without params, params are defined when used for test.
+    if (/^base-(\d+)$/) { $base_id=$1; }
+    elsif (/^format-(.+)$/) { if ($mail_formats{$1}) { $mail_format=$1; } else { push(@job_errors,"Unknown option: $_"); } }
+    elsif (/^output-(.+)$/) { if ($mail_outputs{$1}) { $mail_output=$1; } else { push(@job_errors,"Unknown option: $_"); } }
+    elsif (/^maillist-(.+)$/) { $maillist=$1; }
+    elsif (/^sender-member-(\d+)$/) { $sender_member_id=$1; }
+    elsif (/^sender-(\d+)$/) { $sender_id=$1; }
+    elsif (/^now-(\d+)$/) { $timer_id=$1; }
+    elsif (/^memberlist-([\d,]+|delete)$/) { $memberlist=$1; }
+    else { push(@job_errors,"Unknown parameter: $_"); }
+}
+end_job() if ($#job_errors>-1);
+$mail_output="pipe" if (length($mail_format) and $mail_format ne "mime");  # maxima0 accepts only mime
+
+# "$script_root/sender_engine base-$fae_base format-mime output-maxima0 memberlist-$fae_all[2] sender-$fae_db[0]";
+# if any of these is missing and the timer_id is not defined, we assume the script is called from cron.
+if ($timer_id) {
+    $squery="select id,name,group_id,base_id,filter_id,test_email,stype,sender_id,test,'',message_category_id
+             from sender_timer where id='$timer_id' and status='prepared'";
+    $timer_send=1;
+    $direct_send=1;
+    $mail_format="mime";
+    $mail_output="maxima0";
+    print "Direct send $send_time\n";
+}
+elsif ( not ($base_id and length($mail_format) and length($mail_output)) ) {
+    $timer_send=1;
+    $from_cron=1;
+    $mail_format="mime";
+    $mail_output="maxima0";
+    print "Cron call $send_time\n";
+    $squery="select id,name,group_id,base_id,filter_id,test_email,stype,sender_id,test,'',message_category_id
+             from sender_timer where
+             active='yes' and status='queued'
+             and (
+                (stype='single' and sdate<now() and unix_timestamp(now())-unix_timestamp(sdate)<900)
+                or (
+                    time_to_sec(concat(stime,':00'))<=time_to_sec(curtime())
+                    and time_to_sec(concat(stime,':00'))>=time_to_sec(curtime())-900
+                    and (isnull(to_days(last_sent)) or to_days(last_sent)<to_days(now()))
+                    and (
+                        (stype='cyclical' and substring(sdays,dayofweek(now()),1)='X')
+                        or
+                        (stype='2hetente' and mod(to_days(now()),14)=smod)
+                        or
+                        (stype='3hetente' and mod(to_days(now()),21)=smod)
+                        or
+                        (stype='4hetente' and mod(to_days(now()),28)=smod)
+                        or
+                        (stype='havonta' and dayofmonth(now())=smonthday)
+                    )
+                )
+             )
+             order by rand() limit 1";
+}
+else {
+    $squery = "select 0,subject,group_id,id,0,'','',$sender_id,'no',emphasized,0 from sender_base where id=$base_id";
+    if ($mail_output eq "maxima0") {
+        if ($sender_member_id and length($maillist)) {
+            $member_part="member_";
+            $member_send=1;
+            $member_feedback="m";
+            $verifyd .= "/member";
+        }
+        elsif ($sender_id and $memberlist =~ /^(\d+(,\d+)*|delete)$/) {
+            $member_part="auto_";
+            $memberlist_send=1;
+            $member_feedback="u";
+            $verifyd .= "/auto";
+            $sender_member_id=0;
+        }
+        else {
+            push(@job_errors,"Invalid viral campaign or automatic email data: $sender_member_id,$maillist,$sender_id,$memberlist");
+            end_job();
+        }
+    }
+}
+
+$sth = $dbh->prepare($squery);
+$sth->execute;
+if (@row = $sth->fetchrow_array) {
+    $timer_id = $row[0];
+    $subject = $row[1];
+    $group_id = $row[2];
+    $base_id = $row[3];
+    $filter_id = $row[4];
+    $test_email = $row[5];
+    $stype = $row[6];
+    $test = $row[8];
+    if ($timer_send) {
+        $s2=$dbh->prepare("select emphasized from sender_base where id='$base_id'");
+        $s2->execute;
+        if (@gn = $s2->fetchrow_array) {
+            $emphasized = $gn[0];
+        }
+        else {
+            $emphasized = "";
+        }
+    }
+    else {
+        $emphasized = $row[9];
+    }
+    $message_category_id = $row[10];
+    $test_email="" if ($test ne "yes");
+    $group_title="";
+    $group_name="";
+    if ($VERIFY and $mail_output eq "maxima0") {
+        open (OO, ">$verifyd/$verifyf.notok") || system("logger ne valja - sender engine");
+    }
+    if ($timer_send and $test ne "yes") {
+        ($dt_sec,$dt_min,$dt_hour,$dt_mday,$dt_mon,$dt_year,$dt_wday,$dt_yday,$dt_isdst) = localtime;
+        $filename = $MX_DUPLICATE_VERIFY_DIR . "/${dt_year}-${dt_mon}-${dt_mday}-${dt_hour}-${dt_min}-${timer_id}";
+        if (-e "$filename") {
+            system ("logger sender engine: $filename already exists");
+            exit;
+        }
+        open (OVS, ">$filename") || system("logger sender engine: could not make $filename");
+        close OVS;
+    }
+    $s2=$dbh->prepare("select title,name from groups where id='$group_id'");
+    $s2->execute;
+    if (@gn = $s2->fetchrow_array) {
+        $group_title=$gn[0];
+        $group_name=$gn[1];
+        $group_name=$gn[0] if (!length($group_name));
+    }
+    $s2->finish;
+    if ($member_send) {
+        $sender_id = $sender_member_id;
+        $message_fields="maillist";
+        $message_values=$dbh->quote($maillist);
+        $spool=mx_spool($group_title,"yes"); # force virus mails into the test spool to make them fast
+    }
+    elsif ($memberlist_send) {
+        $message_fields="memberlist";
+        $message_values=$dbh->quote($memberlist);
+        $spool=mx_spool($group_title,"yes");
+    }
+    else {
+        $sender_id = $row[7];
+        $message_fields="filter_id,test,test_email";
+        $message_values="'$filter_id','$test',".$dbh->quote($test_email);
+        $spool=mx_spool($group_title,$test);
+    }
+    ($main_spooldir,$templatedir,$templatedir_contents,$templatedir_banners)=mx_main_spooldir($spool);
+    if ($VERIFY and $mail_output eq "maxima0") {
+        print OO "Found job: timer_id = $row[0]; subject = $row[1]; group_id = $row[2]; base_id = $row[3]; filter_id = $row[4]; test_email = $test_email; test = $row[8]; stype = $row[6]; sender_id = $sender_id; timer_send = $timer_send; mail_format = $mail_format; mail_output = $mail_output; member_send = $member_send; memberlist_send = $memberlist_send; spool = $spool; templatedir_banners = $templatedir_banners; group_title = $group_title\n";
+        close OO;
+    }
+    # For cyclical, check if a single sending is scheduled for today in this group.
+    # If yes (no matter if it is sent already or not), it takes priority and this one is not sent
+    # and also marked as sent because there is no need to try sending again in a given day.
+    if ($timer_send and $stype ne "single" and $stype ne "now") {
+        $prq="select name from sender_timer where active='yes' and test='no' and group_id='$group_id'
+              and stype='single' and to_days(sdate)=to_days(now()) limit 1";
+        $prh = $dbh->prepare($prq);
+        $prh->execute;
+        if (@prw = $prh->fetchrow_array) {
+            $s2=$dbh->prepare("update sender_timer set last_sent=now() where id='$timer_id'");
+            $s2->execute;
+            $s2->finish;
+            $force_archive=1;
+            push(@job_errors,"A ciklikus küldés nem futott le mert ugyanazon a napon volt egy egyszeri kiküldés ebben a csoportban (gid:$group_id): $prw[0]");
+            end_job();
+        }
+    }
+    if ($timer_send) {
+        # reset message_id also, and if there were no errors and maxima0 can be called, it will be set to current message_id.
+        $s2=$dbh->prepare("update sender_timer set status='processing',last_error='',message_id=0 where id='$timer_id'");
+        $s2->execute;
+        $s2->finish;
+    }
+    $st = $dbh->prepare("select plain,html,subject from sender_base where id='$base_id'");
+    $st->execute;
+    $contents="";
+    $ads="";
+    $ads_egyperc="";
+    $base64_parts="";
+    $base64_parts_external_images=""; # sounds silly, but we do need this for cases where we can not use or will not use external images
+    undef %feedback;
+    undef %feedback_name;
+    if (@mailparts = $st->fetchrow_array) {
+        $mailparts[0] =~ s/\{group\}/$group_name/gi;
+        $mailparts[1] =~ s/\{group\}/$group_name/gi;
+        $mailparts[2] =~ s/\{group\}/$group_name/gi;
+        $subject=$mailparts[2] if ($timer_send);
+        $mailparts[0] =~ s/\{KIEMELT_MONDAT\}/$emphasized/gi;
+        mx_replace_html_props(\$mailparts[1]);
+        if ($mail_format eq "plain") {
+            $mailparts_0_external_images = $mailparts[0];
+            ($mail_encoded,$mail_encoded_external_images) = mx_mailpart($mailparts[0],$mailparts_0_external_images,"plain");
+        }
+        elsif ($mail_format eq "html") {
+            $mailparts_1_external_images = $mailparts[1];
+            ($mail_encoded,$mail_encoded_external_images) = mx_mailpart($mailparts[1],$mailparts_1_external_images,"html");
+        }
+        else {
+            $delim1=substr($md5->hexhash($send_time.$base_id."akarmimasegyebvalami"),2,12);
+            $delim2=$delim1."a";
+            $delim1=$delim1."b";
+            $mime_header="Mime-version: 1.0\nContent-Type: multipart/related;\n    boundary=\"----=_NextPart_001_$delim2\"";
+            $mail_encoded="This is a multi-part message in MIME format.
+
+------=_NextPart_001_$delim2
+Content-Type: multipart/alternative;
+    boundary=\"----=_NextPart_000_$delim1\"
+
+------=_NextPart_000_$delim1
+Content-Type: text/plain; charset=\"utf-8\"
+Content-Transfer-Encoding: 8bit\n\n";
+            $mail_encoded_external_images = $mail_encoded;
+            $mailparts_0_external_images = $mailparts[0];
+            ($encoded,$encoded_external_images) = mx_mailpart($mailparts[0],$mailparts_0_external_images,"plain");
+            $mail_encoded .= $encoded;
+            $mail_encoded_external_images .= $encoded_external_images;
+            $mime_middle = "
+
+------=_NextPart_000_$delim1
+Content-Type: text/html; charset=\"utf-8\"
+Content-Transfer-Encoding: 8bit\n\n";
+
+            $mail_encoded .= $mime_middle;
+            $mail_encoded_external_images .= $mime_middle;
+            $mailparts_1_external_images = $mailparts[1];
+            ($encoded,$encoded_external_images) = mx_mailpart($mailparts[1],$mailparts_1_external_images,"html");
+            $mail_encoded .= $encoded;
+            $mail_encoded_external_images .= $encoded_external_images;
+
+            $sta = $dbh->prepare("select path from sender_base_uploaded_files where base_id='$base_id' and type='attachment'");
+            $sta->execute;
+            while (@attach = $sta->fetchrow_array) {
+                ($type,$cid) = mx_getencodedfilepart($MX_SENDER_ATTACHMENTS_URL . $attach[0] , \$base64_parts, \$base64_parts_external_images, 1, 0);
+            }
+            $sta->finish;
+            $mail_encoded .= "\n\n------=_NextPart_000_$delim1--\n\n$base64_parts\n\n------=_NextPart_001_$delim2--\n\n";
+            $mail_encoded_external_images .= "\n\n------=_NextPart_000_$delim1--\n\n$base64_parts_external_images\n\n------=_NextPart_001_$delim2--\n\n";
+        }
+    }
+    else {
+        push (@job_errors,"Could not retreive base data.");
+        end_job();
+    }
+    $st->finish;
+    if ($mail_output eq "maxima0") {
+        if ($test eq "yes" and $member_part eq "") {
+            $subject="Teszt: $subject";
+        }
+        $subject = $dbh->quote(mx_encode_header_tags($subject,"utf8"));
+        $sth = $dbh->prepare("insert into ${member_part}messages
+                              (group_id,user_id,subject,create_date,spool,plain_codeset,html_codeset,$message_fields,message_category_id)
+                              values ('$group_id','$sender_id',$subject,now(),'$spool','utf8','utf8',$message_values,$message_category_id)");
+        $sth->execute;
+        $message_id=$sth->{mysql_insertid};
+        $sth->finish;
+        if ($message_id) {
+            mx_sender_logs ("inserting message: $message_id");
+            $dbh->do("update sender_timer set message_id='$message_id' where id='$timer_id'");
+        }
+        else {
+            push (@job_errors,"Could not insert message data.");
+            end_job();
+        }
+        # feedback links found in contents.
+        while (($unique_id,$qurl) = each (%feedback)) {
+            $link_name=$dbh->quote($feedback_name{$unique_id});
+            $url_replace="";
+            if ($qurl[1] =~ /^<([^>]+)> (.*)/) {
+                $url_replace=$dbh->quote($1);
+                $qurl=$dbh->quote($2);
+            }
+            else {
+                $url_replace="''";
+                $qurl=$dbh->quote($qurl);
+            }
+            $sth = $dbh->prepare("insert into ${member_part}feedback (id,message_id,url,unique_id,group_id,tstamp,url_replace,name)
+                                  values ('0','$message_id',$qurl,'$unique_id','$group_id',now(),$url_replace,$link_name)");
+            $sth->execute;
+            $sth->finish;
+        }
+        # mailarchive and bodies tables are in latin1 (stripmime explains why), tell that the data is in latin1 thus avoiding conversion.
+        $dbh->do("set names latin1");
+        # this table is not really necessary i think, but i am not sure
+        # 2007-07-26: I have found out: maxima/message.php expects the text-only version here, fix when next working on this.
+        if (!$member_send and !$memberlist_send) {
+            $sth = $dbh->prepare("insert into bodies (id,body) values ('$message_id',". $dbh->quote($mail_encoded) .")");
+            $sth->execute;
+            $sth->finish;
+        }
+        # the addon thing is not a mistake, maxima0 needs that, not 'header', but, mime.php needs header
+        $contents=$dbh->quote($contents);
+        $ads=$dbh->quote($ads);
+        $ads_egyperc=$dbh->quote($ads_egyperc);
+        $egyperc1=$egyperc2="";
+        if ($member_part eq "") {
+            $egyperc1=",ads_egyperc";
+            $egyperc2=",$ads_egyperc";
+        }
+
+        $sth = $dbh->prepare("insert into ${member_part}mailarchive (id,addon,header,body,fromweb,contents,ads$egyperc1)
+                              values ('$message_id',". $dbh->quote($mime_header) .",". $dbh->quote($mime_header) .","
+                              . $dbh->quote($mail_encoded) .",'yes',$contents,$ads$egyperc2)");
+        $sth->execute;
+        $sth->finish;
+        if ($member_part eq "") {
+            $sth = $dbh->prepare("insert into ${member_part}mailarchive_external_images (id,body)
+                                  values ('$message_id',". $dbh->quote($mail_encoded_external_images) . ")");
+            $sth->execute;
+            $sth->finish;
+        }
+        $dbh->do("set names utf8");
+        # I don't know if this is needed any more either.
+        if (!$member_send and !$memberlist_send) {
+            $sth = $dbh->prepare("update groups set num_of_mess=num_of_mess+1,last_date=now() where id='$group_id'");
+            $sth->execute;
+            $sth->finish;
+        }
+        $maxima0 = $MX_SPOOL_ENGINE . " ${member_part}$message_id has_contents";
+        $maxima0 .= " filter-$filter_id" if ($filter_id);
+        $maxima0 .= " sender_member-$sender_member_id" if ($member_send);
+        $maxima0 .= " memberlist-$memberlist" if ($memberlist_send);
+        mx_sender_logs ("message data inserted, calling maxima0 with params: $maxima0");
+        $dbh->disconnect;
+        # we always read data from the database, unlike the usual sending method
+        # FIXME we should here await some output from maxima0 and report errors if needed!
+
+        print $maxima0; exit;
+
+        open (OUT,"|$maxima0");
+        close OUT;
+        # reconnect for end_job(), maxima0 can take long and the sql conection can be lost.
+        $dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+    }
+    else {
+        print "Subject: $subject\n$mime_header" if ($mail_format eq "mime");
+        print "$mail_encoded\n";
+    }
+    end_job();
+}
+elsif (!$timer_send) {
+    push (@job_errors,"Invalid base id: $base_id");
+    end_job();
+}
+
+# - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+
+sub end_job()
+{
+    if ($timer_send) {
+        my $qadd="";
+        if ($#job_errors>-1) {
+            $qadd=",last_error=".$dbh->quote(join("\n",@job_errors));
+        }
+        else {
+            $qadd=",last_sent=now(),last_error=''"
+        }
+        if (($stype ne "single" and $stype ne "now") or $#job_errors>-1) {
+            $set_status="queued"; # reset for the next sending for cyclical or for next try if there was an error
+        }
+        else {
+            $set_status="ready";
+        }
+        $s2=$dbh->prepare("update sender_timer set status='$set_status'$qadd where id='$timer_id'");
+        $s2->execute;
+        $s2->finish;
+        if ($#job_errors<0 || $force_archive) {
+        # insert the copy of sender_timer to sender_archive
+        $dbh->do("insert into sender_archive
+                  (name,group_id,base_id,filter_id,sender_id,test_email,last_sent,last_error,status,processing,active,stype,sdate,stime,sdays,test,dateadd,smod,smonthday,message_id,notice,sender_timer_id)
+                  select
+                  name,group_id,base_id,filter_id,sender_id,test_email,last_sent, last_error,status,processing,active,stype,sdate,stime,sdays,test,now(),smod,smonthday,message_id,notice,id
+                  from sender_timer where id=$timer_id");
+        }
+    }
+    if ($#job_errors==-1) {
+        if ($mail_output eq "maxima0" and $VERIFY) {
+            rename("$verifyd/$verifyf.notok","$verifyd/$verifyf.ok");
+        }
+    }
+    else {
+        mx_sender_logs (join("\n",@job_errors));
+        print join("\n",@job_errors)."\n" if ($mail_output ne "maxima0");
+    }
+    exit;
+}
+
+# get contents from the web and save into files
+sub mx_mailpart($;$;$)
+{
+    my $part=shift;
+    my $part_external_images=shift;
+    my $part_format=shift;
+    my $i=0;
+    $sign="h";
+    $sign="p" if ($part_format eq "plain");
+    while ($part =~ /\{c-([a-z0-9_]+)\}/i and $i<100) {
+        my $content_name=$1;
+        my $replace="";
+        $st = $dbh->prepare("select ${part_format}_address,dependent_name,dependent_value,codeset from sender_contents
+                             where group_id='$group_id' and name='$content_name'");
+        $st->execute;
+        if (my @cnt = $st->fetchrow_array) {
+            my $ua = new LWP::UserAgent;
+            my $res = $ua->get($cnt[0]);
+            if ($res->is_success) {
+                my $lastmodstr=$res->header("last_modified");
+                my $lastmod=str2time($lastmodstr);
+                my $content_error;
+                ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+                $today0=time-$hour*60*60-$min*60-$sec;
+                $content_retreived=$res->content;
+                my $is_php = $cnt[0] =~ /\.php/i;
+                if ($is_php) {
+                    if ($content_retreived =~ /<!-- *MAXIMA *-->(.*)<!-- *\/MAXIMA *-->/si) {
+                        $content_retreived = $1;
+                    }
+                    else {
+                        $content_error="PHP TARTALOM FORMÁTUM HIBA: $content_name";
+                        $content_error_log="Php content format invalid ($content_name)";
+                    }
+                }
+                if (not $is_php and $lastmod<$today0 and length($lastmodstr)) {
+                    $content_error="ELÉVÜLT TARTALOM: $content_name ($lastmodstr)";
+                    $content_error_log="Content too old ($lastmod>=$today0 $content_name): ". $res->as_string;
+                }
+                if ($content_retreived =~ /(Uncaught exception|A keresett oldal nem|Oldalunk karbantartas miatt|hirekmedia-failure-site)/) {
+                    $content_error="TARTALOM SZERVER HIBA: $content_name ($1)";
+                    $content_error_log="Server error in content: $content_name ($1)";
+                }
+                unless (length($content_error)) {
+                    # convert to utf8 if needed
+                    if ($cnt[3] ne "utf8") {
+                        mx_sender_logs ("Converting $content_name from $cnt[3] to UTF8");
+                        $content_retreived = mx_iconv($content_retreived,$cnt[3],"UTF8");
+                    }
+                    # check for images in the html contents.
+                    $content_file="$timer_id-$send_time-$part_format-$content_name";
+                    $content_retreived =~ s/\{group\}/$group_name/gi;
+                    if ($content_retreived =~ /(\{subject\})([^{]+)(\{\/subject\})/i) {
+                        $subject=$2;
+                        $content_retreived =~ s/\Q$1$2$3\E/$subject/g;
+                    }
+                    mx_replace_html_props(\$content_retreived);
+                    $content_retreived =~ s/\{c-([a-z0-9_]+)\}//gi; # no recursive contents yet.
+                    # content should be always present or this is a test
+                    if (length($cnt[1]) or $mail_output eq "pipe") {
+                        # {l}{/l}s are invisible for maxima0 if they are not substituted. Show for test too.
+                        while ($content_retreived =~ /\{l([^}]*)\}([^{]+)\{\/l\}/) {
+                            $linkname = $1;
+                            $realurl = $2;
+                            $unique_id = substr($md5->hexhash(rand().time()),0,10);
+                            $unique_url = "http://$group_title.$local_hostname/re/$member_feedback".substr($unique_id,0,3).'{userid}'.substr($unique_id,-7);
+                            $content_retreived =~ s/\{l\Q$linkname\E\}\Q$realurl\E\{\/l\}/$unique_url/gi;
+                            $feedback{$unique_id}=$realurl;
+                            $feedback_name{$unique_id}=$linkname;
+                        }
+                    }
+                    if (!length($cnt[1]) or $mail_output eq "pipe") {
+                        $part =~ s/\{c-$content_name\}/$content_retreived/gi;
+                        $part_external_images =~ s/\{c-$content_name\}/$content_retreived/gi;
+                        mx_sender_logs ("substitute {$part_format-$content_name}");
+                    }
+                    else {  # maxima0 should decide according to demog values who gets which content.
+                        # maxima0 cannot see in the contents demog variables either, search for them here.
+                        my $part_images="";
+                        my $dummy="";
+                        if ($part_format eq "html") {
+                            $content_retreived_external_images = $content_retreived;
+                            mx_encode_images(\$content_retreived,\$content_retreived_external_images,\$part_images,\$dummy,0);
+                        }
+                        mx_part_encode(\$content_retreived);
+                        mx_sender_logs("Write $content_file");
+                        my $opened=1;
+                        open (CF, ">$templatedir_contents/$content_file") or $opened=0;
+                        if ($opened) {
+                            print CF $content_retreived;
+                            close CF;
+                            $contents .= "$sign-$content_name:". length($part_images) ."\n$cnt[1]:$cnt[2]\n$content_file\n=_\n";
+                        }
+                        else {
+                            push (@job_errors,"Could not write to: $templatedir_contents/$content_file");
+                            end_job();
+                        }
+                        if (length($part_images)) {
+                            my $opened=1;
+                            open (CF, ">$templatedir_contents/$content_file-i") or $opened=0;
+                            if ($opened) {
+                                print CF $part_images;
+                                close CF;
+                            }
+                            else {
+                                push (@job_errors,"Could not write to: $templatedir_contents/$content_file-i");
+                                end_job();
+                            }
+                            $base64_parts .= "{$sign-$content_name-i}";
+                            $base64_parts_external_images .= "{$sign-$content_name-i}";
+                        }
+                    }
+                }
+                else {
+                    if ($mail_output eq "maxima0") {
+                        push (@job_errors,$content_error_log);
+                        end_job();
+                    }
+                    else {
+                        $nerepl=mx_error_html($content_error);
+                        $part =~ s/\{c-$content_name\}/$nerepl/gi;
+                    }
+                }
+            }
+            else {
+                if ($mail_output eq "maxima0") {
+                    push (@job_errors,"Could not open connection to $cnt[0]: ". $res->as_string);
+                    end_job();
+                }
+                else {
+                    $nerepl=mx_error_html("NEM ELÉRHETÕ TARTALOM: $content_name");
+                    $part =~ s/\{c-$content_name\}/$nerepl/gi;
+                }
+            }
+        }
+        else {
+            if ($mail_output eq "maxima0") {
+                push (@job_errors,"NEMLÉTEZÕ TARTALOM: $content_name");
+                end_job();
+            }
+            else {
+                $nerepl=mx_error_html("NEMLÉTEZÕ TARTALOM: $content_name");
+                $part =~ s/\{c-$content_name\}/$nerepl/gi;
+            }
+        }
+        $part =~ s/\{c-$content_name\}/{$sign-$content_name}/gi;
+        $i++;
+    }
+    my $create_external_images=0;
+    unless (length($member_part)) {
+        $create_external_images=1;
+    }
+    mx_encode_images(\$part,\$part_external_images,\$base64_parts,\$base64_parts_external_images,$create_external_images) if ($part_format eq "html" and $mail_format eq "mime");
+    mx_part_encode(\$part) if ($mail_format eq "html");
+    mx_getads(\$part,\$part_external_images); # make it possible to add banners to the plain part as well, why not.
+    return ($part,$part_external_images);
+}
+
+# qp-encode taking into account {...} things.
+sub mx_part_encode($)
+{
+    my $enc=shift;
+    # do nothing for now, qp-encode is very problematic, use 8-bit for now.
+    # $$enc=mx_ encode_qp($$enc);
+}
+
+sub mx_string_encode($)
+{
+    my $str=shift;
+    # return mx_ encode_qp($str);
+    return $str;
+}
+
+# try to find images in the base or html contents and base64 encode them
+sub mx_encode_images($;$;$;$;$)
+{
+    my $part_ref=shift;
+    my $part_external_images_ref=shift;
+    my $base64_ref=shift;
+    my $base64_ref_external_images=shift;
+    my $create_external_images=shift;
+    my $i=0;
+    my @notfound = ();
+    my $rpl="";
+    my @patterns=("(<img[^>]+src=['\"]?)(http:\/\/[^'\">]+)(['\"]?[^>]*>)",
+                  "(<[^>]+background=['\"]?)(http:\/\/[^'\">]+)(['\"]?[^>]*>)");
+    foreach $patt (@patterns) {
+        while ($$part_ref =~ /$patt/i and $i<100) {
+            my $begin=$1;
+            my $url=$2;
+            my $end=$3;
+            my $orig="$begin$url$end";
+            # some mail clients do not recognize <img src='cid:... , only <img src="cid: !!?...
+            $begin =~ s/'$/"/;
+            $end =~ s/^'/"/;
+            my $icid="";
+            my $imgtype="";
+            ($imgtype,$icid,$external_image_url) = mx_getencodedfilepart($url,$base64_ref,$base64_ref_external_images,0,$create_external_images);
+            if (length($imgtype)) {     # successfully encoded and saved into a file.
+                $rpl=$begin."cid:$icid$end";
+            }
+            else {                      # not successful, put away this url so that we can work with others.
+                my $nfi=$#notfound+1;
+                push (@notfound,"$begin$url$end");
+                $rpl="{notfound$nfi}";
+            }
+            $$part_ref =~ s/\Q$orig\E/$rpl/gi;
+            if (length($external_image_url)) {
+                $$part_external_images_ref =~ s/\Q$orig\E/$begin$external_image_url$end/gi;
+            }
+            else {
+                $$part_external_images_ref =~ s/\Q$orig\E/$rpl/gi;
+            }
+            $i++;
+        }
+    }
+    # put back images we couldn't encode, thus leave them as external reference.
+    for ($i=0;$i<=$#notfound;$i++) {
+        $$part_ref =~ s/\{notfound$i\}/$notfound[$i]/gi;
+    }
+}
+
+sub mx_random_cid() {
+
+    my @words = ("geza","juci","tavasz","nyar","osz","tel","januar","februar","marcius","aprilis","majus","junius","julius","augusztus","szeptember","oktober","november","december","tegla","korte","alma","barack","dio","gyumolcs","ananasz","telefon","lampa","gyertya","szolo","patak","erdo","folyo","cintanyer","lo","jazz","pikula");
+    my $cid="";
+    while (!length($cid) || $cid_list{"$cid"}) {
+        my $i1=int(rand($#words+1));
+        my $i2=int(rand($#words+1));
+        $cid=$words[$i1] . "_" . $words[$i2];
+    }
+    $cid_list{"$cid"}=1;
+    return $cid;
+}
+
+# tries to get an image from an url and saves it. Returns the image type and cid.
+sub mx_getencodedfilepart($;$;$;$;$)
+{
+    my $url=shift;
+    my $base64_ref=shift; # reference to a string to add the encoded image to
+    my $base64_ref_external_images=shift;
+    my $attachment=shift;
+    my $create_external_images=shift;
+    my $cid = mx_random_cid();
+    my $external_image_url = "";
+    my $itype="";
+    my $maintype="";
+    my $ua = new LWP::UserAgent;
+    my $res = $ua->get($url);
+    if ($res->is_success) {
+        $content_type=$res->header("content-type");
+        if ($content_type =~ /([^\/]+)\/([^\/;]+)$/) {
+            $maintype=$1;
+            $itype=$2;
+        }
+        elsif ($attachment) {
+            $content_type = "application/x-unknown";
+        }
+        else {
+            $itype="jpeg";
+            $itype="gif" if ($url =~ /\.gif$/i); # not quite right, but will do
+            $content_type = "image/$itype";
+        }
+        if ($attachment) {
+            $add_headers="";
+            $url =~ /\/([^\/]+)$/;
+            $name = $1;
+        }
+        else {
+            $add_headers="
+Content-Disposition: inline
+Content-Id: <$cid>";
+            $name="$cid.$itype";
+        }
+        if ($create_external_images) {
+            my $external_image_name = "$timer_id-$send_time-$name";
+            my $external_image_subdir = int(rand(512));
+            my $external_image_dir = "$MX_EXTERNAL_IMAGES_DIR/$external_image_subdir";
+            unless(-d $external_image_dir) {
+                unless (mkdir $external_image_dir) {
+                    push (@job_errors,"Could not create: $external_image_dir");
+                    end_job();
+                }
+                system ("chown www-data $external_image_dir");
+            }
+            my $external_random_number = int(rand($#MX_EXTERNAL_IMAGES_URLS+1));
+            $external_image_url = $MX_EXTERNAL_IMAGES_URLS[$external_random_number] . "/$external_image_subdir/$external_image_name";
+            $opened=1;
+            open (ECF, ">$external_image_dir/$external_image_name") or $opened=0;
+            if ($opened) {
+                print ECF $res->content;
+                close ECF;
+            }
+            else {
+                push (@job_errors,"Could not write to: $external_image_dir/$external_image_name");
+                end_job();
+            }
+        }
+        elsif (not $attachment) {
+            $$base64_ref_external_images .= "\n------=_NextPart_001_$delim2
+Content-Type: $content_type;
+    name=\"$name\"
+Content-Transfer-Encoding: base64$add_headers\n\n";
+            $$base64_ref_external_images .= encode_base64($res->content);
+            $$base64_ref_external_images .= "\n";
+        }
+        if (not $attachment and not $maintype =~ /image/i and $mail_output eq "maxima0") {
+            push (@job_errors,"Invalid image content type: $url - $content_type/$maintype");
+            end_job();
+        }
+        $$base64_ref .= "\n------=_NextPart_001_$delim2
+Content-Type: $content_type;
+    name=\"$name\"
+Content-Transfer-Encoding: base64$add_headers\n\n";
+        $$base64_ref .= encode_base64($res->content);
+        $$base64_ref .= "\n";
+    }
+    else {
+        mx_sender_logs ("Malformed url: ". $res->as_string);
+    }
+    return ($itype,$cid,$external_image_url);
+}
+
+# get banners from banneradmin and ctnetwork and save them to files and prepare data for maxima0 through mailarchive.ads
+# $adslist -> $ads
+sub mx_getads($;$)
+{
+    my $adpart=shift;
+    my $adpart_external_images=shift;
+    my @result_ads = ();
+    my @result_ads_egyperc = ();
+    my $i=0;
+    if ($$adpart =~ /\{ADSLOT__CTNET\}/i) {
+        $$adpart =~ s/\{ADSLOT__CTNET\}//gi;
+        $$adpart_external_images =~ s/\{ADSLOT__CTNET\}//gi;
+    }
+    while ($$adpart =~ /\{ctnet-([0-9a-z_]+)\}/i and $i<100) {
+        $ctslot_id=0;
+        my $ctslot=$1;
+        my $ctnet_template="spec_2"; # constant for now, may be coming later in form of {ctnet-6789-box_normal}
+        my $ua = new LWP::UserAgent;
+# print "Getting $ctnet_query_page$ctslot&template=$ctnet_template\n";
+        my $res = $ua->get("$ctnet_query_page$ctslot&template=$ctnet_template");
+        if ($res->is_success && $res->content=~/^(Success|Nonexistent)/) {
+            if ($res->content =~ /^Nonexistent/) {
+                my $nerepl="";
+                if ($mail_output eq "pipe") {
+                    $nerepl=mx_error_html("NEMLÉTEZÕ CTNETWORK ADSLOT: $ctslot");
+                }
+                $$adpart =~ s/\{ctnet-$ctslot\}/$nerepl/gi;
+                $$adpart_external_images =~ s/\{ctnet-$ctslot\}/$nerepl/gi;
+            }
+            else {
+                @banners = split("\n",$res->content);
+                my @result_data = ();
+                my $egyperc_replace="";     # save replacement for the egyperces archivum and for preview (output=pipe)
+                my $maxweight=0;            # and use the banner with max weight for that
+                # 2247:7379:long_box_normal:0.0055:PGh0bWw+Cjx
+                my $toomany=0;
+                for (@banners) {
+                    if (/^(\d+):([\d-]+):([0-9a-z_]+):([\d\.]+):([^\s]+)/i and $toomany<100) {
+                        $ctslot_id=$1;
+                        my $banner_id=$2;
+                        $ctnet_template=$3;
+                        my $weight=$4;
+                        my $banner_data=$5;
+                        $banner_code = decode_base64($banner_data);
+                        # ctnetwork always sends in CP1250
+                        $banner_code = mx_iconv($banner_code,"CP1250","UTF8");
+                        mx_replace_html_props(\$banner_code);
+                        my $part_images="";
+                        my $dummy="";
+                        $banner_code_external_images=$banner_code;
+                        mx_encode_images(\$banner_code,\$banner_code_external_images,\$part_images,\$dummy,0);
+                        if ($mail_output eq "maxima0") {
+                            my $banner_file="";
+                            if (length($part_images)) {
+                                $banner_file=uc(substr($md5->hexhash(rand().$time),0,2)) . "/" . "ct$send_time"."b$banner_id";
+                                my $opened=1;
+                                open (CF, ">$templatedir_banners/$banner_file") or $opened=0;
+                                if ($opened) {
+                                    print CF $part_images;
+                                    close CF;
+                                }
+                                else {
+                                    push (@job_errors,"Could not write to: $templatedir_banners/$banner_file");
+                                    end_job();
+                                }
+                            }
+                            push (@result_data,"0:$ctnet_template:$ctslot_id:$weight:$banner_id:ctnet:$banner_file:".encode_base64($banner_code,""));
+                        }
+                        if ($weight>$maxweight) {
+                            $maxweight=$weight;
+                            $egyperc_replace=decode_base64($banner_data);
+                            # ctnetwork always sends in CP1250
+                            $egyperc_replace = mx_iconv($egyperc_replace,"CP1250","UTF8");
+                            mx_replace_html_props(\$egyperc_replace);
+                        }
+                    }
+                    $toomany++;
+                }
+                $base64_parts .= "{ad-ctimg-$ctslot_id}" if ($ctslot_id);
+                $base64_parts_external_images .= "{ad-ctimg-$ctslot_id}" if ($ctslot_id);
+                if ($#result_data>-1) {
+                    push (@result_ads,join("|",@result_data));
+                }
+                if ($mail_output eq "pipe") {
+                    $banner_code=$egyperc_replace;
+                    $banner_code=mx_string_encode($banner_code) if ($mail_format eq "mime");
+                    $$adpart =~ s/\{ctnet-$ctslot\}/$banner_code/gi;
+                    $$adpart_external_images =~ s/\{ctnet-$ctslot\}/$banner_code/gi;
+                }
+                push (@result_ads_egyperc,"$ctslot_id|ctnet|".encode_base64($egyperc_replace,""));
+                $$adpart =~ s/\{ctnet-$ctslot\}/{ad-ctlink-$ctslot_id}/gi;
+                $$adpart_external_images =~ s/\{ctnet-$ctslot\}/{ad-ctlink-$ctslot_id}/gi;
+            }
+            mx_sender_logs($res->content);
+        }
+        else {
+            push (@job_errors," Could not retreive ads data for ctnetwork adslot $ctslot: ". $res->as_string);
+            end_job();
+        }
+        $i++;
+    }
+    while ($$adpart =~ /\{adslot-([0-9a-z_]+)\}/i and $i<100) {
+        $adslot_id=0;
+        my $adslot=$1;
+        my $ua = new LWP::UserAgent;
+#print "Getting $banner_query_addr$banner_query_page$adslot\n";
+        my $res = $ua->get("$banner_query_addr$banner_query_page$adslot");
+        if ($res->is_success && $res->content=~/^(Success|Nonexistent)/) {
+            if ($res->content =~ /^Nonexistent/) {
+                my $nerepl="";
+                if ($mail_output eq "pipe") {
+                    $nerepl=mx_error_html("NEMLÉTEZÕ ADSLOT: $adslot");
+                }
+                $$adpart =~ s/\{adslot-$adslot\}/$nerepl/gi;
+                $$adpart_external_images =~ s/\{adslot-$adslot\}/$nerepl/gi;
+            }
+            else {
+                @banners = split("\n",$res->content);
+                my @result_data = ();
+                my $egyperc_replace="";     # save replacement for the egyperces archivum and for preview (output=pipe)
+                my $egyperc_replace_type="";
+                my $egyperc_replace_banner_cid="";
+                my $egyperc_replace_banner_data="";
+                my $maxweight=0;            # and use the banner with max weight for that
+                for (@banners) {
+                    if (/^(\d+:\d+:)(\d+)(:\d+):(\d+):(text|upload):([^\s]+)/) {
+                        my $mparam="$1$2$3";
+                        $adslot_id=$2;
+                        my $banner_id=$4;
+                        my $banner_type=$5;
+                        my $banner_data=$6;
+                        my @adt=split(":",$mparam);
+                        my $banner_cid="";
+                        my $itype="";
+                        if ($banner_type eq "upload") {
+                            my $banner_base64="";
+                            my $dummy="";
+                            ($itype,$banner_cid) = mx_getencodedfilepart($banner_data,\$banner_base64,\$dummy,0,0);
+                            if (length($itype)) {
+                                if ($adt[3]>$maxweight) {
+                                    $maxweight=$adt[3];
+                                    $egyperc_replace="<a target='_blank' href='$BANNERADMIN_LINK$adt[0]|$adt[1]|$banner_id|$adt[2]'>";
+                                    $egyperc_replace_type="upload";
+                                    $egyperc_replace_banner_cid=$banner_cid;
+                                    $egyperc_replace_banner_data=$banner_data;
+                                }
+                                if ($mail_output eq "maxima0") {
+                                    $banner_file=uc(substr($md5->hexhash(rand().$time),0,2)) . "/" . $banner_id . time() . $banner_cid;
+                                    push (@result_data,"$mparam:$banner_id:$banner_type:$banner_file");
+                                    my $opened=1;
+                                    open (CF, ">$templatedir_banners/$banner_file") or $opened=0;
+                                    if ($opened) {
+                                        print CF $banner_base64;
+                                        close CF;
+                                    }
+                                    else {
+                                        push (@job_errors,"Could not write to: $templatedir_banners/$banner_file");
+                                        end_job();
+                                    }
+                                }
+                            }
+                        }
+                        else { # text banner
+                            $banner_code = decode_base64($banner_data);
+                            # banneradmin always sends in CP1250
+                            $banner_code = mx_iconv($banner_code,"CP1250","UTF8");
+                            mx_replace_html_props(\$banner_code);
+                            my $part_images="";
+                            my $dummy="";
+                            $banner_code_external_images = $banner_code;
+                            mx_encode_images(\$banner_code,\$banner_code_external_images,\$part_images,\$dummy,0);
+                            if ($mail_output eq "maxima0") {
+                                my $banner_file="";
+                                if (length($part_images)) {
+                                    $banner_file=uc(substr($md5->hexhash(rand().$time),0,2)) . "/" . "b$send_time"."b$banner_id";
+                                    my $opened=1;
+                                    open (CF, ">$templatedir_banners/$banner_file") or $opened=0;
+                                    if ($opened) {
+                                        print CF $part_images;
+                                        close CF;
+                                    }
+                                    else {
+                                        push (@job_errors,"Could not write to: $templatedir_banners/$banner_file");
+                                        end_job();
+                                    }
+                                }
+                                push (@result_data,"$mparam:$banner_id:$banner_type:$banner_file:".encode_base64($banner_code,""));
+                            }
+                            if ($adt[3]>$maxweight) {
+                                $maxweight=$adt[3];
+                                $egyperc_replace=decode_base64($banner_data);
+                                # banneradmin always sends in CP1250
+                                $egyperc_replace = mx_iconv($egyperc_replace,"CP1250","UTF8");
+                                mx_replace_html_props(\$egyperc_replace);
+                                $egyperc_replace_type="text";
+                            }
+                        }
+                    }
+                }
+                $base64_parts .= "{ad-img-$adslot_id}" if ($adslot_id);
+                $base64_parts_external_images .= "{ad-img-$adslot_id}" if ($adslot_id);
+                if ($#result_data>-1) {
+                    push (@result_ads,join("|",@result_data));
+                }
+                if ($mail_output eq "pipe") {
+                    if ($egyperc_replace_type eq "upload") {
+                        if ($mail_format eq "mime") {
+                            $link_subs=mx_string_encode("$egyperc_replace<img src='cid:$egyperc_replace_banner_cid'></a>");
+                            $$adpart =~ s/\{adslot-$adslot\}/$link_subs/gi;
+                            $$adpart_external_images =~ s/\{adslot-$adslot\}/$link_subs/gi;
+                        }
+                        else {
+                            $$adpart =~ s/\{adslot-$adslot\}/$egyperc_replace<img border='0' src='$egyperc_replace_banner_data'><\/a>/gi;
+                            $$adpart_external_images =~ s/\{adslot-$adslot\}/$egyperc_replace<img border='0' src='$egyperc_replace_banner_data'><\/a>/gi;
+                        }
+                    }
+                    else {
+                        $banner_code=$egyperc_replace;
+                        $banner_code=mx_string_encode($banner_code) if ($mail_format eq "mime");
+                        $$adpart =~ s/\{adslot-$adslot\}/$banner_code/gi;
+                        $$adpart_external_images =~ s/\{adslot-$adslot\}/$banner_code/gi;
+                    }
+                }
+                if ($egyperc_replace_type eq "upload") {
+                    push (@result_ads_egyperc,"$adslot_id|upload|$egyperc_replace<img border='0' src='$egyperc_replace_banner_data'></a>");
+                }
+                else {
+                    push (@result_ads_egyperc,"$adslot_id|text|".encode_base64($egyperc_replace,""));
+                }
+                $$adpart =~ s/\{adslot-$adslot\}/{ad-link-$adslot_id}/gi;
+                $$adpart_external_images =~ s/\{adslot-$adslot\}/{ad-link-$adslot_id}/gi;
+            }
+            mx_sender_logs($res->content);
+        }
+        else {
+            push (@job_errors," Could not retreive ads data for adslot $adslot: ". $res->as_string);
+            end_job();
+        }
+        $i++;
+    }
+    $ads = join("\n",@result_ads); # and this is the final information for maxima0
+    $ads_egyperc = join("\n",@result_ads_egyperc);
+    $$adpart =~ s/\{ad-link-0\}//g;
+    $$adpart_external_images =~ s/\{ad-link-0\}//g;
+}
+
+sub mx_replace_html_props($) {
+    my $str=shift;
+    $$str =~ s/\{KIEMELT_MONDAT\}/$emphasized/gi;
+    my $st = $dbh->prepare("select property,value from sender_base_property where sender_base_id='$base_id'");
+    $st->execute;
+#print length($$str)."\n";
+    while (my @r = $st->fetchrow_array) {
+        if ($r[0] =~ /^text-/) {
+            $$str =~ s/\{$r[0]\}/$r[1]/gi;
+        }
+        else {
+            $$str =~ s/\{css-$r[0]\}/$r[1]/gi;
+        }
+    }
+}
+
+sub mx_sender_logs ($) {
+    my $l=shift;
+    if ($mail_output eq "maxima0") {
+        if ($VERIFY) {
+            open (OO, ">>$verifyd/$verifyf.notok");
+            print OO "$l\n";
+            close OO;
+        }
+    }
+    # FIXME else we'll print to the pipe, php test would display the logs if they do not end with 'sender_ok' or something
+}
+
+sub mx_error_html ($) {
+
+    my $error = shift;
+    return "<img src='http://www.egyperces.hu/maxima/_error/error.gif' alt='$error' title='$error'>";
+}

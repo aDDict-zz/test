@@ -1,0 +1,74 @@
+# TLB simple config file  -*- perl -*-
+
+# This is a config file which duplicates the simple bulk_mailer
+# functionality: no multiple-host delivery, no remote exploders, no
+# external programs, no advanced batching.
+
+# before 2008-05-30, all tlb instances had their own config files.
+# from now this will be unified and will also be used by some other scripts, like maxima_engine.
+
+if ($server eq "maxima") {
+    $main_spooldir="/var/www/maxima_engine/wwws2/spool";
+}
+else {
+    $main_spooldir="/var/maximas/spool";
+}
+
+#%spool_dist = (
+#    "exim" =>       {"s1"=>[-1],    "s2"=>[-1],     "s3"=>[-1],     "s4"=>[-1],     "s6"=>[-1],     "maxima"=>[-1]},
+#    "foreign" =>    {"s1"=>[-1],    "s2"=>[-1],     "s3"=>[-1],     "s4"=>[-1],     "s6"=>[-1],     "maxima"=>[-1]},
+#    "freemail" =>   {"s1"=>[0,50],  "s2"=>[51,100], "s3"=>[101,175],"s4"=>[-1],"s6"=>[176,255],"maxima"=>[-1]},
+#    "important" =>  {"s1"=>[0,51],  "s2"=>[52,102], "s3"=>[103,175],"s4"=>[-1],"s6"=>[176,255],"maxima"=>[-1]},
+#    "other" =>      {"s1"=>[0,63],  "s2"=>[-1],     "s3"=>[64,175], "s4"=>[-1],"s6"=>[176,255],"maxima"=>[-1]},
+#    "test" =>       {"s1"=>[-1],    "s2"=>[-1],     "s3"=>[-1],     "s4"=>[-1],     "s6"=>[-1],     "maxima"=>[0,255]},
+#    "tonline" =>    {"s1"=>[-1],    "s2"=>[0,255],  "s3"=>[-1],     "s4"=>[-1],     "s6"=>[-1],     "maxima"=>[-1]}
+#);
+
+%spool_dist = (
+    "exim" =>       {"s1"=>[-1],    "s2"=>[-1],     "s3"=>[-1],     "s4"=>[-1],     "s6"=>[-1],     "maxima"=>[-1]},
+    "foreign" =>    {"s1"=>[-1],    "s2"=>[-1],     "s3"=>[-1],     "s4"=>[-1],     "s6"=>[-1],     "maxima"=>[-1]},
+    "freemail" =>   {"s1"=>[0,50],  "s2"=>[51,100], "s3"=>[101,152],"s4"=>[153,203],"s6"=>[204,255],"maxima"=>[-1]},
+    "important" =>  {"s1"=>[0,51],  "s2"=>[52,102], "s3"=>[103,154],"s4"=>[155,205],"s6"=>[206,255],"maxima"=>[-1]},
+    "other" =>      {"s1"=>[0,63],  "s2"=>[-1],     "s3"=>[64,127], "s4"=>[128,191],"s6"=>[192,255],"maxima"=>[-1]},
+    "test" =>       {"s1"=>[-1],    "s2"=>[-1],     "s3"=>[-1],     "s4"=>[-1],     "s6"=>[-1],     "maxima"=>[0,255]},
+    "tonline" =>    {"s1"=>[-1],    "s2"=>[0,255],  "s3"=>[-1],     "s4"=>[-1],     "s6"=>[-1],     "maxima"=>[-1]}
+);
+
+# for example, s1 sends from the freemail spool starting from 0 to 50 inclusive (from $spool_dist{"freemail"}{"s1"}[0] to $spool_dist{"freemail"}{"s1"}[1])
+
+$local_hostname = 'localhost';
+
+# The program (with arguments) to call to make LOCAL deliveries.  See the
+# delivery matrix below.
+$mailer = "/usr/lib/sendmail -bs";
+
+$log_level = 255;
+
+%freemail = (
+            'hostname' => '195.228.242.222',
+            'ESMTP'   => '1',
+            );
+
+%localhost = (
+         'hostname' => '127.0.0.1',
+         'ESMTP'    => '1',
+         );
+
+%tonline = (
+         'hostname' => 'massmailer.t-online.hu',
+         'ESMTP'    => '1',
+         );
+
+if ($spool eq "tonline") {
+    @delivery_matrix = {
+		    'hosts' => [ \%tonline, ],
+ 		    'maxaddrs' => 1,
+		   }
+}
+else {
+    @delivery_matrix = {
+		    'hosts' => [ \%localhost, ],
+ 		    'maxaddrs' => 1,
+		   }
+}
+

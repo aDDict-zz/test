@@ -1,0 +1,52 @@
+#!/usr/bin/perl
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+$i = 0; 
+
+while (<STDIN>)
+{
+	$i++;
+	if ($i<100) {
+		$out .= $_;
+	}
+
+
+	if (/^To: postmaster([\djh]+)-(\d+)\@/i)
+	{
+		$found = 1;
+		$message_id = $1;
+		$user_id = $2;
+	}
+}
+
+if ($found)
+{
+	if (-e $MX_BOUNCE_SPOOL . "/${message_id}.${user_id}.bounce")
+	{
+		return 0;
+		exit;
+	}
+
+	open OUT, ">$MX_BOUNCE_SPOOL/${message_id}.${user_id}.bouncet";
+	
+	print OUT $out;
+	close OUT;
+
+	rename($MX_BOUNCE_SPOOL . "/${message_id}.${user_id}.bouncet", $MX_BOUNCE_SPOOL . "/${message_id}.${user_id}.bounce");
+	chmod 0666, $MX_BOUNCE_SPOOL . "/${message_id}.${user_id}.bounce";
+
+}
+else
+{
+	#open OUT, ">>/var/maximas/bounce/other";
+	#print OUT $out;
+	#close OUT;
+}
+
+return(0);
+
+

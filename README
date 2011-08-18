@@ -1,0 +1,8 @@
+There are two config files to set up:
+common.pl (general setup)
+spools.pl (mail spool)
+
+config.tlb should be installed to the spool machine(s) ie. to the machine that holds the mail spool dir, that can be this machine or other machine.
+
+run/* is list of scripts that should always run; these are used for management of various spools, best to set up using the 'service' tool
+

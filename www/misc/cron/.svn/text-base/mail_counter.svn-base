@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+
+use DBI;
+use POSIX qw(strftime);
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+# run once after midnight
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1;
+$dbh->do("set names cp1250");
+
+$output_file = "$MX_LOG_ROOT/counter.txt";
+
+$sth = $dbh->prepare("select sum(t.mails) from track t left join groups g on t.group_id=g.id where g.title is null or g.title not like 'robin%'");
+$sth->execute;
+if (@l = $sth->fetchrow_array) {
+    $mails_total=$l[0];
+    $speed=250;
+    $behind=int (1000/$speed)*60*60*24;
+    $start=$mails_total-$behind;
+    @ouf=(time,$mails_total,$start,$speed);
+    open (OUF, ">$output_file") or die "Could not open output file.";
+    print OUF join("|:|",@ouf) . "\n";
+    close OUF;
+}

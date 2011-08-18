@@ -1,0 +1,360 @@
+#!/usr/bin/perl
+
+use DBI;
+use POSIX qw(strftime);
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+require $MX_SCRIPT_ROOT . "/spools.pl";
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1;
+$dbh->do("set names cp1250");
+
+# this script will be called every minute to, most importantly, update the tlb todo file
+# but only every 3 minutes should it check for tlb progress
+
+($dt_sec,$dt_min,$dt_hour,$dt_mday,$dt_mon,$dt_year,$dt_wday,$dt_yday,$dt_isdst) = localtime;
+
+$tlb_error_check=0;
+if ($dt_min%3==0) {
+    $tlb_error_check=1;
+}
+
+$error_log_dir = $MX_SEND_ERROR_LOG;
+
+# 1. levél kiküldés - értesítés ha valamelyik maxima0 process megszakadt.
+
+if ($tlb_error_check) {
+    opendir(DIR, $MX_SEND_VERIFY_DIR);
+    @flist = grep(/\.notok$/, readdir(DIR)); 
+    closedir(DIR);
+    if ($maxima_implementation eq "MAXIMA") {
+        opendir(DIR, "/usr/local/robin/verify");
+        @flist2 = grep(/\.notok$/, readdir(DIR)); 
+        closedir(DIR);
+    }
+    else {
+        @flist2=();
+    }
+    foreach $f ((@flist,@flist2)) {
+        if ($f =~ /([^\.]+)\.(\d+)\.notok/) {
+            $group_name = $1;
+            $message_id = $2;
+            $sth = $dbh->prepare("select a.* from groups g,alapadatok a where g.title=". $dbh->quote($group_name) ." and g.id=a.group_id");
+            $sth->execute;
+            if ($l = $sth->fetchrow_hashref) {
+                if (!still_sending($message_id)) {
+                    $admin_phones="";
+                    if ($l->{"sms_maxima0"} eq "yes") {
+                        $admin_phones=$l->{"admin_phones"};
+                    }
+                    send_error_report($l->{"group_id"},$group_name,$message_id,$l->{"admin_emails"},$admin_phones,"maxima0",
+                        "A levél kiküldés megszakadt a $group_name csoportban, a $message_id üzenetnél (feldolgozás).",$message_id,0);
+                }
+            }
+        }   
+    }
+}
+
+# 2. levél kiküldés - tlb queue: ha a kiküldés még nem fejezõdött be és a tlb logja nem nõtt, hiba van.
+#                     a cron 3 percenként futtatja ezt a scriptet.
+#  5406 25538.robin.freemail.tlb
+#  6393 25538.robin.important.tlb
+
+%messages_in_queue=();
+%messages_stopped=();
+%queues_progressing=();
+@queue_check=();
+$sth=$dbh->prepare("select m.id,m.tlb_count,m.send_plan,m.group_id,m.tlb_queue_status,m.tlb_queue_plan,m.send_stopped,m.spool,g.important
+                    from messages m,groups g where m.tlb_finished='no' and m.send_plan>0 and m.group_id=g.id");
+$sth->execute;
+while ($k = $sth->fetchrow_hashref) {
+    $message_id=$k->{"id"};
+    $logmod=$message_id%32;
+    ($main_spooldir,$templatedir,$templatedir_contents,$templatedir_banners)=mx_main_spooldir($k->{"spool"});
+    $logfile="$main_spooldir/logs/$logmod/$message_id";
+    $wc="";
+    %q_plan=();
+    %q_prev=();
+    %q_now=();
+    @q=split(" ",$k->{"tlb_queue_plan"});
+    foreach $qq (@q) {
+        if ($qq =~ /^(.+):(.+)$/) {
+            $q_plan{"$1"}=$2;
+        }
+    }
+    @q=split(" ",$k->{"tlb_queue_status"});
+    foreach $qq (@q) {
+        if ($qq =~ /^(.+):(.+)$/) {
+            $tlbl_count=$2;
+            $tlbl_spool=$1;
+            if ($tlbl_spool =~ /^(s1|s2|s3|s4|s6|maxima)\.(.+)$/) {
+                $tlbl_spoolshort=$2;
+            }
+            else {
+                $tlbl_spoolshort=$tlbl_spool;
+            }
+            $q_prev{"$tlbl_spoolshort"}+=$tlbl_count;
+        }
+    }
+    $sent=0;
+    @tlb_status=();
+    if (open(WC, "wc -l $logfile.* |")) {
+        while (<WC>) {
+            $wc=$_;
+            if ($wc =~ /(\d+) [^ ]*$message_id\.([a-z0-9\.]+)\.tlb$/) {
+                $tlbl_count=$1;
+                $tlbl_spool=$2;
+                if ($tlbl_spool =~ /^(s1|s2|s3|s4|s6|maxima)\.(.+)$/) {
+                    $tlbl_spoolshort=$2;
+                }
+                else {
+                    $tlbl_spoolshort=$tlbl_spool;
+                }
+                $q_now{"$tlbl_spoolshort"}+=$tlbl_count;
+                $sent+=$tlbl_count;
+                push (@tlb_status,"$tlbl_spool:$tlbl_count");
+            }
+        }
+    }
+    else {
+        warn "Maxima Check: could not wc -l $logfile!";
+    }
+    while (($queue,$queue_plan)=each(%q_plan)) {
+        # nem ment ki egy sem ebbõl a mailbõl ebben a queueban (de kellett volna), ellenõrizni kell hogy csökken-e a queue 
+        # fontos látni, hogy itt akkor is hibaüzenetet küldünk, ha esetleg egy másik queueban megy a kiküldés,
+        # de ebben a queueban teljesen beállt, nyilván ekkor is jelezni kell a problémát.
+#print "$queue: $queue_plan,$q_now{$queue},$q_prev{$queue}\n";        
+        $check_queue="$main_spooldir/$queue";
+        if ($q_prev{"$queue"}==$q_now{"$queue"} and $q_now{"$queue"}<$queue_plan) {
+            push(@queue_check,"$check_queue:$message_id");
+        }
+        # különben fel kell jegyezni hogy ez a queue mûködik
+        if ($q_prev{"$queue"}<$q_now{"$queue"} and $q_now{"$queue"}>0) {
+            $queues_progressing{"$check_queue"}=1;
+        }
+        # ha ebbõl az üzenetbõl nem ment ki még minden ebben a queue-ban, akkor ezt feljegyezzük a tlb-nek
+        if ($q_now{"$queue"}<$queue_plan) {
+            if ($k->{"send_stopped"} eq "no") {
+                $messages_in_queue{$queue} .= "$message_id ";
+				if ($k->{"important"} eq "yes") {
+					$messages_in_queue{$queue} .= "$message_id ";
+					$messages_in_queue{$queue} .= "$message_id ";
+				}
+                if ($k->{"group_id"} eq "543" or $k->{"group_id"} eq "1272") {
+					$messages_in_queue{$queue} .= "$message_id ";
+					$messages_in_queue{$queue} .= "$message_id ";
+				}
+            }
+            else {
+                $messages_stopped{$queue} .= "$message_id ";
+            }
+        }
+    }
+    $tlb_queue_status = join(" ",@tlb_status);
+    if ($sent>=$k->{"send_plan"}) {
+        $dbh->do("update messages set tlb_count=send_plan,tlb_finished='yes',tlb_queue_status='$tlb_queue_status',tlb_finished_date=now() 
+                  where id='$message_id'");
+    }
+    else {
+        if ($tlb_error_check) {
+            $dbh->do("update messages set tlb_count='$sent',tlb_queue_status='$tlb_queue_status' where id='$message_id'");
+        }
+    }
+}
+$sth->finish;
+
+if ($tlb_error_check) {
+    foreach $qcheck (@queue_check) {
+        ($queue,$message_id)=split(":",$qcheck);
+        unless ($queues_progressing{"$queue"}) {
+    #print "$qcheck!\n";    
+            # nem csökkent a queue egy üzenetben sem, hiba. 
+            $sthh = $dbh->prepare("select a.*,g.title from messages m,groups g,alapadatok a 
+                                  where m.id='$message_id' and m.group_id=g.id and g.id=a.group_id");
+            $sthh->execute;
+            if ($l = $sthh->fetchrow_hashref) {
+                $group_name=$l->{"title"};
+                $admin_phones="";
+                if ($l->{"sms_maxima0"} eq "yes") {
+                    $admin_phones=$l->{"admin_phones"};
+                }
+                send_error_report($l->{"group_id"},$group_name,$message_id,$l->{"admin_emails"},$admin_phones,"maxima0",
+                    "A levél kiküldés megszakadt a $group_name csoportban, a $message_id üzenetnél (levélküldés).",$message_id,0);
+            }
+            $sthh->finish;
+        }
+    }
+}
+# leírjuk a tlb-nek hogy az adott spool-ban mely üzenetek kiküldése nem fejezõdött még be
+# a tlb ezek alapján minden futása alkalmával ki tud választani egy üzenetet, 
+# ami végül azt biztosítja hogy a kis üzeneteket nem fojtják meg a nagy üzenetek
+#@all_queues=("freemail","important","other","test","tonline");
+@all_queues=("freemail","important","other","test","exim");
+for (@all_queues) {
+    $queue=$_;
+    if (length($messages_in_queue{"$queue"})) {
+        $messages=$messages_in_queue{"$queue"};
+    }
+    else {
+        $messages="";
+    }
+	print "$messages - $queue\n";
+    if (open (TQ, ">$main_spooldir/$queue/tlb.todo")) {
+        print TQ "$messages\n";
+        close TQ;
+    }
+	else {
+		die "Could not write to $main_spooldir/$queue/tlb.todo\n";
+	}
+}
+
+# 3. levélküldõ - értesítés ha a levélküldõ nem küldte ki az üzenetet (általában 404-es hiba miatt)
+
+$wait_seconds=1000;
+# a levélküldõ 900 másodpercig próbálkozik a kiküldéssel, tehát ha 1000 másodperce nem ment ki, hiba történt.
+
+$squery="select * from sender_timer where active='yes' and test='no'
+         and (
+            (stype='single' and status!='ready' and to_days(sdate)=to_days(now()) 
+                and unix_timestamp(now())-unix_timestamp(sdate)>$wait_seconds) 
+            or (
+                time_to_sec(concat(stime,':00'))+$wait_seconds < time_to_sec(curtime())
+                and (isnull(to_days(last_sent)) or to_days(last_sent)<to_days(now()))
+                and (
+                    (stype='cyclical' and substring(sdays,dayofweek(now()),1)='X')
+                    or 
+                    (stype='2hetente' and mod(to_days(now()),14)=smod)
+                    or 
+                    (stype='3hetente' and mod(to_days(now()),21)=smod)
+                    or 
+                    (stype='havonta' and dayofmonth(now())=smonthday)
+                )
+            )
+         )";
+#$squery =~ s/[\r\n]//g; $squery =~ s/ +/ /g; print "$squery\n";
+if ($tlb_error_check) {
+    $sth = $dbh->prepare($squery);
+    $sth->execute;
+    while ($k = $sth->fetchrow_hashref) {
+        # legvalószínûbb, hogy fut még a levél kiküldés, ha mégsem, akkor hiba van.
+        if (!($k->{"message_id"}) or !still_sending($k->{"message_id"})) {
+            $st2 = $dbh->prepare("select a.*,g.title from groups g,alapadatok a where g.id=". $k->{"group_id"} ." and g.id=a.group_id");
+            $st2->execute;
+            if ($l = $st2->fetchrow_hashref) {
+                $admin_phones="";
+                if ($l->{"sms_sender_engine"} eq "yes") {
+                    $admin_phones=$l->{"admin_phones"};
+                }
+                my $err="Levélküldõ hiba: a ". $l->{"title"} ." csoportban a(z) ". $k->{"name"} ." idõzítõ ";
+
+                if (length($k->{"last_error"})) {
+                    $err .= "a következõ hibát generálta:\n\n" . $k->{"last_error"};
+                }
+                else {
+                    $err .= "nem kezdte el a kiküldést.";
+                    # itt meg kell nézni van-e mégis .ok file, ha van akkor mégis kiment a levél és a sender_timer
+                    # táblában meg kell csinálni azt az update-et ami nem történt meg (valószínûleg mysql timeout miatt)
+                }
+                # insert the copy of sender_timer to sender_archive
+                send_error_report($k->{"group_id"},$l->{"title"},$k->{"message_id"},$l->{"admin_emails"},
+                                  $admin_phones,"sender_engine",$err,$k->{"name"},$k->{"id"});
+            }
+        }
+    }
+}
+
+sub still_sending($) {
+
+    my $message_id=shift;
+
+    open(IN, "ps uaxw | grep maxima_engine | grep $message_id |");
+    $process = '';
+    while (<IN>) {
+        $process .= $_;
+    }
+    close IN;
+    open(IN, "ps uaxw | grep robin0 | grep $message_id |");
+    while (<IN>) {
+        $process .= $_;
+    }
+    close IN;
+    if ($process and ($process =~ /maxima_engine $message_id/ or $process =~ /robin0 $message_id/)) {
+        return 1;
+    }
+    return 0;
+}
+
+sub send_error_report($;$;$;$;$;$;$;$;$) {
+
+    my $group_id=shift;
+    my $group_name=shift;
+    my $message_id=shift;
+    my $admin_emails=shift;
+    my $admin_phones=shift;
+    my $engine=shift;
+    my $error=shift;
+    my $mail_name=shift;
+    my $timer_id=shift;
+
+    my $subject="[$maxima_implementation HIBA] $group_name - $mail_name";
+    if ($message_id) {
+        $qpart="message_id='$message_id'";
+    }
+    else {
+        # vagyis, a kiküldés nem jutott el a maxima0-ig, ezért az adott timert kell figyelni az adott napra
+        $qpart="timer_id='$timer_id' and to_days(date)=to_days(now())";
+    }
+    $lquery="select id from alert_history where group_id='$group_id' and $qpart";
+    my $sth = $dbh->prepare($lquery);
+    $sth->execute;
+    if (!$sth->fetchrow_array) {
+        $dbh->do("insert into alert_history (group_id,message_id,date,error,timer_id) values 
+                  ('$group_id','$message_id',now(),". $dbh->quote($error) .",$timer_id)");
+        my @mails=();
+        my @to=split(/[,;]/,$admin_emails);
+        foreach $mail (@to) {
+            if ($mail =~ /@/) {
+                push (@mails,$mail);
+            }
+        }
+        if ($#mails>-1) {
+            #if (!open(SENDMAIL, ">$MX_SMS_SEND_SPOOL/$group_name-$message_id-$timer_id-". rand() .".email")) {
+            if (!open(SENDMAIL, "|/usr/lib/sendmail -oi -t -odb")) {
+                warn "error invoking sendmail: $!\n";
+            } 
+            else {
+                print SENDMAIL "From: $maxima_implementation Error Report <kolbasz\@maxima.hu>\nTo: ". join(", ",@mails) ."\nSubject: $subject\nContent-Type: text/plain;\n\tcharset=\"iso-8859-2\"\n\n$error\n";
+                close SENDMAIL;
+            }
+        }
+        $phoneerr = substr($error,0,145);
+        $phoneerr =~ s/\n/ /g;
+        $phoneerr =~ s/\r/ /g;
+        $phoneerr =~ s/û/ü/g;
+        $phoneerr =~ s/Û/Ü/g;
+        $phoneerr =~ s/õ/ö/g;
+        $phoneerr =~ s/Õ/Ö/g;
+        my @to=split(/[,;]/,$admin_phones);
+        foreach $phone (@to) {
+            if ($phone =~ /^\+/) {
+                $filename = "$group_name-$message_id-$timer_id-" . rand();
+                open (SP, ">$MX_SMS_SEND_SPOOL/$filename.temp");
+                print SP "DestinationAddress: $phone\nUserData:\n$maxima_implementation HIBA: $phoneerr\n";
+                close SP;
+                rename("$MX_SMS_SEND_SPOOL/$filename.temp","$MX_SMS_SEND_SPOOL/$filename.sms");
+            }
+        }
+        @time = localtime;
+        $date = strftime("%a, %d %b %Y %H:%M:%S", @time);
+        open (SP, ">>$error_log_dir/$group_name.$engine");
+        print SP "$date\t$error\n";
+        close SP;
+        if ($timer_id) {
+            $dbh->do("insert into sender_archive (name,group_id,base_id,filter_id,sender_id,test_email,last_sent,last_error,status,processing,active,stype,sdate,stime,sdays,test,dateadd,smod,smonthday,message_id,notice,sender_timer_id) select name,group_id,base_id,filter_id,sender_id,test_email,last_sent, last_error,status,processing,active,stype,sdate,stime,sdays,test,now(),smod,smonthday,message_id,notice,id from sender_timer where id=".$timer_id);
+        }
+    }
+}

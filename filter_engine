@@ -1,0 +1,591 @@
+#!/usr/bin/perl
+
+use DBI;
+use MD5;
+
+$filter_id=$ARGV[0];
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1;
+$dbh->do("set names utf8");
+
+# text of the query
+$st = $dbh->prepare("select groups.id,groups.title,query_text from filter,groups 
+                     where groups.id=filter.group_id and filter.id='$filter_id'");
+$st->execute;
+if (@row = $st->fetchrow_array) {
+    $group_id=$row[0];
+    $title=$row[1];
+    $filt_expr=$row[2];
+}
+$st->finish;
+
+if (!$group_id) {
+    print "nemlétezö filter\n";
+    exit(0);
+}
+
+# look for nested filters. It has to be done before the value table is built, at the first glance
+# this is problem because of the comments, but it is not really a problem, because { ... [spec_nest_xxx] ... }
+# will become { ... some filter expr ... } and will be thrown away after.
+$sth = $dbh->prepare("select id,name,query_text from filter where group_id='$group_id'");
+$sth->execute;
+while (@row = $sth->fetchrow_array) {
+    if ($row[0] == $filter_id) {
+        $nest_recurse{$row[1]}=2;
+    }
+    else {
+        $nest_recurse{$row[1]}=1;
+        $nest_expr{$row[1]}=$row[2];
+    }
+}
+$sth->finish;
+while ($filt_expr =~ /\[spec_nest_([a-z][a-z0-9_]*)\]/) {
+    $nest_filter=$1;
+    if ($nest_recurse{$nest_filter}==2) {
+        print "Rekurziv filter beágyazás ($nest_filter)\n";
+        exit(0);
+    }
+    elsif (!$nest_recurse{$nest_filter}) {
+        print "Nemlétezö filter beágyazása ($nest_filter)\n";
+        exit(0);
+    }
+    else {
+        $nest_recurse{$1}=2;
+        $nest_subs=" (".$nest_expr{$nest_filter}.") ";
+        $filt_expr =~ s/\[spec_nest_$nest_filter\]/$nest_subs/g;
+    }
+}
+
+$filt_expr=" ".$filt_expr;
+# escaped '
+$filt_expr =~ s/\\'/§/g;
+$temp_expr="";
+$i=0;
+$valnum=0;
+
+# build the value table
+@aps = split /'/,$filt_expr;
+foreach $val (@aps) {
+    if ($i%2) {
+        $val =~ s/§/'/g;
+        $values[$valnum]=$val;
+        $temp_expr.="'$valnum'";
+        $valnum++;
+    }
+    else {
+        $temp_expr.=$val;
+    }
+    $i++;
+}
+
+$filt_expr=$temp_expr;
+
+$filt_expr =~ s/\r?\n/ /g;
+
+if (0 && $filter_id==9760) {
+	print "$filt_expr\n";
+}
+
+# comments
+$filt_expr=~s/\{[^\{]*\}//g;
+
+# look at the real structure of corresponding users_[title] group.
+# we must be sure that the select from users_[title] succeeds.
+$sth = $dbh->prepare("desc users_$title");
+$sth->execute;
+while (@row = $sth->fetchrow_array) {
+    if ($row[0] =~ /ui_(.*)/) {
+        $demog_var_real{$1}=1;
+    }
+}
+$sth->finish;
+
+$st = $dbh->prepare("select distinct demog.id,variable_name,variable_type,multiselect 
+                     from vip_demog,demog where 
+                     vip_demog.demog_id=demog.id and vip_demog.group_id='$group_id'");
+$st->execute;
+while (@row = $st->fetchrow_array) {
+    if ($demog_var_real{$row[1]}) {
+        $demog_var_ids{$row[1]}=$row[0];
+        $demog_var_types{$row[1]}=$row[2];
+        $demog_var_multiselects{$row[1]}=$row[3];
+    }
+}
+$st->finish;
+    
+# $calculated[] will hold temporary query parts
+$calculated_index=0;
+# if 1, stop everything, there is some error in syntax
+undef($syntax_error);
+undef($syntax_error_text);
+undef($spec_sms);
+    
+filt_expr("$filt_expr ");
+
+if (!length($calculated[$final_index]) && ($limitnum || $spec_sms)) {
+    $calculated[$final_index] = "1";
+}
+if (!length($calculated[$final_index]) && !$limitnum && !$spec_sms) {
+    $calculated[$final_index] = "0";
+}
+if ($syntax_error) {
+    $calculated[$final_index]="0";
+}
+
+# it is important that " users_$title.bounced='no' " is written exactly like this, 
+# see comment in members.php for explanation.
+# other very important consequence of expression below is that php scripts MUST NOT
+# include bounced='no' when using filters, it is here decided about.
+if ($spec_sms) {
+    $sms_bbaddon="users_$title.sms_robinson='no' and users_$title.ui_mobil regexp '^\\\\+[0-9]{10,12}'";
+}
+else {
+    $sms_bbaddon="users_$title.bounced='no'";
+}
+
+print "filter_ok\n";
+print "( $sms_bbaddon and ($calculated[$final_index]))\n";
+print "$limitord\n";
+print "$limitnum\n";
+print "$syntax_error\n";
+print "$syntax_error_text\n";
+
+exit(0);
+
+################## Filter subroutines
+
+sub filt_expr($) {
+    my ($filt_expr,$pre_par,$in_par,$post_par);
+    $filt_expr=shift;
+    if ($filt_expr =~ /^(.*)\s*\(\s*([^\(^\)]*)\s*\)\s*(.*)$/gi) {
+        $pre_par=$1;
+        $in_par=$2;
+        $post_par=$3;
+        $index=log_term(" $in_par ");
+        return if ($syntax_error);
+        filt_expr(" $pre_par §calculated$index"."§ $post_par ");
+    }
+    else {
+        # end of recursion, $final_index holds the index of the result query. 
+        $final_index=log_term($filt_expr);
+    }
+}
+
+sub log_term($) {
+    my ($log_term,$query_main_part,$query_or_parts,$query_or_calced,$or_parts);
+    my ($query_and_parts,$query_and_calced,$and_parts,$val,$or_val);
+    my ($firstval,$otherval,$other_index,$other_val);
+    $log_term=shift;
+
+    $qstring="";
+    $calculated_index++;
+    @or_parts = split /\s+or\s+/,$log_term;
+    $orcount=0;
+    while ($or_val=shift(@or_parts)) {
+        #print " |$or_val| ";
+        @and_parts=split /\s+and\s+/,$or_val;
+        if ($#and_parts>0) {
+            $andcount=0;
+            while ($val=shift(@and_parts)) {
+                #echo " |$val| ";
+                if ($val =~ /^\s*(not\s+|\s*)§calculated([0-9]+)§\s*$/gi ) {
+                    $c_not=$1;
+                    $c_ind=$2;
+                    $results="$c_not ($calculated[$c_ind])";
+                }
+                else {
+                    $results=term(" $val ");
+                }
+                return if ($syntax_error);
+                if (!($results eq "lim")) {
+                    $qstring.=" and " if ($andcount);
+                    $qstring.=" $results ";
+                    $andcount++;
+                }
+            }
+            $orcount++ if ($andcount);
+        }
+        else {
+            # means that this is single 'or' part, build 'or' query
+            if ($or_val =~ /^\s*(not\s+|\s*)§calculated([0-9]+)§\s*$/gi ) {
+                $c_not=$1;
+                $c_ind=$2;
+                $results="$c_not ($calculated[$c_ind])";
+            }
+            else {
+                $results=term(" $or_val ");
+            }
+            return if ($syntax_error);
+            if (!($results eq "lim")) {
+                $qstring.=" or " if ($orcount);
+                $qstring.=" $results ";
+                $orcount++;
+            }
+        }
+    }
+    $calculated[$calculated_index]=$qstring;
+    return $calculated_index;
+}
+
+sub term($) {
+    my ($term,$not,$min,$max,$month,$day,$valind,$value,$demog_var,$soperator);
+    my ($sec,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
+    $term=shift;
+
+    if ($term =~ /^\s*(not\s+|\s*)§calculated([0-9]+)§\s*$/) {
+        return $term;
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)(\[spec_birthday\])\s*$/) {
+        #echo "term: $regs[1]---$regs[2]---$regs[3]---$regs[4]<br>";
+        return " $1 ( substring(ui_szuletesnap,5,6)=substring(curdate(),5,6) ) ";        
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_age_([0-9]+)_([0-9]+)\]\s*$/) {
+        ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+        $not=$1;
+        $min=$year+1900-int($3);
+        $max=$year+1900-int($2);
+        $month=$mon+1;
+        return " $not (ui_szuletesnap>='$min-$month-$mday' and  ui_szuletesnap<'$max-$month-$mday') ";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_age_gyermek_([0-9]+)_([0-9]+)\]\s*$/ and $demog_var_real{'gyermek_szuletesi_eve_1'} and $demog_var_real{'gyermek_szuletesi_eve_2'} and $demog_var_real{'gyermek_szuletesi_eve_3'} and $demog_var_real{'gyermek_szuletesi_eve_4'} and $demog_var_real{'gyermek_szuletesi_eve_5'}) {
+        ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+        $not=$1;
+        $min=$year+1900-int($3);
+        $max=$year+1900-int($2);
+        $gysql="0";
+        $gys = $dbh->prepare("select d.variable_name,ev.id from demog d,demog_enumvals ev where 
+                              d.variable_name in ('gyermek_szuletesi_eve_1','gyermek_szuletesi_eve_2',
+                                    'gyermek_szuletesi_eve_3','gyermek_szuletesi_eve_4','gyermek_szuletesi_eve_5') 
+                              and d.id=ev.demog_id and ev.enum_option>=$min and ev.enum_option<=$max");
+        $gys->execute;
+        while (@gyr = $gys->fetchrow_array) {
+            $gysql .= " or ui_$gyr[0]=',$gyr[1],'";
+        }
+        return " $not ($gysql) ";
+    }
+    elsif ($term =~ /^\s*\[spec_sms\]\s*$/) {
+        if (!($demog_var_ids{"mobil"})) {
+            $syntax_error_text="Nemlétezõ demographic info: 'mobil' (sms kampany)<br>";
+            $syntax_error=1;
+            return;
+        }
+        $spec_sms=1;
+        return "lim";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_megye_([0-9]+)\]\s*$/) {
+        if (!($demog_var_ids{"ir"})) {
+            $syntax_error_text="Nemlétezõ demographic info: ' ir (megye iranyitoszam alapjan) '<br>";
+            $syntax_error=1;
+            return;
+        }
+        $not=$1;
+        $megye_id=int($2);
+        $st=$dbh->prepare("select qpart from megye where id='$megye_id'");
+        $st->execute;
+        if (@row = $st->fetchrow_array) { 
+            $megyepart=$row[0];
+        }
+        else {
+            $megyepart="0";
+        }
+        $st->finish;
+        return " $not $megyepart ";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_ceges_megye_([0-9]+)\]\s*$/) {
+        if (!($demog_var_ids{"post_code_company"})) {
+            $syntax_error_text="Nemlétezõ demographic info: post_code_company (megye ceges iranyitoszam alapjan) '<br>";
+            $syntax_error=1;
+            return;
+        }
+        $not=$1;
+        $megye_id=int($2);
+        $st=$dbh->prepare("select qpart from megye where id='$megye_id'");
+        $st->execute;
+        if (@row = $st->fetchrow_array) { 
+            $megyepart=$row[0];
+	    $megyepart =~ s/ui_ir/ui_post_code_company/g;
+        }
+        else {
+            $megyepart="0";
+        }
+        $st->finish;
+        return " $not $megyepart ";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_score_trust_([0-9]+)\]\s*$/) {
+        $not=$1;
+        $score_id=int($2);
+        if ($score_id eq "0") {
+            return " $not length(score_trust)=0 ";
+        }
+        else {
+            return " $not locate(',$score_id,',score_trust)>0 ";
+        }
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_score_bounced_([0-9]+)\]\s*$/) {
+        $not=$1;
+        $score_id=int($2);
+        if ($score_id eq "0") {
+            return " $not length(score_bounced)=0 ";
+        }
+        else {
+            return " $not locate(',$score_id,',score_bounced)>0 ";
+        }
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)(\[spec_telepules\])\s*=\s*\'([^\']*)\'\s*$/) {
+        if (!($demog_var_ids{"ir"})) {
+            $syntax_error_text="Nemlétezõ demographic info: ' ir (telepules iranyitoszam alapjan) '<br>";
+            $syntax_error=1;
+            return;
+        }
+        $not=$1;
+        $valind=$3;
+        $value=$dbh->quote($values[$valind]);
+        $st=$dbh->prepare("select qpart from telep where telepules like $value");
+        $st->execute;
+        if (@row = $st->fetchrow_array) {
+            $teleppart=$row[0];
+        }
+        else {
+            $teleppart="0";
+        }
+        $st->finish;
+        return " $not $teleppart ";
+    }    
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_kerulet_(0[1-9]|1[0-9]|2[0-3])\]\s*$/) {
+        if (!($demog_var_ids{"ir"})) {
+            $syntax_error_text="Nemlétezõ demographic info: ' ir (kerulet iranyitoszam alapjan) '<br>";
+            $syntax_error=1;
+            return;
+        }
+        $not=$1;
+        $district=$2;
+        return " $not (substring(ui_ir,2,2)='$district' and  ui_ir>=1000 and ui_ir<2000) ";
+    }    
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_ksh_([0-9])\]\s*$/) {
+        if (!($demog_var_ids{"ir"})) {
+            $syntax_error_text="Nemlétezõ demographic info: ' ir (ksh regio iranyitoszam alapjan) '<br>";
+            $syntax_error=1;
+            return;
+        }
+        $not=$1;
+        $district=$2;
+        return " $not (ui_ir in (select ir from irsz_tabla where ksh_regio=$district)) ";
+    }    
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_telepules_tipus_([^\]]+)\]\s*$/) {
+        if (!($demog_var_ids{"ir"})) {
+            $syntax_error_text="Nemlétezõ demographic info: ' ir (telepules tipus iranyitoszam alapjan) '<br>";
+            $syntax_error=1;
+            return;
+        }
+        $not=$1;
+        $district=$2;
+        return " $not (ui_ir in (select ir from irsz_tabla where teltip='$district')) ";
+    }    
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_no_message\]\s*$/) {
+        $not=$1;
+        return " $not (isnull(messagelist) or length(messagelist)<3 ) ";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_message_([0-9]+)\]\s*$/) {
+        $not=$1;
+        $message_id=int($2);
+        return " $not (messagelist like '%,$message_id,%') ";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_sms_message_([0-9]+)\]\s*$/) {
+        $not=$1;
+        $message_id=int($2);
+        return " $not (smslist like '%,$message_id,%') ";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_aff_([0-9]+)\]\s*$/) {
+        $not=$1;
+        $affiliate_id=int($2);
+        return " $not (aff='$affiliate_id') ";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_ug_([0-9]+)\]\s*$/i) {
+        $not=$1;
+        $ug_id=int($2);
+        return " $not (uglist like '%,$ug_id,%') ";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_received_sms_([0-9]+)\]\s*$/) {
+        $not=$1;
+        $message_id=int($2);
+        return " $not (smsrcvlist like '%,$message_id,%') ";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)\[spec_ct_([0-9]+)\]\s*$/) {
+        $not=$1;
+        $message_id=int($2);
+        return " $not (clicklist like '%,$message_id,%') ";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)(\[spec_validated\])\s*(<|>)\s*\'([^\']*)\'\s*$/) {
+        #echo "term: $regs[1]---$regs[2]---$regs[3]---$regs[4]<br>";
+        $not=$1;
+        $operator=$3;
+        $valind=$4;
+        $value=$dbh->quote($values[$valind]);
+        return " $not ( validated_date $operator $value ) ";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)(\[spec_tstamp\])\s*(<|>)\s*\'([^\']*)\'\s*$/) {
+        #echo "term: $regs[1]---$regs[2]---$regs[3]---$regs[4]<br>";
+        $not=$1;
+        $operator=$3;
+        $valind=$4;
+        $value=$dbh->quote($values[$valind]);
+        if ($operator eq "<") {$addnull=" or isnull(data_changed) ";} else {$addnull="";}
+        return " $not ( data_changed $operator $value $addnull ) ";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)(\[spec_subscribed\])\s*(<|>)\s*\'([^\']*)\'\s*$/) {
+        #echo "term: $regs[1]---$regs[2]---$regs[3]---$regs[4]<br>";
+        $not=$1;
+        $operator=$3;
+        $valind=$4;
+        $value=$dbh->quote($values[$valind]);
+        return " $not ( date $operator $value ) ";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)(\[spec_last_clicked\])\s*=\s*\'([^\']*)\'\s*$/) {
+        #echo "term: $regs[1]---$regs[2]---$regs[3]---$regs[4]<br>";
+        $not=$1;
+        $valind=$3;
+        $value=$dbh->quote($values[$valind]);
+        return " $not ( to_days(last_clicked)+$value>=to_days(now()) ) ";        
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)(\[spec_not_sent\])\s*=\s*\'([^\']*)\'\s*$/) {
+        #echo "term: $regs[1]---$regs[2]---$regs[3]---$regs[4]<br>";
+        $not=$1;
+        $valind=$3;
+        $value=$dbh->quote($values[$valind]);
+        return " $not ( to_days(last_sent)+$value<to_days(now()) or isnull(last_sent) ) ";
+    }
+    elsif ($term =~ /^\s*(not\s+|\s*)(\[spec_not_sent_sms\])\s*=\s*\'([^\']*)\'\s*$/) {
+        #echo "term: $regs[1]---$regs[2]---$regs[3]---$regs[4]<br>";
+        $not=$1;
+        $valind=$3;
+        $value=$dbh->quote($values[$valind]);
+        return " $not ( to_days(last_sent_sms)+$value<to_days(now()) or isnull(last_sent_sms) ) ";
+    }
+    elsif ($term =~ /^\s*(\[spec_max_lastclick\])\s*=\s*\'([^\']*)\'\s*$/) {
+        #echo "term: $regs[1]---$regs[2]---$regs[3]---$regs[4]<br>";
+        $valind=$2;
+        $value=$values[$valind];
+        $limitord="last_clicked desc";
+        $limitnum=$value;
+        return "lim";
+    }
+    elsif ($term =~ /^\s*(\[spec_max_lastsent\])\s*=\s*\'([^\']*)\'\s*$/) {
+        #echo "term: $regs[1]---$regs[2]---$regs[3]---$regs[4]<br>";
+        $valind=$2;
+        $value=$values[$valind];
+        $limitord="last_sent asc";
+        $limitnum=$value;
+        return "lim";
+    }
+    elsif ($term =~ /^\s*(\[spec_max_random\])\s*=\s*\'([^\']*)\'\s*$/) {
+        srand();
+        $rseed1=int (rand 463)+534;         
+        $rseed2=int (rand 463)+534;         
+        $valind=$2;
+        $value=$values[$valind];
+        $limitord="mod(id*$rseed1,$rseed2)";
+        $limitnum=$value;
+        return "lim";
+    }    
+    elsif ($term =~ /^\s*\[spec_max_random_([0-9a-z]+)\]\s*=\s*\'([^\']*)\'\s*$/i) {
+        $valind=$2;
+        $value=$values[$valind];
+        $mseed=MD5->hexhash($1);
+        $rseed1=hex(substr($mseed,5,3))%463+534;
+        $rseed2=hex(substr($mseed,9,3))%463+534;
+        $limitord="mod(id*$rseed1,$rseed2)";
+        $limitnum=$value;
+        return "lim";
+    }    
+    elsif ($term =~ /^\s*(not\s+|\s*)([a-z][a-z0-9_\/]*)\s*(<|>|=|like)\s*\'([^\']*)\'\s*$/) {
+        #echo "term: $regs[1]---$regs[2]---$regs[3]---$regs[4]<br>";
+        $not=$1;
+        $soperator=$3;
+        $valind=$4;
+# matrix variable changes        
+        #$demog_var=$2;
+        @subdems=split(/\//,$2);
+        $demog_var=$subdems[0];
+        $demog_subvar=$subdems[1];
+# matrix variable changes end        
+        $value=$values[$valind];
+        if (!($demog_var_ids{$demog_var})) {
+            $syntax_error_text="Nemlétezõ demographic info: ' $demog_var '<br>";
+            $syntax_error=1;
+            return;
+        }
+        $demog_id=$demog_var_ids{$demog_var};
+        if ($not =~ /\s*not\s*/) {
+            $notl=" not ( ";
+            $notr=" ) ";
+        }
+        else {
+            $notl="";
+            $notr="";
+        }
+        if ($soperator eq "like") {
+            $value =~ s/\\\*/§/gi;
+#            $value =~ s/_/\\_/gi;
+            $value =~ s/\*/_/gi;
+            $value =~ s/§/*/gi;
+        }
+        if ($demog_var_types{$demog_var} eq "enum") {
+            $demog_valuepart= " $notl (0 ";
+            if ($soperator eq "=") {
+                $enum_operator="=";
+            }
+            else {
+                $enum_operator="like";
+            }
+            $value=$dbh->quote("$value");
+            $st = $dbh->prepare("select id from demog_enumvals where demog_id='$demog_id'
+                                 and enum_option $enum_operator $value");
+            $st->execute;
+            while (@row = $st->fetchrow_array) {
+                if ($enum_operator=="=" && $demog_var_multiselects{$demog_var} eq "no") {
+                    $demog_valuepart.=" or ui_$demog_var = ',$row[0],' ";
+                }
+                else {
+                    $demog_valuepart.=" or ui_$demog_var like '%,$row[0],%' ";
+                }
+            }
+            $st->finish;
+            $demog_valuepart.= " ) $notr ";
+        }
+# matrix variable changes        
+        elsif ($demog_var_types{$demog_var} eq "matrix") {
+            $demog_valuepart= " $notl (0 ";
+            if ($soperator eq "=") {
+                $enum_operator="=";
+            }
+            else {
+                $enum_operator="like";
+            }
+            $value=$dbh->quote("$value");
+            $st = $dbh->prepare("select id from demog_enumvals where demog_id='$demog_id'
+                                 and vertical='no' and enum_option $enum_operator $value");
+            $st->execute;
+            while (@row = $st->fetchrow_array) {
+                $demog_valuepart.=" or ui_$demog_var like '%,$demog_subvar"."m$row[0],%' ";
+            }
+            $st->finish;
+            $demog_valuepart.= " ) $notr ";
+        }
+# matrix variable changes end
+        else {
+            $value=$dbh->quote($value);
+            $demog_valuepart=" $notl ui_$demog_var $soperator $value $notr ";
+        }
+        return " $demog_valuepart ";        
+    }
+    else {
+        $syntax_error_text="Rossz szintaxis: ' |$term| '<br>";
+        $syntax_error=1;
+    }
+}

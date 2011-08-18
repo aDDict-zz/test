@@ -1,0 +1,159 @@
+#!/usr/bin/perl
+
+use DBI;
+use Text::Iconv;
+Text::Iconv->raise_error(0);
+
+$dbh = DBI->connect('DBI:mysql:maxima:localhost:3306','root','bartok26') || die $DBI::errstr ; 
+$dbh->{RaiseError} = 1;
+$dbh->do("set names utf8");
+
+$group_name="permission";
+$group_id=543;
+
+@filters = (20381);
+
+for (@filters) {
+
+    $filter_id=$_;
+    $group_name="permission";
+    $group_id=543;
+
+    $filter_error="filter_ok";
+    $filtres="";
+    open FILTER, "/var/www/maxima_engine/www/filter_engine $filter_id|";
+    while (<FILTER>) {
+        $filtres .= $_;
+    }
+    close (FILTER);
+    @filtarr = split /\n/,$filtres;
+    if ($filtarr[0] eq "filter_ok") {
+            $filter_query=$filtarr[1];
+            $limitord=$filtarr[2];
+            $limitnum=$filtarr[3];
+            $syntax_error=$filtarr[4];
+            $syntax_error_text=$filtarr[5];
+    }
+    else {
+            $filter_error="error in filter engine: $filtarr[0]";
+            print "$filter_error\n";
+            exit;
+    }
+
+    # 1-4. karakter: postai irányítószám 
+    # 5-8. karakter: vezetéknév elso 4 karaktere
+    # 	- a név nagybetus formára van átalakítva (pl. Nagy -> NAGY)
+    # - a magyar (és egyéb, pl: ä) ékezetes magánhangzók az angol abc megfelelo  magánhangzóira vannak átalakítva (pl. Vágó -> VAGO, Käsemann -> KASE)
+    # - amennyiben a vezetéknév rövidebb, mint 4 karakter, jobbról feltöltjük szóközökkel 
+    # (space-el)  4 karakter hosszúságúra  (pl. "Gál" - > "GAL  ")
+    # - a vezetéknév elotti "Dr.", "ifj.", "id.", "özv." ne szerepeljen a match-kódban
+    # 9-12. karakter: a címben található elso, összefüggo numerikus karaktersorozat elso 4 karaktere, balról "0"-val (nullával) feltöltve. (pl. "Sólyom u. 3. B/25. 2/3." -> "0003")
+
+    if (length($limitord)) { 
+          $limitexp=" order by $limitord limit $limitnum";
+    }
+    else {
+          $limitexp="";
+    }
+#$limitexp = " limit 10";
+    $sql="select id,ui_ir,ui_vezeteknev,ui_hazszam from users_$group_name where validated='yes' and ($filter_query) and robinson='no' and bounced='no' $limitexp";
+    $sth = $dbh->prepare($sql);
+    $sth->execute;
+
+	#print "$sql\n";
+
+    $i = 0;
+
+    $mfile="shobert0414";
+
+    open (OO,">$mfile");
+
+    while (@r = $sth->fetchrow_array) {
+        $i++;
+        if ($i/100 == int($i/100)) {
+            print "$i\n";
+        }
+        $id=$r[0];
+        $mc = mx_wund_match($r[1],1,"0");
+        $mc .= mx_wund_match($r[1],2,"0");
+        $mc .= mx_wund_match($r[1],3,"0");
+        $mc .= mx_wund_match($r[1],4,"0");
+
+        my $converter = Text::Iconv->new("UTF-8", "CP1250");
+        $r[2]=$converter->convert($r[2]);
+
+        $r2old = $r[2];
+
+        my @ignore = ("DR\\.","IFJ\\.","ID\\.","OZV\\.","öZV\\.","ÖZV\\.","DR ");
+        for (@ignore) {
+            $r[2] =~ s/^$_\s*//i;
+        }
+        
+        if ($r2old ne $r[2]) {
+            print "$id $r2old ne $r[2]\n";
+        }
+
+        $mc .= mx_wund_match($r[2],1," ");
+        $mc .= mx_wund_match($r[2],2," ");
+        $mc .= mx_wund_match($r[2],3," ");
+        $mc .= mx_wund_match($r[2],4," ");
+        $mc .= mx_num($r[3]);
+
+        print OO "$mc,$id\n";
+    }
+    close OO;
+}
+
+sub mx_num($) {
+
+    $num = shift;
+    $str = "";
+    if ($num =~ /^[^0-9]*([0-9]+)/) {
+        $str = $1;
+    }
+    $str = substr($str,0,4);
+    while (length($str)<4) {
+        $str = "0$str";
+    }
+    return $str;
+}
+
+sub mx_wund_match($;$;$) {
+
+    my $str=shift;
+    my $char=shift;
+    my $stuff=shift;
+
+    $str =~ s/Á/A/g;
+    $str =~ s/Ä/A/g;
+    $str =~ s/É/E/g;
+    $str =~ s/Í/I/g;
+    $str =~ s/Ó/O/g;
+    $str =~ s/Ö/O/g;
+    $str =~ s/Õ/O/g;
+    $str =~ s/Ú/U/g;
+    $str =~ s/Ü/U/g;
+    $str =~ s/Û/U/g;
+    $str =~ s/á/A/g;
+    $str =~ s/ä/A/g;
+    $str =~ s/é/E/g;
+    $str =~ s/í/I/g;
+    $str =~ s/ó/O/g;
+    $str =~ s/ö/O/g;
+    $str =~ s/õ/O/g;
+    $str =~ s/ú/U/g;
+    $str =~ s/ü/U/g;
+    $str =~ s/û/U/g;
+    $str = uc($str);
+    $str =~ s/[^0-9A-Z.-]/ /g;
+    
+    return $stuff unless length($str);
+    if ($char==-1) {
+        $char=length($str);
+    }
+    if (length($str)<$char) {
+        return $stuff;
+    }
+    $char--;
+    return substr($str,$char,1);
+}

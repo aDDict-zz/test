@@ -1,0 +1,342 @@
+#!/usr/bin/perl
+
+use DBI;
+use MD5;
+use MIME::QuotedPrint;
+use MIME::Base64;
+
+$message_id = $ARGV[0];
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+require $MX_SCRIPT_ROOT . "/lang/lang_hu.inc";
+require $MX_SCRIPT_ROOT . "/common_functions.pl";
+require $MX_SCRIPT_ROOT . "/spools.pl";
+
+$logmod=$message_id%32;
+($main_spooldir,$templatedir,$templatedir_contents,$templatedir_banners)=mx_main_spooldir("sender2");
+$logfile="$main_spooldir/logs/$logmod/$message_id";
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+$dbh->do("set names utf8");
+
+if (open(WC, "ls $logfile.* |")) {
+	while (<WC>) {
+		$file=$_;
+		$file=~s/[\r\n]+$//g;
+		if ($file =~ /$message_id\.([a-z0-9]+)\.([a-z0-9]+)\.tlb$/) {
+			$sender=$1;
+			print "$file --- $sender\n";
+		}
+		open (SLOG, "<$file") or die "Could not open file $file\n";
+		while (<SLOG>) {
+			s/[\r\n]+$//g;
+			$email=$_;
+			$domain = "";
+			if ($email =~ /\@(.+)$/) {
+				$domain = $1;
+			}
+			$email = $dbh->quote($email);
+			$q = "replace into send_stat (message_id,sender,email,domain) values ($message_id,'$sender',$email,'$domain')";
+			$dbh->do($q);
+		}
+	}
+}
+$dbh->do("update users_kutataspanel k,send_stat s set s.user_id=k.id where s.message_id=$message_id and s.email=k.ui_email");
+
+# create temporary table temp_feeds select t.user_id from feedback f,trackf t where f.message_id=58043 and f.id=t.feed_id;
+# update temp_feeds t,send_stat s set s.ct='yes' where t.user_id=s.user_id and s.message_id=58043;
+
+
+
+
+exit;
+
+if ($mailer) { $addmailer = ",ui_mailer=".$dbh->quote($mailer); }
+
+$from = "postmaster\@$local_hostname";
+$welcome_message=0;
+$multi=0;
+$sth = $dbh->prepare("select id, welcome_message, welcome_subject, welcome_yesno, name, mail_sender
+                      from multi where title='$group'");
+$sth->execute;                      
+if (@row = $sth->fetchrow_array) { 
+    $dbh->do("set names latin1");
+    $multiid = $row[0];
+    $out = $row[1]."\n";
+    $subject = $row[2];
+    $welcome_yesno = $row[3];
+    $group_description = $row[4];
+    $mail_sender  = $row[5];
+    $multi = 1;
+    $sth2 = $dbh->prepare("select email,groups,aff,rdemog,date,manaff
+                           from multivalidation 
+                           where unique_id='$unique_id' and 
+                           group_id='$multiid' and validated='no'");
+    $sth2->execute;                      
+    if (@rr = $sth2->fetchrow_array) {
+        $sender=$rr[0];
+        $buffer=$rr[1];
+        $aff=$rr[2];
+        $rdemog=$rr[3];
+        $vt_date=$rr[4];
+        $manaff=$rr[5];
+        $sth3 = $dbh->prepare("update multivalidation set validated='yes',tstamp=now() where group_id='$multiid' 
+                               and email='$sender'");
+        $sth3->execute;
+        log_sub("\nFound unique_id $unique_id for multi $group with validated='no', calling sub_engine\n");
+        $dbh->do("set names utf8");
+        sub_common();
+        $dbh->do("set names latin1");
+        $message = $out;
+        $groupname_list = getgroupnames($buffer);
+        $message =~ s/\{subgroups\}/$groupname_list/gi;
+        $message =~ s/\{groups\}/$groupname_list/gi;
+        $from="owner\@$group.$local_hostname";
+        $welcome_message=1;
+    }
+    else {
+        log_sub("\nDid not find unique_id $unique_id for multi $group with validated='no'");
+        $sth2 = $dbh->prepare("select email,groups,aff,rdemog,date 
+                               from multivalidation 
+                               where unique_id='$unique_id' and 
+                               group_id='$multiid' and validated='yes'");
+        $sth2->execute;                      
+        if (@rr = $sth2->fetchrow_array) {
+            log_sub("\nFound unique_id $unique_id for multi $group with validated='yes', user already subscribed");
+        }
+        else {
+            log_sub("\nDid not find unique_id $unique_id for multi $group with validated='yes' either");
+        }
+    }
+    $dbh->do("set names utf8");
+}
+
+# return value if invoked from php; 1: successfull, 0: unsuccessful, -1: return original message
+$phpmessage=-1;
+if (!$multi) {
+    log_sub("\nNo multi $group, trying to see if it is a single group");
+    $sth = $dbh->prepare("select id, intro, owner_id, welcome_yesno,already_subs,name,welcome_subject,already_subs_subject,
+                          unsub_validation_subject,unsub_validation_ok,unsub_validation_notok,mail_sender
+                          from groups where title='$group'");
+    $sth->execute;
+    if (@row = $sth->fetchrow_array) {
+        $dbh->do("set names latin1");
+        $gid           = $row[0];
+        $intro         = $row[1];
+        $owner_id      = $row[2];
+        $welcome_yesno = $row[3];
+        $already_subs  = $row[4];
+        $group_description  = $row[5];
+        $welcome_subject  = $row[6];
+        $already_subs_subject  = $row[7];
+        $unsub_validation_subject  = $row[8];
+        $unsub_validation_ok  = $row[9];
+        $unsub_validation_notok  = $row[10];
+        $mail_sender  = $row[11];
+        
+        $sth2 = $dbh->prepare("select user_id,aff,date,sender,rdemog,id,manaff from validation where group_id='$gid' 
+                               and action='$action' and unique_id='$unique_id' and validated='no'");
+        $sth2->execute;
+        if (@row = $sth2->fetchrow_array) {
+            $userid = $row[0];
+            $aff = $row[1];
+            $vt_date = $row[2];
+            $sender = $row[3];
+            $rdemog = $row[4];
+            $manaff = $row[6];
+            if (!length($sender)) {
+                $ustring="user_id='$userid'";
+                $sender = "#$row[0]" ;
+            }
+            else {
+                $qs=$dbh->quote($sender);
+                $ustring="sender=$qs";
+            }
+            $sth3 = $dbh->prepare("update validation set validated='yes',tstamp=now() 
+                                   where $ustring and group_id='$gid'");
+            $sth3->execute;
+            if ($gid==1264) {
+                    $sth3 = $dbh->prepare("select ui_email,robinson from users_$group where ui_email=".$dbh->quote($sender));
+            }
+            else {
+                    $sth3 = $dbh->prepare("select ui_email,robinson from users_$group where id='$userid'");
+            }
+            $sth3->execute;
+            if (@rrr = $sth3->fetchrow_array) {
+                $ui_email=$rrr[0];
+                $robinson=$rrr[1];
+            }
+            if ($action eq 'sub') {
+                log_sub("\nFound unique_id $unique_id for group $group for subscription with validated='no', calling sub_engine\n");
+                if ($robinson eq 'no') {
+                    $message = $already_subs;
+                    $subject = $already_subs_subject;
+#                    system("logger debug bejbe");
+                } else {
+                    $dbh->do("set names utf8");
+                    sub_common();
+                    $dbh->do("set names latin1");
+                    $welcome_message=1;
+                    $message = "\n$intro\n";
+                    $subject = $welcome_subject;
+                }
+                $from="owner\@$group.$local_hostname";
+            } 
+            else {
+                $subject=$unsub_validation_subject;
+                log_sub("\nFound unique_id $unique_id for group $group for unsubscription with validated='no'");
+                if ($robinson eq "yes") {
+                    if (length($unsub_validation_notok)) {
+                        $message = $unsub_validation_ok;
+                    }
+                    else {
+                        $message = &r('v_notmember'); 
+                    }
+                    $phpmessage=0;
+                }
+                else {
+                    if (length($unsub_validation_notok)) {
+                        $message = $unsub_validation_ok;
+                    }
+                    else {
+                        $message = &r('v_unsub');
+                    }
+                    #$sth3 = $dbh->prepare("update users_$group set robinson='yes',unsub_date=now() where id='$userid'");
+                    #$sth3->execute;
+                    if ($from_php) {
+                        $upsource="php-validate";
+                    }
+                    else {
+                        $upsource="validate";
+                    }
+                    open (OUT,"|$MX_SCRIPT_ROOT/unsub_ppos $ui_email $group $upsource");
+                    close OUT;
+                    $welcome_message=2;
+                    $phpmessage=1;
+                }
+            }
+            $sender=$ui_email if ($userid);
+        } 
+        else {
+            log_sub("\nDid not find unique_id $unique_id for group $group with validated='no'");
+            $sth3 = $dbh->prepare("select user_id,sender from validation where group_id='$gid' 
+                                   and action='$action' and unique_id='$unique_id' and validated='yes'");
+            $sth3->execute;
+            if (@rw=$sth3->fetchrow_array) { 
+                log_sub("\nFound unique_id $unique_id for group $group for $action with validated='yes'");
+                if ($action eq 'sub') {
+#                    $message = &r('v_already');
+                    $message = $already_subs;
+                    $subject = $already_subs_subject;
+                } else {
+                    $subject=$unsub_validation_subject;
+                    if (length($unsub_validation_notok)) {
+                        $message = $unsub_validation_ok;
+                    }
+                    else {
+                        $message = &r('v_already_unsub');
+                    }
+                }
+                $userid = $rw[0];
+                $sender = $rw[1];
+                if (!length($sender)) {
+                    $sth4 = $dbh->prepare("select ui_email from users_$group where id='$userid'");
+                    $sth4->execute;
+                    if (@rrr = $sth4->fetchrow_array) {
+                        $sender=$rrr[0];
+                    }            
+                }
+            }
+            else {
+                log_sub("\nDid not find unique_id $unique_id for group $group with validated='yes' either");
+            }
+        }
+        $dbh->do("set names utf8");
+    }
+    else {
+        log_sub("\nNo group $group.");
+    }
+} 
+
+$message =~ s/\{group\}/$group_description/gi;
+$message =~ s/\{email\}/$sender/gi;
+$subject =~ s/\{group\}/$group_description/gi;
+$mail_sender =~ s/\{group\}/$group_description/gi;
+
+$subject = &r('v_subject') if (!$subject);
+
+$dspfrom=$from;
+if (length($mail_sender)) {
+    $dspfrom = mx_encode_header_tags($mail_sender,"utf8") . " <$from>";
+}
+
+$subject = mx_encode_header_tags($subject,"utf8");
+
+# flag "welcome_message==1" says that the validation succeeded, welcome message should be sent over.
+# however, if welcome_yesno is set to 'no' we must not send any welcome messages.
+
+if (!($welcome_message==1 && ($welcome_yesno eq 'no')) && length($sender) && length($message)) {
+    if (!open(SENDMAIL, "|/usr/lib/sendmail -oi -t -odb")) {
+        warn "error invoking sendmail: $!\n";
+    } 
+    else {
+        #print "From: $dspfrom\nReply-To: $from\nTo: $sender\nSubject: $subject\nContent-Type: text/plain;
+        #                charset=\"utf-8\"\n\n$message\n";
+        print SENDMAIL "From: $dspfrom\nReply-To: $from\nTo: $sender\nSubject: $subject\nContent-Type: text/plain;
+                        charset=\"utf-8\"\n\n$message\n";
+    }
+    log_sub("\n$message\n");
+    close SENDMAIL;
+}
+
+if ($from_php) {
+    if ($phpmessage==-1) {
+        print $message;
+    }
+    else {
+        print $phpmessage;
+    }
+}
+
+#print "$viral_campaign $newuser_id $group eq $viral_campaign_group_name\n";
+
+# viral_campaign is set to the id of the new user if he is new user in the given group in the header
+if ($viral_campaign_user_id>0 and $viral_campaign_base_id>0) {
+    $vk=0;
+    @vk_emails=();
+    for (@demog) {    # demog* is set by sub_common
+        $demog_name=$_;
+# print "$demog_name\n";
+# print $viral_campaign_variables{$demog_name}. " and $demogvalue[$vk]\n";
+        if ($viral_campaign_variables{$demog_name} and $demogvalue[$vk] =~ /^[\.\+_a-z0-9-]+\@([0-9a-z][0-9a-z-]*\.)+[a-z]{2,4}$/i) {
+            push (@vk_emails,$demogvalue[$vk]);
+        }
+        $vk++;
+    }
+    if ($#vk_emails>-1) {
+        $vk_maillist = join (",",@vk_emails);
+        $sender_call = $MX_SCRIPT_ROOT . "/sender_engine base-$viral_campaign_base_id format-mime output-maxima0 maillist-$vk_maillist sender-member-$viral_campaign_user_id";
+        log_sub("Viral campaign, calling $sender_call\n");
+        open (OUT,"|$sender_call");
+        close OUT;
+    }
+}
+
+# in sub_engine: $form_automatic_emails{$fae_base}="$group_id,$form_id,$m_loguser";
+
+if ($welcome_message) {
+    rename("$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok", "$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.ok");
+}
+else {
+    log_sub("$message\nunsuccessful subscribe validation with parms: $ARGV[0] $ARGV[1] $ARGV[2] $ARGV[3]\n");
+}
+
+sub r {
+  $rr=$_[0];
+  &refresh();
+  $W{$rr};
+}

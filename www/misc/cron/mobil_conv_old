@@ -1,0 +1,172 @@
+#!/usr/bin/perl 
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+use DBI;
+use POSIX qw(strftime);
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+#$dbh->{RaiseError} = 1;
+$dbh->do("set names utf8");
+
+# if group is given, updates only group; updates all otherwise.
+$group=$ARGV[0];
+
+# report email
+$rep_send=1;
+$rep_email="tbjanos\@manufacture.co.yu";
+@time = localtime;
+$date = strftime("%d %b %Y %H:%M:%S", @time);
+$rep_subject = "Mobil normalizacio cron $date";
+$rep_from="report\@maxima.hu";
+
+#set to 2 to print logs to stdout, 1 to print logs to $verifyf dir, and 0 for no logs.
+$VERIFY=1;             
+$verifyf = "$MX_LOG_ROOT/megye_varos"; 
+
+#verify those data which has changed in last $VERIFY_DAYS days only, set to 0
+#to verify all the data. 1 or 2 is reasonable value, because this script is 
+#intended to be a daily cron job.
+$VERIFY_DAYS=2;
+
+if ($VERIFY_DAYS) {
+    $vdpart=" and unix_timestamp(now())-unix_timestamp(tstamp)<=$VERIFY_DAYS*86400";
+    $rep_dtext="az utóbbi $VERIFY_DAYS nap új/megváltozott adatai";
+}
+else {
+    $vdpart="";
+    $rep_dtext="minden tag adatából";
+}
+
+$vtime=time();
+if ($VERIFY==1) {
+    open (OO, ">$verifyf/mobil-$vtime.notok");
+    print OO "group: $group\n";
+    close OO;
+}
+elsif ($VERIFY==2) {
+    print "group: $group\n";
+}
+
+if (!length($group)) {
+    $qpart="";
+}
+else {
+    $qpart="where title='$group'";
+}
+
+$rep_invalid_mobil=0;
+$rep_nomobil=0;
+$rep_mobilok=0;
+$rep_repaired=0;
+$rep_invalid_mobil=0;
+$rep_testedgroups=0;
+$rep_allusers=0;
+
+$foundg=0;
+$sth=$dbh->prepare("select id,title from groups where title!='knorr' order by title");
+$sth->execute;
+while (@row=$sth->fetchrow_array) {
+    $foundg=1;
+    $group_id=$row[0];
+    $title=$row[1];
+    $st1 = $dbh->prepare("desc users_$title");
+    $st1->execute;
+    undef %realdemogs;
+    while (@r1 = $st1->fetchrow_array) {
+        if ($r1[0] =~ /ui_(.*)/) {
+            $realdemogs{$1}=1;
+        }
+    }
+    $st1->finish;
+    if ($realdemogs{"mobil"}) {
+        log_mv("\n\nProcessing $title group ......");
+        $rep_testedgroups++;        
+        $i=0;
+        $st1=$dbh->prepare("select id,ui_mobil from users_$title where 1 $vdpart");
+        $st1->execute;
+        while (@r1=$st1->fetchrow_array) {
+            $user_id=$r1[0];
+            $ui_mobil=$r1[1];
+            $mobil=$ui_mobil;
+            $mobil =~ s/[^\d\+]//gi;
+            if (!length($mobil)) {
+                $rep_nomobil++;
+            }
+            elsif ($mobil =~ /^\+36([237]0[\d]{7})$/) {
+                $rep_mobilok++;
+            }
+            elsif ($mobil =~ /^\+?([03]6)?([237]0[\d]{7})$/) {
+                $mobil = "+36$2";
+                $rep_repaired++;
+            }
+            #elsif ($mobil =~ /^00([\d]{8,})$/) {
+            #    $mobil = "+$1";
+            #    $rep_repaired++;
+            #}
+            else {
+                $mobil = "";
+                $rep_invalid_mobil++;
+            }
+            $rep_allusers++;
+            if ($ui_mobil ne $mobil) {
+                $q="update users_$title set ui_mobil='$mobil' where id='$user_id'";
+                log_mv("\n$q [$ui_mobil]");
+                $st2=$dbh->prepare($q);
+                $st2->execute;
+                $st2->finish;
+                $i++;
+            }
+        }
+        $st1->finish;
+        log_mv("\n\n***Ready with $title group, updated $i users***\n\n");
+    }
+}
+$sth->finish;
+
+if (!$foundg) {
+    log_mv("\nmobil_conv updates ui_mobil column of users_ tables,\n
+             to the form +ccddnnnnnnn c=country d=district n=number (length of parts may vary)\n
+             Usage: mobil_conv updates for all groups\n
+             mobil_conv [group] updates only for given group\n");
+}
+else {
+    $report="
+Összesen $rep_testedgroups csoportnak van mobil demog info-ja.
+$rep_allusers tagból $rep_mobilok tag mobilszáma volt már normalizált formában
+$rep_repaired tag mobilszáma volt normalizálható
+$rep_invalid_mobil tag mobilszáma hibás volt, nem lehetett normalizálni, automatikusan törölve
+$rep_nomobil tagnak nincs mobilszáma
+";
+
+    if ($rep_send==1) {
+        if (! open(SENDMAIL, "|/usr/lib/sendmail -oi -t -odb")) {
+            warn "error invoking sendmail: $!\n";
+        } 
+        else {
+      #      print "From: $rep_from\nTo: $rep_email\nSubject: $rep_subject\n\n$report\n";
+            print SENDMAIL "From: $rep_from\nTo: $rep_email\nCc: igor\@tippnet.co.yu\nSubject: $rep_subject\n\n$report\n";
+        }
+    }
+    log_mv($report);
+}
+
+$dbh->disconnect;
+
+rename ("$verifyf/mobil-$vtime.notok","$verifyf/mobil-$vtime.ok");
+
+sub log_mv($) {
+    $ls_string=shift;
+    if ($VERIFY==1) {
+        open (OUT, ">>$verifyf/mobil-$vtime.notok");
+        print OUT $ls_string;
+        close OUT;
+    }
+    elsif ($VERIFY==2) {
+        print $ls_string;
+    }
+}
+

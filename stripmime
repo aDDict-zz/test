@@ -1,0 +1,794 @@
+#!/usr/bin/perl
+
+# stripmime - get rid of MIME crap in email
+#
+# by Adam Glass <adam@clarity.net>
+
+############################################################################
+
+$version = "0.8.2a"; # version string
+
+$headers = 0;       # default to echo message headers
+$cleanheaders = 0;  # strip non-essential headers in "forward" message sections
+$echomime = 0;      # default to not echo mime section info
+$sep = "";          # section separator
+$needsep = 0;       # flag for section change
+$echobody = 0;      # default to not echoing message body
+$sectionmark = 0;   # 0=MIME headers, 1=message's headers, 2+ otherwise
+$sectiontype = 0;   # section ID (0=message headers,1=body/nonmime,2=body/mime)
+$mimesection = "";  # used to record MIME type of current section
+$printremoved = 0;  # print notice when attachments removed
+$pr_template = "#### MIME type \"\{\}\" removed by stripmime ####";
+
+#$DEBUG = 1;        # uncomment for diagnostic info
+
+###########################################################################
+#
+# Other fun variables:  (you can ignore these, they're just here for fun)
+#  (not in use at present)
+# $ia_spool = "";     # used to push data back into the input stream when we
+                    # read more than we wanted to...
+
+###########################################################################
+                            
+# (If you're customizing the code and adding/removing MIME types to include
+# by default, this would be a good place to do it.  %mimes is a Perl
+# associative array (hash) of MIME types.  If the value of a key is:
+#  1: It is passed through to STDOUT (if it appears in the input stream)
+#  3: It is passed to STDOUT but each line is prepended with "> "
+# Any other value is ignored -- not passed to STDOUT.  (Or, in the
+# parlance of the command line arguments, excluded.)
+
+$mimes{"text/plain"} = 1;        # default MIME type to pass (we like text)
+$mimes{"message/rfc822"} = 3;    # un-MIME Netscape forwarded messages
+
+############################################################################
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+require $MX_SCRIPT_ROOT . "/common_functions.pl";
+
+# We should detect the encoding of the text and html parts to add the demogs in the right way later.
+# Use CP1250 as default, in most cases they use this codapage.
+%codepages=("text/plain"=>"cp1250","text/html"=>"cp1250");
+
+$logfile=$ARGV[0];
+$logfile=~s/[^0-9a-z_-]//gi;
+$logfile="$MX_SENDREQ_VERIFY_DIR/stripmime.$logfile." . time() . ".notok";
+unless (open (OO, ">$logfile")) { 
+    system("logger STRIPMIME - could not create $logfile!");
+    exit;
+}
+print OO time()." Stripmime called with params $ARGV[0] $ARGV[1] $ARGV[2] $ARGV[3]\n";
+
+$group = $ARGV[0];
+$fromvalid = $ARGV[1];
+
+$timer="";
+$timer_day=0;
+$timer_hour=0;
+$timer_minute=0;
+$filter_name="";
+$valid_timer=1;
+$timer_string="A kiküldés a hitelesítés után azonnal elkezdödik.\n";
+$filter_string="**** A csoport MINDEN tagja megkapja az üzenetet. ****\n";
+if ($ARGV[2] =~ /\.timer-(\d{1,2})-(\d{1,2})h(\d{1,2})$/) {
+    $timer=$&;
+    $timer_day=$1;
+    $timer_hour=$2;
+    $timer_minute=$3;
+    $ARGV[2] =~ s/\Q$timer\E//;
+}
+$valid_sender=0;
+if ($ARGV[2] eq "list") {
+    $valid_sender=1;
+}
+elsif ($ARGV[2] =~ /^filter-([a-z][a-z0-9_]*)$/) {
+    $filter_name = $1;
+    $valid_sender=1;
+}
+if (length($timer)) {
+    ($dt_sec,$dt_min,$dt_hour,$dt_mday,$dt_mon,$dt_year,$dt_wday,$dt_yday,$dt_isdst) = localtime;
+    $dt_mon+=1;
+    $dt_year+=1900;
+    if ($timer_day>31 or $timer_hour>23 or $timer_minute>59) {
+        $valid_timer=0;
+    }
+    else {
+        if ($timer_day<$dt_mday) {
+            $dt_mon++;
+            if ($dt_mon==13) {
+                $dt_mon=1;
+                $dt_year++;
+            }
+        }
+    }
+    @dt_months=("","január","február","március","április","május","június","július","augusztus","szeptember","október","november","december");
+    $timer_hour="0$timer_hour" if (length($timer_hour)<2);
+    $timer_minute="0$timer_minute" if (length($timer_minute)<2);
+    $timer_string="A kiküldés a hitelesítés után, $dt_year $dt_months[$dt_mon] $timer_day-n $timer_hour:$timer_minute-kor kezdödik el.\n";
+    $dt_mon="0$dt_mon" if (length($dt_mon<2));
+    $timer_day="0$timer_day" if (length($timer_day<2));
+    $timersql="$dt_year-$dt_mon-$timer_day $timer_hour:$timer_minute:00";
+}
+
+unless ($valid_sender and $valid_timer) {
+    print OO time()." Invalid sender $ARGV[2], or timer $timer\n";
+    exit;
+}
+
+use DBI;
+use MD5;
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+
+# sender and group validation are done in the 'exist' script
+
+$sth = $dbh->prepare("select id from groups where title = '$group'");
+$sth->execute;
+($group_id) = $sth->fetchrow_array;
+
+if ($filter_name) {
+    $sth = $dbh->prepare("select id from filter where name = '$filter_name' and group_id='$group_id'");
+    $sth->execute;
+    ($filter_id) = $sth->fetchrow_array;
+    if (!$filter_id) {
+        print OO time()." Invalid filter: $filter_name\n";
+        exit;
+    }
+    $filter_string="Filter: $filter_name.\n";
+}
+else {
+    $filter_id = '';
+}
+
+print OO time()." Command line check passed, params: group:$group valid:$fromvalid filter:$filter_name timer:$timer\n";
+
+parse_command_line();
+
+if ($DEBUG) { show_options(); }
+
+$DEBUG=0;
+
+while ($intxt = ($savethatinput ? $savethatinput : <STDIN>)) {
+
+  $savethatinput = "";
+
+  if ($sep && ($intxt eq "--$sep--\n")) {         # found final MIME boundary
+    $CHANGEDBODY.=$TEXTAD if ($NEEDTEXTAD);
+    $CHANGEDBODY.=$intxt;
+    $REALBODY.=$intxt;
+    process_final_boundary();
+  }
+
+  elsif ($sep && ($intxt eq "--$sep\n")) {        # found MIME boundary
+    $CHANGEDBODY.=$TEXTAD if ($NEEDTEXTAD);
+    $CHANGEDBODY.=$intxt;
+    $REALBODY.=$intxt;
+    process_mime_boundary();
+  }
+
+  elsif ($sectiontype == 0) {                     # deal with message headers
+    process_message_headers();
+#  system("logger $intxt $sectiontype");
+  }
+
+  elsif ($sectiontype == 1) {                     # deal with non-MIME body
+    process_nonmime_body();
+  }
+
+  elsif (($sectiontype == 2) &&                   # deal with MIME in body
+        (($mimes{$mimesection} == 1) ||           #  ("1" = include it
+         ($mimes{$mimesection} == 3))) {          #   "3" = "forward" it)
+    process_mime_section();
+  }
+
+  elsif (($sectiontype == 2) &&
+          $INSERTAD) {
+  if ($intxt =~ /(.*)<\/body>(.*)/i) {
+    $CHANGEDBODY.=$1.'<BR>{mimead_bottom}<BR>'.$HTMLAD."</body>".$2."\n";
+    $REALBODY.=$intxt;
+    $INSERTAD = 0;
+  } elsif ($intxt =~ /(.*)<\/html>(.*)/i) {
+    $CHANGEDBODY.=$1.'<BR>{mimead_bottom}<BR>'.$HTMLAD."</html>".$2."\n";
+    $REALBODY.=$intxt;
+    $INSERTAD = 0;
+  } else {
+    $CHANGEDBODY.=$intxt;
+    $REALBODY.=$intxt;
+  }  
+  } else {
+    $CHANGEDBODY.=$intxt;
+    $REALBODY.=$intxt;
+  }  
+}
+print OO time()." Mime processing passed.\n";
+
+# (print a terminal separator if need be)
+if ($sep) { print "--$sep--\n" if ($echomime && $needsep); }
+
+#$CHANGEDBODY = "{ad_top}\n$CHANGEDBODY\n{ad_bottom}\n$TEXTAD" if (!$NUMOFADS);
+
+$BODY =~ s/\\/\\\\/g;
+$HEADER =~ s/\\/\\\\/g;
+$REALBODY =~ s/\\/\\\\/g;
+
+$BODY =~ s/'/\\'/g;
+$HEADER =~ s/'/\\'/g;
+$REALBODY =~ s/'/\\'/g;
+if (!$ADDON && $SPECADDON) {
+    $ADDON = "Mime-Version: 1.0\n$SPECADDON";
+}
+
+$header=$HEADER;
+
+# 
+# from
+#
+
+$automatic = 0 ;
+
+if ($header =~ /From: (.*) <automata-([^>]+)>/)  
+{
+    $fromname = $1;
+    $email = $2;
+    $email =~ tr/A-Z/a-z/;
+    $automatic = 1;
+}
+elsif ($header =~ /From: (.*) <([^>]+)>/)  
+{
+    $fromname = $1;
+    $email = $2;
+    $email =~ tr/A-Z/a-z/;
+} else {
+  $header =~ /From: (.+)/;
+$fromname = $1;
+$email = $1;
+$email =~ tr/A-Z/a-z/;
+}
+
+print OO time()." Header processed: fromname:$fromname sender:$email automatic:$automatic fromvalid:$fromvalid\n";
+
+#
+# subject
+#
+if ($header =~ /Subject: (.*)\n(\s+.*)?(\n\s+.*)?/i) {
+  $subject = $1;
+  $subject .= "\n$2" if length($2); 
+  $subject .= "$3" if length($3); 
+} else {
+  $subject = '(no subject)';
+}
+
+print OO time()." Subject created: $subject\n";
+
+$sth = $dbh->prepare("select id,name from user where email='$email'");
+$sth->execute;
+
+if (@row = $sth->fetchrow_array) {
+  $sender_id = $row[0];
+  $author_email = $email;
+  $author_name = $row[1];
+}
+
+$letter = $BODY;
+$plain_codeset=$codepages{"text/plain"};
+$html_codeset=$codepages{"text/html"};
+
+if (!$automatic && !$fromvalid) {
+    $unique_id = substr(MD5->hexhash($author_email.time()),0,10);
+    $from = "mvalidate-$unique_id\@$group.$local_hostname";
+
+    $message = "From: $from
+Reply-To: $from
+To: $author_email
+Subject: [$group] Üzenet hitelesítése
+
+Ön levelet adott fel a(z) $group csoportba. 
+A téma: $subject.
+A csoport: $group
+${timer_string}${filter_string}Ha azt kívánja, hogy üzenete megjelenjen a csoportban, akkor változatlan tartalommal küldje vissza ezt a levelet a feladónak.
+
+-------------------------------------------------------
+www.$local_hostname 
+";
+
+    print OO time()." Validation email: $message\n";
+
+    if (! open(SENDMAIL, "|/usr/lib/sendmail -oi -t -odb")) {
+        warn "error invoking sendmail: $!\n";
+        print OO time()." error invoking sendmail: $!\n";
+    } 
+    else {
+        print SENDMAIL $message;
+    }
+    # see comments below about the set names'
+    print OO time()." Inserting validation data, plain codeset: $plain_codeset, html codeset: $html_codeset\n";
+    $dbh->do("set names $html_codeset");
+    $sth = $dbh->prepare("insert into validatemes (group_id,user_id,subject,create_date,filter_id,unique_id,timer) values 
+                          ('$group_id','$sender_id','$subject',now(),'$filter_id','$unique_id','$timer')"); 
+    $sth->execute;
+    $mid = $sth->{mysql_insertid};
+    print OO time()." Validation data inserted, id: $mid\n";
+    exit unless ($mid);
+    $dbh->do("set names latin1");
+    $sth = $dbh->prepare("insert into vbodies values ($mid,'$letter')");
+    $sth->execute;
+    $sth = $dbh->prepare("insert into vmailarchive values ($mid,'$ADDON','$HEADER','$REALBODY','no')");
+    $sth->execute;
+} 
+else {
+    $messadd1="";
+    $messadd2="";
+    if (length($timer)) {
+        $messadd1=",schedule_date,status";
+        $messadd2=",'$timersql','scheduled'";
+    }
+    print OO time()." Inserting message data, plain codeset: $plain_codeset, html codeset: $html_codeset\n";
+    # messages table is utf8, subject may not be encoded as it should be, most likely it will be the same encoding as the rest of the email
+    # but we can not know that if the subject is not properly encoded, so this is just a guess...
+    $dbh->do("set names $html_codeset");
+    $sth = $dbh->prepare("insert into messages (group_id,user_id,subject,create_date,filter_id,implementation,
+                                plain_codeset,html_codeset$messadd1) values 
+                          ('$group_id', '$sender_id', '$subject',now(),'$filter_id','$maxima_implementation',
+                                '$plain_codeset','$html_codeset'$messadd2)"); 
+    $sth->execute;
+    $mid = $sth->{mysql_insertid};
+    print OO time()." Message data inserted, id: $mid\n";
+    exit unless ($mid);
+    $sth = $dbh->prepare("select create_date from messages where id='$mid'");
+    $sth->execute;
+    ($date) = $sth->fetchrow_array;
+    print OO time()." Inserting message body, id: $mid\n";
+    # bodies and mailarhive tables are latin1, so setting the codeset to latin1 means that mysql shouldn't do any conversion,
+    # we'll keep the data in the database in the origial format. This is the safest, because this way we make much less harm
+    # in event of wrong encoding detection, only the demogs can be inserted in the wrong way but the message itself remains intact.
+    $dbh->do("set names latin1");
+    $sth = $dbh->prepare("insert into bodies values ($mid,'$letter')");
+    $sth->execute;
+    $sth = $dbh->prepare("insert into mailarchive (id,addon,header,body,fromweb) values ($mid,'$ADDON','$HEADER','$REALBODY','no')");
+    $sth->execute;
+    $sth = $dbh->prepare("update groups set num_of_mess=num_of_mess+1, last_date='$date' where id='$group_id'"); 
+    $sth->execute;
+
+    if (length($timer)) {
+        print OO time()." Timer $timer, NOT invoking maxima0.\n";
+    }
+    else {
+        $m0_params="$mid";
+        if ($filter_id) {
+            $m0_params .= " filter-$filter_id";
+        }
+        print OO time()." Invoking maxima_engine with params:$m0_params\n";
+        open (OUT,"|$MX_SPOOL_ENGINE $m0_params");
+        print OUT "$ADDON\n##-##\n$CHANGEDBODY";
+        close OUT;
+    }
+}
+close OO;
+$rename=$logfile;
+$rename=~s/notok$/ok/;
+rename($logfile,$rename);
+
+exit 0;
+
+#
+# wait, you mean it's not that simple?
+#
+#
+# oh...
+############################################################################
+
+sub parse_command_line {
+  foreach $arg (@ARGV) {
+    if (substr($arg,0,1) eq "-") {                    # starts with a -?
+     dovers() if ($arg =~ /^(-)?-version/i);          # version text
+     dohelp() if ($arg =~ /^(-)?-help/i);             # help/usage message
+     $sectiontype = 0;                                # reset for later use
+     for ($i=1;$i<length($arg);$i++) {                # for each character
+       $flag = substr($arg,$i,1);
+       if ($flag eq "h") { $headers = 0; }            # don't echo msg hdrs
+       elsif ($flag eq "m") { $echomime = 1; }        # echo MIME info/seps
+       elsif ($flag eq "c") { $cleanheaders = 1; }    # (see line 17 above)
+       elsif ($flag eq "b") { $echobody = 1; }        # print nonmime body
+       elsif ($flag eq "r") { $printremoved = 1; }    # print warning removed
+       elsif ($flag eq "i") { $sectiontype = 1; }     # include following types
+       elsif ($flag eq "e") { $sectiontype = 2; }     # exclude following types
+       elsif ($flag eq "f") { $sectiontype = 3; }     # fwd (>) following types
+       else {                                         # not a valid flag
+         print "invalid option: ".substr($arg,$i,1)."\n";
+         dohelp();                                    # do help/usage message
+       }
+     }
+    }
+    elsif ($sectiontype != 0) {                       # expecting MIME types
+      @mimelist = split(",",$arg);                    # temporary array
+      if (@mimelist == 0) { dohelp(); }               # none? do help/usage msg
+      foreach $mime (@mimelist) {                     # for each one,
+        if ($mime !~ /\w\/\w/) { dohelp(); } else {   # valid-looking?
+          $mimes{lc($mime)} = $sectiontype;           # set action to take
+        }
+      }
+      $sectiontype = 0;                               # reset for next argument
+    }
+  }
+
+  # If -i/-e/-f was last argument, we didn't get MIME types we were expecting.
+
+  if ($sectiontype != 0) { dohelp(); }                  # do help/usage msg
+
+  if ($echomime) { $cleanheaders = 0; }                 # -m overrides -c
+}
+
+
+sub show_options {
+  print "$0 $version -- DEBUG mode ON -- options:\n";
+  print ($headers ? "  WILL" : "  Will NOT");
+   print " pass-through message's headers.\n";
+  print ($cleanheaders ? "  WILL" : "  Will NOT");
+   print " clean forwarded-sections' headers.\n";
+  print ($echomime ? "  WILL" : "  Will NOT");
+   print " leave message looking like a MIME message.\n";
+  print ($echobody ? "  WILL" : "  Will NOT");
+   print " pass-through non-MIME part of message body.\n";
+  print ($printremoved ? "  WILL" : "  Will NOT");
+   print " insert warning when MIME sections are removed.\n";
+}
+
+
+sub input_arbitrator {
+    #
+    # not using this pending resolution of the "\n" -> "" issue
+    # or maybe never, if the $savethatinput one-line input-pushback is enough??
+    #
+    my @tempspool,$extract;
+    local($spoolme) = @_;
+
+    # if called with input string, we should push it to top of input stack
+    if ($spoolme) {
+      $ia_spool .= "$spoolme\n$ia_spool";      # tack on FRONT of input
+      return;
+    }
+    if ($ia_spool eq "") {                             # anything queued?
+        if (!($extract = <STDIN>)) { return; }         # no - get new stuff,
+        return clean_text($extract);                   # return cleaned text
+    } else {                                           # yes - new stuff
+        @tempspool = split("\n",$ia_spool);            # unpack it,
+        $extract = shift @tempspool;                   # save it for later.
+        if (@tempspool) {                              # if there's anything
+            $ia_spool = join("\n",@tempspool);         # left, pack it up
+        } else {
+            $ia_spool = "";                            # otherwise empty it
+        }
+        return $extract;                                  
+    }
+}
+
+sub clean_text {                                       # clean input lines
+ local($cleanme) = @_;
+
+ chomp $cleanme;                                       # remove trailing \n
+ chop $cleanme if (substr($cleanme,-1,1) eq "\r");     # and \r, as needed
+ if ($DEBUG) { print "Translated cr/nl into nl...\n"; }
+ # do i want to do anything else here??
+ return $cleanme;                                      # and send it on back
+}
+
+
+sub process_final_boundary {
+  $needsep = 1;                                 # print final boudary (if -m)
+  $sectiontype = 1;                             # just in case there's more
+  if (@seplist>1) {
+    pop @seplist;
+    $sep = $seplist[@seplist-1]; 
+    if ($DEBUG) { print ">>> DROPPED BACK TO \"$sep\"\n"; }
+  }
+}
+
+# find in which encodings are the textual mime parts.
+sub find_mimepart_encoding($;$) {
+    my $mimepart=shift;
+    my $header=shift;
+    
+    if ($header =~ /Content-Type:\s*$mimepart\s*;.*charset\s*=\s*['"]?([^\s'"]+)['"]?/is) {
+        $codepages{"$mimepart"}=mx_get_supported_charset($1);
+    }
+}
+
+sub process_mime_boundary {
+  $needsep = 1;                                 # need a separator for this
+  $printedremoved = 0;                          # reset flag marking printed
+
+  if ($DEBUG) { print ">>> HIT SEPARATOR\n"; }
+
+  # in case you care... ("token documentation")
+  # $sectionid is the action to take with this MIME section
+  #  (1=echo,3=forward,anything else=ignore)
+  # $sectionmark is the location within a section (0=in MIME headers,
+  #  >0=in MIME body.  For MIME sections which are themselves messages
+  #  (as in the case of message/rfc822-style forwarded messages, $sectionmark
+  #  will be 1 in the forwarded message's headers, 2+ afterwards)
+
+  # MIME boundaries mean we're moving onto a new section, so check
+  # Content-Type field to identify section and set sectiontype as needed
+
+  $done = 0;  $spool = "";  $hiteof = 0;  $mimesection = "";
+  $ISFILE = 0;
+  while (!$done && !$hiteof) {
+    $hiteof = 1 unless ($intxt = <STDIN>);    # note down EOF if it happened
+    $spool .= $intxt;                         # save mime headersa
+    if ($spool =~ /filename/) {
+      $ISFILE = 1;
+    }
+    $hassemi = index($intxt,";");
+    if ($hassemi != -1) { $intxt = substr($intxt,0,$hassemi); }
+    if (!$mimesection) {
+      if ($intxt =~ /^Content-Type: (.*);?/i) {  # does it look right?
+        $mimesection = lc($1);                # save for later
+        chop $mimesection if (substr($mimesection,-1,1) eq ";");
+      }
+    }
+    if ($intxt eq "\n") {
+      die "Missed Content-Type in MIME section headers" if (!$mimesection);
+      $done = 1;                              # end of headers - exit loop
+    }
+  }
+  die "Hit EOF scanning MIME headers" if ($hiteof);
+
+
+
+  # we should have a Content-Type by this point -- is it multipart?
+  # if so, record the boundary value on the stack
+  if (index($mimesection,"multipart/") == 0) {
+    if ($spool =~ /boundary="?(.*)"?;?\s*/im) {   # should find it in there
+      $sep = $1; $sep =~ tr/"//d;                 # spooled MIME headers
+      push @seplist,$sep;                         # add to boundary stack
+    }
+    if ($DEBUG) { print ">>> NEW BOUNDARY \"$sep\"\n"; }
+  }	
+  if ($DEBUG) { print ">>> SWITCHING TO: \"$mimesection\" ($mimes{$mimesection})\n"; }
+
+  # if this is a mime part we need the encoding for, try to find out
+  if (length($codepages{"$mimesection"})) {
+    find_mimepart_encoding($mimesection,$spool);
+  }
+
+  $CHANGEDBODY.=$spool;
+  $REALBODY.=$spool;
+
+  $INSERTAD = 0;
+  $NEEDTEXTAD = 0;
+
+  if (($mimesection =~ /text\/html/ || $mimesection =~ /text\/plain/) && !$ISFILE) { 
+    $INSERTAD = 1;
+    $NUMOFADS++;
+    if ($mimesection =~ /text\/plain/) {
+      $NEEDTEXTAD = 1;
+    }
+  }
+    
+  # assuming we got a good content-type header...
+
+  $sectiontype = 2;                          # set sectiontype = MIME
+  $sectionmark = 1;                          # set section location to body
+  if (($mimes{$mimesection} == 1) || ($mimes{$mimesection} == 3)) {
+    if ($needsep && $echomime) {             # and we need to print a
+      print "--@seplist[0]\n";               # MIME separator line, do so
+      $needsep = 0;                          # and reset need flag
+    }
+    if ($echomime) {
+      @spool_lines = split("\n",$spool);     # convert to array
+      foreach $spooled_line (@spool_lines) { # for each line spooled...
+        print "> " if (($mimes{$mimesection} == 3) &&
+                      (!$echomime));         # maybe print a "> "
+        print "$spooled_line\n";             #  definitely print the line
+      }
+      if (($mimes{$mimesection} == 3) && (!$echomime)) {
+        print "> \n"; } else { print "\n"; }
+    }
+  } else {                                   # not something we should print
+    if ($printremoved && !$printedremoved) { # look closely, they're different
+      $printedremoved = 1;
+      $removetext = $pr_template;
+      $removetext =~ s/\{\}/$mimesection/ig;
+      print "$removetext\n";
+    }
+  }
+}
+
+
+sub process_message_headers {
+
+  my $istextsec="";
+
+  $HEADER.=$intxt;
+  if ($intxt =~ /^Content-Type: text\/plain; charset=iso-8859-1/i)
+  {
+    $SPECADDON = $intxt;
+  }
+  if ($SPECADDON && $intxt =~/^Content-Transfer-Encoding: 8bit/i)
+  {
+    $SPECADDON .= $intxt;
+  }
+
+  if ($intxt =~ /^Content-Type:/i) {       # if it's a MIME content-type def
+    # this next line is wrong -- we don't necessarily want to echo
+    # the input MIME type.  but what to use instead?  multipart/something?
+    # text/plain?  ... fix this at some point.
+    $mojcontent=$intxt;
+    print "$intxt" if ($echomime && $headers);       # print it if we should
+    if (!$sep) {                                     # don't already have one?
+      if ($intxt =~ /boundary="?(.*)"?;?\s*/i) {     # find the boundary
+        $sep = $1; $sep =~ tr/"//d;
+	$ADDON =  "Mime-Version: 1.0\n$mojcontent";
+      } else {                                       # it's not here
+        if ($intxt =~ /^Content-Type: (.*);?/i) {    # not multipart, maybe a text part
+            $istextsec = lc($1);                     # so try to find the encoding
+            chop $istextsec if (substr($istextsec,-1,1) eq ";");
+        }
+        $spool = "";                                 # start spooling
+        $done = 0;                                   # reset flag
+        while (!$done) {
+          if ($intxt = <STDIN>) {
+            $HEADER.=$intxt;
+#system("logger premature end of MIME header");
+#            die "Premature end of MIME header" if ($intxt eq "\n");
+            if ($intxt eq "\n") {
+                 $sectiontype = 1;                      # state: now in message BODY
+                 $sectionmark = 0;                      # and at the start, no less!
+                 if (length($codepages{"$istextsec"})) {
+                   find_mimepart_encoding($istextsec,"Content-Type: $istextsec;$spool");
+                 }
+                 return;
+            }
+            if ($intxt !~ /^\s+/) {     # ok, fine ... no boundary recorded!
+              if (length($codepages{"$istextsec"})) {
+                find_mimepart_encoding($istextsec,"Content-Type: $istextsec;$spool");
+              }
+	          $savethatinput = $intxt;
+              return;
+            }
+            if ($intxt =~ /boundary="?(.*)"?;?\s*/i) { # found a boundary?
+              $sep = $1; $sep =~ tr/"//d;              # yep - save it
+              $done = 1;                               # now we're done, so
+              print "$spool$intxt" if ($echomime && $headers);
+              $ADDON =  "Mime-Version: 1.0\n$mojcontent$spool${intxt}";
+            } else {
+              $spool .= "$intxt";                      # spool it up for later
+            }
+          } else {
+#system("logger premature end of input");
+            die "Premature end of input while reading headers";
+          }
+        }
+        if (length($codepages{"$istextsec"})) {
+          find_mimepart_encoding($istextsec,"Content-Type: $istextsec;$spool");
+        }
+      } 
+    } else {      # this would be a second Content-Type -- not kosher
+      die "Saw two Content-Type headers in input!";
+    }
+    chop $sep if (substr($sep,-1,1) eq ";");         # chop trailing ;
+    if ($DEBUG) { print ">>> BOUNDARY IS \"$sep\"\n"; }
+    push @seplist,$sep;                      # add to boundary stack
+    $done = 0;
+    while (!$done) {
+      if ($intxt = <STDIN>) {
+        if ($intxt eq "\n") {
+          $sectiontype = 1;
+	  print "end\n";
+          $sectionmark = 0;
+          print $intxt unless (!$headers);
+          $done = 1;
+        }
+        elsif ($intxt =~ /^\S+/) {
+	  $savethatinput = $intxt;
+          $done = 1;
+        } else { print $intxt unless (!$echomime || !$headers); }
+      } else { die "End of input in middle of headers!"; }
+    }
+  } else {
+    if ($intxt eq "\n") {                    # watch for end of headers
+      $sectiontype = 1;                      # state: now in message BODY
+      $sectionmark = 0;                      # and at the start, no less!
+      print $intxt unless (!$headers);       # no extra \n if !printing hdrs
+    }
+    elsif ($headers) {                       # should we print ANY headers?
+      if (($intxt !~ /^Content-/i) &&        # is this a *non* MIME header?
+          ($intxt !~ /^Mime-/i)) {
+        print $intxt;                        # then automatically print it
+      } else {                               # but if it IS a MIME header,
+        print $intxt if ($echomime);         #  only print it if we should
+      }
+    }
+  }
+}
+
+
+sub process_nonmime_body {
+#  print "$intxt" if ($echobody || !$sep);
+  $BODY.="$intxt" if ($echobody || !$sep);
+  $CHANGEDBODY.=$intxt;
+  $REALBODY.=$intxt;
+}
+
+
+sub process_mime_section {
+  $sectionid = $mimes{$mimesection};
+  if ($sectionid == 3) {              # FORWARD section (echo with >)
+    if ($sectionmark == 0) {          #  in section's MIME headers
+      print "> $intxt" if ($echomime);#    were we told to print MIME hdrs?
+    }
+    elsif ($sectionmark == 1) {       #  in forwarded message's headers
+      if ($cleanheaders) {            #    cleaning them?
+        if (($intxt =~ /^(From|Date|Subject|To|Cc): /i) ||
+            ($intxt eq "\n")) {       #     must preserve head/body sep (\n\n)
+          print "> $intxt";           #     yes + good header = print
+        }
+      } else {
+#        print "> $intxt";             #     not cleaning, so always print
+#        $BODY .=  "> $intxt";             #     not cleaning, so always print
+      $BODY .= "> $intxt" if (!$ISFILE);                 #      so always print it
+      $CHANGEDBODY .= $intxt;                 #      so always print it
+      $REALBODY .= $intxt;                 #      so always print it
+      }
+    } else {                          #  in the forwarded message's body
+      $BODY .= "> $intxt" if (!$ISFILE);                 #      so always print it
+      $CHANGEDBODY .= $intxt;                 #      so always print it
+      $REALBODY .= $intxt;                 #      so always print it
+    }
+  }
+  elsif ($sectionid == 1) {           # INCLUDE section (print it verbatim)
+    if ($sectionmark == 0) {          #    in section's MIME headers
+      print "$intxt" if ($echomime);  #      were we told to print MIME hdrs?
+    }
+    elsif ($sectionmark > 0) {        #    not in MIME headers
+#      print "$intxt";                 #      so always print it
+      $BODY .= "$intxt" if (!$ISFILE);                 #      so always print it
+      $CHANGEDBODY .= "$intxt" ;                 #      so always print it
+      $REALBODY .= $intxt;                 #      so always print it
+    }
+  }
+
+  $sectionmark += 1 if ($intxt eq "\n");   # past MIME or message headers?
+}
+
+############################################################################
+
+
+sub dohelp() {
+  print <<ZZEOF
+usage: $0 [--help] [--version] [-bmrhc] [-ief <MIMEtypes>]
+ Expects an email message on STDIN and echoes the email to STDOUT except
+ for MIME attachments.  Options:
+   -i <MIMEtypes> -- comma-separated MIME types to include in output
+   -e <MIMEtypes> -- comma-separated MIME types to exclude from output
+   -f <MIMEtypes> -- comma-separated MIME types to "forward" (prepend "> ")
+   -b  -- echo the non-MIME part of the message body (default ignores it)
+   -m  -- echo MIME separators and message/section header info (default won't)
+   -r  -- print a warning when $0 removes MIME from the message
+   -h  -- doesn't echo the message headers (default will)
+   -c  -- only echo basic headers in forward (-f) MIME types (overridden by -m)
+ Or:
+   --help    -- print this help message
+   --version -- print version info and exits
+ For -i, -e and -f options, command line arguments are parsed left-to-right,
+ and later directives override earlier ones.
+ Unless you explicitly exclude (-e) them, text/plain will be included (-i)
+ and message/rfc822 will be forwarded (-f) by default.
+ZZEOF
+;
+  exit 1;
+}
+
+sub dovers() {
+  print "stripmime version $version by Adam Glass <adam\@clarity.net>\n";
+  print "  This program is distributed with NO WARRANTY WHATSOEVER under ";
+  print "the terms\n  of the GNU Public License (GPL), details about which ";
+  print "can be found at:\n  ";
+  print "    http://www.gnu.org/copyleft/gpl.txt\n";
+  exit 2;
+}

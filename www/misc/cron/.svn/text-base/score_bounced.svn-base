@@ -1,0 +1,132 @@
+#!/usr/bin/perl
+
+#require "/var/www/maxima_engine/www/common";
+use DBI;
+use POSIX qw(strftime);
+
+#> score 1:
+#>    -1  => 'Sender error',
+#>    0   => 'Unknown error',
+#>    2   => 'Server temporarily down',
+#>    451 => 'Name server timeout',
+#>    553 => 'Service unavailable',
+#>
+#> the score 2 goes to:
+#>    3   => 'Disk quota exceeded',
+#>    554 => 'Disk quota exceeded'
+#> (it will be processed every day, i suggest to characterize user with this
+#> if all messages are bounced back for this user in the last month, and
+#> user's
+#> validate date is more than 15 days).
+#>
+#> the score 3 goes to:
+#>    5   => 'Looping message',
+#>
+#> the score 4 goes to:
+#>    6   => 'Server does not exist',
+#>
+#> and score 5 goes to:
+#>    550 => 'User not found',
+
+# score for the errors.
+$crit_score{"-1,0,2,451,553"}=1;
+$crit_score{"3,554"}=2;
+$crit_score{"5"}=3;
+$crit_score{"6"}=4;
+$crit_score{"550"}=5;
+# number of appearences considered critical.
+$crit_num{"-1,0,2,451,553"}=1;
+$crit_num{"3,554"}=5;
+$crit_num{"5"}=1;
+$crit_num{"6"}=1;
+$crit_num{"550"}=1;
+# user is marked 'bounced' if the error occurs at least 'crit_num' times in last 'crit_days' days.
+$crit_days{"-1,0,2,451,553"}=1;
+$crit_days{"3,554"}=14;
+$crit_days{"5"}=1;
+$crit_days{"6"}=14;
+$crit_days{"550"}=3;
+
+my $dbh = DBI->connect('DBI:mysql:maxima:localhost:3306', 'root' ,'bartok26') || die $DBI::errstr ;
+#$dbh->{RaiseError} = 1;
+
+
+#set to 2 to print logs to stdout, 1 to print logs to $verifyf dir, and 0 for no logs.
+$VERIFY=1;             
+$verifyf = "/var/www/maxima_engine/www/bounced"; 
+
+# report email
+$rep_send=0;
+$rep_email="zi\@manufacture.co.yu";
+@time = localtime;
+$date = strftime("%d %b %Y %H:%M:%S", @time);
+$rep_subject = "Maxima bounced back score cron $date";
+$rep_from="report\@maxima.hu";
+
+$vtime=time();
+if ($VERIFY==1) {
+    open (OO, ">$verifyf/score-$vtime.notok");
+    print OO "date: $date\n";
+    close OO;
+}
+elsif ($VERIFY==2) {
+    print "date: $date\n";
+}
+
+$report="";
+while (($error_code,$error_num) = each(%crit_num)) {
+    $error_days=$crit_days{$error_code};
+    $score=$crit_score{$error_code};
+    $i=0;
+    $oldem="";
+    $sql="select count(*) as bcnt, email, group_name from bounced_back where 
+          project='maxima' and group_name!='' and error_code in ($error_code) 
+          and to_days(now())-to_days(date)<=$error_days
+          group by email,group_name having bcnt>=$error_num order by email";
+    #print "$sql\n";
+    $sth = $dbh->prepare($sql);
+    $sth->execute;
+    while (@row = $sth->fetchrow_array) {
+        $email=$dbh->quote($row[1]);
+        $i++ if ($email ne $oldem);
+        $oldem=$email;
+        $title=$row[2];
+        #print "\n-+$email$title-+\n";
+        $s3="update users_$title set score_bounced=concat(score_bounced,',$score,') where ui_email=$email
+             and locate(',$score,',score_bounced)=0";
+        #print "$s3\n";
+        $st3 = $dbh->prepare($s3);
+        $st3->execute;
+        $st3->finish;
+    }
+    $sth->finish;
+    $report.="Hiba kód: $error_code (az utóbbi $error_days napban legalább $error_num alkalommal) -- $i user\n";
+}
+
+if ($rep_send==1) {
+    if (! open(SENDMAIL, "|/usr/lib/sendmail -oi -t -odb")) {
+        warn "error invoking sendmail: $!\n";
+    } 
+    else {
+        #print "From: $rep_from\nTo: $rep_email\nSubject: $rep_subject\n\n$report\n";
+        print SENDMAIL "From: $rep_from\nTo: $rep_email\nCc: zi\@manufacture.co.yu\nSubject: $rep_subject\n\n$report\n";
+    }
+}
+log_sub($report);
+
+$dbh->disconnect;
+
+rename ("$verifyf/score-$vtime.notok","$verifyf/score-$vtime.ok");
+
+sub log_sub($) {
+    $ls_string=shift;
+    if ($VERIFY==1) {
+        open (OUT, ">>$verifyf/score-$vtime.notok");
+        print OUT $ls_string;
+        close OUT;
+    }
+    elsif ($VERIFY==2) {
+        print $ls_string;
+    }
+}
+

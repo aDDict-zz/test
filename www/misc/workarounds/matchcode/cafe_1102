@@ -1,0 +1,157 @@
+#!/usr/bin/perl
+
+use DBI;
+
+$dbh = DBI->connect('DBI:mysql:maxima:localhost:3306','root','bartok26') || die $DBI::errstr ; 
+$dbh->{RaiseError} = 1;
+$dbh->do("set names utf8");
+
+$group_name="permission";
+$group_id=543;
+
+@filters = (16166);
+
+for (@filters) {
+
+    $filter_id=$_;
+    $group_name="permission";
+    $group_id=543;
+
+    $filter_error="filter_ok";
+    $filtres="";
+    open FILTER, "/usr/local/maxima/filter_engine $filter_id|";
+    while (<FILTER>) {
+        $filtres .= $_;
+    }
+    close (FILTER);
+    @filtarr = split /\n/,$filtres;
+    if ($filtarr[0] eq "filter_ok") {
+            $filter_query=$filtarr[1];
+            $limitord=$filtarr[2];
+            $limitnum=$filtarr[3];
+            $syntax_error=$filtarr[4];
+            $syntax_error_text=$filtarr[5];
+    }
+    else {
+            $filter_error="error in filter engine: $filtarr[0]";
+            print "$filter_error\n";
+            exit;
+    }
+    if (length($limitord)) { 
+          $limitexp=" order by $limitord limit $limitnum";
+    }
+    else {
+          $limitexp="";
+    }
+	#$limitexp=" limit 10";
+    $sql="select ui_hazszam,ui_utca_nev,ui_vezeteknev,ui_keresztnev,id,ui_ir,ui_varos from users_$group_name where validated='yes' and ($filter_query) and robinson='no' and bounced='no' $limitexp";
+
+    print "$sql\n";
+	exit;
+    $sth = $dbh->prepare($sql);
+    $sth->execute;
+
+    $i = 0;
+
+    $mfile="cafe1102.csv";
+
+    open (OO,">$mfile");
+
+    while (@r = $sth->fetchrow_array) {
+        $i++;
+        if ($i/100 == int($i/100)) {
+            print "$i\n";
+        }
+        $id=$r[4];
+        $mc = mx_wund_match($r[6],1,"");
+        $mc .= mx_wund_match($r[6],2,"");
+        $mc .= mx_wund_match($r[6],3,"");
+        $mc .= mx_wund_match($r[2],1,"");
+        $mc .= mx_wund_match($r[2],3,"");
+        $mc .= mx_wund_match($r[2],4,"");
+        $mc .= mx_wund_match($r[2],5,"");
+        $mc .= mx_wund_match($r[1],1,"");
+        $mc .= mx_wund_match($r[1],3,"");
+        $mc .= mx_wund_match($r[3],1,"");
+        $mc .= mx_wund_match($r[3],2,"");
+        $mc .= mx_wund_match($r[3],-1,"");
+
+        # Településnevéből az első 3 karakter és a Családi név 1. Karaktere és a Családi név 3. pozíciójától 3 karakter hosszan és a Utca név 1. Karaktere és a Utca név 3. karakter pozíciójától 1 karakter hosszan és a Keresztnév első két karaktere és a Keresztnév utolsó karaktere.    
+        # 
+        # Egyéb szabályok:  
+        # - minden karaktert nagybetűre kell konvertálni  
+        # - a ékezetes karaktereket ékezet nélkülire kell cserélni (angol abc)  
+        # - a "nem értékes" karaktereket - mint a pont, vesző, per, szóköz, kötőjel - Null-ra kell cserélni   Tehát a matchcode kizárólag az angol abc nagy betűit tartalmazhatja.
+        # 
+        # családi név: PALKÓ
+        # keresztnév: ORSOLYA
+        # település: Budapest
+        # utca: Ráday utca 56
+        # matchcode: BUDPLKORDORA
+        # 
+        # Településnevéből az első 3 karakter - BUD
+        # Családi név 1. Karaktere - P
+        # Családi név 3. pozíciójától 3 karakter hosszan - LKO
+        # Utca név 1. Karaktere - R
+        # Utca név 3. karakter pozíciójától 1 karakter hosszan - D
+        # Keresztnév első két karaktere - OR
+        # Keresztnév utolsó karaktere - A
+
+        print OO "$mc,$id\n";
+    }
+    close OO;
+}
+
+sub mx_num($) {
+
+    $num=shift;
+    $num=~s/[^0-9]//g;
+    $lnl=length($num);
+    if ($lnl<4) {
+        for ($i=0;$i<4-$lnl;$i++) {
+            $num="0$num";
+        }
+    }
+    return substr($num,0,4);
+}
+
+sub mx_wund_match($;$;$) {
+
+    my $str=shift;
+    my $char=shift;
+    my $stuff=shift;
+
+    $str =~ s/Á/A/g;
+    $str =~ s/É/E/g;
+    $str =~ s/Í/I/g;
+    $str =~ s/Ó/O/g;
+    $str =~ s/Ö/O/g;
+    $str =~ s/Ő/O/g;
+    $str =~ s/Ú/U/g;
+    $str =~ s/Ü/U/g;
+    $str =~ s/Ű/U/g;
+    $str =~ s/á/A/g;
+    $str =~ s/é/E/g;
+    $str =~ s/í/I/g;
+    $str =~ s/ó/O/g;
+    $str =~ s/ö/O/g;
+    $str =~ s/ő/O/g;
+    $str =~ s/ú/U/g;
+    $str =~ s/ü/U/g;
+    $str =~ s/ű/U/g;
+    $str = uc($str);
+    
+    return $stuff unless length($str);
+    if ($char==-1) {
+        $char=length($str);
+    }
+    if (length($str)<$char) {
+        return $stuff;
+    }
+    $char--;
+    my $ret = substr($str,$char,1);
+    unless ($ret =~ /[A-Z]/) {
+        return $stuff;
+    }
+    return $ret;
+}

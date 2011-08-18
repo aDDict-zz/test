@@ -1,0 +1,1011 @@
+#!/usr/bin/perl -w
+BEGIN {
+  $Sys::Syslog::host = "bug_in_perl_5.003";
+}
+
+use strict;
+
+srand();
+
+$::rcs_version = '$Revision: 1.26 $$Author: tibbs $$Date: 1998/09/22 04:41:41 $';
+$::rcs_version =~ s/\$|Revision: |Author: |Date: //g;
+$::rcs_version =~ s/ $//;
+
+require 5.002;
+
+use Carp;
+use Getopt::Std;
+use POSIX qw(ceil waitpid);
+use Socket 1.3;
+use IPC::Open2;
+
+use IO::Socket;                      
+use Net::Domain qw(hostfqdn hostname); # From the libnet package
+use Date::Format qw(strftime);       
+use Mail::Address qw(address parse); 
+use MD5;
+use MIME::Base64;
+use Encode;
+
+use Sys::Syslog;
+$Sys::Syslog::host = hostfqdn;
+
+
+sub AddRecipient ($ );
+sub BatchAddrLists ();
+sub ChildReaper ();
+sub CloseAllConnections ();
+sub CloseConnection (@ );
+sub CloseEnvelope (@ );
+sub DeliverBatches ();
+sub GetResponse ($$$ );
+sub Log ($$$ );
+sub LogAbort ($ );
+sub LogClose ();
+sub LogIn ($$$ );
+sub LogOpen ();
+sub LogOut (;$ );
+sub LogStartupTime ();
+sub ParseAddrs ($ );
+sub PushAddr ($$$$ );
+sub ReadAddrs ($ );
+sub ReverseDomain ($ );
+sub OpenConnection ($$ );
+sub OpenEnvelope ($$$ );
+sub OpenSocket ($$ );
+sub SendData ($@ );
+sub SendGreeting ($@ );
+sub SendMessage ($$@ );
+sub SendRCPT ($@ );
+sub SendSMTP ($$@ );
+
+$SIG{CHLD} = \&ChildReaper;
+
+sub DEFAULT_BATCH_SIZE { 1 };
+sub DEFAULT_TIMEOUT { 60 };
+
+$| = 1;
+
+getopts('abcl:x:y:z:vhd:t:');
+
+use vars qw($opt_a $opt_b $opt_c $opt_h $opt_l $opt_v $opt_x $opt_y $opt_z);
+
+{
+  package Config;
+  no strict "vars";
+  use vars qw($opt_a $opt_b $opt_c $opt_x $opt_y $opt_z);
+  my($i, $j);
+
+  $opt_a = $::opt_a;
+  $opt_b = $::opt_b;
+  $opt_c = $::opt_c;
+  $opt_l = $::opt_l;
+  $opt_x = $::opt_x;
+  $opt_y = $::opt_y;
+  $opt_z = $::opt_z;
+
+  $address_file = undef;
+  $start_spooldir = undef;
+  $end_spooldir = undef;
+  $sender = undef;
+  $send_no_mail = undef;
+  $list_name = $opt_l || "init";
+  $local_ESMTP = undef;
+  $local_hostname = ::hostfqdn();
+  $log_entries = undef;
+  $log_level = 6;
+  $stripped_address_list = undef;
+  @delivery_matrix = ();
+  @template = ();
+  $server=$::ARGV[1];
+  $spool=$::ARGV[2];
+
+  ::LogOpen;
+
+  unless (defined $::ARGV[0]) {
+    ::LogAbort("You must specify a config file, stopped");
+  }
+  unless (-r $::ARGV[0]) {
+    ::LogAbort("Invalid or unreadable config file: $::ARGV[0], stopped");
+  }
+  require $::ARGV[0] ||
+    ::LogAbort("Error loading config file: $::ARGV[0], $!, stopped");
+
+  $::ARGV[0] =~ /\/([^\/]+)$/;
+  $logext="$server.$spool.tlb";
+
+  $address_file = "$main_spooldir/$spool";
+  $start_spooldir = $spool_dist{"$spool"}{"$server"}[0];
+  $end_spooldir = $spool_dist{"$spool"}{"$server"}[1];
+
+  unless ($start_spooldir>=0 and $end_spooldir>=0 and $end_spooldir>=$start_spooldir) {
+    ::LogAbort("No valid spool dirs set ($start_spooldir - $end_spooldir): $::ARGV[0] $server $spool, $!, stopped");
+  }
+
+  $address_file = "$main_spooldir/$spool";
+  unless ($address_file) {
+    ::LogAbort("Config must specify hash dir, stopped");
+  }
+  unless (-d $address_file) {
+    ::LogAbort("Cannot read dir \"$address_file\", stopped");
+  }
+  unless ($main_spooldir) {
+    ::LogAbort("Config must specify spool dir root, stopped");
+  }
+  unless (-d $main_spooldir) {
+    ::LogAbort("Cannot read dir \"$main_spooldir\", stopped");
+  }
+
+  $templateroot = "$main_spooldir/templates";
+  $logroot = "$main_spooldir/logs";
+  
+  $address_file =~ m|.*/(.*)|;
+  $list_name = $opt_l || $1 || $list_name;
+
+  $sender = "postmaster\@maxima.hu" unless $sender;
+  %spoolfiles = ();
+}
+
+::LogClose;
+::LogOpen;
+
+
+if (!$::opt_d) {
+  $::opt_d = 0;
+}
+
+
+if (defined $Config::send_no_mail && !defined $::opt_t) {
+  $::opt_d = $::opt_d | 256;
+}
+
+
+if ($::opt_d & 256) {
+  $::opt_d = $::opt_d | 128;
+}
+
+print "Debugging with $::opt_d.\n" if $::opt_d;
+print "Testing with $::opt_t.\n" if $::opt_t;
+
+
+LogStartupTime;
+
+ReadAddrs($Config::address_file);
+
+BatchAddrLists;
+
+# TESTING
+#exit(0);
+
+DeliverBatches unless ($::opt_d & 256);
+
+exit(0);
+
+sub ReadAddrs ($) {
+
+    my($file) = shift;
+    my $spoolcount;
+    my $d_diff;
+    my $dirand;
+    my $irand;
+    my $i;
+    my $ii;
+    my $ddir;
+      
+    LogIn(6, "info", "Reading addresses");
+
+    # if there are at least two messages in this queue, pick randomly one of them.
+    # /var/www/maxima_engine/www/maxima_check script provides information about messages to send in the tlb.todo file.
+    my @message_list=();
+    my $message_pattern="";
+    my $messages="";
+    my $mprand="";
+    # change from 2008-05-30: tlb must only send messages that are in the todo file,
+    # this needs to work like this to make sure the 'message stop' mechanism works.
+    open(TQ, "<$file/tlb.todo") or LogAbort("Could not open todo file: $file/tlb.todo: $!");
+    $messages=<TQ>;
+    $messages=~s/^ +//;
+    $messages=~s/[ \r\n]+$//;
+    @message_list=split(" ",$messages);
+    close TQ;
+    if ($#message_list>0) {
+        $mprand=int(rand($#message_list+1));
+        if ($message_list[$mprand] =~ /\d+/) {
+            $message_pattern="-$message_list[$mprand]-.*";
+        }
+    }
+    else {
+        $message_pattern="-$messages-.*";
+    }
+    LogAbort("Could not get message list: $file/tlb.todo - $messages: $!") unless length($message_pattern);
+    # test spool holds test mails, virus mails (and other user induced mails) too; therefore we need to add check for those files too
+    # this also means that test send can not be stopped - but we don't really need to do that
+    if ($Config::spool eq "test") {
+        $message_pattern="($message_pattern|TEST.*)";
+    }
+    # start sending from a random point in random direction    
+    $d_diff=$Config::end_spooldir-$Config::start_spooldir+1;
+    $irand=int(rand($d_diff));
+    $dirand=int(rand(2));
+    $spoolcount = 0;
+    for ($i=$Config::start_spooldir;$i<=$Config::end_spooldir and $spoolcount<25;$i++) {
+        if ($dirand) {
+            $ii=$i;
+        }
+        else {
+            $ii=$Config::end_spooldir-($i-$Config::start_spooldir); # go backwards
+        }
+        $ii-=$irand; # start at random location
+        $ii+=$d_diff if ($ii<$Config::start_spooldir);
+        $ddir = uc(sprintf("%x",$ii));
+        $ddir="0$ddir" if (length($ddir)==1);
+        print "$ddir\n";
+        my $dname = "$file/$ddir";
+        opendir(DIR, $dname);
+        my @flist = grep(/${message_pattern}\.spool$/, readdir(DIR));
+        foreach my $f (@flist) {
+            if ($f =~ /^(.+)\.spool$/ and $spoolcount<25) {
+                my $tempf = "$1.sproc";
+                rename ("$dname/$f","$dname/$tempf");
+                open(LIST, "$dname/$tempf") or LogAbort("Couldn't open file $dname/$tempf: $!");
+                $spoolcount++;
+                $Config::spoolfiles{"$dname/$tempf"}=[0,0];
+                my @mparts = ();
+                my $row="";
+                while (1) {
+                    $row = <LIST>;
+                    # a spool file can contain messages for more than one recepient.
+                    if (not defined $row or $row =~ /^{---separator---/) {
+                        my $mail = $mparts[0];
+                        my $template_filename = $mparts[1];
+                        my $return_path = $mparts[2];
+                        if (length($mail)) {
+                            if (!($Config::template{$template_filename})) {
+                                open(IN, "$Config::templateroot/$template_filename") or LogAbort("Cound't opet file $template_filename");
+                                while (<IN>) {
+                                    $Config::template{$template_filename} .= $_;
+                                }
+                                close IN;
+                            }
+                            PushAddr($mail, "$dname/$tempf", $return_path, join("\n",@mparts));
+                            print "II $mail  $dname/$tempf $template_filename\n";
+                            $Config::spoolfiles{"$dname/$tempf"}[0]++;
+                        }
+                        @mparts = ();
+                    }
+                    last unless defined $row;
+                    chomp $row;
+                    push (@mparts,$row) unless $row =~ /^{---separator---/;
+                }
+                close(LIST);
+            }
+        }
+        closedir(DIR);
+    }
+    LogOut;
+}
+
+sub PushAddr ($$$$) {
+
+    my($addr) = shift;
+    my($domain, $revdomain, $i);
+
+    unless ($Config::stripped_address_list) {
+        $addr = ParseAddrs($addr);
+    }
+    ($domain = $addr) =~ s/(.*@|\[|\])//g; # Leave only the domain and strip brackets.
+    $revdomain = uc(join('.',reverse(split /\./,$domain)));
+    for $i (0..$#Config::delivery_matrix) {
+        if (!defined $Config::delivery_matrix[$i]{'regexp'} || $domain =~ /$Config::delivery_matrix[$i]{'regexp'}/i) {
+            push @{$Config::delivery_matrix[$i]{'addrs'}},[$addr, $revdomain, shift, shift, shift];
+            return;
+        }
+    }
+    push @{$Config::delivery_matrix[$#Config::delivery_matrix + 1]{'addrs'}},[$addr, $revdomain, shift, shift, shift];
+}
+
+sub BatchAddrLists () {
+
+    my($i, $dest, $j, $count, $maxcount, $lastdomain, $currentbatch);
+
+    LogIn(6, "info", "Batching addresses");
+    for $i (0..$#Config::delivery_matrix) {
+        SWITCH: for $dest ($Config::delivery_matrix[$i]) {
+            $currentbatch = 0;
+            for $j (0..$#{$dest->{'addrs'}}) {
+                push @{$dest->{'batches'}[$currentbatch]}, $dest->{'addrs'}[$j][0];
+                push @{$dest->{'file'}[$currentbatch]}, $dest->{'addrs'}[$j][2];
+                push @{$dest->{'return_path'}[$currentbatch]}, $dest->{'addrs'}[$j][3];
+                push @{$dest->{'mparts'}[$currentbatch]}, $dest->{'addrs'}[$j][4];
+                $currentbatch++;
+            }
+            last SWITCH;
+        }
+    }
+    LogOut;
+}
+
+sub DeliverBatches () {
+
+    my($currenthost, @envelope, $i, $j, $result);
+    LogIn(6, "info", "Delivering batches");
+    for $i (0..$#Config::delivery_matrix) {     # in this implementation $i is always 0.
+        $currenthost = 0;
+        unless ($#Config::delivery_matrix == 0) {
+            LogIn(7, "info", "Delivering to dest $i");
+        }
+        for $j (0..$#{$Config::delivery_matrix[$i]{'batches'}}) {
+            LogIn(8, "info", "Delivering dest $i, batch $j");
+            my $zii=0;
+            while (1) {
+                $zii++;
+                if ($zii>100000) {
+                    system("logger TLB Delivering dest $i");
+                    exit(1);
+                }
+#print "-------------------------------------------------------------------\n";
+#print $Config::delivery_matrix[$i]{'file'}[$j][0];
+#print "\n";
+#print $Config::delivery_matrix[$i]{'mparts'}[$j][0];
+#print "\n";
+#print $Config::delivery_matrix[$i]{'return_path'}[$j][0];
+#print "\n";
+#print $Config::delivery_matrix[$i]{'batches'}[$j][0];
+#print "\n";
+#print "-------------------------------------------------------------------\n";
+#last;
+                @envelope = OpenEnvelope($Config::delivery_matrix[$i],
+                    $Config::delivery_matrix[$i]{'allhostsdown'} ? 'LOCAL' : $currenthost,
+                    $Config::delivery_matrix[$i]{'return_path'}[$j][0]);
+                next unless @envelope;
+                print "Successfully opened the envelope: D$i, B$j.\n" if ($::opt_d & 16);
+                # Send the address list
+                $result = SendRCPT($Config::delivery_matrix[$i]{'batches'}[$j], @envelope);
+                next unless $result;
+                if ($result == -1) {
+                    Log(5, "notice", "Batch contained just a single rejected address.\n");
+                    last;
+                }
+                # Send the message body
+#print "!!!!!!!!!sendmessage!!!!!!!!\n";
+                SendMessage($Config::delivery_matrix[$i]{'file'}[$j][0], $Config::delivery_matrix[$i]{'mparts'}[$j][0], @envelope) || next;
+                # Close the envelope
+                CloseEnvelope(@envelope) || next;
+                # OK, we successfully sent a batch.  Increment the current host if
+                # not in failsafe mode, skip backup hosts if no hosts are down.
+                if (!defined $Config::delivery_matrix[$i]{'allhostsdown'}) {
+                    do {
+                        $currenthost = ($currenthost + 1) % ($#{$Config::delivery_matrix[$i]{'hosts'}} + 1);
+                    } until
+                        (!$Config::delivery_matrix[$i]{'hosts'}[$currenthost]{'down'} &&
+                         (!$Config::delivery_matrix[$i]{'hosts'}[$currenthost]{'backup'}
+                          || ($Config::delivery_matrix[$i]{'downcount'} && $Config::delivery_matrix[$i]{'downcount'} > 0)));
+                }
+                print "Switching to host $currenthost.\n" if ($::opt_d & 16);
+                last;
+            }
+            continue {
+                # Mark host down
+                print "Marking $Config::delivery_matrix[$i]{'hosts'}[$currenthost]{'hostname'} down.\n" if ($::opt_d & 8);
+                Log(3, "notice", "Marking $Config::delivery_matrix[$i]{'hosts'}[$currenthost]{'hostname'} down.\n");
+                $Config::delivery_matrix[$i]{'hosts'}[$currenthost]{'down'} = 1;
+                $Config::delivery_matrix[$i]{'downcount'}++;
+                # Nuke a possible cached connection
+                delete $Config::delivery_matrix[$i]{'connection'};
+                # Are all our hosts down?  Fall back to failsafe.
+                if ($Config::delivery_matrix[$i]{'downcount'} >= ($#{$Config::delivery_matrix[$i]{'hosts'}}+1)) {
+                    print "Switching to failsafe.\n" if ($::opt_d & 8);
+                    Log(2, "warning", "Dest $i, in failsafe mode.");
+                    $Config::delivery_matrix[$i]{'allhostsdown'} = 1;
+                }
+                else {
+                    SKIP:
+                    while (1) {
+                        $currenthost = ($currenthost + 1) % ($#{$Config::delivery_matrix[$i]{'hosts'}}+1);
+                        last SKIP unless $Config::delivery_matrix[$i]{'hosts'}[$currenthost]{'down'};
+                    }
+                }
+            }
+            LogOut;
+        }
+        unless ($#Config::delivery_matrix == 0) {
+            LogOut;
+        }
+    }
+    LogOut;
+    CloseAllConnections;
+}
+
+sub SendMessage ($$@) {
+
+    my ($filename) = shift;
+    my ($mdata) = shift;
+    my $from;
+    my $to;
+    my $mytime;
+    my @rri;
+    my $subs_text;
+    my $final_subs_text;
+    my $uid=0; 
+    my $mid=0; 
+    my $gid=0; 
+    my $tid; 
+    my $logmod=0;
+
+    print "Sending message.\n" if ($::opt_d & 16);
+    SendSMTP("DATA\r\n", 0, @_) || return undef;
+    if ($filename =~ /\/([^\/]+).sproc$/) {
+        ($gid, $uid, $mid, $tid) = split /-/, $1;
+#print "?match\n";
+    }
+#print "?$filename?$mid\n";
+    my @mparts = split ("\n",$mdata);
+    my $logemail = $mparts[0];
+    my $template_filename = $mparts[1];
+    my $return_path = $mparts[2];
+    my $tempf = $Config::template{$template_filename};
+    my $message_codeset="cp1250";
+    my $custom_subject="";
+    for (@mparts) {
+        ($from, $to) = split "\t";
+        if ($from eq '{message-codeset}') {
+            $message_codeset=$to;
+        }
+        if ($from eq '{subject-c}') {
+            $custom_subject=$to;
+        }
+        if (($from =~ /^{p-|^{h-/) and $to) {
+            open(IN, "$Config::templateroot/contents/$to") or $to = '';
+            my $tto = '';
+            while (<IN>) {
+                $tto .= $_;
+            }
+            close IN;
+            $to = $tto;
+        }
+        if ($from =~ /^{ad-(ct)?img-/) {
+            open(IN, "$Config::templateroot/banners/$to") or $to = '';
+            my $tto = '';
+            while (<IN>) {
+                $tto .= $_;
+            }
+            close IN;
+            $to = $tto;
+        }
+        if ($from =~ /^{[0-9a-z_ -]+}$/i) {
+            $tempf =~ s/$from/$to/gi;
+            if (length($custom_subject)) {
+                $custom_subject =~ s/$from/$to/gi;
+            }
+        }
+    }
+    $mytime = time() . int(rand 10000); 
+    if (length($custom_subject)) {
+        $custom_subject=mx_encode_header_tags($custom_subject,$message_codeset);
+        $tempf =~ s/{subject-cust}/Subject: $custom_subject/g;
+    }
+    $tempf =~ s/{TAB}/\t/g;
+    $tempf =~ s/{NEWLINE}/\n/g;
+    $tempf =~ s/{ad_bottom}//g;
+    $tempf =~ s/{mimead_bottom}//g;
+    $tempf =~ s/\{[^\{\}]+\}//g;
+    $tempf =~ s/\[TIMESTAMP\]/$mytime/g;
+    for (split("\n",$tempf)) {
+        SendData("$_\r\n",@_);
+    }
+    $Config::spoolfiles{"$filename"}[1]++;
+#print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+#print $filename;
+#print "\n";
+#print $Config::spoolfiles{"$filename"}[0];
+#print "\n";
+#print $Config::spoolfiles{"$filename"}[1];
+#print "\n";
+#print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    unlink ($filename) if ($Config::spoolfiles{"$filename"}[0] == $Config::spoolfiles{"$filename"}[1]);
+    if ($mid=~/^\d+$/) {
+        $logmod=$mid%32;
+    }
+	if ($template_filename=~/^(ext\/)?\d+$/) {  # do not log virus emails.
+        open(LOG,">>$Config::logroot/$logmod/$mid.$Config::logext") or LogAbort("Couldn't open logfile $Config::logroot/$logmod/$mid.$Config::logext: $!");
+        print LOG "$logemail\n";
+        close LOG;
+	}
+    return 1;
+}
+  
+
+sub ParseAddrs ($) {
+  my($addr) = shift;
+  Mail::Address::address(parse Mail::Address $addr);
+}
+
+sub ChildReaper () {
+  my($child);
+  $SIG{CHLD} = \&ChildReaper;
+
+  while (($child = waitpid(-1,&POSIX::WNOHANG())) > 0) {
+    $::child_status{$child} = $?;
+  }
+}
+
+sub OpenEnvelope ($$$) {
+
+    my($dest) = shift;
+    my($host) = shift;
+    my($return_path) = shift;
+    my($hostref, @envelope);
+
+    $hostref = ($host eq 'LOCAL') ? undef : $dest->{'hosts'}[$host];
+    if (!$hostref || !$hostref->{'connection'} || !@{$hostref->{'connection'}}) {
+        @envelope = OpenConnection($dest, $host);
+        if (@envelope) {
+            SendGreeting($hostref, @envelope) || return wantarray ? () : undef;
+        }
+        else {
+            return wantarray ? () : undef;
+        }
+    }
+    else {
+        @envelope = @{$hostref->{'connection'}};
+        SendSMTP("RSET\r\n", 0, @envelope) ||
+        return wantarray ? () : undef;
+    }
+    unless (length($return_path)) {
+        $return_path=$Config::sender;
+    }
+    SendSMTP("MAIL FROM:<$return_path>\r\n", 0, @envelope) || return wantarray ? () : undef;
+    return (@{$hostref->{'connection'}} = @envelope);
+}
+
+sub OpenConnection ($$) {
+  my($dest) = shift;
+  my($host) = shift;
+  
+  my($hostname, $port, $timeout, $rfh, $wfh, $pid);
+
+
+  if ($host ne 'LOCAL' &&
+      $dest->{'hosts'}[$host] ne 'LOCAL' &&
+      $dest->{'hosts'}[$host]{'fail'} &&
+      ($::opt_d & 512))
+    {
+      return wantarray ? () : undef;
+    }
+  
+  if ($host                   eq 'LOCAL' ||
+      $dest->{'hosts'}        eq 'LOCAL' ||
+      $dest->{'hosts'}[$host] eq 'LOCAL' )
+    {
+    
+      print "Opening envelope in failsafe mode to LOCAL.\n" if ($::opt_d & 16);
+      $hostname = 'LOCAL';
+      $timeout  = DEFAULT_TIMEOUT;
+    }
+  else {
+    $hostname = $dest->{'hosts'}[$host]{'hostname'} || 'LOCAL';
+    $timeout  = $dest->{'hosts'}[$host]{'timeout'}  || DEFAULT_TIMEOUT;
+  }
+
+  LogIn(9, "info", "Opening connection to $hostname");
+ SWITCH: for ($hostname) {
+    /^LOCAL$/ && do {
+      exit(1);
+      last SWITCH;
+    };
+    /^\// && do {
+      if (($::opt_d & 1024) && (rand > 0.5)) {
+    return wantarray ? () : undef;
+      }
+      last SWITCH;
+    };
+  
+    do {
+    
+      if (($::opt_d & 1024) && (rand > 0.5)) {
+    return wantarray ? () : undef;  
+      }
+
+      $rfh = OpenSocket($dest, $host);
+      $wfh = undef;
+      $pid = undef;
+      last SWITCH;
+    }
+  }
+  
+
+  if (!$rfh || ($pid && !$wfh)) {
+    print "Open of socket or command failed!\n" if ($::opt_d & 8);
+    LogOut("failed");
+    return wantarray ? () : undef;  
+  }
+
+
+  unless (GetResponse($rfh, 0, $timeout)) {
+    print "Timeout waiting for greeting!\n" if ($::opt_d & 8);
+    LogOut("timeout");
+    return wantarray ? () : undef;  
+  }    
+
+  LogOut;
+  return ($rfh, $wfh, $pid, $timeout);
+}
+
+
+sub OpenSocket ($$) {
+  my($dest) = shift;
+  my($host) = shift;
+  my($fh, $hostname, $timeout, $port, $iaddr, $try);
+  
+
+  if (!$dest->{'hosts'}[$host]{'port'}) {
+    $dest->{'hosts'}[$host]{'port'} = 'smtp';
+  }
+  if ($dest->{'hosts'}[$host]{'port'} =~ /\D/) {
+    $port = getservbyname($dest->{'hosts'}[$host]{'port'},"tcp");
+    if (!$port) {
+      print "Failed to get port number for port: $dest->{'hosts'}[$host]{'port'}!\n"
+    if ($::opt_d & 8);
+      return wantarray ? () : undef;  
+    }
+  
+    $dest->{'hosts'}[$host]{'port'} = $port;
+  }
+  else {
+    $port = $dest->{'hosts'}[$host]{'port'};
+  }
+
+
+  $hostname = $dest->{'hosts'}[$host]{'hostname'};
+  $iaddr = inet_aton($hostname);
+
+  if (!$iaddr) {
+    print "Failed to resolve hostname: $hostname!\n" 
+      if ($::opt_d & 8);
+    return wantarray ? () : undef;  
+  }
+
+  $timeout = $dest->{'hosts'}[$host]{'timeout'} || DEFAULT_TIMEOUT;
+  print "Will open socket to: host    = $hostname,\n" if ($::opt_d & 16);
+  print "                     port    = $port,\n" if ($::opt_d & 16);
+  print "                     timeout = $timeout.\n" if ($::opt_d & 16);
+  
+  $try = eval {
+    $fh = new IO::Socket::INET (
+                PeerAddr => $hostname,
+                PeerPort => $port,
+                Proto    => "tcp",
+                Timeout  => $timeout,
+                   );
+  };
+  
+  if (!$try) {
+    print "Error opening socket: $@"
+      if ($::opt_d & 8);
+    Log(3, "notice", "Error opening socket: $@");
+    return wantarray ? () : undef;
+  }
+
+  if (!$fh) {
+    print "(Probably) Timeout ($timeout sec) connecting to $hostname!\n"
+      if ($::opt_d & 8);
+    return wantarray ? () : undef;  
+  }
+
+  print "Opened socket!\n" if $fh && ($::opt_d & 16);
+  $fh->autoflush;
+  return $fh;
+}
+
+
+
+sub CloseEnvelope (@) {
+  print "Closing envelope.\n" if ($::opt_d & 16);
+  
+    print "Closing envelope.\n";
+  
+  SendSMTP("\r\n.\r\n", 0, @_) ||
+    return undef;
+    
+    print "Closing envelope done.\n";
+
+  return 1;
+}
+
+
+sub CloseAllConnections () {
+  my($i, $j);
+
+  for $i (@Config::delivery_matrix) {
+    for $j (@{$i->{'hosts'}}) {
+      if ($j ne 'LOCAL' && $j->{'connection'} && @{$j->{'connection'}}) {
+    print "Closing connection to $j->{'hostname'}.\n" if ($::opt_d & 16);
+    CloseConnection(@{$j->{'connection'}});
+    delete $j->{'connection'};
+      }
+    }
+  }
+}
+
+
+sub CloseConnection (@) {
+  my($rfh, $wfh, $pid, $timeout) = @_;
+  my($waited);
+
+  SendSMTP("QUIT\r\n", 0, @_);
+  
+
+  if ($pid) {
+    $waited = 0;
+    while (!defined ($::child_status{$pid})) {
+      $waited++;
+      
+      if ($waited > $timeout) {
+    Log(3, "notice", "Waited too long for child to exit.");
+    last;
+      }    
+      
+      print "Waiting for child process to exit: $waited.\n" if ($::opt_d & 16);
+      sleep(1);
+    }
+    delete $::child_status{$pid};
+  }
+
+  unless ($pid) {
+    $rfh->close;
+  }
+  return 1;
+}
+
+
+
+sub SendGreeting ($@) {
+  my($host, @envelope) = @_;
+  my($hostname, $local_hostname);
+  
+  unless (!$host || $host eq 'LOCAL') {
+    $hostname = $host->{'hostname'};
+  }
+
+  if (!$hostname || $hostname eq 'LOCAL' || $hostname =~ m|^/|) {
+    $local_hostname = 'localhost';
+  }
+  else {
+    $local_hostname = $Config::local_hostname;
+  }
+
+  if (!$host || $host eq 'LOCAL') {
+    if ($Config::local_ESMTP) {
+      SendSMTP("EHLO $local_hostname\r\n", 0, @envelope) ||
+    return undef;;
+    }
+  }
+  elsif ($host->{'ESMTP'}) {
+    SendSMTP("EHLO $local_hostname\r\n", 0, @envelope) ||
+      return undef;
+  }
+  else {
+    SendSMTP("HELO $local_hostname\r\n", 0, @envelope) ||
+      return undef;
+  }
+  
+  if ($host && $host ne 'LOCAL' && $host->{'ONEX'}) {
+    SendSMTP("ONEX\r\n", 0, @envelope) ||
+      return undef;
+  }
+  
+  return 1;
+}
+
+  
+sub SendSMTP ($$@) {
+  my($string, $ignorenonfatal, $rfh, $wfh, $pid, $timeout) = @_;
+  my($code);
+
+  if (!$wfh) {
+    $wfh = $rfh;
+  }
+  
+  if ($string =~ /^\r\n\./) {
+    LogIn(10, "info", "SMTP DATA end");
+  }
+  elsif ($string =~ /^RCPT/) {
+    LogIn(10, "info", "SMTP RCPT<".substr($string,9,4).">");
+  }
+  else {
+    LogIn(10, "info", "SMTP ".substr($string,0,4));
+  }
+
+  push(@::transaction_log, ">>> $string") if $::opt_t;
+  print ">>> $string" if ($::opt_d & 32);
+
+  return(1) if ($::opt_d & 128);
+
+  print $wfh "$string"; 
+  $code = GetResponse($rfh, $timeout, $ignorenonfatal) || return undef;
+    
+  LogOut;
+  return $code;
+}
+
+sub SendData ($@) {
+  my($string, $rfh, $wfh, $pid) = @_;
+
+  if (!$wfh) {
+    $wfh = $rfh;
+  }
+
+
+  $string =~ s/^\./../;
+  print $wfh $string unless ($::opt_d & 128);
+  print ">>> $string" if ($::opt_d & 64);
+}
+  
+sub SendRCPT ($@) {
+  my($batch) = shift;
+  my($i, $code);
+  
+  for $i (0..$#{$batch}) {
+    print "!! ".$batch->[$i]."\n";
+    $code = SendSMTP("RCPT TO:<$batch->[$i]>\r\n", 1, @_) ||
+      return undef;;
+  }
+
+  if ($code == -1 && $#{$batch} == 0) {
+    return -1;
+  }
+  return 1;
+}
+
+sub GetResponse ($$$) {  
+  my($rfh) = shift;
+  my($timeout) = shift;
+  my($ignorenonfatal) = shift;
+  my($resp, $gotresp, $error, $code, $dummy, $multi, $text);
+
+  while (1) {
+  
+    $gotresp = 0;
+    
+    local $SIG{ALRM} = sub { die };
+
+    eval {
+      $resp = <$rfh>;
+      $gotresp = 1;
+    };
+    
+    $SIG{ALRM} = 'DEFAULT';
+
+    unless ($resp) {
+      print "Received null STP response!\n" if ($::opt_d & 32);
+      Log(3, "notice", "Received null SMTP response!\n");
+      return undef;
+    }
+    
+    unless ($gotresp) {
+      print "Timeout waiting for response!\n" if ($::opt_d & 32);
+      Log(3, "notice", "Timeout waiting for SMTP response!\n");
+      return undef;
+    }
+
+    $resp =~ s/\r\n$//;
+    push(@::transaction_log, "<<< $resp\n") if $::opt_t;
+    print "<<< $resp\n" if ($::opt_d & 32);
+    
+  
+    ($code, $multi, $text) = ($resp =~ /(\d{3})(.)(.*)/);
+    
+  
+    
+    if ($code =~ /^(55[0123])|(45[012])$/ &&
+       $ignorenonfatal) 
+      {
+    Log(4, "notice", "Received non-fatal SMTP response: $resp\n");
+    $code = -1;
+      }
+    elsif ($code =~ /^[45]../) {
+    
+      Log(4,"notice","SMTP Failure: $resp\n");
+      $error = 1;
+    }
+    elsif ($code =~ /^[123]../) {
+    
+      Log(12, "info", "SMTP Resp: $resp\n");
+    }
+    else {
+    
+      LogAbort "Illegal SMTP response: $resp";
+    }
+    
+  
+    last if $multi eq " ";
+  }
+  return $error ? undef : $code
+}
+
+sub LogOpen () {
+  openlog("tlb/$Config::list_name", 'pid', 'mail');
+  Log(8, "info", "TLB starting.");
+}
+
+sub LogClose () {
+  closelog;
+}
+
+sub Log ($$$) {
+  my $level = shift;
+  my $prio = shift;
+  my $message = shift;
+
+  confess("Log with no message!") unless $message;
+  print "$prio $message\n";
+  if ($level <= $Config::log_level) {
+    syslog($prio, $message);
+  }
+}
+
+sub LogStartupTime () {
+  my($user, $system) = (times)[0..1];
+
+  $user = sprintf("%.2f", $user);
+  $system = sprintf("%.2f", $system);
+
+  Log(6, "info", "Compilation took " . $user . "s, " . $system . "u");
+}
+
+sub LogIn ($$$) {
+  my $level = shift;
+  my $prio = shift;
+  my $message = shift;
+
+  if ($Config::log_entries) {
+    Log($level, $prio, $message);
+  }
+  unshift @::log_state, [$level, $prio, $message, time()];
+}
+
+sub LogOut (;$) {
+  my $extra = shift || "done";
+  my $state = shift @::log_state;
+  
+  unless ($state) {
+    LogAbort "LogOut called without corresponding LogIn, stopped";
+  }
+
+  my ($level, $prio, $message) = @{$state}[0..2];
+  my $elapsed = time() - @{$state}[3];
+  
+  $elapsed = sprintf("%.2f", $elapsed);
+
+  Log($level, $prio, "$message..$extra, took $elapsed sec");
+}
+
+sub LogAbort ($) {
+  my $message = shift;
+
+  Log(1, "warning", $message);
+  confess $message;
+}
+     
+# rfc2047 B-encodes a string in the given codeset.
+sub mx_encode_header_tags($;$) {
+
+    my $string=shift;
+    my $codeset=shift;
+    $codeset="cp1250" unless ($codeset);
+    $codeset=~s/utf8/utf-8/i;
+    $string = decode('utf-8', $string) if ($codeset eq "utf-8");
+    my $len=length($string);
+    my @eparts = ();
+    my $chunks=$len/42;
+    for (my $i=0;$i<$chunks;$i++) {
+        my $chunk=substr($string,$i*42,42);
+        $chunk=encode('utf-8',$chunk) if ($codeset eq "utf-8");
+        $chunk=encode_base64($chunk);
+        $chunk =~ s/[\r\n]+$//;
+        push(@eparts,"=?$codeset?B?$chunk?=");
+    }
+    return join("\n\t",@eparts);
+}
+
+

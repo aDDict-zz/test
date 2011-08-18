@@ -1,0 +1,764 @@
+#!/usr/bin/perl
+
+use LWP::UserAgent;
+use Text::Iconv;
+Text::Iconv->raise_error(0);
+
+# this script inserts or updates verified data into users_* tables.
+# for the hidden-subscribe and validate scripts the sub_common() wrapper is provided to be 
+# compatible with these scripts (although they will need to be changed to call the wrapper function) 
+# 
+# other scripts using these functions are (will be):
+# - xmlreq/import_member: import user data through maxima backend/xmlreq system
+# - maxima form -> form_collect.php -> subscribe spool system for MAN (and other form based subscribes) 
+# 
+# the following data is needed:
+# $group: title of the group. If $multi=0, $group_id is id of the group.
+# If $multi=1, $buffer is needed with single group names (or ids)
+# $aff is the affiliate id
+# $rdemog is the raw demog data
+# $sender is the user authenticator. Usually it is an email address, but if it is of form 
+# #demog_name#some_string 'demog_name' demog var is the authenticator with 'some_string' value.
+# if $sender is of form '#\d+' users_*.id is the authenticator 
+# $vt_date is the datetime from the validation table, important for new users
+# $MX_SUBSCRIBE_LOG,$subscribe_action is needed for logging
+
+$man_aff_id=0;
+$man_aff_trusted="no";
+$man_site_id=0;
+$man_campaign_id=0;
+$man_registered_partners="";
+$man_multi_id=-1;
+$man_track_subs_id=0;
+$update_uid="";  
+$vct_id="";  
+$vct_ord="";  
+$old_user_robinson=""; 
+# the charset of the incoming data is assumed to be cp1250 unless stated otherwise in the '# data-charset:' tag.
+$data_charset="cp1250";
+# will the new subscription activate the unsubscribed member or not, 'yes' is the deafult, '# activate-unsubscribed:no' tag can turn this off.
+$activate_unsubscribed="yes"; 
+undef %man_group_partner;
+%demog_processed = ();
+
+# a wrapper function to be called from validate and hidden-subscribe scripts.
+sub sub_common() {
+    
+    my $i=0;
+    my $form_id=0;
+    
+    sub_man_setup();
+    sub_get_groups();
+    $form_id=sub_prepare_demog(0);
+    for (@group_titles) {
+        $title=$_;
+        $group_id=$group_ids[$i];
+        sub_group_data();
+        sub_affiliate_type();
+        sub_authdata();
+        sub_getuserid();
+        sub_doupdate($form_id);
+        $i++;
+    }
+    #sub_data_forward($form_id) if ($form_id);
+}
+
+# try to setup MAN data
+sub sub_man_setup() {
+
+    if (length($manaff)) {
+        if ($manaff =~ /^(\d+)h(\d+)h([0-9a-f]+)$/) {
+            $man_site_id=$1;
+            $man_campaign_id=$2;
+            if (substr(MD5->hexhash("$man_site_id$_MAN_spice$man_campaign_id"),8,9) eq $3) {
+                my $stt = $dbh->prepare("select u.id,u.trusted_affiliate,p.partners from man_site s,man_user u,man_campaign_user p 
+                          where s.id='$man_site_id' and s.user_id=u.id and u.id=p.user_id and p.campaign_id='$man_campaign_id'");
+                $stt->execute;
+                if (my @strow = $stt->fetchrow_array) {
+                    $man_aff_id=$strow[0];
+                    $man_aff_trusted=$strow[1];
+                    $man_registered_partners=",".$strow[2].",";
+                    $aff=0; # We have a MAN affiliate. 
+                    log_sub("MAN subscribe: man_aff_id=$man_aff_id; man_site_id=$man_site_id; man_campaign_id=$man_campaign_id\n"); 
+                }
+                else {
+                    log_sub("MAN user not registered for this campaign: site: $man_site_id; campaign: $man_campaign_id\n");
+                    exit;
+                }
+                $stt->finish;
+                my $stt = $dbh->prepare("select c.multi_id,cp.partner_id,cp.groups from man_campaign c,man_campaign_partner cp 
+                                         where c.id='$man_campaign_id' and c.id=cp.campaign_id");
+                $stt->execute;
+                while (my @strow = $stt->fetchrow_array) {
+                    $man_multi_id=$strow[0];
+                    if ($man_registered_partners =~ /,$strow[1],/) {  # affiliate does collect data for this partner in this campaign
+                        my @mgr=split(",",$strow[2]);
+                        for (@mgr) {
+                            if (/^([0-9]+)$/) {
+                                $man_group_partner{$1}=$strow[1];     # and partner wants data to come into these groups
+                            }
+                        }
+                    }
+                }
+                $stt->finish;
+                if ($man_multi_id==-1) {
+                    log_sub("Nonexistent MAN campaign: $man_campaign_id\n");
+                    exit;
+                }
+                if (($man_multi_id>0 && $multi==0) || ($man_multi_id==0 && $multi==1)) {
+                    log_sub("Invalid MAN subscription type: multi:$multi; MAN multi:$man_multi_id\n");
+                    exit;
+                }
+                my $stt = $dbh->prepare("insert into man_track_subs (date,campaign_id,site_id)
+                                         values (now(),'$man_campaign_id','$man_site_id')");
+                $stt->execute;
+                $man_track_subs_id=$stt->{mysql_insertid};
+                $stt->finish;
+                log_sub("man_track_subs_id: $man_track_subs_id\n");
+                if (!$man_track_subs_id) {
+                    exit;
+                }
+            }
+            else {
+                log_sub("Invalid MAN checksum: $manaff\n");
+                exit;
+            }
+        }
+        else {
+            log_sub("Malformed MAN parameter: $manaff\n");
+            exit;
+        }
+    }
+    else {
+        log_sub("Not a MAN subscribe, aff=$aff\n"); # continue with regular subscribe
+    }
+}
+
+# get groups from $group_id,$gid,$multi,$buffer variables set by hidden-subscribe and validate scripts.
+sub sub_get_groups() {
+
+    undef @group_ids; 
+    undef @group_titles; 
+
+    if ($multi==0) {
+        if ($man_campaign_id) {
+            my $qgr=(join(",",keys %man_group_partner));
+            my $stt = $dbh->prepare("select id,title from groups where id in ($qgr)");
+            $stt->execute;
+            while (my @strow = $stt->fetchrow_array) {
+                push (@group_titles,$strow[1]);
+                push (@group_ids,$strow[0]);
+            }
+            $stt->finish;
+        }
+        else {
+            $group_id=$gid if (!$group_id);
+            push (@group_ids,$group_id);
+            push (@group_titles,$group);
+        }
+    }
+    elsif ($multi==1) {
+        my @list = split("\n",$buffer);
+        my @tlist = ();
+        for (@list) {
+            $pg = $_;
+            if ($pg =~ /(.+)\|(.+)/) {
+                push (@tlist,$dbh->quote($1));
+            }
+            else {
+                push (@tlist,$dbh->quote($pg));
+            }
+        }
+        if ($#tlist>-1) {
+            my $jtl=join(",",@tlist);
+            my $stt = $dbh->prepare("select id,title from groups where title in ($jtl)");
+            $stt->execute;
+            while (@strow = $stt->fetchrow_array) { 
+                if ($man_campaign_id==0 || $man_group_partner{$strow[0]}) {  # if it's a MAN subscribe, check group existence.
+                    push (@group_ids,$strow[0]);
+                    push (@group_titles,$strow[1]);
+                }
+            }
+            $stt->finish;
+        }
+    }
+    $groupnum=$#group_ids+1;
+    log_sub("\n$groupnum groups\n");
+}
+
+# prepare raw demog data from the $rdemog variable. 
+sub sub_prepare_demog($) {
+
+    my $fromimport=shift;
+    undef @demog;
+    undef @demogvalue;
+    unless ($fromimport) {
+        undef %demog_var_types;    
+        undef %demog_var_idref;    
+        undef %demog_var_readonly;
+        undef %demog_var_multiselects;    
+        undef %demog_var_multi_append;    
+    }
+    my $i=0;
+    my $form_id=0;
+    my @edem=();
+    my $ldem="";
+    $old_email = '';
+    log_sub("\n$rdemog\n");
+    @list = split("\n",$rdemog);
+    for (@list) {
+        $dd=$_;
+        if ($dd =~ /^# data-charset:(.+)$/) {  # the data is sent in other charset than CP1250.
+            $data_charset=mx_get_supported_charset($1);
+        }
+        # will the new subscription activate the unsubscribed member or not, 'yes' is the deafult
+        elsif ($dd =~ /^# activate-unsubscribed:(.+)$/) {  
+            $activate_unsubscribed=$1;
+        }
+        elsif ($dd =~ /^# form-id:(\d+)$/) {  # form id is needed for the data forward function.
+            $form_id=$1;
+        }
+        elsif ($dd =~ /^# form-email:(\d+)-(\d+)$/) {  # form id is needed for the data forward function.
+            #if ($subs_fromvalidate) {
+                $form_automatic_emails{$1}=$2;
+            #}
+        }
+        elsif ($dd =~ /^# u-uid:([a-f\d]+)$/) {  # form id is needed for the data forward function.
+            $update_uid=$1;
+        }
+        elsif ($dd =~ /^# vct-id:(\d+)h([a-f\d]{11})(\d+)$/) {  # viral campaigns, a friend has registered
+            if ($2 eq substr(MD5->hexhash("$1Sebestyen$3Marta"),1,11)) {
+                $vct_id=$3;
+                $vct_ord=$1;
+            }
+        }
+        elsif ($dd =~ /^# ([^:]+):(.+)$/) {  # this drops empty values, should think about is this correct
+            $demog[$i] = $1;              # (trusted affiliate updates?)
+            $demogvalue[$i] = $2;
+            if ($data_charset ne "utf8") {
+                $demogvalue[$i] = mx_iconv($demogvalue[$i],$data_charset,"UTF8");
+            }
+            if ($demog[$i] eq 'old_email') {
+                $demog[$i] = 'email';
+                $old_email = $demogvalue[$i];
+                $demog_email = $i;
+            }
+            push (@edem,$dbh->quote($demog[$i])) unless ($ldem eq $demog[$i]);
+            if ($#edem>50) { # make queries in chunks if there are so many demogs.
+                sub_get_var_data(\@edem) unless ($fromimport);
+                @edem=();
+            }
+            $ldem=$demog[$i];
+            $i++;
+        }
+    }    
+    sub_get_var_data(\@edem) unless ($fromimport);
+    # there are some variables that users MUST NOT change or register with, some viral data for now
+    unless ($fromimport) {
+        my $svt = $dbh->prepare("select demog_id from form_viral where group_id='$group_id'");
+        $svt->execute;
+        while (my @svtt=$svt->fetchrow_array) {
+            my $rorf=$demog_var_idref{$svtt[0]};
+            $demog_var_readonly{$rorf}=1;
+        }
+        $svt->finish;
+    }
+    return $form_id;
+}
+
+sub sub_get_var_data($) {
+    
+    my $aref=shift;
+    my @edem=@{$aref};
+    if ($#edem>-1) {
+        my $st = $dbh->prepare("select variable_name,variable_type,multiselect,id,multi_append
+                                from demog where variable_name in (". join(",",@edem) .")");
+        $st->execute;
+        while (@row = $st->fetchrow_array) {
+            $demog_var_types{$row[0]}=$row[1];
+            $demog_var_multiselects{$row[0]}=$row[2];
+            # multi_append: if this is an update of user data, and this is a multienum, 
+            # append new values rather than overwrite the old values, see process_newdata() for the rest.
+            $demog_var_multi_append{$row[0]}="no";
+            if ($demog_var_multiselects{$row[0]} eq "yes" && $row[4] eq "yes") {
+                $demog_var_multi_append{$row[0]}="yes";
+            }
+            if ($row[1] eq "matrix") {
+                $demog_var_multiselects{$row[0]}="yes";
+            }
+            $demog_var_idref{$row[3]}=$row[0];
+        }
+        $st->finish;
+    }
+}
+
+# look both at the real structure of corresponding users_[title] group and the vip_demog table.
+# we must be sure that the insert into users_[title] succeeds.
+sub sub_group_data() {
+
+    undef %realdemogs;
+    undef %realindex;    
+    $reallist="";
+    my $k=0;
+    $sth = $dbh->prepare("desc users_$title");
+    $sth->execute;
+    while (@row = $sth->fetchrow_array) {
+        if ($row[0] =~ /ui_(.*)/) {
+            $realdemogs{$1}=1;
+            $reallist.="," if (length($reallist));
+            $reallist.="ui_$1";
+            $realindex{$1}=$k;
+            $k++;
+        }
+    }
+    $sth->finish;
+    log_sub("$title group, $k demog columns\n");
+}
+
+# set $trusted_affiliate according to current $group_id
+sub sub_affiliate_type() {
+
+    $trusted_affiliate="no";
+    if (length($update_uid)) {
+        my $ut=$dbh->prepare("select id from update_request where group_id='$group_id' and unique_id=". $dbh->quote($update_uid) 
+                              ." and unix_timestamp(now())-unix_timestamp(date)<36000 limit 1");
+        $ut->execute;
+        if (@ur = $ut->fetchrow_array) {
+            log_sub("update request $update_uid\n");
+            $trusted_affiliate="yes";
+            my $utt=$dbh->prepare("update update_request set updated='yes' where id='$ur[0]'");
+            $utt->execute;
+            $utt->finish;
+        }
+        else {
+            log_sub("invalid update request $update_uid\n");
+            exit;
+        }
+        $ut->finish;
+    }
+    elsif ($man_campaign_id) {
+        $trusted_affiliate=$man_aff_trusted;
+    }
+    else {
+        $sth = $dbh->prepare("select trusted_affiliate from members where group_id='$group_id' and user_id='$aff'");
+        $sth->execute;
+        if (@row = $sth->fetchrow_array) {
+            $trusted_affiliate=$row[0];
+        }    
+        $sth->finish;
+    }
+	$trusted_affiliate="yes" if ($group_id==1566);
+    log_sub("trusted_affiliate=$trusted_affiliate\n");
+}
+
+# what is the authenticator column
+sub sub_authdata() {
+
+    $auth_val="";
+    $auth_col="";
+log_sub("sender=$sender\n");
+    $sender=substr($sender,0,100);
+    $old_email=substr($old_email,0,100);
+    if ($sender =~ /^#(\d+)$/) {
+        $auth_col="id";
+        $auth_val=$1;
+    }
+    elsif ($sender =~ /^#([^#]+)#(.+)$/) {
+        $dname=$1;
+        $auth_val=$2;
+        $auth_col="ui_$dname" if ($realdemogs{$dname});
+    }
+    elsif ($sender =~ /^[\.\+_a-z0-9-]+\@([0-9a-z][0-9a-z-]*\.)+[a-z]{2,4}$/i) {
+        $auth_col="ui_email";
+        if ($old_email) {
+            $auth_val = $old_email;
+            $demogvalue[$demog_email] = $sender;
+        } else { 
+            $auth_val=$sender;
+        }
+    }
+    if (!length($auth_col)) {  #AIEEEE! invalid e-mail address or nonexistent demog var as authenticator
+		#exit;
+    }
+    $auth_val=$dbh->quote($auth_val);
+    log_sub("authenticator is $auth_col, auth value is $auth_val\n");
+}
+
+# see if the user is already subscribed to this group. 
+sub sub_getuserid() {
+
+    $user_id=0;
+
+    if (length($auth_col) and $title ne "endlink") {
+        $st = $dbh->prepare("select id,validated,robinson,$reallist from users_$title where $auth_col=$auth_val");
+        $st->execute;
+        if (@old = $st->fetchrow_array) {
+            $user_id=$old[0];
+            $validated=$old[1]; 
+            $old_user_robinson=$old[2]; 
+        }
+        $st->finish;
+        log_sub("user_id=$user_id\n");
+        # FIXME what if old_email exists, and user_id not? 
+        if ($old_email) {
+            $st = $dbh->prepare("select id,validated,$reallist from users_$title where $auth_col=".$dbh->quote($sender));
+            $st->execute;
+            if (@old = $st->fetchrow_array) {
+                # FIXME dirty hack, we will track if there should be something more sophisticated
+                log_sub("new email $sender already exists, changing it to old_$sender\n");
+                $dbh->do("update users_$title set $auth_col=".$dbh->quote("old_$sender").",validated='no' where id='$old[0]'");
+            }
+            $st->finish;
+        }
+    }
+}
+
+# the actual user data insert or update, when all data is prepared
+sub sub_doupdate($) {
+
+	%demog_processed = ();
+    my $origin=shift;
+    my $form_id=0;
+    my $called_for="subscribe";
+    if ($origin>=0) {
+        $form_id=$origin;
+    }
+    else {
+        $called_for="import";
+    }
+    $insstr="";
+    my $k=0;
+    my @datalist=();
+    my $savedn="#";
+    for (@demog) {
+        $demog_name=$_;
+        $demog_value=$demogvalue[$k];
+        if ($realdemogs{$demog_name} and !$demog_var_readonly{$demog_name}) {
+            if ($savedn ne $demog_name and $#datalist>-1) {
+                process_newdata($savedn,join(",",@datalist));
+                @datalist=();
+            }        
+            push (@datalist,$demog_value);
+            $savedn=$demog_name;
+        }
+        else {
+            log_sub("$demog_name is not in users_$title or it is readonly\n");
+        }
+        $k++;
+    }
+    if ($#datalist>-1) {
+        process_newdata($savedn,join(",",@datalist));
+    }
+    my $sql="";
+    my $newuser_id=0;
+    if (($title eq 'permission') or ($title eq 'zigor2')) {
+        $m_addmailer=$addmailer;
+    }
+    else {
+        $m_addmailer="";
+    }
+    # In these groups, if an unsubscribed member reregisters, the old data should be completely deleted and the member should be added as new
+    # rather then simply updating. An exception is when 'activate_unsubscribed' is not "yes" 
+    @delete_old_data=("megajob","zigor2");
+    if ($user_id and $old_user_robinson eq "yes" and $called_for eq "subscribe" and grep(/^$title$/,@delete_old_data) and $auth_col eq "ui_email" and $activate_unsubscribed eq "yes") {
+        my $dsql="delete from users_$title where $auth_col=$auth_val";
+        log_sub("! delete sql:$dsql\n");
+        $dbh->do($dsql);
+        $user_id=0;
+    }
+    if ($user_id) {
+        if ($old_user_robinson eq "yes" and $activate_unsubscribed ne "yes") {
+            log_sub("No update, old_user_robinson is $old_user_robinson and activate_unsubscribed is $activate_unsubscribed.\n");
+        }
+        else {
+            $sql="update users_$title set validated='yes',robinson='no',data_changed=now(),bounced='no',tstamp=now()$m_addmailer$insstr where $auth_col=$auth_val";
+            # note that the ! mark at the beginning of a row denotes sensitive data
+            # which means that this mark should be present at the beginning of each row of sensitive data
+            log_sub("! update sql:$sql\n");
+            $st = $dbh->prepare($sql);
+            $st->execute;
+            $st->finish;
+        }
+    }
+    elsif (!($auth_col eq "id")) { # id as auth_col is intended only for update.
+        if (length($auth_col)) {
+            $insstr.=",$auth_col=$auth_val";
+        }
+        if (length($vt_date)) { # vt_date: date when validation letter has been sent, empty for hidden-subscribe.
+            $date=$dbh->quote($vt_date);
+        }
+        else {
+            $date="now()";
+        }
+        $specfieldadd="";
+        if ($title eq "betsson") {
+            $st = $dbh->prepare("select kod from betsson_codes where used=0 order by rand() limit 1");
+            $st->execute;
+            if (@vcf=$st->fetchrow_array()) {
+                $dbh->do("update betsson_codes set used=1 where kod=" . $dbh->quote($vcf[0]));
+                $specfieldadd=",ui_egyedi_kod=" . $dbh->quote($vcf[0]);
+            }
+        }
+        $sql="insert into users_$title set validated='yes',robinson='no',bounced='no',aff='$aff',man_aff='$man_aff_id',tstamp=now(),data_changed=now(),validated_date=now(),date=$date$m_addmailer$specfieldadd$insstr";
+        log_sub("! insert sql:$sql\n");
+        $st = $dbh->prepare($sql);
+        $st->execute;
+        $newuser_id=$st->{mysql_insertid};
+        $st->finish;
+    }
+    if (length($sql)) {
+        if ($newuser_id) {
+            $m_newuser=1;
+            $m_loguser=$newuser_id;
+        }
+        else {
+            $m_newuser=0;
+            $m_loguser=$user_id;
+        }
+        # check for viral campaigns if this as a new user, comes from validate and it's not already found.
+        # if ($newuser_id and $form_id and $subs_fromvalidate and !$viral_campaign_base_id) 
+        # 2006-11-14 change: everybody can send viral mails, not only the new users
+        if ($form_id>0 and !$viral_campaign_base_id) {
+            $st = $dbh->prepare("select f.viral_base_id,fe.demog_id from form f,form_element fe 
+                                 where f.id='$form_id' and f.group_id='$group_id' and f.viral='yes' and f.id=fe.form_id
+                                 and fe.viralfunc like '\%send_to\%' order by fe.demog_id");
+            $st->execute;
+            while (@vcf=$st->fetchrow_array()) {
+                $viral_campaign_base_id=$vcf[0];
+                $vir_demog=$demog_var_idref{$vcf[1]};
+                if (length($vir_demog)) {
+                    $viral_campaign_variables{$vir_demog}=1;
+                    $viral_campaign_user_id=$m_loguser;
+                }
+            }
+            $st->finish;
+            # copied from validate to allow virus mail for hidden subscribe.
+            if (!$subs_fromvalidate) {
+                if ($viral_campaign_user_id>0 and $viral_campaign_base_id>0) {
+                    $vk=0;
+                    @vk_emails=();
+                    for (@demog) {    # demog* is set by sub_common
+                        $demog_name=$_;
+                        # print "$demog_name\n";
+                        # print $viral_campaign_variables{$demog_name}. " and $demogvalue[$vk]\n";
+                        if ($viral_campaign_variables{$demog_name} and $demogvalue[$vk] =~ /^[\.\+_a-z0-9-]+\@([0-9a-z][0-9a-z-]*\.)+[a-z]{2,4}$/i) {
+                            push (@vk_emails,$demogvalue[$vk]);
+                        }
+                        $vk++;
+                    }
+                    if ($#vk_emails>-1) {
+                        $vk_maillist = join (",",@vk_emails);
+                        $sender_call = $MX_SCRIPT_ROOT . "/sender_engine base-$viral_campaign_base_id format-mime output-maxima0 maillist-$vk_maillist sender-member-$viral_campaign_user_id";
+                        log_sub("Viral campaign, calling $sender_call\n");
+                        open (OUT,"|$sender_call");
+                        close OUT;
+                    }
+                }
+            }
+            # copied from validate to allow virus mail for hidden subscribe. END
+            # sending virus mails is allowed for anyone, not only newly registered,
+            # but the following tracking can be done for the new users only (= who has invited this user).
+            if ($vct_id && $newuser_id) {  # a friend has registered, update sender's data.
+                $viral_counter="";
+                $viral_sub_from="";
+                $st = $dbh->prepare("select d.variable_name,v.viralfunc from form_viral v,demog d 
+                                     where v.form_id='$form_id' and v.group_id='$group_id' and v.demog_id=d.id");
+                $st->execute;
+                while (@vcf=$st->fetchrow_array()) {
+                    if ($vcf[1] eq "counter") {
+                        $viral_counter=$vcf[0];
+                    }
+                    elsif ($vcf[1] eq "sub_from") {
+                        $viral_sub_from=$vcf[0];
+                    }
+                }
+                $st->finish;
+                if ($realdemogs{$viral_counter} and $realdemogs{$viral_sub_from}) {
+                    $sql="update users_$title set ui_$viral_sub_from=concat(ui_$viral_sub_from,',${form_id}-${vct_ord}-${newuser_id},'),
+                          ui_$viral_counter=ui_$viral_counter+1 where id='$vct_id' and 
+                          ui_$viral_sub_from not like '\%,${form_id}-${vct_ord}-\%'";
+                    log_sub("! viral friend sql:$sql\n");
+                    $st = $dbh->prepare($sql);
+                    $st->execute;
+                    $st->finish;
+                }
+            }
+        }
+        # if this is the form's group, and there are automatic mails scheduled, send them to the user 
+        # validate script will call sender_engine
+        if ($form_id>0) {
+            while ( ($fae_base,$fae_group_id) = each (%form_automatic_emails) ) {
+                if ($fae_group_id==$group_id) {
+                    $form_automatic_emails{$fae_base}="$group_id,$form_id,$m_loguser";
+                    $sth = $dbh->prepare("select fe.sender_id from form_email fe,sender_base sb where fe.form_id='$form_id'
+                                          and fe.base_id='$fae_base' and sb.group_id='$group_id' and fe.base_id=sb.id");
+                    $sth->execute;                      
+                    if (@fae_db=$sth->fetchrow_array) {
+                        $sender_call = $MX_SCRIPT_ROOT . "/sender_engine base-$fae_base format-mime output-maxima0 memberlist-$m_loguser sender-$fae_db[0]";
+                        log_sub("Automatic email, calling $sender_call\n");
+                        open (OUT,"|$sender_call");
+                        close OUT;
+                    }
+                    $sth->finish;
+                }
+            }
+        }
+        if ($man_campaign_id) {
+            my $stt = $dbh->prepare("insert into man_track_subs_data (man_track_subs_id,group_id,user_id,newuser,partner_id)
+                      values ('$man_track_subs_id','$group_id','$m_loguser','$m_newuser','". $man_group_partner{$group_id} ."')");
+            $stt->execute;
+            $stt->finish;
+        }
+    }
+}
+
+sub process_newdata() {
+    $pn_dname=shift;
+    $pn_value=shift;
+	return if ($demog_processed{$pn_dname});
+	$demog_processed{$pn_dname}=1;
+    #log_sub("! process_newdata: got params $pn_dname,$pn_value\n");
+    return if (($auth_col eq "ui_$pn_dname") and !$old_email); # authenticator col should not be updated
+    $oldvalue="";
+    if ($user_id) {
+        $oldind=$realindex{$pn_dname}+3;
+        $oldvalue=$old[$oldind];
+        if ((length($oldvalue) and not $oldvalue=~/^0000-00-00/) && $trusted_affiliate eq "no") {
+			#if ((length($oldvalue) and not $oldvalue=~/^0000-00-00/) and $trusted_affiliate eq "no" and not ($demog_var_multiselects{$pn_dname} eq "yes" and $demog_var_multi_append{$pn_dname} eq "yes")) {
+            #log_sub("! process_newdata: nothing added, data already exists and affiliate is not trusted.\n");
+            return;
+        }
+        if (length($oldvalue)) {
+            $oldvalue=$dbh->quote($oldvalue);
+            $st = $dbh->prepare("insert into data_cemetary
+                                 (group_id,email,content,dateadd,demog_name) values
+                                 ('$group_id',$auth_val,$oldvalue,now(),'$pn_dname')");
+            $st->execute;
+            $st->finish;
+        }
+    }
+    if ($user_id and $demog_var_multiselects{$pn_dname} eq "yes") { 
+        # override the default setting for multi append
+        if ($pn_value =~ /-/) {
+            $demog_var_multi_append{$pn_dname}="no";
+        }
+        elsif ($pn_value =~ /\+/) {
+            $demog_var_multi_append{$pn_dname}="yes";
+        }
+        if ($demog_var_multi_append{$pn_dname} eq "yes") {
+            $pn_value .= ",$oldvalue";
+        }
+    }
+    if ($demog_var_types{$pn_dname} eq "matrix" or $demog_var_types{$pn_dname} eq "enum") {
+        $pn_value =~ s/[^\d,]//g if ($demog_var_types{$pn_dname} eq "enum"); # there has been problems with this
+        $pn_value =~ s/[^\d,m]//g if ($demog_var_types{$pn_dname} eq "matrix"); 
+        my %pnv = ();
+        my @pnp = split(/,/,$pn_value);
+        foreach $pn (@pnp) {
+            if ($pn =~ /^[\dm]+$/) {
+                $pnv{$pn}=1;
+            }
+        }
+        @pnp = keys(%pnv);
+        if ($#pnp>-1) {
+            $pn_value = "," . join(",",@pnp) . ",";
+        }
+        else {
+            $pn_value="";
+        }
+    }
+    $insstr.=", ui_$pn_dname=";
+    $insstr.=$dbh->quote($pn_value);
+    #log_sub("! process_newdata: added ui_$pn_dname='$pn_value'\n");
+}
+
+sub sub_data_forward($) {
+
+    my $form_id=$dbh->quote(shift);
+    my @fw;
+    my @fwp;
+    my $stt = $dbh->prepare("select name,connect_data,connect_netloc,connect_realm,connect_username,connect_password,id
+                             from data_forward where form_id=$form_id and active='yes'");
+    $stt->execute;
+    while (@fw=$stt->fetchrow_array) {
+        my %fd=undef;
+        undef %forward_params;
+        log_sub("\nData forward: $fw[0]\n");
+        my $sta = $dbh->prepare("select d.variable_name,fe.widget 
+                                 from data_forward_demog df,form_element fe left join demog d on d.id=fe.demog_id 
+                                 where df.data_forward_id='$fw[6]' and df.form_element_id=fe.id");
+        $sta->execute;
+        while (@fwp=$sta->fetchrow_array) {
+            if ($fwp[1] eq "cim") {
+                $fd{"hazszam"}=1;$fd{"emelet"}=1;$fd{"ajto"}=1;$fd{"utca_nev"}=1;$fd{"utca_tipus"}=1;
+            }
+            elsif ($fwp[1] eq "ceg_cim") {
+                $fd{"street_name_company"}=1;$fd{"street_type_company"}=1;$fd{"street_number_company"}=1;$fd{"floor_company"}=1;$fd{"door_company"}=1;
+            }
+            elsif (length($fwp[0])) {
+                $fd{$fwp[0]}=1;
+            }
+        }
+        $sta->finish;
+        my $savedn="#";
+        my @datalist=();
+        my $k=0;
+        for (@demog) {
+            $demog_name=$_;
+            $demog_value=$demogvalue[$k];
+            if ($fd{$demog_name}) {
+                if ($savedn ne $demog_name and $#datalist>-1) {
+                    sub_data_forward_data($savedn,join(",",@datalist));
+                    @datalist=();
+                }        
+                push (@datalist,$demog_value);
+                $savedn=$demog_name;
+            }
+            $k++;
+        }
+        if ($#datalist>-1) {
+            sub_data_forward_data($savedn,join(",",@datalist));
+        }
+        my $ua = new LWP::UserAgent;
+        if (length($fw[2]) && length($fw[3]) && length($fw[4])) {
+            $ua->credentials($fw[2],$fw[3],$fw[4],$fw[5]);
+        }
+        my $res = $ua->post($fw[1], \%forward_params);
+        if ($res->is_success) { 
+            if ($res->content =~ /success/i) {
+                log_sub("Data forward successful: ".$res->content."\n");
+            }
+            else {
+                log_sub("Data forward unsuccessful: client error ".$res->content."\n");
+            }
+        } 
+        else { 
+            log_sub("Data forward unsuccessful: connect error ".$res->message."\n");
+        }
+    }
+    $stt->finish;
+}
+
+sub sub_data_forward_data($,$) {
+
+    my $varname=shift;
+    my $gostr=shift;
+    my @fw;
+    if ($demog_var_types{$varname} eq "matrix" or $demog_var_types{$varname} eq "enum") {
+        $gostr =~ s/[^\dm,]//g;
+        my @elems = split(/[m,]/,$gostr);
+        $gostr =~ s/m/=/g;
+        if ($#elems>-1) {
+            my $stt = $dbh->prepare("select id,enum_option from demog_enumvals where id in ('". join("','",@elems) ."')");
+            $stt->execute;
+            while (@fw=$stt->fetchrow_array) {
+                $gostr =~ s/(\A|[,=])$fw[0](\Z|[,=])/$1$fw[1]$2/g;
+            }
+            $stt->finish;
+        }
+    }
+    log_sub("$varname -f- $gostr\n");
+    $forward_params{$varname}=$gostr;
+}
+
+1;

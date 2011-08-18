@@ -1,0 +1,108 @@
+#!/usr/bin/perl
+
+use DBI;
+
+$dbh = DBI->connect('DBI:mysql:maxima:localhost:3306','root','bartok26') || die $DBI::errstr ; 
+$dbh->{RaiseError} = 1;
+$dbh->do("set names cp1250");
+
+$group_name="permission";
+$group_id=543;
+
+$sql="select id,ui_varos,ui_vezeteknev,ui_utca_nev,ui_keresztnev from users_$group_name where validated='yes' and robinson='no' and bounced='no' order by id";
+$sth = $dbh->prepare($sql);
+$sth->execute;
+
+print "$sql\n";
+
+$i = 0;
+
+$mfile="matchcode1";
+open (OO,">$mfile");
+
+while (@r = $sth->fetchrow_array) {
+    $i++;
+    if ($i/100 == int($i/100)) {
+        print "$i\n";
+    }
+    $id=$r[0];
+    $mc = mx_wund_match($r[1],1,"");
+    $mc .= mx_wund_match($r[1],2,"");
+    $mc .= mx_wund_match($r[1],3,"");
+    $mc .= mx_wund_match($r[2],1,"");
+    $mc .= mx_wund_match($r[2],3,"");
+    $mc .= mx_wund_match($r[2],4,"");
+    $mc .= mx_wund_match($r[2],5,"");
+    $mc .= mx_wund_match($r[3],1,"");
+    $mc .= mx_wund_match($r[3],3,"");
+    $mc .= mx_wund_match($r[4],1,"");
+    $mc .= mx_wund_match($r[4],2,"");
+    $mc .= mx_wund_match($r[4],-1,"");
+
+    # Településnevébol az elso 3 karakter
+    # Családi név 1. Karaktere
+    # Családi név 3. pozíciójától 3 karakter hosszan
+    # Utca név 1. Karaktere
+    # Utca név 3. karakter pozíciójától 1 karakter hosszan
+    # Keresztnév elso két karaktere
+    # Keresztnév utolsó karaktere
+    # 
+    # Amennyiben az adatmezobol nincs meg a felhasználni kívánt karakterek száma
+    # (2 vagy 3 karakter) akkor a rövidebb adat kerül felhasználásra és a generált matchkód
+    # rövidebb lesz.
+
+    print OO "$mc,$id\n";
+}
+close OO;
+
+sub mx_num($) {
+
+    $num=shift;
+    $num=~s/[^0-9]//g;
+    $lnl=length($num);
+    if ($lnl<4) {
+        for ($i=0;$i<4-$lnl;$i++) {
+            $num="0$num";
+        }
+    }
+    return substr($num,0,4);
+}
+
+sub mx_wund_match($;$;$) {
+
+    my $str=shift;
+    my $char=shift;
+    my $stuff=shift;
+
+    if (0) {
+        $str =~ s/Á/A/g;
+        $str =~ s/É/E/g;
+        $str =~ s/Í/I/g;
+        $str =~ s/Ó/O/g;
+        $str =~ s/Ö/O/g;
+        $str =~ s/Õ/O/g;
+        $str =~ s/Ú/U/g;
+        $str =~ s/Ü/U/g;
+        $str =~ s/Û/U/g;
+        $str =~ s/á/A/g;
+        $str =~ s/é/E/g;
+        $str =~ s/í/I/g;
+        $str =~ s/ó/O/g;
+        $str =~ s/ö/O/g;
+        $str =~ s/õ/O/g;
+        $str =~ s/ú/U/g;
+        $str =~ s/ü/U/g;
+        $str =~ s/û/U/g;
+        $str = uc($str);
+    }
+    
+    return $stuff unless length($str);
+    if ($char==-1) {
+        $char=length($str);
+    }
+    if (length($str)<$char) {
+        return $stuff;
+    }
+    $char--;
+    return substr($str,$char,1);
+}

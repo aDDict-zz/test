@@ -1,0 +1,21 @@
+#!/usr/bin/perl
+
+use Mail::CheckUser qw(:constants check_email last_check);
+
+open CHECK,"<checkemail6.csv";
+$i=0;
+while (<CHECK>) {
+	$i++;
+	$email_addr=$_;
+	$email_addr=~s/[\n\r]$//g;
+	my $ok = check_email($email_addr);
+	print $email_addr;
+	print "\t";
+	print last_check()->{ok};
+	print "\t";
+	print last_check()->{code};
+	print "\t";
+	print last_check()->{reason};
+	print "\n";
+	#exit if ($i==2);
+}

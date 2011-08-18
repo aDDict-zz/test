@@ -1,0 +1,37 @@
+#!/usr/bin/perl
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+use DBI;
+
+# ./dsmsvalidate akarmi permission dsmsvalidate-
+$sender = $ARGV[0];
+$group = $ARGV[1];
+$validation = $ARGV[2];
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+$dbh->do("set names cp1250");
+
+$validation =~ /dsmsvalidate-(.+)/;
+
+$unique_id = $1;
+
+$sth = $dbh->prepare("select group_id,user_id,sms,filter_id,automat,test,test_numbers,senderid 
+                      from validatesms where unique_id='$unique_id'");
+$sth->execute;
+if (@row=$sth->fetchrow_array) {
+    $sth = $dbh->prepare("insert into sms_send (sender_id,group_id,filter_id,message,create_time,
+                            sent_num,automat,test,test_numbers,senderid) 
+                          values 
+                          ('$row[1]','$row[0]','$row[3]',".$dbh->quote($row[2]).",now(),0,".$dbh->quote($row[4]).",
+                           ".$dbh->quote($row[5]).",".$dbh->quote($row[6]).",".$dbh->quote($row[7]).")");
+    $sth->execute;
+    $insert_id = $sth->{'mysql_insertid'};
+
+    $dbh->do("delete from validatesms where unique_id='$unique_id'");
+    system("$MX_SCRIPT_ROOT/sms0 $insert_id filter-$row[3] dimoco");
+}

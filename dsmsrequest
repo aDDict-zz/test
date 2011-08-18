@@ -1,0 +1,224 @@
+#!/usr/bin/perl
+
+use DBI;
+use MD5;
+use MIME::QuotedPrint;
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+my $dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+$dbh->do("set names cp1250");
+
+$group = $ARGV[0];
+$fromvalid = $ARGV[1];
+$ARGV[2] =~ /sms-(.*)$/;
+$filter_name = $1;
+if (length($ARGV[4])) {
+    $senderid=$ARGV[4];
+}
+else {
+    $senderid="";
+}
+
+$sth = $dbh->prepare("select id from groups where title = '$group'");
+$sth->execute;
+
+($group_id) = $sth->fetchrow_array;
+
+$test="no";
+$test_numbers="";
+if ($filter_name) {
+    if ($filter_name eq "test-send") {
+        if ($ARGV[3]=~/^[\d\+,]+$/) {
+            $test="yes";
+            $test_numbers=$ARGV[3];
+            @testlist=split(/,/,$test_numbers);
+            $rcpt_number=$#testlist+1;
+        }
+        else {
+            exit;
+        }
+    }
+    else {
+        $sth = $dbh->prepare("select id from filter where name = '$filter_name' and group_id='$group_id'");
+        $sth->execute;
+        ($filter_id) = $sth->fetchrow_array;
+        if (!$filter_id) {
+            exit;
+        }
+        undef ($filtres);
+        $filter_error="filter_ok";
+        open FILTER, "$MX_FILTER_ENGINE $filter_id|";
+        while (<FILTER>) {
+            $filtres .= $_;
+        }
+        close (FILTER);
+        $limitnum=0;
+        @filtarr = split /\n/,$filtres;
+        if ($filtarr[0] eq "filter_ok") {
+            $filter_query=$filtarr[1];
+            $limitord=$filtarr[2];
+            $limitnum=$filtarr[3];
+            $syntax_error=$filtarr[4];
+            $syntax_error_text=$filtarr[5];
+        }
+        else {
+            $filter_error="error in filter engine: $filtarr[0]";
+        }
+        if ($syntax_error==1) {
+            $filter_error="filter syntax error: $syntax_error_text";
+        }
+        if ($filter_error ne "filter_ok") {
+            exit (0);
+        }
+        if ($limitnum) {
+            $rcpt_number=$limitnum;
+        }
+        else {
+$dbh->do("set names utf8");
+            $sql="select count(id) from users_$group where ($filter_query) and robinson='no' and bounced='no' and validated='yes'";
+            $sth=$dbh->prepare($sql);
+            $sth->execute;
+$dbh->do("set names cp1250");
+            ($rcpt_number) = $sth->fetchrow_array;
+        }
+    }
+}
+else
+{
+    exit;
+}
+
+
+$header = '';
+$body = '';
+
+$sw = 1;
+
+while (<STDIN>) {
+    chop;
+    s/\r$//;
+    if ($sw) {
+        if ($_) {
+            $header .= "$_\n";
+        } else {
+            $sw = 0;
+        }
+    } else {
+        $body .= "$_\n";
+    }
+}
+
+if ($header =~ /quoted-printable/i) {
+    $body = decode_qp($body);
+}
+
+
+$automatic = 0 ;
+
+if ($header =~ /From: (.*) <([^>]+)>/)  
+{
+    $fromname = $1;
+    $email = $2;
+    $email =~ tr/A-Z/a-z/;
+} else {
+  $header =~ /From: (.+)/;
+$fromname = $1;
+$email = $1;
+$email =~ tr/A-Z/a-z/;
+$email =~ s/\r//;
+}
+
+$sth = $dbh->prepare("select id,name,sms_validate from user where email='$email'");
+$sth->execute;
+
+if (@row = $sth->fetchrow_array) {
+  $user_id = $row[0];
+  if (length($row[2])) {
+    $author_email = $row[2];
+  }
+  else {
+    $author_email = $email;
+  }
+  $author_name = $row[1];
+}
+$automat='';
+
+if ($body =~ /(.+)\n-automat-\n(.+)/s) {
+$body = $1;
+$automat = $2;
+    
+}
+
+if (!$automatic && !$fromvalid) {
+
+$unique_id = substr(MD5->hexhash($author_email . time()),0,10);
+
+$from = "dsmsvalidate-$unique_id\@$group.$local_hostname";
+
+if (length($senderid)) {
+    $senderid_desc=$senderid;
+}
+else {
+    $senderid_desc="06303444295";
+}
+
+if ($filter_name eq "test-send") {
+    $filter_name="Teszt sms: $test_numbers";
+}
+else {
+    $filter_name="szûrõ neve: $filter_name";
+}
+
+$message = "Ön SMS-t adott fel az alábbi paraméterekkel:
+_____________________________________
+csoport neve: $group
+$filter_name
+tagok száma: $rcpt_number
+küldõ: $senderid_desc
+_____________________________________
+az SMS szövege:
+_____________________________________
+$body
+_____________________________________
+a válasz automata definíciója:
+_____________________________________
+$automat
+_____________________________________
+Ha azt kívánja, hogy SMS megjelenjen a csoportban, akkor változatlan tartalommal küldje vissza ezt a levelet a feladónak.
+  www.$local_hostname
+[SEEME ENGINE]
+";
+
+#             print "From: $from
+if (! open(SENDMAIL, "|/usr/lib/sendmail -oi -t -odb")) {
+   warn "error invoking sendmail: $!\n";
+} else {
+             print SENDMAIL "From: $from
+Reply-To: $from
+To: $author_email
+Subject: [$group - $filter_name] SMS hitelesítése
+
+$message
+
+-------------------------------------------------------
+www.$local_hostname 
+";
+
+}
+
+$senderid=$dbh->quote($senderid);
+
+$sth = $dbh->prepare("insert into validatesms 
+                      (group_id,user_id,create_date,filter_id,unique_id,sms,automat,test,test_numbers,senderid) values 
+                      ('$group_id', '$user_id', now(),'$filter_id','$unique_id',".$dbh->quote($body).",
+                       ".$dbh->quote($automat).",'$test','$test_numbers',$senderid)"); 
+$sth->execute;
+
+
+} 
+

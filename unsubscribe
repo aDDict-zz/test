@@ -1,0 +1,132 @@
+#!/usr/bin/perl
+
+use MD5;
+use DBI;
+use MIME::Base64;
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+require $MX_SCRIPT_ROOT . "/lang/lang_hu.inc";
+require $MX_SCRIPT_ROOT . "/common_functions.pl";
+
+$sender = $ARGV[0];
+$group = $ARGV[1];
+$receiver = $ARGV[2];
+
+# group_description: group.name or multi.name field 
+$group_description=$group;
+
+if ($receiver =~ /^leir-(.+)$/) {
+    $message_id = $1;
+}
+else {
+    $message_id = 0; 
+}
+
+$subscribe_action="unsubscribe";
+$subscribe_id=$sender . ":" . time();
+
+$no_validation=0;
+while (<STDIN>) {
+    if (/^# no-validation: d610850d3ff145fc9b9ec78c1e290127/) {
+        $no_validation=1;
+    }
+}
+
+open (OUT, ">$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok");
+print OUT "sender: $sender group: $group receiver: $receiver\n";
+close OUT;
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+
+$from = "\"Postmaster\" <postmaster\@$local_hostname>";
+
+$message = &r('unsub_not');
+
+$message_id=$dbh->quote($message_id);
+
+$success=0;
+
+$dbh->do("set names utf8");
+
+$origsender=$sender;
+$sender=$dbh->quote($sender);
+if ($group =~ /^[a-z0-9_]+$/i) {
+    $sth = $dbh->prepare("select id from users_$group where ui_email=$sender");
+    $sth->execute;
+    if (@row = $sth->fetchrow_array) {
+      $userid=$row[0];
+      $sth = $dbh->prepare("select id,unsub_mail,unsub_mail_subject,name from groups where title = '$group'");
+      $sth->execute;
+      if (@row=$sth->fetchrow_array) {
+          if ($no_validation) {
+              open (PPOUT,"|$MX_SCRIPT_ROOT/unsub_ppos $sender $group unsubscript");
+              close PPOUT;
+              open (OUT, ">>$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok");
+              print OUT "no-validation, calling $MX_SCRIPT_ROOT/unsub_ppos $sender $group unsubscript\n";
+              close OUT;
+              rename("$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok", "$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.ok");
+              exit;
+          }
+          else {
+              $success=1;
+              $gid = $row[0];
+              $subject=$row[2];
+              $message=$row[1];
+              $group_description=$row[3];
+              $unique_id = substr(MD5->hexhash($sender.time()),0,10);
+              $message =~ s/\{url\}/http:\/\/$group.$local_hostname\/unsub\/$unique_id/gi;
+              $from="validate-unsub-$unique_id\@$group.$local_hostname";
+              $sth = $dbh->prepare("insert into validation (user_id,group_id,action,unique_id,date,tstamp,message_id) values ($userid,$gid,'unsub','$unique_id',now(),now(),$message_id)");
+              $sth->execute;
+              if (!length($message)) {
+                $message = &r('unsub_validate');
+              }
+          }
+      }
+  }
+}
+if ($success==0) {
+    open (OUT, ">>$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok");
+    print OUT "select id from users_$group where ui_email=$sender unsuccessful (no such group or member), exiting.";
+    close OUT;
+    exit;
+}
+
+if (!length($subject)) {
+    $subject = &r('unsub_subject');
+}
+
+$message =~ s/\{group\}/$group_description/gi;
+$subject =~ s/\{group\}/$group_description/gi;
+
+$subject = mx_encode_header_tags($subject,"utf8");
+
+if (! open(SENDMAIL, "|/usr/lib/sendmail -oi -t -odb")) {
+   warn "error invoking sendmail: $!\n";
+} else {
+	     print SENDMAIL "From: $from
+Reply-To: $from
+To: $origsender
+Subject: $subject
+Content-Type: text/plain;
+    charset=\"utf-8\"
+
+$message
+
+";
+
+close SENDMAIL;
+
+}
+
+rename("$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok", "$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.ok");
+
+sub r
+{
+  $rr=$_[0];
+  &refresh();
+  $W{$rr};
+}

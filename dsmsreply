@@ -1,0 +1,91 @@
+#!/usr/bin/perl
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+use DBI;
+use MD5;
+use MIME::QuotedPrint;
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+
+$header = '';
+$body = '';
+$sw = 1;
+$insert_group_id=0;
+# it is not decided yet where will insert_group_id come from, most likely as ARGV[0] from procmail,
+# or, the mail body will contain some information about this.
+# in 'plain' situations, when we send messages first and then is the sms automat used 
+#   (or there is no answer at all) insert_group_id should be 0;
+# for the test period starting from 2008-10-20, (that's ended so 1411 is removed) it will be 1411 to say:
+# insert the data into the group 1411 instead of checking what is answered.
+
+while (<STDIN>) {
+    chop;
+    s/\r$//;
+    if ($sw) {
+        if ($_) {
+            $header .= "$_\n";
+        } else {
+            $sw = 0;
+        }
+    } else {
+        $body .= "$_\n";
+    }
+}
+
+if ($header =~ /quoted-printable/i) {
+    $body = decode_qp($body);
+}
+
+
+if ($header =~ /From: (.*) <([^>]+)>/)  
+{
+    $fromname = $1;
+    $email = $2;
+    $email =~ tr/A-Z/a-z/;
+} else {
+    $header =~ /From: (.+)/i;
+    $fromname = $1;
+    $email = $1;
+    $email =~ tr/A-Z/a-z/;
+    $email =~ s/\r//;
+}
+
+@b = split /\n/, $body;
+
+$md5     = shift(@b);
+$md5     = shift(@b);
+$phone   = shift(@b);
+$message = join("\n", @b);
+
+$file = time().'-'.$phone.'-'.int(rand(1000)).'.sms';
+
+$check = MD5->hexhash("hirek$phone");
+
+if ($check eq $md5) {
+    $file = "$MX_SMS_INCOMING_SPOOL/$file";
+    open OUT, ">$file";
+    print OUT "$phone\n";
+    print OUT "$insert_group_id\n";
+    print OUT "$message\n";
+} 
+else {
+    $file = "$MX_BAD_INCOMING_SMS_DIR/$file";
+    open OUT, ">$file";
+    print OUT "[detected email] $email\n";
+    print OUT "[detected phone]$phone\n";
+    print OUT "[detected md5]$md5\n";
+    print OUT "[check md5]$check\n";
+    print OUT "[detected insert_group_id]$insert_group_id\n";
+    print OUT "[detected message]$message\n";
+    print OUT "original header ---------------------------------------------------------------------\n";
+    print OUT "$header\n";
+    print OUT "original body ---------------------------------------------------------------------\n";
+    print OUT "$body";
+}
+close OUT;
+

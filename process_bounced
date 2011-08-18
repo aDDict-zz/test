@@ -1,0 +1,193 @@
+#!/usr/bin/perl
+
+use DBI;
+
+$dbh = DBI->connect("DBI:mysql:maxima:localhost:3306", 'root', 'bartok26') || die $DBI::errstr; 
+$dbh->{RaiseError} = 1;
+
+$dir = $ARGV[0] ? $ARGV[0] : '/var/maximas/bounce';
+
+# unsubscribe all from egyperces for 550 errors
+%do_unsubscribe=();
+$sth = $dbh->prepare("select g.id,g.title from groups g,multigroup mg where g.id=mg.groupid and mg.multiid=3");
+$sth->execute;
+while (($group_id, $title) = $sth->fetchrow_array) {
+    $do_unsubscribe{"$title"} = 1;
+    $titles{$group_id} = $title;
+}
+$sth->finish;
+
+# add more groups like this
+$do_unsubscribe{"zigor2"} = 1;
+# the following five groups are added 2009-12-02
+$do_unsubscribe{"permission"} = 1;
+$do_unsubscribe{"kutataspanel"} = 1;
+$do_unsubscribe{"permissionb2b"} = 1;
+$do_unsubscribe{"ottohu"} = 1;
+$do_unsubscribe{"ottocz"} = 1;
+$do_unsubscribe{"ottosk"} = 1;
+
+opendir(DIR, $dir);
+@flist = grep(/\.bounce$/, readdir(DIR));
+closedir(DIR);
+
+$fi=0;
+foreach $f (@flist) {
+	$fi++;
+	print "$fi\n";
+	exit if ($fi>10000);
+	$jobinfo_bounce=0;
+	$hidden_bounce=0; # from hidden subscribe welcome messages
+    $f =~ /^([\djh]+)\.(\d+).bounce/;
+    $message_id = $1;
+    $user_id = $2;
+    if ($message_id =~ /^(\d+)j(\d+)$/) {
+        $jobinfo_bounce=1;
+        $message_date = $1;
+        $message_type = $2;
+        if ($message_date =~ /^(\d\d)(\d\d)(\d\d)$/) {
+            $message_date = "20$1-$2-$3";
+        }
+    }
+    elsif ($message_id =~ /^h(\d+)$/) {
+        $hidden_bounce=1;
+        $group_id = $1;
+        unless ($titles{$group_id}) {
+            $sth = $dbh->prepare("select title from groups where id='" . $group_id . "'");
+            $sth->execute;
+            if (($g) = $sth->fetchrow_array) {
+                $titles{$group_id} = $g;
+            }
+        }
+    }
+    else {
+        unless ($group{$message_id}) {
+            # allow 2 weeks for bounces to come back; 
+            # there are evil spams coming to maxima which have headers of the same format we use for bounces
+            $sth = $dbh->prepare("select group_id, title from messages m, groups g where m.group_id = g.id and 
+                                  unix_timestamp(now())-unix_timestamp(send_date)<14*24*3600 and m.id=" . $dbh->quote($message_id));
+            $sth->execute;
+            if (($group_id, $title) = $sth->fetchrow_array) {
+                $group{$message_id} = $group_id;
+                $titles{$group_id} = $title;
+            }
+            else {
+                $group{$message_id} = 0;
+            }
+            $sth->finish;
+        }
+        unless ($titles{$group{$message_id}}) {
+            $sth = $dbh->prepare("select title from groups where id='" . $group{$message_id} . "'");
+            $sth->execute;
+            if (($g) = $sth->fetchrow_array) {
+                $titles{$group{$message_id}} = $g;
+            }
+        }
+    }
+    if ($jobinfo_bounce or $hidden_bounce and $titles{$group_id} or $group{$message_id} and $titles{$group{$message_id}}) {
+        if ($jobinfo_bounce) {
+            print "jobinfo: $user_id $titles{$group_id}\n"
+        }
+        elsif ($hidden_bounce) {
+            print "hidden: $group_id $message_type\n"
+        }
+        else {
+            print "$titles{$group{$message_id}}\n";
+        }
+
+        $error = 0; 
+        $othererror = 0; 
+        ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size, $atime, $mtime, $ctime, $blksize, $blocks) = stat("$dir/$f");
+
+        open IN, "$dir/$f";
+
+        A: while (<IN>) {
+            if (/quota exceeded|over quota|diskspace quota|over the allowed quota|mailbox is full|File too large/i) {
+                $error = '200_over_quota';
+            }
+            elsif (/identified as spam|553.+SPAM!|554.+spam/i) {
+                #		$error = '200_spam';
+            }
+            elsif (/550 Unrouteable address|Remote host said: 550 Address rejected|: 550.+address does not exist|550.+ mailbox unavailable|unknown or illegal alias|: 550.+rejected|550.+5\.1\.1|#5\.1\.1|Status: 5\.1\.1|5\.1\.1 User unknown|550.+No such|: 553 5\.3\.0|Command output: Unknown user/i) {
+                $error = 550;
+            }
+            elsif (/: 553.+5\.7\.1/) {
+                $error = 553;
+            }
+            elsif (/Delivery to the following recipients failed./) {
+                $error = '550_failed';
+            }
+            elsif  (/554 delivery error|\(#5\.4\.4\)|said: 554/) {
+                $error = '554_delivery_error';
+            }
+            elsif (/: 554 5\.1\.0/) {
+                $error = '554_sender_denied';
+            }
+            elsif (/: 554 5\.7\.1/) {
+                $error = '554_relay_access_denied';
+            }
+            elsif (/: 500 5\.5\.0/) {
+                $error = '500_syntax_error';
+            }
+            elsif (/\(#5\.4\.6\)/) {
+                $error = '550_not_local';
+            }
+            elsif (/Subject: automatikus valasz\/autoreply/) {
+                $error = 200;
+            }
+            elsif (/retry timeout/) {
+                $othererror = '200_retry_timeout';
+            }
+            elsif (/permanent error/) {  # this may precede more specific error descriptions!
+                #$othererror = '500_other_permanent';
+                $error = '500_other_permanent';
+            } 
+            elsif (/This could indicate a mail loop/) {
+                $error = '500_loop';
+            }
+            last A if $error;
+        }
+        $error = $othererror unless($error);
+
+        unless ($jobinfo_bounce or $hidden_bounce) {
+            $sth = $dbh->prepare("select ui_email from users_" . $titles{$group{$message_id}} . " where id='$user_id'");
+            $sth->execute;
+            if (!(($email) = $sth->fetchrow_array)) {
+                $error = 0;
+            }
+        }
+        $sth->finish;
+
+        if ($error) {
+            print "$f : $error\n";
+            if ($jobinfo_bounce) {
+                $dbh->do("insert into bounced_jobinfo (message_date, message_type, user_id, date, error_code) values 
+                                ('$message_date', '$message_type', '$user_id', from_unixtime($ctime), '$error')");
+            }
+            elsif ($hidden_bounce) {
+                $dbh->do("insert into bounced_hidden (group_id, user_id, date, error_code) values 
+                                ('$group_id', '$user_id', from_unixtime($ctime), '$error')");
+                if ($error =~ /^550/) {
+                    $dbh->do("update users_$titles{$group_id} set robinson='yes',unsub_date=now() where id='$user_id' and unix_timestamp(now())-unix_timestamp(validated_date)<14*24*3600");
+                }
+            }
+            else {
+                $dbh->do("insert into bounced_back (email, project, group_name, group_id, message_id, date, error_code) values 
+                                (".$dbh->quote($email).", 'maxima', '" . $titles{$group{$message_id}} . "', '$group{$message_id}','$message_id', from_unixtime($ctime), '$error')");
+                if ($error =~ /^550/ and $do_unsubscribe{$titles{$group{$message_id}}}) {
+                    print "unsub_ppos $email " . $titles{$group{$message_id}} . " bounced\n";
+                    system("/var/www/maxima_engine/www/unsub_ppos $email " . $titles{$group{$message_id}} . " bounced");
+                } 
+            }
+            rename "$dir/$f", "/var/maximas/done/$f";
+        }
+        else {
+            rename "$dir/$f", "/var/maximas/purgatory/$f";
+            print "NO : $f\n";
+        }
+    }
+    else {
+        rename "$dir/$f", "/var/maximas/unidentified/$f";
+        print "UNIDENTIFIED : $f\n";
+    }
+}

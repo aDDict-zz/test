@@ -1,0 +1,79 @@
+#!/usr/bin/perl
+
+use HTML::Entities;
+use LWP::Simple;
+use URI::URL;
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+if ($ARGV[0]) { $MX_SMS_SEND_SPOOL = $ARGV[0]; }
+
+opendir(DIR, $MX_SMS_SEND_SPOOL);
+@flist = grep(/\.sms$/, readdir(DIR));
+
+$i = 0; 
+
+foreach $f (@flist) {
+    $i++;
+    if ($i>1000000) {
+        exit;
+    }
+    print "$i $f\n";
+    open(IN, "$MX_SMS_SEND_SPOOL/$f");
+    $phone = '';
+    $sms = '';
+    $found = 0;
+    $senderid="";
+    while (<IN>) {
+        chop;
+        if ($found && !$sms) {
+            $sms .= $_;
+        } elsif (/^DestinationAddress: \+([0-9]+)/) {
+            $phone = $1;
+        } elsif (/^UserId: ([0-9]+)/) {
+            $userid = $1;
+        } elsif (/^SMSId: ([0-9]+)/) {
+            $mid = $1;
+        } elsif (/^UserData:/) {
+            $found = 1;
+        } elsif (/^SenderId: (.+)/) {
+            $senderid = $1;
+        }
+    }
+    if ($phone and $sms) {
+        if (!$mid) { $mid = 1; }
+        if (!$userid) { $userid = 1; }
+        print "$phone && $sms\n";
+        $url = url('http://seeme.dream.hu/gateway.d2');
+        if ($senderid eq "") {
+            $senderid = "36303444295";
+        }
+        $url->query_form (
+            user => 'hirekmedia',
+            password => '23HIReKMEdia37',
+            message => $sms, 
+            reference => "${mid}0000$userid", 
+            number  => $phone,
+            senderid  => $senderid,
+            callback  => '1,2,3,4,5,6,7,8,9,10',
+            profile => 6
+	    );
+        ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime;
+        $year += 1900;
+        $mon++;
+        $smstime =  "$year-$mon-$mday $hour:$min:$sec";
+        $debug = $MX_SEND_SMS_GATEWAY_LOG . "/" . $phone . "-" . time() . "-" . rand();
+        open(OUT, ">>$debug");
+        print OUT "$i SMS BEGIN\n$smstime\n$phone\n$senderid\n$sms\n";
+        $answer = get($url);
+        print OUT "$answer\nSMS END\n";
+        close OUT;
+        unlink ("$MX_SMS_SEND_SPOOL/$f");
+    }
+    close IN;
+}
+
+

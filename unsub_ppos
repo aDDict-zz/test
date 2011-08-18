@@ -1,0 +1,134 @@
+#!/usr/bin/perl 
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+use DBI;
+use POSIX qw(strftime);
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1;
+
+# unsubscribe $email from $groups (groups to be separated by commas)
+# groups can be listed by their ids or by their titles.
+# source is the caller script
+$email=$ARGV[0];
+$groups=$ARGV[1];
+$source=$ARGV[2];
+
+# if we manually unsubscribe somebody, it should be done through this script.
+unless (length($source)) { 
+    $source="manual";
+}
+
+$rand = int(rand(9999));
+$logfile = $MX_UNSUBSCRIBE_LOG . "/" . time() . "-$groups-$email-$source-$rand";
+$logfile =~ s/[^a-z0-9\.\+\/\@_-]//gi;
+open (OO, ">$logfile.notok") || system("logger UNSUB_PPOS - could not create $logfile.notok!");
+print OO "$email\n$groups\n$source\n";
+close OO;
+
+# otherwise this could delete everybody's data in a group where the email is not the unique demog and thus it is empty.
+unless (length($email)) {
+    exit;
+}
+
+# if delete test is 1, then only the emails' data in the hash below will be deleted.
+$delete_test=0;
+%delete_only = (
+"toth.tamas\@hirek.hu"=>1,
+"tbjanos\@manufacture.co.yu"=>1
+);
+
+%nodelete = (
+"email"=>1,
+"vezeteknev"=>1,
+"keresztnev"=>1,
+"utca_nev"=>1,
+"utca_tipus"=>1,
+"hazszam"=>1,
+"emelet"=>1,
+"ajto"=>1,
+"ir"=>1,
+"cim"=>1,
+"varos"=>1,
+"from_campaign_kutataspanel"=>1,
+"from_campaign_b2c"=>1,
+"from_campaign_b2b"=>1
+);
+
+# data is deleted only from these groups
+%delgroups = (
+"permission"=>1,
+"permissionb2b"=>1,
+"kutataspanel"=>1
+);
+
+$q="select title from groups where ";
+if ($groups =~ /^(\d+,)*\d+$/) {
+    $q .= "id in ($groups";
+}
+else {
+    @grlist=();
+    foreach (split(/,/,$groups)) {
+        push (@grlist,$dbh->quote($_));
+    }
+    $q .= "title in (" . join(",",@grlist);
+}
+
+$foundg=0;
+$sth=$dbh->prepare("$q)");
+$sth->execute;
+while (@row=$sth->fetchrow_array) {
+    $oemail=$email;
+    $email=$dbh->quote($email);
+    $title=$row[0];
+    open (OO, ">>$logfile.notok");
+    print OO "Unsubscribing from $title\n";
+    close OO;
+    # first of all make sure the unsubscribe goes through. 
+    # scripts calling this script should make sure that the email is really member in the group.
+    # TODO call this script even if the email is not member, and do just logging.
+    $sth3 = $dbh->prepare("update users_$title set robinson='yes',unsub_date=now() where ui_email=$email");
+    $sth3->execute;
+    $sth3->finish;
+    open (OO, ">>$logfile.notok");
+    print OO "Done\n";
+    close OO;
+    # then we can move to data deletion, but not for robin
+    if ($delgroups{"$title"}) {
+        unless ($delete_test and not $delete_only{"$oemail"}) {
+            open (OO, ">>$logfile.notok");
+            print OO "Not a robin group, deleting data.\n";
+            close OO;
+            $st1 = $dbh->prepare("desc users_$title");
+            $st1->execute;
+            undef @realdemogs;
+            while (@r1 = $st1->fetchrow_array) {
+                if ($r1[0] =~ /ui_(.*)/) {
+                    unless ($nodelete{"$1"}) {
+                        push (@realdemogs,"$r1[0]=''");
+                    }
+                }
+            }
+            $st1->finish;
+            if ($#realdemogs) {
+                $q="update users_$title set " . join(",",@realdemogs) . " where ui_email=$email limit 1";
+                open (OO, ">>$logfile.notok");
+                print OO "$q\n";
+                close OO;
+                $sth3 = $dbh->prepare($q);
+                $sth3->execute;
+                $sth3->finish;
+                open (OO, ">>$logfile.notok");
+                print OO "Done\n";
+                close OO;
+            }
+        }
+    }
+}
+rename ("$logfile.notok","$logfile.ok");
+print "Success\n" unless ($phpmessage>-1);
+

@@ -1,0 +1,458 @@
+#!/usr/bin/perl 
+
+use DBI;
+use MD5;
+use POSIX qw(strftime);
+#use Date::Format qw(strftime);
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+$dbh->do("set names cp1250");
+
+# message id
+$mid = $ARGV[0];
+# filters and user groups, remember that by default maxima0 reads them from ARGV (see below),
+# but with send_again, script reads them from the database.
+$filter_id = 0;
+$user_group_id = 0;
+$verifyf = $MX_SEND_SMS_VERIFY_DIR;
+# send_again is used if the script broke in the middle of sending messages.
+# if send_again=1, script looks for email addresses in corresponding .notok file,
+# and sends only for those users who did not get the message.
+# send_again reads the message from database instead of STDIN.
+# If there were no previous attempts to send the message, this (and reading filter parms) 
+# will be the only difference to sending the message in a regular way.
+$send_again = 0; # 0 or 1
+# look for command line parameters, more convenient way to set debug values.
+$command_line_error="";
+$cl_switch=0;
+for (@ARGV) {
+    if ($_ eq "just_log_addresses") {
+        $just_log_addresses=1;
+    }
+    elsif ($_ eq "nosql") {
+        $nosql=1;
+    }
+    elsif ($_ eq "dimoco") {
+        $sms_spooldir = $MX_SMS_SEND_SPOOL;
+    }
+    elsif ($_ eq "send_again") {
+        $send_again=1;
+    }
+    elsif (/^filter-(\d+)$/) {
+        $filter_id=$1;
+    }
+    elsif (/^user_group-(\d+)$/) {
+        $user_group_id=$1;
+    }
+    elsif ($cl_switch) {
+        $command_line_error.="Unknown parameter: $_ ";
+    }
+    $cl_switch=1;
+}
+
+$just_log_filename="$just_log_addresses_root/$mid.".time();
+
+# look for necessary data in the database.
+# it is assumed that the message has valid user_id and group_id.
+$sth = $dbh->prepare("select sms_send.group_id,sms_send.message,
+                      groups.title,sms_send.filter_id,
+                      sms_send.test,sms_send.test_numbers,sms_send.senderid
+                      from groups,sms_send
+                      where groups.id=sms_send.group_id
+                      and sms_send.id='$mid'");
+$sth->execute;
+($gid,$sms,$group_name,$db_filter_id,$test,$test_numbers,$senderid) = $sth->fetchrow_array;
+$sth->finish;
+
+$title=$group_name;
+
+if ($send_again) {
+    if ($test eq "yes") {
+        exit;
+    }
+    $filter_id=$db_filter_id;
+    $user_group_id=$db_user_group_id;
+}
+
+undef %demog_var_ids;
+undef %demog_var_types;
+undef %demog_var_neeeded;
+undef %demog_var_multiselects;
+undef %demog_var_groups;
+# this is needed for substitution of {demog...} to their values and for filter if any.
+$st = $dbh->prepare("select distinct demog.id,variable_name,variable_type,multiselect 
+                     from vip_demog,demog where 
+                     vip_demog.demog_id=demog.id and vip_demog.group_id='$gid'");
+$st->execute;
+while (@row = $st->fetchrow_array) {
+    $demog_var_ids{$row[1]}=$row[0];
+    $demog_var_types{$row[1]}=$row[2];
+    $demog_var_multiselects{$row[1]}=$row[3];
+}
+$st->finish;
+
+if ($send_again) {
+    # look for email addresses of those users who have already got the message, do not send them again.
+    $notok_exists=1;
+    open (NOTOK, "<$verifyf/$group_name.$mid.notok") or $notok_exists=0;
+    if ($notok_exists) {
+        while (<NOTOK>) {
+            if ($_ =~ /^# (\d+) ([^ ]+) [^ ]+$/) {
+                $notok_emails{$2}=$1;
+            }
+        }
+        close NOTOK;
+    }
+}
+
+if ($VERIFY) {
+    open (OO, ">$verifyf/$group_name.$mid.notok") || system("logger ne valja");
+    print OO time()." group name: $group_name\nmessage id: $mid\nfilter id: $filter_id\nuser group id: $user_group_id\n";
+    system("chmod 644 $verifyf/$group_name.$mid.notok");
+
+    # write back already sent email addresses, what if script breaks again...
+    if ($send_again) {
+        while (($email,$time) = each %notok_emails) {        
+            print OO "# $time $email [send_again:already_sent]\n";
+        }
+    }            
+    close OO;
+}
+
+if (!length($group_name) || length($command_line_error)) {
+    if ($VERIFY) {
+        open (OO, ">>$verifyf/$group_name.$mid.notok");
+        print OO "Invalid message id $mid! (no group name)\n" if (!length($group_name));
+        print OO "Erronous parameters: $command_line_error\n" if (length($command_line_error));
+        close OO;
+    }
+    exit(0);
+}
+
+#find out which demog info are needed
+while (($variable_name,$demog_id) = each %demog_var_ids) {
+    if ($sms =~ /\{$variable_name( [a-z][a-z0-9_ ]*)?\}/) { # single demog var or multiple demog vars in braces separated by spaces
+        $demog_var_needed{$variable_name}=1;        # hash of demog vars to be selected from users_* tables
+        $demog_var_groups{"$variable_name$1"}=1;    # hash of demog groups to be substituted in custom messages
+        if (length($1)) {
+            @otherdemogs = split(/ /, $1);
+            foreach $otherd (@otherdemogs) {
+                $demog_var_needed{$otherd}=1 if $demog_var_ids{$otherd};
+            }
+        }
+    }
+}
+
+# look at the real structure of corresponding users_[title] group.
+# we must be sure that the select from users_[title] succeeds.
+$sth = $dbh->prepare("desc users_$title");
+$sth->execute;
+while (@row = $sth->fetchrow_array) {
+    if ($row[0] =~ /ui_(.*)/) {
+        $demog_var_real{$1}=1;
+    }
+}
+$sth->finish;
+# make hashes of enum values of needed demographic vars
+# and create list of needed demographic vars for select.
+$k=0;
+while (($variable_name,$x) = each %demog_var_needed) {
+    if ($demog_var_real{$variable_name}) {
+        $neededpart.=",ui_$variable_name";
+        $neededlist{$variable_name}=$k;
+        $k++;
+        if ($demog_var_types{$variable_name} eq "enum") {
+            $demog_id=$demog_var_ids{$variable_name};
+            $q2="select id,enum_option from demog_enumvals where demog_id='$demog_id'";
+            $stdi2 = $dbh->prepare($q2);
+            $stdi2->execute;
+            while (@row = $stdi2->fetchrow_array) {
+                $enumid=$row[0];
+                $demog_var_enums{$variable_name}{$enumid}=$row[1];
+            }
+            $stdi2->finish;
+        }
+    }
+    else {
+        $demog_var_needed{$variable_name}=0;
+    }
+}
+
+if ($VERIFY) {
+    open (OO, ">>$verifyf/$group_name.$mid.notok");
+    print OO time()." demog list,hashes,problem domains creation passed\n";
+    close OO;
+}
+
+if ($user_group_id) {
+    $joinpart=",user_group_members where users_$group_name.id=user_group_members.user_id 
+               and user_group_members.user_group_id='$user_group_id' and";
+    $seldist="distinct";
+}
+else {
+    $joinpart=" where";
+    $seldist="";
+}
+
+undef ($limitord);
+if ($test eq "yes") {
+    undef %demog_subs_userid;
+    $ti=0;
+    @testnum=split(/,/,$test_numbers);
+    foreach $tn (@testnum) {
+        $userid=$email="test$ti";
+        $demog_subs_userid{$email}="$userid";
+        $phone_nums{$email}=$tn;
+        $ti++;
+    }
+}
+else { # not test start
+    if ($filter_id) {
+        undef ($filtres);
+        $filter_error="filter_ok";
+        open FILTER, "$MX_FILTER_ENGINE $filter_id|";
+        while (<FILTER>) {
+            $filtres .= $_;
+        }
+        close (FILTER);
+
+        @filtarr = split /\n/,$filtres;
+        if ($filtarr[0] eq "filter_ok") {
+            $filter_query=$filtarr[1];
+            $limitord=$filtarr[2];
+            $limitnum=$filtarr[3];
+            $syntax_error=$filtarr[4];
+            $syntax_error_text=$filtarr[5];
+        }
+        else {
+            $filter_error="error in filter engine: $filtarr[0]";
+        }
+        if ($syntax_error==1) {
+            $filter_error="filter syntax error: $syntax_error_text";
+        }
+
+        if ($VERIFY) {
+            open (OO, ">>$verifyf/$group_name.$mid.notok");
+            print OO time()." $filter_error\n";
+            close OO;
+        }
+        if (!($filter_error eq "filter_ok")) {
+            exit (0);
+        }
+
+        if (length($limitord)) { 
+            $limitexp=" order by $limitord limit $limitnum";
+        }
+        else {
+            $limitexp="";
+        }
+        $sql="select $seldist users_$group_name.id,ui_email,ui_mobil$neededpart from users_$group_name$joinpart validated='yes' 
+                and ($filter_query) and robinson='no' and bounced='no' $limitexp";
+    }
+    else {
+    # for now, filter_id is compulsory
+    exit;
+        $st = $dbh->prepare("select title from groups where id='$gid'");
+        $st->execute;
+        if (@row = $st->fetchrow_array) {
+            $group_name=$row[0];
+        }
+        $st->finish;
+        $sql = "select $seldist users_$group_name.id,ui_email$neededpart from users_$group_name$joinpart validated='yes' 
+                and robinson='no' and bounced='no'";
+    }
+
+    if ($just_log_addresses==1) {
+        open (LOGADDR, ">$just_log_filename");
+        print LOGADDR "List of users that would get the message with the following query:\n\n";
+        print LOGADDR "$sql\n\n";
+    }
+    if ($VERIFY) {
+        open (OO, ">>$verifyf/$group_name.$mid.notok");
+        print OO time()." query build passed: *****$sql***$syntax_error_text**\n";
+        close OO;
+    }        
+$dbh->do("set names utf8");
+    $sth = $dbh->prepare($sql);
+    $sth->execute;
+$dbh->do("set names cp1250");
+
+    undef %demog_subs;
+    undef %demog_subs_userid;
+    undef %phone_nums;
+    undef %id_nums;
+    $noemailnum=1;
+    while (@row = $sth->fetchrow_array) {   # create list of email addresses with corresponding
+        $userid = $row[0];                    # demog expressions to substitute.
+        $email  = $row[1];
+        if (!length($email)) {
+            $email=$noemailnum;
+        }
+        $phone_nums{$email} = $row[2];
+        $id_nums{$email} = $row[0];
+        unless ($send_again && $notok_emails{$email}) {
+            if (length($demog_subs_userid{$email})) {
+                $demog_subs_userid{$email}.=",$userid";
+            }
+            else {
+                $demog_subs_userid{$email}="$userid";
+            }
+            while (($dvg,$x)=each %demog_var_groups) {
+                @dvgs = split(/ /, $dvg);
+                undef ($dvg_r);
+                undef ($glue);
+                foreach $dvgs_part (@dvgs) {
+                    if (length($dvgs_part) && $demog_var_needed{$dvgs_part}) {
+                        $index=$neededlist{$dvgs_part};
+                        $subpart=$row[3+$index];    
+                        if ($demog_var_types{$dvgs_part} eq "enum") {
+                            $enumvals="";
+                            @enumids = split /,/,$subpart;
+                            $valui=shift(@enumids);
+                            while ($valui=shift(@enumids)) {
+                                $valui=int($valui);
+                                if ($valui) {
+                                    $enumvals.=";" if(length($enumvals));
+                                    $enumvals.=$demog_var_enums{$dvgs_part}{$valui};
+                                }
+                            }
+                            $subpart=$enumvals;
+                        }
+                    }
+                    else {
+                        $subpart=$dvgs_part;
+                    }
+                    $dvg_r.="$glue$subpart";
+                    $glue=" ";
+                }
+                if (length($demog_subs{$email}{$dvg})) {
+                    $demog_subs{$email}{$dvg}.=", $dvg_r";
+                }
+                else {
+                    $demog_subs{$email}{$dvg}=$dvg_r;
+                }
+            }
+        }
+        $noemailnum++;
+    }
+} # not test end
+while (($email,$uids) = each %demog_subs_userid) {  #now send the messages
+    @uidarr=split(/,/,$uids);
+    $message_values="$email\n$mid\n{userid}\t$uidarr[0]\n{email}\t$email\n";
+   
+    $tosms = $sms;
+    while (($dvg,$x)=each %demog_var_groups) {
+        $subs_value = $demog_subs{$email}{$dvg};
+#        $ntnl=substitute_nltab($subs_value);
+        $dvg = "{$dvg}";
+                if (($dvg eq '{vezeteknev}') or ($dvg eq '{keresztnev}'))
+                {
+
+@rri = split (/ /, $subs_value);
+
+$final_subs_text = '';
+
+for (@rri)
+{
+    $subs_text = $_;
+
+                        $subs_text =~ tr/A-ZÁÉÍÓÖÕÚÜÛ/a-záéíóöõúüû/;
+                        $subs_text =~ s/^(\w)/\u$1/;
+                        $subs_text =~ s/^á/Á/;
+                        $subs_text =~ s/^é/É/;
+                        $subs_text =~ s/^í/Í/;
+                        $subs_text =~ s/^ó/Ó/;
+                        $subs_text =~ s/^ö/Ö/;
+                        $subs_text =~ s/^õ/Õ/;
+                        $subs_text =~ s/^ú/Ú/;
+                        $subs_text =~ s/^ü/Ü/;
+                        $subs_text =~ s/^û/Û/;
+
+   $final_subs_text .= "$subs_text ";
+}
+
+$final_subs_text =~ s/ +$//;
+$final_subs_text =~ s/ +/ /g;
+
+$subs_value = $final_subs_text;
+                }
+        $tosms =~ s/$dvg/$subs_value/g;
+    }
+    $addsenderid="";
+    if (length($senderid)) {
+        $addsenderid="\nSenderId: $senderid";
+    }
+
+    $sms_message = "UserId: $uidarr[0]\nSMSId: $mid$addsenderid\nDestinationAddress: $phone_nums{$email}\nUserData:\n$tosms";
+
+    $time=time();
+    $filename="$gid-$uidarr[0]-$mid-$time";
+    
+    if ($just_log_addresses==1) {
+        print LOGADDR "$email $spooldir/$filename\n";
+    }
+    else {
+        open (SP, ">$sms_spooldir/$filename.temp") || die;
+        print SP "$sms_message\n";
+        close SP;
+        rename("$sms_spooldir/$filename.temp","$sms_spooldir/$filename.sms");
+        if ($VERIFY) {
+            open (OO, ">>$verifyf/$group_name.$mid.notok");
+            # log exactly like this, logs are used by send_again!
+            print OO "# ".time()." $email $filename\n";
+            close OO;
+        }        
+    }
+    $num_of_email++;
+    if (!$nosql and $test ne "yes") {
+        # sure this is slower than one update when finished; but the main goal we want to achieve
+        # is that if script is broken for some reason, 'send_again' can continue, and, most important,
+        # create precise logs in database.
+        $sth=$dbh->prepare("update sms_send set sent_num=sent_num+1 where id='$mid'");
+        $sth->execute;
+        $sth->finish;
+
+        $dbh->do("insert into sms_tracko (group_id,user_id,date,ui_mobil,sms_send_id,response_id,user_response_id) values('$gid','$id_nums{$email}',now(),'$phone_nums{$email}','$mid','-1','-1')");
+        $dbh->do("update users_$group_name set last_sent_sms=now(),tstamp=now(),
+                        smslist=concat(smslist,',$mid,'), sms_total=sms_total+1 where id='$id_nums{$email}'");
+
+    }
+    # for testing what happens if script is broken
+    # if ($num_of_email>10) { exit; }
+}
+if ($just_log_addresses==1) {
+  close LOGADDR;
+}
+$sth->finish;
+
+if ($VERIFY) {
+    open (OO, ">>$verifyf/$group_name.$mid.notok");
+    $infostring=" nosql:$nosql send_again:$send_again";
+    if ($just_log_addresses) {
+        print OO time()." listed $num_of_email mails to $just_log_filename$infostring\n";
+    }
+    else {
+        print OO time()." added $num_of_email mails to spool dirs$infostring\n";
+    }
+    close OO;
+    rename("$verifyf/$group_name.$mid.notok","$verifyf/$group_name.$mid.ok");
+    system("chmod 644 $verifyf/$group_name.$mid.ok");
+}
+
+exit(0);
+
+################## Subroutines
+
+
+sub substitute_nltab ($) {
+
+    $valstring=shift;
+    $valstring=~s/\t/$message_val_subs_tab/gi;
+    $valstring=~s/\n/$message_val_subs_nl/gi;
+    return $valstring;
+}

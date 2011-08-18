@@ -1,0 +1,50 @@
+#!/usr/bin/perl
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+$logfile = $MX_SENDREQ_VERIFY_DIR . "/scheduled_send.log";
+unless (open (OO, ">>$logfile")) { 
+    system("logger SCHEDULED_SEND - could not create $logfile!");
+    exit;
+}
+
+# vigyazni kell hogy a megfelelo modon kuldje ki a Robinos uzeneteket, azaz a robin0-val!
+
+use DBI;
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+
+$stt=$dbh->prepare("select id,filter_id,implementation from messages where status='scheduled' and schedule_date<=now() order by schedule_date limit 1");
+$stt->execute;
+if (@row=$stt->fetchrow_array) {
+    $message_id = $row[0];
+    $filter_id = $row[1];
+    $implementation = lc($row[2]);
+    print OO time()." $message_id Found message to send: $message_id, filter: $filter_id\n";
+    $dbh->do("update messages set status='processing' where id='$message_id'");
+    print OO time()." $message_id processing...\n";
+    if ($implementation eq "robin") {
+        $maxima0 = "/usr/local/robin/robin0";
+    }
+    else {
+        $maxima0 = $MX_SPOOL_ENGINE;
+    }
+    $maxima0 .= " $message_id has_contents";
+    $maxima0 .= " filter-$filter_id" if ($filter_id);
+    print OO time()." $message_id calling maxima_engine: $maxima0\n";
+    open (OUT,"|$maxima0");
+    close OUT;
+    # reconnect for end_job(), maxima0 can take long and the sql connection can be lost. 
+    $dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+    $dbh->do("update messages set status='sent' where id='$message_id'");
+    print OO time()." $message_id sent.\n";
+}
+else {
+    print OO time()." No message to send.\n";
+}
+close OO;
+

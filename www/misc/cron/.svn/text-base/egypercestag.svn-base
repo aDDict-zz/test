@@ -1,0 +1,40 @@
+#!/usr/bin/perl 
+
+@multis=("'hirekoldalak'","'terminalmulti'","'egyperces'");
+$demog_name="newsletter_inside";
+$demog_id=220;
+
+use DBI;
+
+$dbh = DBI->connect('DBI:mysql:maxima:localhost:3306','root','bartok26') || die $DBI::errstr ;
+$dbh->{RaiseError} = 0;
+
+#$dbh->do("update users_permission set ui_$demog_name=','");
+$q="select distinct g.name,g.title,d.id from multi m,multigroup mg,groups g 
+    left join demog_enumvals d on g.title=d.enum_option and d.deleted='no' and d.demog_id='$demog_id' 
+    where m.title in(". join(",",@multis) .") and m.id=mg.multiid and mg.groupid=g.id";
+#print "$q\n";
+$s = $dbh->prepare($q);
+$s->execute;
+while (@gr = $s->fetchrow_array) {
+    $name = $dbh->quote($gr[0]);
+    $group = $gr[1];
+    $sgroup = $dbh->quote($gr[1]);
+    $enum_id = $gr[2];
+    print "$enum_id $group\n";
+    unless ($enum_id) {
+        $sn = $dbh->prepare("insert into demog_enumvals (demog_id,enum_option,tstamp,optdesc)
+                             values ($demog_id,$sgroup,now(),$name)");
+        $sn->execute;
+        $enum_id = $sn->{'mysql_insertid'};
+        print "new enum id: $enum_id\n";
+        $sn->finish;
+    }
+    if ($enum_id) {
+        $q="update users_$group g,users_permission p set p.ui_$demog_name=concat(p.ui_$demog_name,'$enum_id,') where g.ui_email=p.ui_email and g.robinson='no' and g.validated='yes' and g.bounced='no' and p.robinson='no' and p.validated='yes' and p.bounced='no' and p.ui_$demog_name not like '%,$enum_id,%'";
+        print "$q\n\n"; 
+        $dbh->do($q);
+    }
+}
+$s->finish;
+

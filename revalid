@@ -1,0 +1,90 @@
+#!/usr/bin/perl
+
+use DBI;
+use MD5;
+use MIME::QuotedPrint;
+use MIME::Base64;
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+require $MX_SCRIPT_ROOT . "/common_functions.pl";
+require $MX_SCRIPT_ROOT . "/sub_engine";
+
+$subscribe_action="validate";
+$subscribe_id="$sender.$unique_id";
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+$dbh->do("set names utf8");
+
+$DEBUG=0;
+#%revalid = ("sql"=>"from multivalidation m where validated='yes' and date>='2010-06-01' and date<'2011-06-07' and group_id in (51,59) and groups like '%permission%' 
+#                    and email like '%\@%' and tstamp like '2011-06-07 18%'",
+#            "approx"=>"5544",
+#            "buffer"=>"permission",
+#            "logname"=>"revalidnew543");
+#%revalid = ("sql"=>"from multivalidation m left join users_permission p on m.email=p.ui_email where 
+#                    m.validated='no' and m.date>='2010-06-01' and m.date<'2011-06-07' and m.group_id in (51,59) and m.groups like '%permission%' and m.email like '%\@%'
+#                    and p.id is null",
+#            "approx"=>"5544",
+#            "buffer"=>"permission",
+#            "logname"=>"revalidnew543");
+#%revalid = ("sql"=>"from multivalidation m inner join users_permission p on m.email=p.ui_email where 
+#                    m.validated='no' and m.date>='2010-06-01' and m.date<'2011-06-07' and m.group_id in (51,59) and m.groups like '%permission%' and m.email like '%\@%' 
+#                    and p.robinson='yes' and p.unsub_date<m.date",
+#            "approx"=>"303",
+#            "buffer"=>"permission",
+#            "logname"=>"revalidrob543");
+#%revalid = ("sql"=>"from multivalidation m left join users_kutataspanel p on m.email=p.ui_email where 
+#                    (m.validated='no' or m.tstamp like '2011-06-07 18%') 
+#                    and m.date>='2010-06-01' and m.date<'2011-06-07' and m.group_id in (51,59) and m.groups like '%kutataspanel%' and m.email like '%\@%'
+#                    and p.id is null",
+#            "approx"=>"4649",
+#            "buffer"=>"kutataspanel",
+#            "logname"=>"revalidnew1272");
+%revalid = ("sql"=>"from multivalidation m inner join users_kutataspanel p on m.email=p.ui_email where 
+                    (m.validated='no' or m.tstamp like '2011-06-07 18%') 
+                    and m.date>='2010-06-01' and m.date<'2011-06-07' and m.group_id in (51,59) and m.groups like '%kutataspanel%' and m.email like '%\@%' 
+                    and p.robinson='yes' and p.unsub_date<m.date",
+            "approx"=>"45",
+            "buffer"=>"kutataspanel",
+            "logname"=>"revalidrob1272");
+
+$group = $revalid{"buffer"};
+$subscribe_id = $revalid{"logname"};
+$subscribe_action = rand();
+$multi=1;
+$subs_fromvalidate=1;
+
+open (OUT, ">$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok");
+print OUT $raw;
+close OUT;
+
+$dbh->do("set names latin1");
+$q="select m.email,m.groups,m.aff,m.rdemog,m.date,m.manaff,m.group_id " . $revalid{"sql"};# . " limit 6";
+log_sub("$q\n");
+$sth2 = $dbh->prepare($q);
+$sth2->execute;                      
+while (@rr = $sth2->fetchrow_array) {
+    $sender=$rr[0];
+    $buffer=$revalid{"buffer"}; # important, subscribe only to this group not for all as originally requested
+    $aff=$rr[2];
+    $rdemog=$rr[3];
+    $vt_date=$rr[4];
+    $manaff=$rr[5];
+    $multiid=$rr[6];
+    log_sub("% $sender\n");
+    if (!$DEBUG) {
+        $q = "update multivalidation set validated='yes',tstamp=now() where group_id='$multiid' and email='$sender'";
+        $sth3 = $dbh->prepare($q);
+        $sth3->execute;
+        $dbh->do("set names utf8");
+        sub_common();
+        $dbh->do("set names latin1");
+    }
+}
+
+rename("$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok", "$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.ok");
+

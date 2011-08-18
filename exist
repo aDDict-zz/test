@@ -1,0 +1,50 @@
+#!/usr/bin/perl
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+# return codes:
+# 
+# 1 -- OK
+# 2 -- group does not exist
+# 3 -- not owner or moderator or sender
+
+$sender = $ARGV[0];
+$group = $ARGV[1];
+
+if ($sender =~ /automata-(.*)/) {
+    $sender = $1;
+}
+
+use DBI ;
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+
+$sth = $dbh->prepare("select id from groups where title = '$group'");
+$sth->execute;
+
+if (@row = $sth->fetchrow_array) {
+    $id   = $row[0];
+    $st=$dbh->prepare("select members.id from members,user where user.id=members.user_id 
+                       and user.email='$sender' and members.group_id='$id' 
+                       and (membership='owner' or membership='moderator' or membership='sender')");
+    $st->execute;
+    if (@l = $st->fetchrow_array) {
+        print "1 OK\n";
+        system "logger EXIST $sender $group 1 OK";
+    }
+    else {
+        print "3 not owner or moderator or sender\n";
+        system "logger EXIST $sender $group 3 not owner or moderator or sender";
+    }
+    $st->finish;
+} 
+else {
+    print "2 group not exists\n";
+    system "logger EXIST $sender $group 2 group does not exist";
+}
+
+$sth->finish;
+$dbh->disconnect;

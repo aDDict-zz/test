@@ -1,0 +1,85 @@
+#!/usr/bin/perl 
+
+use DBI;
+use MIME::QuotedPrint;
+use MIME::Base64;
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1;
+$dbh->do("set names utf8");
+
+$st = $dbh->prepare("select m.id,m.group_id,subject,create_date,time_to_sec(timediff(tlb_finished_date,send_date)),(select sum(mails) from track where 
+                          message_id = m.id and group_id=m.group_id group by message_id),(select count(distinct v.user_id) from validation v where 
+                           v.message_id =m.id and v.group_id=m.group_id and v.action='unsub'  
+                           and v.validated='yes' group by v.message_id),(select name from filter where id=m.filter_id),m.tlb_finished_date,m.tlb_finished from messages m 
+			   where datediff(now(),create_date)<30");
+$st->execute;
+while (@row = $st->fetchrow_array) {
+    undef %mdat;    
+    $st1 = $dbh->prepare("select count(distinct t.user_id),count(distinct f.id) from feedback f,trackf t where 
+                          f.message_id=".$row[0]." and f.group_id=".$row[1]." and f.id=t.feed_id group by f.message_id");
+    $st1->execute;
+    @row1 = $st1->fetchrow_array;
+    $stcl = $dbh->prepare("select email from user,message_client,members where user.id=message_client.user_id and message_client.message_id=".$row[0]." and 
+ user.id=members.user_id and members.group_id=".$row[1]." and membership='client'");    
+    $stcl->execute;
+    undef @cla;        
+    while (@cl = $stcl->fetchrow_array) {    
+        push (@cla, $cl[0]);
+    }    
+    if (length(@cla)) {
+        $clients = join(",",@cla);
+    } else {
+        $clients="";
+    }
+    $mdat[0]=$row[0];
+    $mdat[1]=$row[1];    
+    $mdat[2]=$dbh->quote(mx_subject_decode($row[2]));    
+    $mdat[3]=$row[3];        
+    $mdat[4]=int($row[4]);
+    $mdat[5]=int($row1[0]);
+    $mdat[6]=int($row1[1]);    
+    $mdat[7]=int($row[5]);    
+    if ($row[5]) {
+        if ($row1[0] eq 0) {$mdat[8]=0;} else {$mdat[8]=sprintf("%.2f",$row1[0]/$row[5]*100);}  
+    } else {
+        $mdat[8]=0;    
+    }
+    $mdat[9]=int($row[6]);        
+    $mdat[10]=$row[7];
+    $mdat[11]=$row[8];
+    $mdat[12]=$row[9];    
+    $sti = $dbh->prepare("replace into message_search values('',$mdat[1],$mdat[0],$mdat[2],'$mdat[3]','$mdat[11]',$mdat[4],'$clients',$mdat[5],$mdat[8],$mdat[6],$mdat[7],'$mdat[12]',$mdat[9],'$mdat[10]')");      
+    $sti->execute;
+    
+}
+$st->finish;
+
+sub mx_subject_decode($) {
+    my @subjparts=split(/\r?\n[\s]*/,shift);
+    $subject_decoded="";
+    foreach (@subjparts) {
+        $spa=$_;
+        while ($spa =~ /=\?([^?]+)\?(B|Q)\?([^?]+)\?=/) {
+            $orig=$&;
+            $charenc=$1;
+            $mimeenc=$2;
+            $mtext=$3;
+            if ($mimeenc eq "B") {
+                $mtext=decode_base64($mtext);
+            }
+            if ($mimeenc eq "Q") {
+                $mtext=decode_qp($mtext);
+                $mtext =~ s/_/ /g;
+            }
+            $spa =~ s/\Q$orig\E/$mtext/;
+        }
+        $subject_decoded .= $spa;
+    }
+    return $subject_decoded;
+}
+

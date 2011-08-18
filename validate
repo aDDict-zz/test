@@ -1,0 +1,454 @@
+#!/usr/bin/perl
+
+use DBI;
+use MD5;
+use MIME::QuotedPrint;
+use MIME::Base64;
+
+$DEBUG=0;
+
+$sender = $ARGV[0];
+$group = $ARGV[1];
+$validation = $ARGV[2];
+$from_php = $ARGV[3];
+
+$subs_fromvalidate=1;
+$viral_campaign_user_id=0;
+$viral_campaign_base_id=0;
+%viral_campaign_variables=();
+%form_automatic_emails=();
+
+# group_description: group.name or multi.name field 
+$group_description=$group;
+
+if ($sender eq 'from-php') {
+    $raw = 'from-php';
+}
+else {
+    while (<STDIN>) {
+        $raw .= $_;
+    }
+}
+
+$validation =~ /validate-([^-]+)-(.+)/;
+
+$action = $1;
+$unique_id = $2;
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+require $MX_SCRIPT_ROOT . "/lang/lang_hu.inc";
+require $MX_SCRIPT_ROOT . "/common_functions.pl";
+require $MX_SCRIPT_ROOT . "/sub_engine";
+
+$subscribe_action="validate";
+$subscribe_id="$sender.$unique_id";
+
+$logfile=">$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok";
+
+if ($DEBUG) {
+    print "$logfile\n";
+}
+open (OUT, $logfile);
+print OUT $raw;
+close OUT;
+
+# sub engine later also checks these groups! (maybe we subsribe to some other groups along with permission)
+if (($group eq 'permission') or ($group eq 'zigor2'))
+{
+    $content = $raw;
+
+    $mailer = 'unknown';
+
+    if ($content =~ /X-Mailer: ([^\n]+)\n/i) {
+        $mailer = $1;
+    } 
+    elsif (($content =~ /X-Originating-IP/) and ($content =~ /freemail.hu/)) {
+        $mailer = 'Freemail Webmail';
+    }
+    elsif ($content =~ /\@yahoo/) {
+        $mailer = 'Yahoo Webmail';
+    }
+    elsif (($content =~ /X-Originating-IP/) and ($content =~ /gyaloglo.hu/)) {
+        $mailer = 'Gyaloglo Webmail';
+    }
+    elsif ($content =~ /X-Lotus-FromDomain/) {
+        $mailer = 'Lotus';
+    }
+    elsif (($content =~ /intermail.hu/) or ($content =~ /wap.hu/)) {
+        $mailer = 'Hirek Webmail';
+    }
+    elsif ($content =~ /\@hotmail.com/) {
+        $mailer = 'Hotmail Webmail';
+    }
+    elsif ($content =~ /IndexMail/) {
+        $mailer = 'Index Webmail';
+    }
+    elsif (($content =~ /drotposta.hu/) or ($content =~ /dpg.hu/)) {
+        $mailer = 'Drotposta mail';
+    }
+    elsif ($content =~ /netposta.net/) {
+        $mailer = 'Netposta Webmail';
+    }
+    elsif ($content =~ /\<Pine./) {
+        $mailer = 'Pine';
+    }
+    elsif ($content =~ /freestart.hu/) {
+        $mailer = 'Freestart Webmail';
+    }
+    elsif ($content =~ /X-MimeOLE: Produced By Microsoft Exchange/) {
+        $mailer = 'Microsoft Exchange V6.0';
+    } 
+    elsif ($content =~ /X-MimeOLE: Produced By Microsoft MimeOLE V5.50/) {
+        $mailer = 'Microsoft MimeOLE V5.50';
+    }
+    elsif ($content =~ /X-MimeOLE: Produced By Microsoft MimeOLE V5.00/) {
+        $mailer = 'Microsoft MimeOLE V5.00';
+    } 
+    elsif ($content =~ /mailbox.hu/) {
+        $mailer = 'Mailbox Webmail';
+    }
+    elsif ($content =~ /User-Agent: ([^\n]+)\n/i) {
+        $mailer = $1;
+    }
+    if ($mailer =~ /^Microsoft .+ \d+\.\d+(\..+)$/) {
+        $mailer =~ s/$1//;
+    }
+}
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1 ;
+$dbh->do("set names utf8");
+
+if ($mailer) { $addmailer = ",ui_mailer=".$dbh->quote($mailer); }
+
+$from = "postmaster\@$local_hostname";
+$welcome_message=0;
+$multi=0;
+$sth = $dbh->prepare("select id, welcome_message, welcome_subject, welcome_yesno, name, mail_sender,subs_expired,subs_expired_subject,subs_expiration_days,
+                      already_subs,name,welcome_subject,already_subs_subject from multi where title='$group'");
+$sth->execute;                      
+if (@row = $sth->fetchrow_array) { 
+    $dbh->do("set names latin1");
+    $multiid = $row[0];
+    $out = $row[1]."\n";
+    $subject = $row[2];
+    $welcome_yesno = $row[3];
+    $group_description = $row[4];
+    $mail_sender = $row[5];
+    $subs_expired = $row[6];
+    $subs_expired_subject = $row[7];
+    $subs_expiration_days = $row[8];
+    $already_subs = $row[9];
+    $already_subs_subject  = $row[10];
+    $subs_expired = &r('subs_expired') unless length($subs_expired);
+    $subs_expired_subject = &r('subs_expired_subject') unless length($subs_expired_subject);
+    $multi = 1;
+    $q="select email,groups,aff,rdemog,date,manaff,
+        to_days(date)+$subs_expiration_days-to_days(now()), from_days(to_days(date)+$subs_expiration_days)
+        from multivalidation where unique_id='$unique_id' and group_id='$multiid' and validated='no'";
+    if ($DEBUG) {
+        print "$q\n";
+    }
+    $sth2 = $dbh->prepare($q);
+    $sth2->execute;                      
+    if (@rr = $sth2->fetchrow_array) {
+        $sender=$rr[0];
+        $buffer=$rr[1];
+        $aff=$rr[2];
+        $rdemog=$rr[3];
+        $vt_date=$rr[4];
+        $manaff=$rr[5];
+        $is_subs_expired = $rr[6];
+        $subs_expired_on_day = $rr[7];
+        $sth3 = $dbh->prepare("update multivalidation set validated='yes',tstamp=now() where group_id='$multiid' and email='$sender'");
+        $sth3->execute;
+        if ($is_subs_expired<0 and $subs_expiration_days!=0) {
+            log_sub("\nFound unique_id $unique_id for multi $group with validated='no', but the link is expired: $is_subs_expired\n");
+            $message = $subs_expired;
+            $subs_expired_on_day = substr($subs_expired_on_day,0,10);
+            $message =~ s/{validate-till}/$subs_expired_on_day/gmi;
+            $subject = $subs_expired_subject;
+        }
+        else {
+            log_sub("\nFound unique_id $unique_id for multi $group with validated='no', calling sub_engine\n");
+            $dbh->do("set names utf8");
+            sub_common();
+            $dbh->do("set names latin1");
+            $message = $out;
+            $groupname_list = getgroupnames($buffer);
+            $from="owner\@$group.$local_hostname";
+            $welcome_message=1;
+        }
+    }
+    else {
+        log_sub("\nDid not find unique_id $unique_id for multi $group with validated='no'");
+        $sth2 = $dbh->prepare("select email,groups,aff,rdemog,date from multivalidation 
+                               where unique_id='$unique_id' and group_id='$multiid' and validated='yes'");
+        $sth2->execute;                      
+        if (@rr = $sth2->fetchrow_array) {
+            log_sub("\nFound unique_id $unique_id for multi $group with validated='yes', user already subscribed");
+            $message = $already_subs;
+            $subject = $already_subs_subject;
+        }
+        else {
+            log_sub("\nDid not find unique_id $unique_id for multi $group with validated='yes' either");
+        }
+    }
+    $dbh->do("set names utf8");
+    $message =~ s/\{subgroups\}/$groupname_list/gi;
+    $message =~ s/\{groups\}/$groupname_list/gi;
+}
+
+# return value if invoked from php; 1: successfull, 0: unsuccessful, -1: return original message
+my $phpmessage=-1;
+if (!$multi) {
+    log_sub("\nNo multi $group, trying to see if it is a single group");
+    $q="select id, intro, owner_id, welcome_yesno,already_subs,name,welcome_subject,already_subs_subject,
+        unsub_validation_subject,unsub_validation_ok,unsub_validation_notok,mail_sender,subs_expired,subs_expired_subject,subs_expiration_days
+        from groups where title='$group'";
+    $sth = $dbh->prepare($q);
+    $sth->execute;
+    if (@row = $sth->fetchrow_array) {
+        $dbh->do("set names latin1");
+        $gid           = $row[0];
+        $intro         = $row[1];
+        $owner_id      = $row[2];
+        $welcome_yesno = $row[3];
+        $already_subs  = $row[4];
+        $group_description  = $row[5];
+        $welcome_subject  = $row[6];
+        $already_subs_subject  = $row[7];
+        $unsub_validation_subject  = $row[8];
+        $unsub_validation_ok  = $row[9];
+        $unsub_validation_notok  = $row[10];
+        $mail_sender  = $row[11];
+        $subs_expired  = $row[12];
+        $subs_expired_subject = $row[13];
+        $subs_expiration_days = $row[14];
+        $subs_expired = &r('subs_expired') unless length($subs_expired);
+        $subs_expired_subject = &r('subs_expired_subject') unless length($subs_expired_subject);
+        
+        $q="select user_id,aff,date,sender,rdemog,id,manaff,
+            to_days(date)+$subs_expiration_days-to_days(now()), from_days(to_days(date)+$subs_expiration_days)
+            from validation where group_id='$gid' and action='$action' and unique_id='$unique_id' and validated='no'";
+        $sth2 = $dbh->prepare($q);
+        $sth2->execute;
+        if (@row = $sth2->fetchrow_array) {
+            $userid = $row[0];
+            $aff = $row[1];
+            $vt_date = $row[2];
+            $sender = $row[3];
+            $rdemog = $row[4];
+            $manaff = $row[6];
+            $is_subs_expired = $row[7];
+            $subs_expired_on_day = $row[8];
+            if (!length($sender)) {
+                $ustring="user_id='$userid'";
+                $sender = "#$row[0]" ;
+            }
+            else {
+                $qs=$dbh->quote($sender);
+                $ustring="sender=$qs";
+            }
+            $sth3 = $dbh->prepare("update validation set validated='yes',tstamp=now() where $ustring and group_id='$gid'");
+            $sth3->execute;
+            $robinson="new";
+            if ($action eq 'sub') {
+                $sth3 = $dbh->prepare("select ui_email,robinson from users_$group where ui_email=".$dbh->quote($sender));
+            }
+            else {
+                $sth3 = $dbh->prepare("select ui_email,robinson from users_$group where id='$userid'");
+            }
+            $sth3->execute;
+            if (@rrr = $sth3->fetchrow_array) {
+                $ui_email=$rrr[0];
+                $robinson=$rrr[1];
+            }
+            if ($action eq 'sub') {
+                if ($robinson eq 'no') {
+                    log_sub("\nFound unique_id $unique_id for group $group for subscription with validated='no', but the user is already subscribed\n");
+                    $message = $already_subs;
+                    $subject = $already_subs_subject;
+                } 
+                elsif ($is_subs_expired<0 and $subs_expiration_days!=0) {
+                    log_sub("\nFound unique_id $unique_id for group $group for subscription with validated='no', but the link is expired: $is_subs_expired\n");
+                    $message = $subs_expired;
+                    $subs_expired_on_day = substr($subs_expired_on_day,0,10);
+                    $message =~ s/{validate-till}/$subs_expired_on_day/gmi;
+                    $subject = $subs_expired_subject;
+                }
+                else {
+                    log_sub("\nFound unique_id $unique_id for group $group for subscription with validated='no', calling sub_engine\n");
+                    $dbh->do("set names utf8");
+                    sub_common();
+                    $dbh->do("set names latin1");
+                    $welcome_message=1;
+                    $message = "\n$intro\n";
+                    $subject = $welcome_subject;
+                }
+                $from="owner\@$group.$local_hostname";
+            } 
+            else {
+                $phpmessage=0;
+                $subject=$unsub_validation_subject;
+                log_sub("\nFound unique_id $unique_id for group $group for unsubscription with validated='no'");
+                if ($robinson eq "yes") {
+                    if (length($unsub_validation_notok)) {
+                        $message = $unsub_validation_ok;
+                    }
+                    else {
+                        $message = &r('v_notmember'); 
+                    }
+                }
+                else {
+                    if (length($unsub_validation_notok)) {
+                        $message = $unsub_validation_ok;
+                    }
+                    else {
+                        $message = &r('v_unsub');
+                    }
+                    #$sth3 = $dbh->prepare("update users_$group set robinson='yes',unsub_date=now() where id='$userid'");
+                    #$sth3->execute;
+                    if ($from_php) {
+                        $upsource="php-validate";
+                    }
+                    else {
+                        $upsource="validate";
+                    }
+                    open (OUT,"|$MX_SCRIPT_ROOT/unsub_ppos $ui_email $group $upsource");
+                    close OUT;
+                    $welcome_message=2;
+                    $phpmessage=1;
+                }
+            }
+            $sender=$ui_email if ($userid);
+        } 
+        else {
+            log_sub("\nDid not find unique_id $unique_id for group $group with validated='no'");
+            $sth3 = $dbh->prepare("select user_id,sender from validation where group_id='$gid' and action='$action' and unique_id='$unique_id' and validated='yes'");
+            $sth3->execute;
+            if (@rw=$sth3->fetchrow_array) { 
+                log_sub("\nFound unique_id $unique_id for group $group for $action with validated='yes'");
+                if ($action eq 'sub') {
+                    $message = $already_subs;
+                    $subject = $already_subs_subject;
+                } 
+                else {
+                    $phpmessage=0;
+                    $subject=$unsub_validation_subject;
+                    if (length($unsub_validation_notok)) {
+                        $message = $unsub_validation_notok;
+                    }
+                    else {
+                        $message = &r('v_already_unsub');
+                    }
+                }
+                $userid = $rw[0];
+                $sender = $rw[1];
+                if (!length($sender)) {
+                    $sth4 = $dbh->prepare("select ui_email from users_$group where id='$userid'");
+                    $sth4->execute;
+                    if (@rrr = $sth4->fetchrow_array) {
+                        $sender=$rrr[0];
+                    }            
+                }
+            }
+            else {
+                log_sub("\nDid not find unique_id $unique_id for group $group with validated='yes' either");
+            }
+        }
+        $dbh->do("set names utf8");
+    }
+    else {
+        log_sub("\nNo group $group.");
+    }
+} 
+
+$message =~ s/\{group\}/$group_description/gi;
+$message =~ s/\{email\}/$sender/gi;
+$subject =~ s/\{group\}/$group_description/gi;
+$mail_sender =~ s/\{group\}/$group_description/gi;
+
+$subject = &r('v_subject') if (!$subject);
+
+$dspfrom=$from;
+if (length($mail_sender)) {
+    $dspfrom = mx_encode_header_tags($mail_sender,"utf8") . " <$from>";
+}
+
+$subject = mx_encode_header_tags($subject,"utf8");
+
+# flag "welcome_message==1" says that the validation succeeded, welcome message should be sent over.
+# however, if welcome_yesno is set to 'no' we must not send any welcome messages.
+
+if (!($welcome_message==1 && $welcome_yesno eq 'no') && length($sender) && length($message) && !$from_php) {
+    # The messages should be used for both emails and html; thus remove html tags 
+    $message =~ s/<br[^>]*>/\n/gm;
+    $message =~ s/<[^>]+>//gm;
+    $mime = "From: $dspfrom\nReply-To: $from\nTo: $sender\nSubject: $subject\nContent-Type: text/plain;
+                    charset=\"utf-8\"\n\n$message\n";
+    if ($DEBUG) {
+        print "Email: $mime\n";
+    }
+    else {
+        if (!open(SENDMAIL, "|/usr/lib/sendmail -oi -t -odb")) {
+            warn "error invoking sendmail: $!\n";
+        } 
+        else {
+            print SENDMAIL $mime;
+            close SENDMAIL;
+        }
+    }
+    log_sub("\n$message\n");
+}
+
+if ($from_php) {
+    if ($phpmessage==-1) { # the phpmessage thing is used for unsubscribe, should be changed to work in the same way the subscribe validation.
+        print $message;
+    }
+    else {
+        print $phpmessage;
+    }
+}
+
+#print "$viral_campaign $newuser_id $group eq $viral_campaign_group_name\n";
+
+# viral_campaign is set to the id of the new user if he is new user in the given group in the header
+if ($viral_campaign_user_id>0 and $viral_campaign_base_id>0) {
+    $vk=0;
+    @vk_emails=();
+    for (@demog) {    # demog* is set by sub_common
+        $demog_name=$_;
+# print "$demog_name\n";
+# print $viral_campaign_variables{$demog_name}. " and $demogvalue[$vk]\n";
+        if ($viral_campaign_variables{$demog_name} and $demogvalue[$vk] =~ /^[\.\+_a-z0-9-]+\@([0-9a-z][0-9a-z-]*\.)+[a-z]{2,4}$/i) {
+            push (@vk_emails,$demogvalue[$vk]);
+        }
+        $vk++;
+    }
+    if ($#vk_emails>-1) {
+        $vk_maillist = join (",",@vk_emails);
+        $sender_call = $MX_SCRIPT_ROOT . "/sender_engine base-$viral_campaign_base_id format-mime output-maxima0 maillist-$vk_maillist sender-member-$viral_campaign_user_id";
+        log_sub("Viral campaign, calling $sender_call\n");
+        open (OUT,"|$sender_call");
+        close OUT;
+    }
+}
+
+# in sub_engine: $form_automatic_emails{$fae_base}="$group_id,$form_id,$m_loguser";
+
+if ($welcome_message) {
+    rename("$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.notok", "$MX_SUBSCRIBE_LOG/$group-$subscribe_id.$subscribe_action.ok");
+}
+else {
+    log_sub("$message\nunsuccessful subscribe validation with parms: $ARGV[0] $ARGV[1] $ARGV[2] $ARGV[3]\n");
+}
+
+sub r {
+  $rr=$_[0];
+  &refresh();
+  $W{$rr};
+}

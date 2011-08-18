@@ -1,0 +1,94 @@
+#!/usr/bin/perl 
+
+$_setchdir = $0;
+$_setchdir =~ s/[^\/]*$//;
+chdir($_setchdir);
+require "./common.pl";
+
+use DBI;
+use POSIX qw(strftime);
+
+$dbh = DBI->connect("DBI:mysql:$DB_NAME:$DB_AUTH_HOST:$DB_AUTH_PORT",$DB_AUTH_USER,$DB_AUTH_PW) || die $DBI::errstr ;
+$dbh->{RaiseError} = 1;
+$dbh->do("set names utf8");
+
+# report email
+$rep_send=1;
+#$rep_email="tbjanos\@manufaktura.rs";
+$rep_email="maxima.ugyfelszolgalat\@hirekmedia.hu";
+@time = localtime;
+$date = strftime("%d %b %Y %H:%M:%S", @time);
+$rep_subject = "Visszapattano mobil torles cron $date";
+$rep_from="report\@maxima.hu";
+
+#set to 2 to print logs to stdout, 1 to print logs to $verifyf dir, and 0 for no logs.
+$VERIFY=1;             
+$verifyf = "$MX_LOG_ROOT/bad_mobil"; 
+
+$vtime=time();
+if ($VERIFY==1) {
+    open (OO, ">$verifyf/$vtime.notok");
+    close OO;
+}
+
+$year=$time[5]+1900;
+$month=$time[4]+1;
+$bad_table="permission_del_mobil_${year}_${month}_$time[3]";
+
+log_mv("creating $bad_table\n");
+
+$dbh->do("create table $bad_table 
+select o.user_id,o.ui_mobil,group_concat(if(s.code is null,'0',s.code) order by o.date) gcs 
+from sms_tracko o left join sms_status s on o.sms_send_id=s.sms_id and o.user_id=s.user_id and s.code in (6,7) 
+where o.group_id=543 and o.response_id=-1 group by user_id having gcs like '%7,7'");
+log_mv("indexing $bad_table\n");
+$dbh->do("alter table $bad_table add key user_id(user_id)");
+$dbh->do("alter table $bad_table add key ui_mobil(ui_mobil)");
+$dbh->do("alter table $bad_table add ui_mobil_verify int not null default 0");
+$dbh->do("alter table $bad_table add key ui_mobil_verify(ui_mobil_verify)");
+log_mv("searching for removable numbers\n");
+$dbh->do("update users_permission p,$bad_table d set d.ui_mobil_verify=1 where p.id=d.user_id and p.ui_mobil=d.ui_mobil");
+log_mv("removing removable numbers\n");
+$dbh->do("update users_permission p,$bad_table d set p.ui_mobil='' where p.id=d.user_id and ui_mobil_verify");
+log_mv("dumping removed number data\n");
+$dbh->do("select user_id,ui_mobil from $bad_table where ui_mobil_verify into outfile '$verifyf/$bad_table.dump'");
+
+$count=0;
+$st2=$dbh->prepare("select count(*) from $bad_table where ui_mobil_verify");
+$st2->execute;
+if (@r2=$st2->fetchrow_array) {
+    $count=$r2[0];
+}
+$st2->finish;
+
+$report="$count visszapattano mobilszamot toroltem a permission csoportbol.\n";
+
+if ($rep_send==1) {
+    if (! open(SENDMAIL, "|/usr/lib/sendmail -oi -t -odb")) {
+        warn "error invoking sendmail: $!\n";
+    } 
+    else {
+  #      print "From: $rep_from\nTo: $rep_email\nSubject: $rep_subject\n\n$report\n";
+        print SENDMAIL "From: $rep_from\nTo: $rep_email\nCc: tbjanos\@tippnet.rs\nSubject: $rep_subject\n\n$report\n";
+    }
+}
+log_mv($report);
+
+$dbh->disconnect;
+
+if ($VERIFY==1) {
+    rename ("$verifyf/$vtime.notok","$verifyf/$vtime.ok");
+}
+
+sub log_mv($) {
+    $ls_string=shift;
+    if ($VERIFY==1) {
+        open (OUT, ">>$verifyf/$vtime.notok");
+        print OUT $ls_string;
+        close OUT;
+    }
+    elsif ($VERIFY==2) {
+        print $ls_string;
+    }
+}
+
