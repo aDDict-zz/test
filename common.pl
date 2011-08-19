@@ -10,12 +10,12 @@ $DB_AUTH_PW="v";
 $DB_NAME="maxima";
 
 # Script paths -----------------------------------------------------------------------------------
-$MX_SCRIPT_ROOT = "/var/www/maxima_engine/www";
+$MX_SCRIPT_ROOT = "/home/vvv/sites/maxima_engine";
 $MX_FILTER_ENGINE = $MX_SCRIPT_ROOT . "/filter_engine";
 $MX_SPOOL_ENGINE = $MX_SCRIPT_ROOT . "/maxima_engine";
 
 # Logging paths ----------------------------------------------------------------------------------
-$MX_LOG_ROOT = "/var/www/maxima_engine/www/var/log";
+$MX_LOG_ROOT = "/home/vvv/sites/maxima_engine/www/var/log";
 $MX_SEND_VERIFY_DIR = $MX_LOG_ROOT . "/verify";
 $MX_SENDREQ_VERIFY_DIR = $MX_LOG_ROOT . "/verify/mail";
 $MX_DUPLICATE_VERIFY_DIR = $MX_LOG_ROOT . "/verify_sender";

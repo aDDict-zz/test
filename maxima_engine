@@ -1,5 +1,7 @@
 #!/usr/bin/perl 
 
+print $ARGV; exit;
+
 use DBI;
 use MD5;
 use POSIX qw(ceil strftime);

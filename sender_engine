@@ -1,8 +1,9 @@
 #!/usr/bin/perl
 
 use DBI;
-use Digest::MD5;
-#use MD5;
+#use Digest::MD5;
+#use Digest::Tiger;
+use MD5;
 use MIME::Base64;
 use LWP::UserAgent;
 use HTTP::Date;
@@ -242,7 +243,7 @@ if (@row = $sth->fetchrow_array) {
             ($mail_encoded,$mail_encoded_external_images) = mx_mailpart($mailparts[1],$mailparts_1_external_images,"html");
         }
         else {
-            $delim1=substr($md5->hexhash($send_time.$base_id."akarmimasegyebvalami"),2,12);
+            $delim1=substr(MD5->hexhash($send_time.$base_id."akarmimasegyebvalami"),2,12);
             $delim2=$delim1."a";
             $delim1=$delim1."b";
             $mime_header="Mime-version: 1.0\nContent-Type: multipart/related;\n    boundary=\"----=_NextPart_001_$delim2\"";
@@ -288,7 +289,7 @@ Content-Transfer-Encoding: 8bit\n\n";
         end_job();
     }
     $st->finish;
-    if ($mail_output eq "maxima0") {
+    if ($mail_output eq "maxima0") { #print "anotherFuck"; print $mail_output; exit;
         if ($test eq "yes" and $member_part eq "") {
             $subject="Teszt: $subject";
         }
@@ -364,13 +365,13 @@ Content-Transfer-Encoding: 8bit\n\n";
         $maxima0 = $MX_SPOOL_ENGINE . " ${member_part}$message_id has_contents";
         $maxima0 .= " filter-$filter_id" if ($filter_id);
         $maxima0 .= " sender_member-$sender_member_id" if ($member_send);
-        $maxima0 .= " memberlist-$memberlist" if ($memberlist_send);
+        $maxima0 .= " memberlist-$memberlist" if ($memberlist_send); #print $maxima0; print "\nFokkkkk"; exit;
         mx_sender_logs ("message data inserted, calling maxima0 with params: $maxima0");
         $dbh->disconnect;
         # we always read data from the database, unlike the usual sending method
         # FIXME we should here await some output from maxima0 and report errors if needed!
 
-        print $maxima0; exit;
+        
 
         open (OUT,"|$maxima0");
         close OUT;
@@ -494,7 +495,7 @@ sub mx_mailpart($;$;$)
                         while ($content_retreived =~ /\{l([^}]*)\}([^{]+)\{\/l\}/) {
                             $linkname = $1;
                             $realurl = $2;
-                            $unique_id = substr($md5->hexhash(rand().time()),0,10);
+                            $unique_id = substr(MD5->hexhash(rand().time()),0,10);
                             $unique_url = "http://$group_title.$local_hostname/re/$member_feedback".substr($unique_id,0,3).'{userid}'.substr($unique_id,-7);
                             $content_retreived =~ s/\{l\Q$linkname\E\}\Q$realurl\E\{\/l\}/$unique_url/gi;
                             $feedback{$unique_id}=$realurl;
@@ -807,7 +808,7 @@ sub mx_getads($;$)
                         if ($mail_output eq "maxima0") {
                             my $banner_file="";
                             if (length($part_images)) {
-                                $banner_file=uc(substr($md5->hexhash(rand().$time),0,2)) . "/" . "ct$send_time"."b$banner_id";
+                                $banner_file=uc(substr(MD5->hexhash(rand().$time),0,2)) . "/" . "ct$send_time"."b$banner_id";
                                 my $opened=1;
                                 open (CF, ">$templatedir_banners/$banner_file") or $opened=0;
                                 if ($opened) {
@@ -900,7 +901,7 @@ sub mx_getads($;$)
                                     $egyperc_replace_banner_data=$banner_data;
                                 }
                                 if ($mail_output eq "maxima0") {
-                                    $banner_file=uc(substr($md5->hexhash(rand().$time),0,2)) . "/" . $banner_id . time() . $banner_cid;
+                                    $banner_file=uc(substr(MD5->hexhash(rand().$time),0,2)) . "/" . $banner_id . time() . $banner_cid;
                                     push (@result_data,"$mparam:$banner_id:$banner_type:$banner_file");
                                     my $opened=1;
                                     open (CF, ">$templatedir_banners/$banner_file") or $opened=0;
