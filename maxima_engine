@@ -1,6 +1,16 @@
 #!/usr/bin/perl 
+#print "\nDDDDDDDDDDDDDDDDDDDDDDddd\n";
 
-print $ARGV; exit;
+#print $ARGV[0];
+
+#$len = scalar $ARGV;
+
+#for($i = 1; $i < $len; $i++) {
+#	print "\n";
+#	print $ARGV[$i];
+#}
+
+#exit;
 
 use DBI;
 use MD5;

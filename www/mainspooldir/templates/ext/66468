@@ -1,0 +1,91 @@
+Received: by maxima.hu (MAXIMA v1.1); Fri, 19 Aug 2011 17:06:24 +0200
+From: =?utf-8?B?QWxsaWFueg==?= <allianz@maxima.hu>
+Reply-To: allianz@maxima.hu
+Date: Fri, 19 Aug 2011 17:06:24 +0200
+To: {email}
+Subject: =?utf-8?B?RXp0IG5la2VkIGlzIGzDoXRub2Qga2VsbCE=?=
+Message-Id: <543.0.66468@permission.maxima.hu>
+Mime-version: 1.0
+Content-Type: multipart/related;
+    boundary="----=_NextPart_001_1fe879fb7da0a"
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_001_1fe879fb7da0a
+Content-Type: multipart/alternative;
+    boundary="----=_NextPart_000_1fe879fb7da0b"
+
+------=_NextPart_000_1fe879fb7da0b
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+Pszt! Képzeld...
+az Egypercessel most fantasztikus ajándékokat nyerhetsz!
+
+
+Válassz magadnak Te is ajándékot 200.000 Ft értékben:
+- utazási utalvány
+- Nokia mobil
+- IKEA utalvány
+
+További információ:
+http://permission.maxima.hu/re/890{userid}85a155d|vct|{vct-id}
+
+Üdv,
+{vezeteknev} {keresztnev}
+
+------=_NextPart_000_1fe879fb7da0b
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+<html>
+<head>
+<title>Pszt! Képzeld...</title>
+<meta name="Author" content="Wayout Média - http://www.wayout.hu/">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table width="580" cellpadding="0" cellspacing="0" align="center" border="0">
+	<tr>
+		<td width="184">
+			{notfound0}</td>
+		<td width="396">
+			<table width="396" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td colspan="3">
+						<a href="http://permission.maxima.hu/re/5ee{userid}8099f33|vct|{vct-id}">{notfound1}</a></td>
+				</tr>
+				<tr>
+					{notfound5}
+						<p style="font-family: Tahoma, Arial, Sans-serif; font-size: 9pt; font-weight: bold; text-align: center; margin: 0px;">Válassz magadnak Te is ajándékot 200 000 Ft értékben:</p></td>
+				</tr>
+				<tr>
+					<td><a href="http://permission.maxima.hu/re/5b3{userid}a9cf013|vct|{vct-id}">{notfound2}</a></td>
+					<td><a href="http://permission.maxima.hu/re/695{userid}9b51178|vct|{vct-id}">{notfound3}</a></td>
+					<td><a href="http://permission.maxima.hu/re/bbe{userid}8dc1970|vct|{vct-id}">{notfound4}</a></td>
+				</tr>
+				<tr>
+					{notfound6}
+						<p style="font-family: Tahoma, Arial, Sans-serif; font-size: 9pt; font-weight: bold; text-align: right; margin: 0px; padding-right: 30px">üdv,<br>
+						{vezeteknev} {keresztnev}
+						</p>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+
+
+</body>
+</html>
+
+------=_NextPart_000_1fe879fb7da0b--
+
+
+
+------=_NextPart_001_1fe879fb7da0a--
+
+

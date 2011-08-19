@@ -1,0 +1,150 @@
+Found job: timer_id = 18409; subject = qqqqqqqqqqqqq; group_id = 543; base_id = 123; filter_id = 3980; test_email = ; test = no; stype = now; sender_id = 81211; timer_send = 1; mail_format = mime; mail_output = maxima0; member_send = 0; memberlist_send = ; spool = sender2; templatedir_banners = /home/vvv/sites/maxima_engine/www/mainspooldir/templates/banners; group_title = permission
+Malformed url: HTTP/1.1 404 Not Found
+Connection: close
+Date: Fri, 19 Aug 2011 15:10:56 GMT
+Server: Apache/2.2.9 (Debian) PHP/5.2.6-1+lenny9 with Suhosin-Patch mod_ssl/2.2.9 OpenSSL/0.9.8g
+Content-Length: 400
+Content-Type: text/html; charset=iso-8859-1
+Client-Date: Fri, 19 Aug 2011 15:06:21 GMT
+Client-Peer: 193.28.86.36:80
+Client-Response-Num: 1
+Title: 404 Not Found
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p>The requested URL /nyeremenyjatek/invitel_2006_egyperces/viruslevel/left.jpg was not found on this server.</p>
+<hr>
+<address>Apache/2.2.9 (Debian) PHP/5.2.6-1+lenny9 with Suhosin-Patch mod_ssl/2.2.9 OpenSSL/0.9.8g Server at www.maxima.hu Port 80</address>
+</body></html>
+
+Malformed url: HTTP/1.1 404 Not Found
+Connection: close
+Date: Fri, 19 Aug 2011 15:10:56 GMT
+Server: Apache/2.2.9 (Debian) PHP/5.2.6-1+lenny9 with Suhosin-Patch mod_ssl/2.2.9 OpenSSL/0.9.8g
+Content-Length: 402
+Content-Type: text/html; charset=iso-8859-1
+Client-Date: Fri, 19 Aug 2011 15:06:22 GMT
+Client-Peer: 193.28.86.36:80
+Client-Response-Num: 1
+Title: 404 Not Found
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p>The requested URL /nyeremenyjatek/invitel_2006_egyperces/viruslevel/header.gif was not found on this server.</p>
+<hr>
+<address>Apache/2.2.9 (Debian) PHP/5.2.6-1+lenny9 with Suhosin-Patch mod_ssl/2.2.9 OpenSSL/0.9.8g Server at www.maxima.hu Port 80</address>
+</body></html>
+
+Malformed url: HTTP/1.1 404 Not Found
+Connection: close
+Date: Fri, 19 Aug 2011 15:10:57 GMT
+Server: Apache/2.2.9 (Debian) PHP/5.2.6-1+lenny9 with Suhosin-Patch mod_ssl/2.2.9 OpenSSL/0.9.8g
+Content-Length: 407
+Content-Type: text/html; charset=iso-8859-1
+Client-Date: Fri, 19 Aug 2011 15:06:23 GMT
+Client-Peer: 193.28.86.36:80
+Client-Response-Num: 1
+Title: 404 Not Found
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p>The requested URL /nyeremenyjatek/invitel_2006_egyperces/viruslevel/gift_utazas.jpg was not found on this server.</p>
+<hr>
+<address>Apache/2.2.9 (Debian) PHP/5.2.6-1+lenny9 with Suhosin-Patch mod_ssl/2.2.9 OpenSSL/0.9.8g Server at www.maxima.hu Port 80</address>
+</body></html>
+
+Malformed url: HTTP/1.1 404 Not Found
+Connection: close
+Date: Fri, 19 Aug 2011 15:10:58 GMT
+Server: Apache/2.2.9 (Debian) PHP/5.2.6-1+lenny9 with Suhosin-Patch mod_ssl/2.2.9 OpenSSL/0.9.8g
+Content-Length: 406
+Content-Type: text/html; charset=iso-8859-1
+Client-Date: Fri, 19 Aug 2011 15:06:23 GMT
+Client-Peer: 193.28.86.36:80
+Client-Response-Num: 1
+Title: 404 Not Found
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p>The requested URL /nyeremenyjatek/invitel_2006_egyperces/viruslevel/gift_mobil.jpg was not found on this server.</p>
+<hr>
+<address>Apache/2.2.9 (Debian) PHP/5.2.6-1+lenny9 with Suhosin-Patch mod_ssl/2.2.9 OpenSSL/0.9.8g Server at www.maxima.hu Port 80</address>
+</body></html>
+
+Malformed url: HTTP/1.1 404 Not Found
+Connection: close
+Date: Fri, 19 Aug 2011 15:10:58 GMT
+Server: Apache/2.2.9 (Debian) PHP/5.2.6-1+lenny9 with Suhosin-Patch mod_ssl/2.2.9 OpenSSL/0.9.8g
+Content-Length: 405
+Content-Type: text/html; charset=iso-8859-1
+Client-Date: Fri, 19 Aug 2011 15:06:23 GMT
+Client-Peer: 193.28.86.36:80
+Client-Response-Num: 1
+Title: 404 Not Found
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p>The requested URL /nyeremenyjatek/invitel_2006_egyperces/viruslevel/gift_ikea.jpg was not found on this server.</p>
+<hr>
+<address>Apache/2.2.9 (Debian) PHP/5.2.6-1+lenny9 with Suhosin-Patch mod_ssl/2.2.9 OpenSSL/0.9.8g Server at www.maxima.hu Port 80</address>
+</body></html>
+
+Malformed url: HTTP/1.1 404 Not Found
+Connection: close
+Date: Fri, 19 Aug 2011 15:10:58 GMT
+Server: Apache/2.2.9 (Debian) PHP/5.2.6-1+lenny9 with Suhosin-Patch mod_ssl/2.2.9 OpenSSL/0.9.8g
+Content-Length: 403
+Content-Type: text/html; charset=iso-8859-1
+Client-Date: Fri, 19 Aug 2011 15:06:23 GMT
+Client-Peer: 193.28.86.36:80
+Client-Response-Num: 1
+Title: 404 Not Found
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p>The requested URL /nyeremenyjatek/invitel_2006_egyperces/viruslevel/bg_text.jpg was not found on this server.</p>
+<hr>
+<address>Apache/2.2.9 (Debian) PHP/5.2.6-1+lenny9 with Suhosin-Patch mod_ssl/2.2.9 OpenSSL/0.9.8g Server at www.maxima.hu Port 80</address>
+</body></html>
+
+Malformed url: HTTP/1.1 404 Not Found
+Connection: close
+Date: Fri, 19 Aug 2011 15:10:58 GMT
+Server: Apache/2.2.9 (Debian) PHP/5.2.6-1+lenny9 with Suhosin-Patch mod_ssl/2.2.9 OpenSSL/0.9.8g
+Content-Length: 404
+Content-Type: text/html; charset=iso-8859-1
+Client-Date: Fri, 19 Aug 2011 15:06:24 GMT
+Client-Peer: 193.28.86.36:80
+Client-Response-Num: 1
+Title: 404 Not Found
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p>The requested URL /nyeremenyjatek/invitel_2006_egyperces/viruslevel/bg_text2.jpg was not found on this server.</p>
+<hr>
+<address>Apache/2.2.9 (Debian) PHP/5.2.6-1+lenny9 with Suhosin-Patch mod_ssl/2.2.9 OpenSSL/0.9.8g Server at www.maxima.hu Port 80</address>
+</body></html>
+
+inserting message: 66468
+message data inserted, calling maxima0 with params: /home/vvv/sites/maxima_engine/maxima_engine 66468 has_contents filter-3980

@@ -1,0 +1,10 @@
+1313766564 group name: permission
+message id: 66469
+filter id: 3980
+user group id: 0
+spool: sender2
+1313766564 feedback passed
+1313766564 demog list,hashes creation passed
+1313766564 filter_ok
+1313766564 query build passed: *****select  users_permission.id,ui_email,ui_vezeteknev,ui_keresztnev from users_permission where validated='yes' 
+            and (( users_permission.bounced='no' and (   (ui_szuletesnap>='1971-8-19' and  ui_szuletesnap<'1989-8-19')   and   (    (0  or ui_jobstatus_new = ',3515,'  )     or     (0  or ui_jobstatus_new = ',3516,'  )     or     (0  )     or     (0  or ui_jobstatus_new = ',3518,'  )     or     (0  or ui_jobstatus_new = ',3523,'  )    )  and    length(score_bounced)=0   and  not   (   (messagelist like '%,14731,%')   or    (messagelist like '%,14657,%')   or    (messagelist like '%,14602,%')   or    (messagelist like '%,14843,%')   or    (messagelist like '%,14973,%')  )  and   not  (uglist like '%,76,%')  ))) and robinson='no' and bounced='no' *****

@@ -1,6 +1,6 @@
 #!/usr/bin/perl 
 
-%spooldirs=("sender3"=>"/var/www/maxima_engine/wwws3/spool","sender2"=>"/usr/local/maximas2/spool","ssd"=>"/usr/local/maximas2/ssd/spool");
+%spooldirs=("sender3"=>"/var/www/maxima_engine/www/spool","sender2"=>"/var/www/maxima_engine/www/sender2","ssd"=>"/var/www/maxima_engine/www/ssd");
 
 # the exim spool is turned off for now, there is no need for it any more, 
 # the messages are expected to be sent asap anyway
@@ -40,7 +40,7 @@ sub mx_main_spooldir($) {
 
     my $spool=shift;
     
-    my $main_spooldir=$spooldirs{"$spool"};
+    my $main_spooldir= "/home/vvv/sites/maxima_engine/www/mainspooldir"; #$spooldirs{"$spool"};
     my $templatedir="$main_spooldir/templates";
     my $templatedir_contents="$templatedir/contents";
     my $templatedir_banners="$templatedir/banners";
