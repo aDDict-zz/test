@@ -31,6 +31,10 @@ git config --global core.editor "medit"
 
 source /home/vvv/scripts/git-completion.bash
 
+
+source /usr/lib/libui.sh
+
+
 export GIT_PS1_SHOWDIRTYSTATE=true
 
 # export PS1='\n\[\e[1;32m\]\h:\w\[\e[0;33m\]$(__git_ps1) \[\e[1;33m\]\n\$ \[\033[m\]'
