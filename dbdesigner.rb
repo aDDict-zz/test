@@ -26,13 +26,17 @@ end
 
 def getTableNames  
   Dir[@thisDir + "*.sql"].each do |file|
-# 		if file.match(/(.*)(form)(.*)/)
+# 		if file.match(/(\/)(multigroup\.sql)/) || file.match(/(\/)(members\.sql)/) || file.match(/(\/)(groups\.sql)/) || file.match(/(\/)(multi_members\.sql)/) || file.match(/(\/)(multi\.sql)/)
 #     	@tablesNames.push file.match(/(maxima_sql\/)(.*)(\.sql)/)[2]
 # 		end
-		@tablesNames.push file.match(/(maxima_sql\/)(.*)(\.sql)/)[2]
+		
+		if file.match(/(\/)(user\.sql)/)
+    	@tablesNames.push file.match(/(maxima_sql\/)(.*)(\.sql)/)[2]
+		end
+
+# 		@tablesNames.push file.match(/(maxima_sql\/)(.*)(\.sql)/)[2]
   end
 end
-
 
 def mysqlFetchAll(resource)
 	arr = []
