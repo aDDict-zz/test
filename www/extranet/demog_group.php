@@ -16,7 +16,10 @@ setcookie("Amfppage",$maxPerPage,time()+30*24*3600);
 $mres = mysql_query("select title,num_of_mess,membership 
                      from groups,members where groups.id=members.group_id
                      and groups.id='$group_id' and (membership='owner' or membership='moderator' $admin_addq)
-                     and user_id='$active_userid'");
+                     and user_id='$active_userid'"); /*die("select title,num_of_mess,membership 
+                     from groups,members where groups.id=members.group_id
+                     and groups.id='$group_id' and (membership='owner' or membership='moderator' $admin_addq)
+                     and user_id='$active_userid'");*/
 if ($mres && mysql_num_rows($mres))
     $rowg=mysql_fetch_array($mres);  
 else {
@@ -74,7 +77,7 @@ printhead();
 
 $parms="group_id=$group_id";
 if ($maxrecords) {
-    $rst=mysql_query("select * $qmain $order limit $first,$maxPerPage");
+    $rst=mysql_query("select * $qmain $order limit $first,$maxPerPage"); //die("select * $qmain $order limit $first,$maxPerPage");
     $index = $first;
     if ($rst && mysql_num_rows($rst)) {
         printnavigation();

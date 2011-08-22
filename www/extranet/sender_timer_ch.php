@@ -260,7 +260,7 @@ if (isset($_POST["enter"]) && $_POST["enter"]==1) {
 		if ($changes != NULL) {
 			mysql_query("insert into sender_log set user_id='$active_userid',group_id='$which_group_id',timer_id='$timer_id',log_desc='$changes',date_mod=now(),chtype='$chtype'");
 		}
-        if ($immediate) {
+        if ($immediate) { //echo "$_MX_var->sender_engine now-$immediate >/dev/null &"; die();
             system("$_MX_var->sender_engine now-$immediate >/dev/null &");
             if ($doredirect) {
                 header ("Location: $_MX_var->baseUrl/sender_timer.php?group_id=$fix_group_id");

@@ -73,7 +73,7 @@
 <datatype>INTEGER</datatype>
 </row>
 </table>
-<table x="1195" y="1623" name="form_endlink_dep">
+<table x="1191" y="1662" name="form_endlink_dep">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -384,7 +384,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="494" y="1271" name="form">
+<table x="489" y="1296" name="form">
 <row name="id" null="0" autoincrement="1">
 <datatype>INTEGER</datatype>
 </row>
@@ -668,7 +668,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="261" y="325" name="groups">
+<table x="200" y="311" name="groups">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -686,6 +686,7 @@
 </row>
 <row name="owner_id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
+<relation table="user" row="id" />
 </row>
 <row name="num_of_mess" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
@@ -841,7 +842,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="6" y="711" name="vip_demog">
+<table x="15" y="782" name="vip_demog">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -914,7 +915,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="26" y="548" name="temp_demog_enumvals">
+<table x="9" y="627" name="temp_demog_enumvals">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -935,7 +936,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="48" y="171" name="demog">
+<table x="49" y="322" name="demog">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -1112,7 +1113,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="705" y="591" name="sender_base">
+<table x="689" y="623" name="sender_base">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -1940,7 +1941,7 @@
 <part>group_id</part>
 </key>
 </table>
-<table x="261" y="1718" name="user_group_members">
+<table x="251" y="1757" name="user_group_members">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -1959,7 +1960,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="250" y="1909" name="members">
+<table x="1069" y="2197" name="members">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -1996,7 +1997,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="647" y="2174" name="multi_members">
+<table x="882" y="2335" name="multi_members">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -2081,7 +2082,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="539" y="1072" name="sender_base_uploaded_files">
+<table x="526" y="1095" name="sender_base_uploaded_files">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -2108,7 +2109,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="912" y="973" name="sender_timer">
+<table x="895" y="1021" name="sender_timer">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -2215,7 +2216,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="484" y="505" name="sender_archive">
+<table x="478" y="476" name="sender_archive">
 <row name="id" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
@@ -2286,6 +2287,231 @@
 <datatype>INTEGER</datatype>
 </row>
 <row name="sender_timer_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="29" y="5" name="bodies">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="body" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+</table>
+<table x="24" y="37" name="mailarchive">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="addon" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="header" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="body" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="fromweb" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="contents" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="ads" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="ads_egyperc" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+</table>
+<table x="4" y="80" name="mailarchive_external_images">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="body" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+</table>
+<table x="30" y="172" name="feedback">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="message_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="url" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="unique_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="group_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="tstamp" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="url_replace" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="name" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+</table>
+<table x="1503" y="1823" name="multigroup">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="multiid" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="multi" row="id" />
+</row>
+<row name="groupid" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="groups" row="id" />
+</row>
+<row name="tstamp" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="1244" y="2012" name="multi">
+<row name="id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="title" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="create_date" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="modify_date" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="owner_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="user" row="id" />
+</row>
+<row name="custom_head" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="custom_foot" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="landing2" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="subscribe_subject" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="subscribe_body" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="welcome_message" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="welcome_subject" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="landingpage2" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="welcome_yesno" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="validator_page" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="already_subs" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="tstamp" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="alert_subject" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="alert_text" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="alert" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="validator_page_unsub" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="kedvenc" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="name" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="already_subs_subject" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="header" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="footer" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="unsub_mail" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="unsub_mail_subject" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="unsublink_ok" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="unsublink_notok" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="mail_sender" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="unsub_validation_ok" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="unsub_validation_notok" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="unsub_validation_subject" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="update_mail_subject" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="update_mail" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="maint_notify_delete_ok" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="maint_notify_delete_notok" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="index_grouping" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="subscribe_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="check_subscribe_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="subs_expired" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="subs_expired_subject" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="subs_expiration_days" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 </row>
 <key type="PRIMARY" name="">

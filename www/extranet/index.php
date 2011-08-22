@@ -54,7 +54,7 @@ switch ($sortm) {
 $grouped=array();
 $grouping=array();
 $grouper=array();
-$res=mysql_query("select id,if(length(name)>0,name,title) realname from multi where index_grouping='yes' $order");
+$res=mysql_query("select id,if(length(name)>0,name,title) realname from multi where index_grouping='yes' $order"); //die("select id,if(length(name)>0,name,title) realname from multi where index_grouping='yes' $order");
 if ($res && mysql_num_rows($res)) {
     while ($row=mysql_fetch_array($res)) {
         $grouping["$row[id]"]=array("name"=>htmlspecialchars($row["realname"]),"rows"=>"","count"=>0);
@@ -88,7 +88,7 @@ $gfareal=array();
 
 $notother=0;
 $bgi=0;
-$res = mysql_query($sql); //print_r($sql); print_r(mysql_num_rows($res)); die();
+$res = mysql_query($sql); //print_r($sql); /*print_r(mysql_num_rows($res));*/ die();
 if ($res && mysql_num_rows($res)) {  //echo "xxxxxxxxxxxxxxxxx<br />";  die();
     while($row=mysql_fetch_array($res)) { //print_r($row); echo "xxxxxxxxxxxxxxxxx<br />"; 
         $affiliate="";

@@ -9,8 +9,11 @@ include "common.php";
 $mres = mysql_query("select title,num_of_mess,membership 
                      from groups,members where groups.id=members.group_id
                      and groups.id='$group_id' and (membership='owner' or membership='moderator' $admin_addq)
-                     and user_id='$active_userid'");
-if ($mres && mysql_num_rows($mres))
+                     and user_id='$active_userid'"); /*die("select title,num_of_mess,membership 
+                     from groups,members where groups.id=members.group_id
+                     and groups.id='$group_id' and (membership='owner' or membership='moderator' $admin_addq)
+                     and user_id='$active_userid'");*/
+if ($mres && mysql_num_rows($mres)) 
     $rowg=mysql_fetch_array($mres);  
 else {
     exit; }
@@ -102,7 +105,7 @@ while (list($data,$widget)=each($alldata)) {
     }
     $qtext=htmlspecialchars($word["dg_$data"]);
     if (in_array($data,array("landing_page","landing_page_inactive"))) {
-        $qtext.="<br><a href='form_landview.php?demog_group_id=$demog_group_id&group_id=$group_id&lpview=$data' target='_blank'>El&#337;nézet</a>";
+        $qtext.="<br><a href='form_landview.php?demog_group_id=$demog_group_id&group_id=$group_id&lpview=$data' target='_blank'>El&#337;nï¿½zet</a>";
     }
     if ($widget=="input") {
         $qw="<input class=formframe type='text' name='$data' value=\"$value\" size='35'><input type=button class='tovabbgomb' value='$word[dg_new]' onclick=\"location='demog_group_ch.php?group_id=$group_id&addnewname='+escape(document.dgf.name.value);\">";

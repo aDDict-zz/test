@@ -364,7 +364,9 @@ else
     $limitend=$maxPerPage;
 
 $query = "select $distinct_qpart ui_$unique_col,users_$title.id,$date_type,last_clicked,last_sent,mess_total 
-          $query $order limit $first,$limitend";
+          $query $order limit $first,$limitend"; //die( $query );
+          
+          //"select distinct ui_email,users_robthot.id,validated_date,last_clicked,last_sent,mess_total from users_robthot where 1 and validated='yes' and robinson='no' and bounced='no' order by validated_date desc limit 0,25"
 
 printhead();
 $userIds = "";

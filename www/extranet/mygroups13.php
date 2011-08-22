@@ -334,7 +334,7 @@ print "
 print "<form action='mygroups13.php' method='post'>$hallparm<input type='hidden' name='delete_demogs' value='0'>\n";
 
 //print("select d.* from $mainq $filters $ordby limit $limstart,$perpage<br>");
-$r1=mysql_query("select d.* from $mainq $filters $ordby limit $limstart,$perpage");
+$r1=mysql_query("select d.* from $mainq $filters $ordby limit $limstart,$perpage"); //die("select d.* from $mainq $filters $ordby limit $limstart,$perpage");
 $index=0;                 
 $addbutton=$addbutton?"<input type='submit' name='add_demogs' value='$word[add]'>":"";
 $delbutton=$delbutton?"<input type='button' name='ddemogs' value='$word[remove]' onClick='if(confirm(\"$word[deltext]\")) { this.form.submit(); this.form.delete_demogs=1;}'>":"";

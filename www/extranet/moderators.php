@@ -1,7 +1,5 @@
 <?
 
-include "main.php";
-
 include "auth.php";
 include "decode.php";
 $weare=5;
