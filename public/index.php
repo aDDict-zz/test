@@ -1,4 +1,4 @@
-<?php
+<?php echo $_SERVER[ "REQUEST_URI" ] . "<br />\n";
 
 // Define path to application directory
 defined('APPLICATION_PATH')
