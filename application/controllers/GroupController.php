@@ -7,11 +7,7 @@ class GroupController extends Zend_Controller_Action {
     }
 
     public function indexAction() {
-        $groups = new Application_Model_Groups();
-        echo  Zend_Json::encode($groups->fetchAll()); 
         
-        // disable the rendering of the view
-        $this->_helper->viewRenderer->setNoRender(true);
     }
 
     public function addAction() {
@@ -26,8 +22,21 @@ class GroupController extends Zend_Controller_Action {
         // action body
     }
 
+    public function showAction() {
+      $params = $this->getRequest()->getParams();
+      $id     = $params["stub"];
+      
+      $groups = new Application_Model_Groups();
+      echo  Zend_Json::encode($groups->getGroup($id)); 
+        
+        // disable the rendering of the view
+      $this->_helper->viewRenderer->setNoRender(true);
+    }
+
 
 }
+
+
 
 
 
