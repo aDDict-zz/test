@@ -1,6 +1,6 @@
 <?php
 require_once 'Zend/Application.php';
-
+error_reporting(E_ERROR);
 // Define path to application directory
 defined('APPLICATION_PATH')
     || define('APPLICATION_PATH', realpath(dirname(__FILE__) . '/../application'));
@@ -29,4 +29,4 @@ $bootstrap->bootstrap('db');
 $dbAdapter = $bootstrap->getResource('db');*/
 
 
-//print_r(APPLICATION_ENV);
+//print_r($application);
