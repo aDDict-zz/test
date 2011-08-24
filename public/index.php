@@ -1,4 +1,5 @@
-<?php echo $_SERVER[ "REQUEST_URI" ] . "<br />\n";
+<?php
+require_once 'Zend/Application.php';
 
 // Define path to application directory
 defined('APPLICATION_PATH')
@@ -14,13 +15,18 @@ set_include_path(implode(PATH_SEPARATOR, array(
     get_include_path(),
 )));
 
-/** Zend_Application */
-require_once 'Zend/Application.php';
-
 // Create application, bootstrap, and run
 $application = new Zend_Application(
     APPLICATION_ENV,
     APPLICATION_PATH . '/configs/application.ini'
 );
-$application->bootstrap()
-            ->run();
+
+$application->bootstrap()->run();
+
+/*
+$bootstrap = $application->getBootstrap();
+$bootstrap->bootstrap('db');
+$dbAdapter = $bootstrap->getResource('db');*/
+
+
+//print_r(APPLICATION_ENV);
