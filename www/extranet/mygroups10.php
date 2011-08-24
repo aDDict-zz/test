@@ -1,7 +1,5 @@
 <?
 
-include "main.php";
-
 include "auth.php";
 
 $automatic_type=get_http("automatic_type","");
