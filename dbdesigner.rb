@@ -30,7 +30,7 @@ def getTableNames
 #     	@tablesNames.push file.match(/(maxima_sql\/)(.*)(\.sql)/)[2]
 # 		end
 		
-		if file.match(/(\/)(user\.sql)/)
+		if file.match(/(\/)(messages\.sql)/)
     	@tablesNames.push file.match(/(maxima_sql\/)(.*)(\.sql)/)[2]
 		end
 

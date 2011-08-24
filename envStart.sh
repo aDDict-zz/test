@@ -8,9 +8,6 @@ ifconfig eth0 192.168.0.107
 /etc/rc.d/sshd start
 /etc/rc.d/redis start
 
-
-export MOZILLA_FIVE_HOME=/usr/lib/xulrunner-5.0
-
 # sphinx start
 #/usr/local/bin/searchd --config /usr/local/etc/sphinx.conf
 
@@ -22,9 +19,9 @@ export MOZILLA_FIVE_HOME=/usr/lib/xulrunner-5.0
   #$(mysql depo -u root --password=v < $f)
 #done
 
-mysql depo -u root --password=v  < /home/vvv/Desktop/sql/mem_filter_items.sql
-mysql depo -u root --password=v  < /home/vvv/Desktop/sql/mem_product_keyword.sql
-mysql depo -u root --password=v  < /home/vvv/Desktop/sql/mem_products_filter.sql
-mysql depo -u root --password=v  < /home/vvv/Desktop/sql/mem_products.sql
+#mysql depo -u root --password=v  < /home/vvv/Desktop/sql/mem_filter_items.sql
+#mysql depo -u root --password=v  < /home/vvv/Desktop/sql/mem_product_keyword.sql
+#mysql depo -u root --password=v  < /home/vvv/Desktop/sql/mem_products_filter.sql
+#mysql depo -u root --password=v  < /home/vvv/Desktop/sql/mem_products.sql
 
-terminator -x vim &
+#terminator -x vim &
