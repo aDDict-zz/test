@@ -1,3 +1,26 @@
 <script type="text/javascript">
-eval(function(p,a,c,k,e,d){e=function(c){return c.toString(36)};if(!''.replace(/^/,String)){while(c--){d[c.toString(a)]=k[c]||c.toString(a)}k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c])}}return p}('n 7=6.o("e")[0].p,4=6.9("e"),b=6.9("e"),3=6.9("g"),5=6.9("g");5.1("a","8/2");5.1("i","k");5.1("m","2/q.2");3.1("a","8/2");3.1("i","k");3.1("m","c/r/2/c-l.2");b.1("a","8/j");b.1("h","f/4.f");4.1("a","8/j");4.1("h","c/c-l.f");7.d(3);7.d(5);7.d(b);7.d(4);',28,28,'|setAttribute|css|cssExt|main|cssStyle|document|head|text|createElement|type|extAll|ext|appendChild|script|js|link|src|rel|javascript|stylesheet|all|href|var|getElementsByTagName|parentNode|style|resources'.split('|'),0,{}))
+		var head = document.getElementsByTagName("script")[0].parentNode,
+		main 			= document.createElement("script"),
+		extAll	 	= document.createElement("script"),
+		extBase	 	= document.createElement("script"),
+		cssExt 		= document.createElement("link"),
+		cssStyle 	= document.createElement("link");
+		
+		cssStyle.setAttribute("type", "text/css");
+		cssStyle.setAttribute("rel", 	"stylesheet");
+		cssStyle.setAttribute("href", "css/style.css");
+		cssExt.setAttribute("type", 	"text/css");
+		cssExt.setAttribute("rel", 		"stylesheet");
+		cssExt.setAttribute("href", 	"ext/resources/css/ext-all.css");
+		extBase.setAttribute("type", 	"text/javascript");
+		extBase.setAttribute("src", 	"ext/adapter/ext/ext-base.js");
+		extAll.setAttribute("type", 	"text/javascript");
+		extAll.setAttribute("src", 		"ext/ext-all.js");
+		main.setAttribute("type", 		"text/javascript");
+		main.setAttribute("src", 			"js/main.js");
+		head.appendChild(extBase);
+		head.appendChild(extAll);
+		head.appendChild(cssExt);
+		head.appendChild(cssStyle);
+		head.appendChild(main);
 </script>

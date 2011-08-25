@@ -1,7 +1,12 @@
+/**
+* @author robThot, hirekmedia
+*/
 var $$ = {
+
   orders    : ["groups","demog","trillili","trallala"],
   order     : "",
   frontPage : "groups",
+  
   init      : function(){
     if($$.ie)
       IEHH.setup();
@@ -11,10 +16,30 @@ var $$ = {
       "interval"  : 100
     });
   },
+  
   getOrder  : function(){
-    /*var matches;
-    if(matches = window.location.href.match(/(.*)(#)(.*)/))*/
-    console.log(window.location.hash);
+    var matches = window.location.href.match(/(.*)(#)(.*)/);
+    
+    if(matches != null){
+      if($$.orders.indexOf(matches[3]) == -1)
+        window.location.href = [matches[1],"#",$$.frontPage].join("");
+      else {
+        $$.order = matches[3];
+        $$.doJob();
+      }
+    } else {
+      window.location.href = [window.location.href,"#",$$.frontPage].join("");
+    }
+  },
+  
+  doJob     : function(){
+    if($$.order != "")
+      switch($$.order){
+        case "groups": //alert("groups");
+        break;
+        case "demog": //alert("demog");
+        break;
+      }
   }
 }
 /*
@@ -36,9 +61,9 @@ var IEHH = new function () {
         thisBody = document.getElementsByTagName("body")[0];
 
     thisBody.appendChild(thisIframe);
-    T.add({
-      "function": IEHH.checkIframeContent,
-      "interval": 50
+    t.add({
+      "method"    : IEHH.checkIframeContent,
+      "interval"  : 50
     })
   }
   function _changeContent(urlPart) {
@@ -85,12 +110,12 @@ var t = new function () {
     }
     function _listener() {
       t.CASH == 9999 ? t.CASH = 0 : t.CASH++;
-      var thisRemainder, thisFunction, thisObject, objLength = t.DEPO.length;
+      var thisRemainder, method, thisObject, objLength = t.DEPO.length;
       for (var i = 0; i < objLength; i++) {
         thisRemainder = t.CASH % t.DEPO[i]["interval"];
         if (thisRemainder == 0) {
-          thisFunction = t.DEPO[i]["method"];
-          thisFunction()
+          method = t.DEPO[i]["method"];
+          method()
         }
       }
     }
@@ -116,10 +141,10 @@ var t = new function () {
         }
       }
     }
-    function _del(thisFunction) {
+    function _del(method) {
       var objLength = this.DEPO.length - 1;
       for (var i = objLength; i >= 0; i--) {
-        if (this.DEPO[i]["function"] == thisFunction) {
+        if (this.DEPO[i]["method"] == method) {
             this.DEPO.splice(i, 1)
         }
       }
@@ -137,7 +162,19 @@ var t = new function () {
 */
 
 window.onload = function(){
-  if(navigator.appVersion.match(/MSIE/))
-    $$.ie = 1;
-  $$.init();
-};
+  //fuckin loader for the big fuckin extJs TODO baszott ugly
+  var extLoader = function(){
+    if(typeof Ext != "undefined"){
+      t.del(extLoader);
+      if(navigator.appVersion.match(/MSIE/))
+        $$.ie = 1;
+      
+      $$.init();
+    }
+  }
+  
+  t.add({
+    "method"    : extLoader,
+    "interval"  : 10
+  });
+}
