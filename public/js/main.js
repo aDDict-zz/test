@@ -24,8 +24,14 @@ var $$ = {
       if($$.orders.indexOf(matches[3]) == -1)
         window.location.href = [matches[1],"#",$$.frontPage].join("");
       else {
-        $$.order = matches[3];
-        $$.doJob();
+        if($$.order != matches[3]){
+          
+          if($$.ie)
+            IEHH.changeContent(["#",matches[3]].join(""));
+          
+          $$.order = matches[3];
+          $$.doJob();
+        }
       }
     } else {
       window.location.href = [window.location.href,"#",$$.frontPage].join("");
@@ -162,7 +168,7 @@ var t = new function () {
 */
 
 window.onload = function(){
-  //fuckin loader for the big fuckin extJs TODO baszott ugly
+  //fuckin loader for the extJs. TODO baszott ugly
   var extLoader = function(){
     if(typeof Ext != "undefined"){
       t.del(extLoader);
