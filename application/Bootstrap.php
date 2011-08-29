@@ -1,6 +1,7 @@
 <?php
 
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
+  
 	protected function _initRoutes() {  
     $ctrl = Zend_Controller_Front::getInstance();
     $router = $ctrl->getRouter();
