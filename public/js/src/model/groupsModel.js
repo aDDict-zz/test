@@ -2,17 +2,20 @@ Ext.define('GroupsModel', {
 
 	extend: 'Model',
 	
-	data : {},
-	
-	router : {},
-	
-	mapper: function(data){ alert("asdsad");
-		//this.data
+	mapper: function(data){
+		var self 	= this;
+		self.data 	= Ext.JSON.decode(data.responseText);
+		self.router.ajaxCallback(self);
 	},
 	
-	getAjax: function(obj){
-		this.router = obj;
-		AJAX.post("groups", {'elso':'ELSO','masodik':{'valami':[0,1,2,3],'masvalami':'SEMMISEM'}},this.mapper);
+	getAjaxData: function(){
+		var self = this;
+		AJAX.post(
+			"group/",
+			{'elso':'ELSO','masodik':{'valami':[0,1,2,3],'masvalami':'SEMMISEM'}},
+			this.mapper,
+			self
+		);
 	}
 	
 });

@@ -1,68 +1,100 @@
 /*!
  * Maxima Javascript Engine Built on ExtJs 4.0, @author robThot, hirekmedia
  */
+/**
+ * simple wrapper for ext ajax 
+ */
 Ext.define('AJAX', {
 	statics: {
-		ajax: function(url, method, params, callback){
+		ajax: function(url, method, params, callback, scope){
 			Ext.Ajax.request({
 			    url		: url,
+			    scope 	: (typeof scope != "undefined" ? scope : null),
 			    method	: method,
 			    params	: params,
 			    success	: callback
 			});
 		},
-		get : function(url, params, callback){
-			this.ajax(url, "get", params, callback);
+		get : function(url, params, callback, scope){
+			this.ajax(url, "get", params, callback, scope);
 		},
-		post: function(url, params, callback){
-			this.ajax(url, "post", params, callback);
+		post: function(url, params, callback, scope){
+			this.ajax(url, "post", params, callback, scope);
 		}
 	},
 	constructor: function() {}
 });
-
+/**
+ * controller
+ */
 Ext.define('Controller', {
-	constructor: function() {
+	model		: {},
+	view		: {},
+	constructor	: function() {
 		this.getData();
 	}
 });
-
+/**
+ * model
+ */
 Ext.define('Model', {
-	constructor: function(reference) {
-		this.getAjax(reference);
+	
+	data 		: {},
+	router 		: {},
+	
+	constructor	: function(reference) {
+		this.router = reference;
+		this.getAjaxData();
 	}
 });
-
+/**
+ * view
+ */
 Ext.define('View', {
-	constructor: function() {}
+	render 		: function() {},
+	constructor	: function() {}
 });
-Ext.define('GroupsController', {
+Ext.define('GroupController', {
 
 	extend: 'Controller',
 	
+	//this time the relevant model is done with his job, all response data are stored in scope.data
+	ajaxCallback: function(scope){
+		var groupView = new GroupsView();
+		groupView.render(scope.data);
+	},
+	
 	getData : function(){
-		var groups = new GroupsModel(this);
+		var self = this;
+		new GroupsModel(self);
 	}
 	
 });Ext.define('GroupsView', {
 
-	extend: 'View'
+	extend: 'View',
+	
+	render: function(data){ console.log("sadsad");
+		console.log(data);
+	}
 	
 });Ext.define('GroupsModel', {
 
 	extend: 'Model',
 	
-	data : {},
-	
-	router : {},
-	
-	mapper: function(data){ alert("asdsad");
-		//this.data
+	mapper: function(data){
+		var self 	= this;
+		self.data 	= Ext.JSON.decode(data.responseText);
+		self.router.ajaxCallback(self);
 	},
 	
-	getAjax: function(obj){
-		this.router = obj;
-		AJAX.get("groups", {'elso':'ELSO','masodik':{'valami':[0,1,2,3],'masvalami':'SEMMISEM'}},this.mapper);
+	getAjaxData: function(){
+		var self = this;
+		AJAX.post(
+			"group/",
+			{'elso':'ELSO','masodik':{'valami':[0,1,2,3],'masvalami':'SEMMISEM'}},
+			this.mapper,
+			self
+		);
 	}
 	
 });// iframe hack for the ie history featureless
@@ -121,12 +153,12 @@ Ext.define('IEHH', {
 Ext.define('$$', {
   
   statics: {
-  
-    orders    : ["groups","demog","trillili","trallala"],
-    order     : "",
-    frontPage : "groups",
+  	
+  	orders    	: ["groups","demog","trillili","trallala"],
+    order     	: "",
+    frontPage 	: "groups",
     
-    init      : function(){
+    init      	: function(){
       if($$.ie)
         IEHH.setup();
       
@@ -136,7 +168,7 @@ Ext.define('$$', {
       });
     },
   
-    getOrder  : function(){
+    getOrder  	: function(){
       var matches = window.location.href.match(/(.*)(#)(.*)/);
       if(matches != null){
         if(Ext.Array.indexOf($$.orders, matches[3]) == -1){
@@ -155,14 +187,14 @@ Ext.define('$$', {
       }
     },
   
-    doJob     : function(){
+    doJob     	: function(){
       if($$.order != "")
         switch($$.order){
           case "groups":
-          	var groups = new GroupsController();
+      	 	new GroupController();
           break;
           case "demog":
-          	var groups = new DemogController();
+          	new DemogController();
           break;
         }
     },

@@ -54,12 +54,12 @@ Ext.define('IEHH', {
 Ext.define('$$', {
   
   statics: {
-  
-    orders    : ["groups","demog","trillili","trallala"],
-    order     : "",
-    frontPage : "groups",
+  	
+  	orders    	: ["groups","demog","trillili","trallala"],
+    order     	: "",
+    frontPage 	: "groups",
     
-    init      : function(){
+    init      	: function(){
       if($$.ie)
         IEHH.setup();
       
@@ -69,7 +69,7 @@ Ext.define('$$', {
       });
     },
   
-    getOrder  : function(){
+    getOrder  	: function(){
       var matches = window.location.href.match(/(.*)(#)(.*)/);
       if(matches != null){
         if(Ext.Array.indexOf($$.orders, matches[3]) == -1){
@@ -88,14 +88,14 @@ Ext.define('$$', {
       }
     },
   
-    doJob     : function(){
+    doJob     	: function(){
       if($$.order != "")
         switch($$.order){
           case "groups":
-          	var groups = new GroupsController();
+      	 	new GroupController();
           break;
           case "demog":
-          	var groups = new DemogController();
+          	new DemogController();
           break;
         }
     },

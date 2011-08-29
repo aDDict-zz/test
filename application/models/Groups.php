@@ -1,8 +1,8 @@
 <?php
 
-class Application_Model_AbstractGroups extends Zend_Db_Table_Abstract {
+class Application_Model_Groups extends Zend_Db_Table_Abstract {
   
-  protected $_name = 'abstractGroups';
+  protected $_name = 'groups';
 
   public function getGroup($id){
     $id = (int)$id;
