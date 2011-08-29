@@ -1,11 +1,4 @@
-/**
-* @author robThot, hirekmedia
-*/
-
-
-/*
-  iframe hack for ie history featureless
-*/
+// iframe hack for the ie history featureless
 Ext.define('IEHH', {
 
 	statics: {
@@ -19,7 +12,7 @@ Ext.define('IEHH', {
 		setup: function(){
   
 			var thisIframe  = document.createElement('<iframe id="thisIframe" style="display:none;" src="about:blank" />'),
-				  thisBody    = document.getElementsByTagName("body")[0];
+				  thisBody  = document.getElementsByTagName("body")[0];
         
 			document.appendChild(thisIframe);
     
@@ -66,7 +59,7 @@ Ext.define('$$', {
     order     : "",
     frontPage : "groups",
     
-    init      : function(){ console.log(Ext.Array);
+    init      : function(){
       if($$.ie)
         IEHH.setup();
       
@@ -76,10 +69,10 @@ Ext.define('$$', {
       });
     },
   
-    getOrder  : function(){ console.log( Ext.Array.indexOf($$.orders, "trillili") );
+    getOrder  : function(){
       var matches = window.location.href.match(/(.*)(#)(.*)/);
       if(matches != null){
-        if(Ext.Array.indexOf($$.orders, matches[3]) == -1){ alert("frontPage");
+        if(Ext.Array.indexOf($$.orders, matches[3]) == -1){
           window.location.href = [matches[1],"#",$$.frontPage].join("");
         } else {
           if($$.order != matches[3]){
@@ -98,9 +91,11 @@ Ext.define('$$', {
     doJob     : function(){
       if($$.order != "")
         switch($$.order){
-          case "groups": alert("groups");
+          case "groups":
+          	var groups = new GroupsController();
           break;
-          case "demog": alert("demog");
+          case "demog":
+          	var groups = new DemogController();
           break;
         }
     },

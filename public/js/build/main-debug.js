@@ -1,62 +1,77 @@
 /*!
- * Maxima Javascript Engine Built on ExtJs 4.0
+ * Maxima Javascript Engine Built on ExtJs 4.0, @author robThot, hirekmedia
  */
-alert("CLASSES");/**
-* @author robThot, hirekmedia
-*/
+Ext.define('AJAX', {
+	statics: {
+		ajax: function(url, method, params, callback){
+			Ext.Ajax.request({
+			    url		: url,
+			    method	: method,
+			    params	: params,
+			    success	: callback
+			});
+		},
+		get : function(url, params, callback){
+			this.ajax(url, "get", params, callback);
+		},
+		post: function(url, params, callback){
+			this.ajax(url, "post", params, callback);
+		}
+	},
+	constructor: function() {}
+});
 
-/*var IEHH = new function () {
-  this.constructor        = null;
-  this.DEPO               = "";
-  this.init               = _init;
-  this.setup              = _setup;
-  this.changeContent      = _changeContent;
-  this.checkIframeContent = _checkIframeContent;
+Ext.define('Controller', {
+	constructor: function() {
+		this.getData();
+	}
+});
 
-  function _init() {
-    navigator.appName.match("Microsoft") != null ? this.setup() : "";
-  }
-  function _setup() { alert("IEHH");
-    var thisIframe = document.createElement('<iframe id="thisIframe" style="display:none;" src="about:blank" />'),
-        thisBody = document.getElementsByTagName("body")[0];
+Ext.define('Model', {
+	constructor: function(reference) {
+		this.getAjax(reference);
+	}
+});
 
-    thisBody.appendChild(thisIframe);
-    t.add({
-      "method"    : IEHH.checkIframeContent,
-      "interval"  : 50
-    })
-  }
-  function _changeContent(urlPart) {
-    var thisIframe    = document.getElementById("thisIframe"),
-        thisIframeDoc = thisIframe.contentWindow.document;
+Ext.define('View', {
+	constructor: function() {}
+});
+Ext.define('GroupsController', {
 
-    thisIframeDoc.open();
-    thisIframeDoc.write(urlPart);
-    thisIframeDoc.close();
-    IEHH.DEPO = urlPart;
-  }
-  function _checkIframeContent() {
-    var thisIframe        = document.getElementById("thisIframe"),
-        thisIframContent  = thisIframe.contentWindow.document.body.innerHTML;
+	extend: 'Controller',
+	
+	getData : function(){
+		var groups = new GroupsModel(this);
+	}
+	
+});Ext.define('GroupsView', {
 
-    if (window.location.href.match("#") && thisIframContent != "") {
-      var thisArr = window.location.href.split("#"),
-        thisUrlPart = ["#",thisArr[1]].join("");
-      if (thisUrlPart != thisIframContent) {
-        window.location.href = [thisArr[0],thisIframContent].join("");
-      }
-    }
-  }
-};*/
+	extend: 'View'
+	
+});Ext.define('GroupsModel', {
 
-/*
-  iframe hack for ie history featureless
-*/
+	extend: 'Model',
+	
+	data : {},
+	
+	router : {},
+	
+	mapper: function(data){ alert("asdsad");
+		//this.data
+	},
+	
+	getAjax: function(obj){
+		this.router = obj;
+		AJAX.get("groups", {'elso':'ELSO','masodik':{'valami':[0,1,2,3],'masvalami':'SEMMISEM'}},this.mapper);
+	}
+	
+});// iframe hack for the ie history featureless
 Ext.define('IEHH', {
 
 	statics: {
 
 		DEPO: "",
+		
 		init: function(){
 			navigator.appName.match("Microsoft") != null ? this.setup() : "";
 		},
@@ -64,7 +79,7 @@ Ext.define('IEHH', {
 		setup: function(){
   
 			var thisIframe  = document.createElement('<iframe id="thisIframe" style="display:none;" src="about:blank" />'),
-				  thisBody    = document.getElementsByTagName("body")[0];
+				  thisBody  = document.getElementsByTagName("body")[0];
         
 			document.appendChild(thisIframe);
     
@@ -111,7 +126,7 @@ Ext.define('$$', {
     order     : "",
     frontPage : "groups",
     
-    init      : function(){ console.log(Ext.Array);
+    init      : function(){
       if($$.ie)
         IEHH.setup();
       
@@ -121,10 +136,10 @@ Ext.define('$$', {
       });
     },
   
-    getOrder  : function(){ console.log( Ext.Array.indexOf($$.orders, "trillili") );
+    getOrder  : function(){
       var matches = window.location.href.match(/(.*)(#)(.*)/);
       if(matches != null){
-        if(Ext.Array.indexOf($$.orders, matches[3]) == -1){ alert("frontPage");
+        if(Ext.Array.indexOf($$.orders, matches[3]) == -1){
           window.location.href = [matches[1],"#",$$.frontPage].join("");
         } else {
           if($$.order != matches[3]){
@@ -143,9 +158,11 @@ Ext.define('$$', {
     doJob     : function(){
       if($$.order != "")
         switch($$.order){
-          case "groups": alert("groups");
+          case "groups":
+          	var groups = new GroupsController();
           break;
-          case "demog": alert("demog");
+          case "demog":
+          	var groups = new DemogController();
           break;
         }
     },
@@ -162,64 +179,3 @@ Ext.define('$$', {
     $$.init();
   }
 );
-
-/*
-  |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\
-  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\
-  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /
-  |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/
-*/
-
-//Ext.application({
-//  name: 'HelloExt',
-//  launch: function() {
-//    
-//    //alert($$.title);
-//    
-//    $$.fokk();
-//    
-//    console.log($$.fokk);
-//    
-//    /*if(navigator.appVersion.match(/MSIE/))
-//      $$.ie = 1;
-//    
-//    $$.init();*/
-//  
-//    Ext.create('Ext.container.Viewport', {
-//        layout: 'fit',
-//        items: [
-//            {
-//                title: 'Hello Ext',
-//                html : 'Hello! Welcome to Ext JS.'
-//            }
-//        ]
-//    });
-//  }
-//});
-
-
-/*Ext.onReady = function(){ alert("sadasdsad");
-  if(navigator.appVersion.match(/MSIE/))
-    $$.ie = 1;
-  
-  $$.init();
-}*/
-
-/*window.onload = function(){
-  //fuckin loader for the extJs. TODO baszott ugly
-  var extLoader = function(){
-    if(typeof Ext != "undefined"){
-      t.del(extLoader);
-      if(navigator.appVersion.match(/MSIE/))
-        $$.ie = 1;
-      
-      $$.init();
-    }
-  }
-  
-  t.add({
-    "method"    : extLoader,
-    "interval"  : 10
-  });
-}*/
-alert("CONTROLLER");alert("VIEW");alert("MODEL");

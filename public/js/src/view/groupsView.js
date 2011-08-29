@@ -1,1 +1,5 @@
-alert("VIEW");
+Ext.define('GroupsView', {
+
+	extend: 'View'
+	
+});
