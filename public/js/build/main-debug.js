@@ -28,8 +28,10 @@ Ext.define('AJAX', {
  * controller
  */
 Ext.define('Controller', {
+	
 	model		: {},
 	view		: {},
+	
 	constructor	: function() {
 		this.getData();
 	}
@@ -51,7 +53,9 @@ Ext.define('Model', {
  * view
  */
 Ext.define('View', {
+	
 	render 		: function() {},
+	
 	constructor	: function() {}
 });
 Ext.define('GroupController', {
@@ -89,9 +93,18 @@ Ext.define('GroupController', {
 	
 	getAjaxData: function(){
 		var self = this;
+		
+		var datas = {
+			'elso' : 'ELSO',
+			'masodik' : {
+				'valami' 	: [0,1,2,3],
+				'masvalami' : 'SEMMISEM'
+			}
+		};
+		
 		AJAX.post(
 			"group/",
-			{'elso':'ELSO','masodik':{'valami':[0,1,2,3],'masvalami':'SEMMISEM'}},
+			['data=',Ext.JSON.encode(datas)].join(''),
 			this.mapper,
 			self
 		);

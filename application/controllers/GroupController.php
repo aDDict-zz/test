@@ -7,8 +7,11 @@ class GroupController extends Zend_Controller_Action {
     }
 
     public function indexAction() {
-        $params = $this->getRequest()->getParams();
-        echo  Zend_Json::encode($params);
+        //$params = $this->getRequest()->getParams();
+        $params = $this->getRequest()->getPost();
+        //echo  Zend_Json::encode($params);
+        //print_r($this->getRequest()->getPost());
+        echo $this->getRequest()->getPost("data");
         
         // disable the rendering of the view
         $this->_helper->viewRenderer->setNoRender(true);
@@ -37,8 +40,6 @@ class GroupController extends Zend_Controller_Action {
       // disable the rendering of the view
       $this->_helper->viewRenderer->setNoRender(true);
     }
-
-
 }
 
 

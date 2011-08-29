@@ -25,8 +25,10 @@ Ext.define('AJAX', {
  * controller
  */
 Ext.define('Controller', {
+	
 	model		: {},
 	view		: {},
+	
 	constructor	: function() {
 		this.getData();
 	}
@@ -48,6 +50,8 @@ Ext.define('Model', {
  * view
  */
 Ext.define('View', {
+	
 	render 		: function() {},
+	
 	constructor	: function() {}
 });

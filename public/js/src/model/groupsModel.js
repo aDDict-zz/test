@@ -10,9 +10,18 @@ Ext.define('GroupsModel', {
 	
 	getAjaxData: function(){
 		var self = this;
+		
+		var datas = {
+			'elso' : 'ELSO',
+			'masodik' : {
+				'valami' 	: [0,1,2,3],
+				'masvalami' : 'SEMMISEM'
+			}
+		};
+		
 		AJAX.post(
 			"group/",
-			{'elso':'ELSO','masodik':{'valami':[0,1,2,3],'masvalami':'SEMMISEM'}},
+			['data=',Ext.JSON.encode(datas)].join(''),
 			this.mapper,
 			self
 		);
