@@ -1,6 +1,9 @@
 <?
+#print_r($_COOKIE);
 
+#print_r($_POST);
 
+#print_r($_GET); die();
 
 include "auth.php";
 $weare=4;
@@ -455,7 +458,7 @@ include "footer.php";
 
 ######################### functions ####################################
 
-function printhead() {
+function printhead() { echo "<br /><br />sssssssssssssssss:    <br /><br />" . $hfilt_email . "<br /><br /><br /><br />";
 
     global $_MX_var,$stat_text,$rmem,$userlist_yn,$filt_demog_options,$group_id,$pagenum,$filtaff,$ug_options;
     global $_MX_var,$filt_demog,$hfilt_email,$user_status,$maxrecords,$date_type_string,$word,$unique_col,$ug_options;

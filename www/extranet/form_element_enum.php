@@ -110,7 +110,7 @@ $error=array();
 
 if ($enter == 'yes') {
     if (is_array($_POST['de'])) {
-        $res = mysql_query("select * from demog_enumvals where demog_id='$formdata[demog_id]' and deleted='no'");
+        $res = mysql_query("select * from demog_enumvals where demog_id='$formdata[demog_id]' and deleted='no'"); //die("select * from demog_enumvals where demog_id='$formdata[demog_id]' and deleted='no'");
         //print("select * from demog_enumvals where demog_id='$formdata[demog_id]' and deleted='no'");
         if (isset($_POST["default_value"]) && ereg("^[0-9]+$",$_POST["default_value"])) {
             $default_value=$_POST["default_value"];
@@ -218,7 +218,7 @@ if ($demogdata["multiselect"]=="yes") {
 }
 
 $fsel=array();
-$r2=mysql_query("select demog_enumvals_id,title,default_aff from form_element_enumvals where form_element_id='$form_element_id'");
+$r2=mysql_query("select demog_enumvals_id,title,default_aff from form_element_enumvals where form_element_id='$form_element_id'"); //die("select demog_enumvals_id,title,default_aff from form_element_enumvals where form_element_id='$form_element_id'");
 if ($r2 && mysql_num_rows($r2)) {
     while ($z=mysql_fetch_array($r2)) {
         $fsel[$z['demog_enumvals_id']] = 1;
