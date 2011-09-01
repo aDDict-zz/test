@@ -1,4 +1,4 @@
-Ext.define('GroupsModel', {
+Ext.define('LoginModel', {
 
 	extend: 'Model',
 	
@@ -6,7 +6,7 @@ Ext.define('GroupsModel', {
 		
 		var self 	= this;
 		// store the data
-		self.data 	= Ext.JSON.decode(data.responseText);
+		self.data = Ext.JSON.decode(data.responseText);
 		// call the callback method of the relevant controller
 		self.router.ajaxCallback(self);
 	},
@@ -15,17 +15,9 @@ Ext.define('GroupsModel', {
 		
 		var self = this;
 		
-		var datas = {
-			'elso' : 'ELSO',
-			'masodik' : {
-				'valami' 	: [0,1,2,3],
-				'masvalami' : 'SEMMISEM'
-			}
-		};
-		
-		AJAX.post(
-			"group/",
-			['data=',Ext.JSON.encode(datas)].join(''),
+		AJAX.get(
+			"login/",
+			"",
 			this.mapper,
 			self
 		);

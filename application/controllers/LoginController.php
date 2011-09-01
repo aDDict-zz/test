@@ -3,7 +3,10 @@
 class LoginController extends Zend_Controller_Action {
   
   public function indexAction() {
-    $this->view->form = $this->getForm();
+    $form = new FormBuilder("login");
+    $hash = $form->getHash();
+    
+    die( print_r($hash) );
   }
 
   public function getForm() {
@@ -14,11 +17,7 @@ class LoginController extends Zend_Controller_Action {
   }
 
   public function getAuthAdapter(array $params) {
-    // Leaving this to the developer...
-    // Makes the assumption that the constructor takes an array of
-    // parameters which it then uses as credentials to verify identity.
-    // Our form, of course, will just pass the parameters 'username'
-    // and 'password'.
+    return new Adapter($params);
   }
   
   public function preDispatch() {
@@ -60,8 +59,12 @@ class LoginController extends Zend_Controller_Action {
     if (!$result->isValid()) {
         // Invalid credentials
         $form->setDescription('Invalid credentials provided');
+        
+        //return $this->_helper->redirector('actionName', 'controllerName');
+        //return $this->_helper->redirector('index', 'login');
+        
         $this->view->form = $form;
-        return $this->render('index'); // re-render the login form
+        return $this->render('index');
     }
 
     // We're authenticated! Redirect to the home page

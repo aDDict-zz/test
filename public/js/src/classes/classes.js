@@ -1,8 +1,17 @@
 /**
- * simple wrapper for ext ajax 
+ * static class AJAX
  */
 Ext.define('AJAX', {
 	statics: {
+		/**
+		 * @method ajax
+		 * simple wrapper for the Ext.Ajax.request
+		 * @param {string} 			url
+		 * @param {string} 			method
+		 * @param {string} (JSON) 	params
+		 * @param {reference} 		callback
+		 * @param {reference} 		scope
+		 */
 		ajax: function(url, method, params, callback, scope){
 			Ext.Ajax.request({
 			    url		: url,
@@ -12,9 +21,25 @@ Ext.define('AJAX', {
 			    success	: callback
 			});
 		},
+		/**
+		 * @method get
+		 * ajax get method
+		 * @param {string} 			url
+		 * @param {JSON}			params
+		 * @param {reference} 		callback
+		 * @param {reference} 		scope
+		 */
 		get : function(url, params, callback, scope){
 			this.ajax(url, "get", params, callback, scope);
 		},
+		/**
+		 * @method post
+		 * ajax post method
+		 * @param {string} 			url
+		 * @param {JSON}		 	params
+		 * @param {reference} 		callback
+		 * @param {reference} 		scope
+		 */
 		post: function(url, params, callback, scope){
 			this.ajax(url, "post", params, callback, scope);
 		}
@@ -22,7 +47,7 @@ Ext.define('AJAX', {
 	constructor: function() {}
 });
 /**
- * controller
+ * class Controller
  */
 Ext.define('Controller', {
 	
@@ -34,7 +59,7 @@ Ext.define('Controller', {
 	}
 });
 /**
- * model
+ * class Model
  */
 Ext.define('Model', {
 	
@@ -42,16 +67,16 @@ Ext.define('Model', {
 	router 		: {},
 	
 	constructor	: function(reference) {
+		// storing the relevant controller instance reference
 		this.router = reference;
 		this.getAjaxData();
 	}
 });
 /**
- * view
+ * class View
  */
 Ext.define('View', {
 	
 	render 		: function() {},
-	
 	constructor	: function() {}
 });

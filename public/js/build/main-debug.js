@@ -2,10 +2,19 @@
  * Maxima Javascript Engine Built on ExtJs 4.0, @author robThot, hirekmedia
  */
 /**
- * simple wrapper for ext ajax 
+ * static class AJAX
  */
 Ext.define('AJAX', {
 	statics: {
+		/**
+		 * @method ajax
+		 * simple wrapper for the Ext.Ajax.request
+		 * @param {string} 			url
+		 * @param {string} 			method
+		 * @param {string} (JSON) 	params
+		 * @param {reference} 		callback
+		 * @param {reference} 		scope
+		 */
 		ajax: function(url, method, params, callback, scope){
 			Ext.Ajax.request({
 			    url		: url,
@@ -15,9 +24,25 @@ Ext.define('AJAX', {
 			    success	: callback
 			});
 		},
+		/**
+		 * @method get
+		 * ajax get method
+		 * @param {string} 			url
+		 * @param {JSON}			params
+		 * @param {reference} 		callback
+		 * @param {reference} 		scope
+		 */
 		get : function(url, params, callback, scope){
 			this.ajax(url, "get", params, callback, scope);
 		},
+		/**
+		 * @method post
+		 * ajax post method
+		 * @param {string} 			url
+		 * @param {JSON}		 	params
+		 * @param {reference} 		callback
+		 * @param {reference} 		scope
+		 */
 		post: function(url, params, callback, scope){
 			this.ajax(url, "post", params, callback, scope);
 		}
@@ -25,7 +50,7 @@ Ext.define('AJAX', {
 	constructor: function() {}
 });
 /**
- * controller
+ * class Controller
  */
 Ext.define('Controller', {
 	
@@ -37,7 +62,7 @@ Ext.define('Controller', {
 	}
 });
 /**
- * model
+ * class Model
  */
 Ext.define('Model', {
 	
@@ -45,17 +70,17 @@ Ext.define('Model', {
 	router 		: {},
 	
 	constructor	: function(reference) {
+		// storing the relevant controller instance reference
 		this.router = reference;
 		this.getAjaxData();
 	}
 });
 /**
- * view
+ * class View
  */
 Ext.define('View', {
 	
 	render 		: function() {},
-	
 	constructor	: function() {}
 });
 Ext.define('GroupController', {
@@ -73,6 +98,20 @@ Ext.define('GroupController', {
 		new GroupsModel(self);
 	}
 	
+});Ext.define('LoginController', {
+
+	extend: 'Controller',
+	
+	ajaxCallback: function(scope){ alert("sadasds");
+		var loginView = new GroupsView();
+		loginView.render(scope.data);
+	},
+	
+	getData : function(){
+		var self = this;
+		new LoginModel(self);
+	}
+	
 });Ext.define('GroupsView', {
 
 	extend: 'View',
@@ -86,12 +125,16 @@ Ext.define('GroupController', {
 	extend: 'Model',
 	
 	mapper: function(data){
+		
 		var self 	= this;
+		// store the data
 		self.data 	= Ext.JSON.decode(data.responseText);
+		// call the callback method of the relevant controller
 		self.router.ajaxCallback(self);
 	},
 	
 	getAjaxData: function(){
+		
 		var self = this;
 		
 		var datas = {
@@ -105,6 +148,31 @@ Ext.define('GroupController', {
 		AJAX.post(
 			"group/",
 			['data=',Ext.JSON.encode(datas)].join(''),
+			this.mapper,
+			self
+		);
+	}
+	
+});Ext.define('LoginModel', {
+
+	extend: 'Model',
+	
+	mapper: function(data){
+		
+		var self 	= this;
+		// store the data
+		self.data = Ext.JSON.decode(data.responseText);
+		// call the callback method of the relevant controller
+		self.router.ajaxCallback(self);
+	},
+	
+	getAjaxData: function(){
+		
+		var self = this;
+		
+		AJAX.get(
+			"login/",
+			"",
 			this.mapper,
 			self
 		);
@@ -167,7 +235,7 @@ Ext.define('$$', {
   
   statics: {
   	
-  	orders    	: ["groups","demog","trillili","trallala"],
+  	orders    	: ["login","logout","groups","demog"],
     order     	: "",
     frontPage 	: "groups",
     
@@ -199,10 +267,14 @@ Ext.define('$$', {
         window.location.href = [window.location.href,"#",$$.frontPage].join("");
       }
     },
-  
+  	
+  	// set up the routing order
     doJob     	: function(){
       if($$.order != "")
         switch($$.order){
+		  case "login":
+      	 	new LoginController();
+          break;
           case "groups":
       	 	new GroupController();
           break;

@@ -1,6 +1,7 @@
 <?php
 
 class LoginForm extends Zend_Form {
+  
   public function init() {
     $username = $this->addElement('text', 'username', array(
       'filters'    => array('StringTrim', 'StringToLower'),

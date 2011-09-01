@@ -55,7 +55,7 @@ Ext.define('$$', {
   
   statics: {
   	
-  	orders    	: ["groups","demog","trillili","trallala"],
+  	orders    	: ["login","logout","groups","demog"],
     order     	: "",
     frontPage 	: "groups",
     
@@ -87,10 +87,14 @@ Ext.define('$$', {
         window.location.href = [window.location.href,"#",$$.frontPage].join("");
       }
     },
-  
+  	
+  	// set up the routing order
     doJob     	: function(){
       if($$.order != "")
         switch($$.order){
+		  case "login":
+      	 	new LoginController();
+          break;
           case "groups":
       	 	new GroupController();
           break;
