@@ -4,13 +4,13 @@ Ext.define('GroupController', {
 	
 	//this time the relevant model is done with his job, all response data are stored in scope.data
 	ajaxCallback: function(scope){
-		var groupView = new GroupsView();
+		var groupView = new GroupView();
 		groupView.render(scope.data);
 	},
 	
 	getData : function(){
 		var self = this;
-		new GroupsModel(self);
+		new GroupModel(self);
 	}
 	
 });

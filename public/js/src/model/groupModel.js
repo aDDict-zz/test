@@ -1,4 +1,4 @@
-Ext.define('GroupsModel', {
+Ext.define('GroupModel', {
 
 	extend: 'Model',
 	
