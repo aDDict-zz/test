@@ -2,19 +2,25 @@
 
 class FormBuilder {
  
- public $hash = array();
+ public $cfg = array();
+ protected $form;
  
   public function __construct($form) {
+    $this->form = $form;
     $form .= "Form";
     if(method_exists($this, $form)) {
-      $this->hash = $this->$form();
+      $this->cfg = $this->$form();
     } else {
       //error
     }
   }
   
-  public function getHash(){
-    return $this->hash;
+  public function getCfg(){
+    return $this->cfg;
+  }
+  
+  public function getJSONCfg(){
+    return Zend_Json::encode($this->cfg); 
   }
   
   protected function loginForm(){
@@ -27,6 +33,13 @@ class FormBuilder {
             "name" => "username",
             "value" => "",
             "label" => "user",
+           ),
+           array(
+            "tag" => "input",
+            "type" => "hidden",
+            "name" => "{$this->form}token",
+            "value" => $this->getHash(),
+            "label" => "",
            ),
            array(
             "tag" => "input",
@@ -44,6 +57,17 @@ class FormBuilder {
            )
       )
     );
+  }
+  
+  protected function setHash(){
+    $_SESSION["{$this->form}token"] = md5 ($this->form . rand(time(),true));
+  }
+  
+  protected function getHash(){
+    if(!isset($_SESSION["{$this->form}token"]))
+      $this->setHash();
+    
+    return $_SESSION["{$this->form}token"];
   }
   
 }

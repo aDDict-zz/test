@@ -2,7 +2,7 @@ Ext.define('LoginController', {
 
 	extend: 'Controller',
 	
-	ajaxCallback: function(scope){ alert("sadasds");
+	ajaxCallback: function(scope){
 		var loginView = new LoginView();
 		loginView.render(scope.data);
 	},

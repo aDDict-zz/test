@@ -4,10 +4,9 @@ class LoginController extends Zend_Controller_Action {
   
   public function indexAction() {
     $form = new FormBuilder("login");
-    $hash = $form->getHash();
-    die("ddsf");
-    die( new Zend_Form_Element_Hash('no_csrf_foo') );
-    die( print_r($hash) );
+    echo  $form->getJSONCfg();
+    
+    $this->_helper->viewRenderer->setNoRender(true);
   }
 
   public function getForm() {
