@@ -1,0 +1,72 @@
+
+/**
+ * dom manipulation, events, etc
+ */
+var $$ = {
+  
+  cache : {},
+
+  createEl: function(cfg,thisParent) {
+
+    var parent = thisParent || document.body,
+        thisEl,
+        thisEl = document.createElement(cfg.tag);
+
+    for(var i in cfg) {
+      switch(i) {
+        case "id":
+          thisEl.setAttribute("id",cfg[i]);
+        break;
+        case "cls":
+          if(o.ie != undefined)
+            thisEl.setAttribute("className",cfg[i]);
+          else
+            thisEl.setAttribute("class",cfg[i]);
+        break;
+        case "style":
+          if(o.ie != undefined)
+            thisEl.style.setAttribute("cssText",cfg[i]);
+          else
+            thisEl.setAttribute("style",cfg[i]);
+        break;
+        case "arr":
+        break;
+        case "html":
+        break;
+        case "command":
+        break;
+        case "tag":
+        break;
+        default: console.log(cfg.id, cfg.tag, i);
+          thisEl.setAttribute(i,cfg[i]);
+        break;
+      }
+    }
+
+    this.cache[cfg.id] = thisEl;
+
+    parent.appendChild(thisEl);
+
+    if(cfg.arr) {
+      for(var i in cfg.arr) {
+        this.createEl(cfg.arr[i],thisEl);
+      }
+    }
+
+    if(cfg.html) {
+      thisEl.innerHTML = cfg.html;
+    }
+    
+    /** TODO its ugly */
+    if(cfg.command)
+      this.events.add(cfg.command[0], cfg.command[1], this.cache[cfg.id]);
+
+    return thisEl;
+  }
+
+};
+var canvas  = {};
+var snake   = {};
+
+window.onload = $$.init;
+
