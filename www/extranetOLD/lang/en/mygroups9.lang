@@ -1,0 +1,22 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["title_error"]="Invalid name for group of members, it may contain only alphanumeric chars and must begin with a letter";
+$word["ug_allmembers"]="All members of the group";
+$word["not_specified"]="- select one -";
+$word["ug_"]="Groups of members";
+$word["ug_delete"]="Delete group of members";
+$word["ug_no_ug"]="No groups of members yet";
+$word["ug_ug_members"]="members of 'group of members'";
+$word["ug_newgroup"]="New group of members";
+$word["email"]="Email address";
+$word["no"]="No.";
+$word["ug_delfrom_ug"]="Delete members";
+$word["ug_addto"]="Add";
+$word["ug_copyto"]="Copy to";
+$word["select_all"]="Select all";
+$word["select_none"]="Select none";
+$word["ug_no_members"]="This group of members is empty";
+$word["member_page"]="members / page";
+$word["email_asc"]="email ascending";
+$word["email_desc"]="email descending";
+?>

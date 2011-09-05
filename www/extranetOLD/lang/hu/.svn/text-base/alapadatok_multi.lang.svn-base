@@ -1,0 +1,7 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["msettings"]="Alapadatok";
+$word["st_index_grouping"]="Megjelenik a 'lista választás' oldalon";
+$word["st_subscribe_id"]="Subscribe ID";
+$word["st_check_subscribe_id"]="Ellenőrzés feliratkozáskor";
+?>

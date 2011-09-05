@@ -1,0 +1,14 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["success1"]="leiratasa a";
+$word["success3"]="törlése a";
+$word["success2"]="csoportból sikeres volt";
+$word["select1"]="Jelölje ki mely csoportokból szeretné kiiratni a";
+$word["select2"]="user";
+$word["none"]="Egyik csoport sem";
+$word["all"]="Minden csoport";
+$word["find_user"]="Tag kereső a csoportokban";
+$word["email"]="Email";
+$word["member_of"]="Tagja a következő csoportoknak";
+$word["go"]="Mehet";
+?>

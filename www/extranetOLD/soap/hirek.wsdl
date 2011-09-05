@@ -1,0 +1,256 @@
+<?xml version="1.0"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.maxima.hu/soap/Hirek.php" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="WS_SB_Hirek" targetNamespace="http://www.maxima.hu/soap/Hirek.php">
+<types>
+<xsd:schema targetNamespace="http://www.maxima.hu/soap/Hirek.php"/>
+</types>
+<portType name="WS_SB_HirekPort">
+<operation name="Synchronize">
+<documentation>Synchronizes user data - tries to update, if the user does not exist then subscribes and validates</documentation>
+<input message="tns:SynchronizeIn"/>
+<output message="tns:SynchronizeOut"/>
+</operation>
+<operation name="Subscribe">
+<documentation>Subscribes new user</documentation>
+<input message="tns:SubscribeIn"/>
+<output message="tns:SubscribeOut"/>
+</operation>
+<operation name="Validate">
+<documentation>Validates user</documentation>
+<input message="tns:ValidateIn"/>
+<output message="tns:ValidateOut"/>
+</operation>
+<operation name="UpdateUserData">
+<documentation>Updates $username's user data - if a parameter is empty it's not updated</documentation>
+<input message="tns:UpdateUserDataIn"/>
+<output message="tns:UpdateUserDataOut"/>
+</operation>
+<operation name="ChangeUserName">
+<documentation>Changes username</documentation>
+<input message="tns:ChangeUserNameIn"/>
+<output message="tns:ChangeUserNameOut"/>
+</operation>
+<operation name="GetUserData">
+<documentation>Gets user data</documentation>
+<input message="tns:GetUserDataIn"/>
+<output message="tns:GetUserDataOut"/>
+</operation>
+<operation name="GetUserDataByEmail">
+<documentation>Gets user data by</documentation>
+<input message="tns:GetUserDataByEmailIn"/>
+<output message="tns:GetUserDataByEmailOut"/>
+</operation>
+<operation name="GetUserDataByMobile">
+<documentation>Gets user data by mobile number</documentation>
+<input message="tns:GetUserDataByMobileIn"/>
+<output message="tns:GetUserDataByMobileOut"/>
+</operation>
+<operation name="GetPaymentData">
+<documentation>Gets payment data</documentation>
+<input message="tns:GetPaymentDataIn"/>
+<output message="tns:GetPaymentDataOut"/>
+</operation>
+<operation name="Payment">
+<documentation>Called upon a successful payment</documentation>
+<input message="tns:PaymentIn"/>
+<output message="tns:PaymentOut"/>
+</operation>
+<operation name="ValidatePayment">
+<documentation>Validates payment</documentation>
+<input message="tns:ValidatePaymentIn"/>
+<output message="tns:ValidatePaymentOut"/>
+</operation>
+</portType>
+<binding name="WS_SB_HirekBinding" type="tns:WS_SB_HirekPort">
+<soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+<operation name="Synchronize">
+<soap:operation soapAction="http://www.maxima.hu/soap/Hirek.php#Synchronize"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</output>
+</operation>
+<operation name="Subscribe">
+<soap:operation soapAction="http://www.maxima.hu/soap/Hirek.php#Subscribe"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</output>
+</operation>
+<operation name="Validate">
+<soap:operation soapAction="http://www.maxima.hu/soap/Hirek.php#Validate"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</output>
+</operation>
+<operation name="UpdateUserData">
+<soap:operation soapAction="http://www.maxima.hu/soap/Hirek.php#UpdateUserData"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</output>
+</operation>
+<operation name="ChangeUserName">
+<soap:operation soapAction="http://www.maxima.hu/soap/Hirek.php#ChangeUserName"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</output>
+</operation>
+<operation name="GetUserData">
+<soap:operation soapAction="http://www.maxima.hu/soap/Hirek.php#GetUserData"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</output>
+</operation>
+<operation name="GetUserDataByEmail">
+<soap:operation soapAction="http://www.maxima.hu/soap/Hirek.php#GetUserDataByEmail"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</output>
+</operation>
+<operation name="GetUserDataByMobile">
+<soap:operation soapAction="http://www.maxima.hu/soap/Hirek.php#GetUserDataByMobile"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</output>
+</operation>
+<operation name="GetPaymentData">
+<soap:operation soapAction="http://www.maxima.hu/soap/Hirek.php#GetPaymentData"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</output>
+</operation>
+<operation name="Payment">
+<soap:operation soapAction="http://www.maxima.hu/soap/Hirek.php#Payment"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</output>
+</operation>
+<operation name="ValidatePayment">
+<soap:operation soapAction="http://www.maxima.hu/soap/Hirek.php#ValidatePayment"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Hirek.php"/>
+</output>
+</operation>
+</binding>
+<service name="WS_SB_HirekService">
+<port name="WS_SB_HirekPort" binding="tns:WS_SB_HirekBinding">
+<soap:address location="http://www.maxima.hu/soap/Hirek.php"/>
+</port>
+</service>
+<message name="SynchronizeIn">
+<part name="client_id" type="xsd:string"/>
+<part name="userdata" type="xsd:anyType"/>
+</message>
+<message name="SynchronizeOut">
+<part name="return" type="xsd:string"/>
+</message>
+<message name="SubscribeIn">
+<part name="client_id" type="xsd:string"/>
+<part name="userdata" type="xsd:anyType"/>
+</message>
+<message name="SubscribeOut">
+<part name="return" type="xsd:string"/>
+</message>
+<message name="ValidateIn">
+<part name="client_id" type="xsd:string"/>
+<part name="validator_code" type="xsd:string"/>
+</message>
+<message name="ValidateOut">
+<part name="return" type="xsd:string"/>
+</message>
+<message name="UpdateUserDataIn">
+<part name="client_id" type="xsd:string"/>
+<part name="userdata" type="xsd:anyType"/>
+</message>
+<message name="UpdateUserDataOut">
+<part name="return" type="xsd:int"/>
+</message>
+<message name="ChangeUserNameIn">
+<part name="client_id" type="xsd:string"/>
+<part name="username" type="xsd:string"/>
+<part name="new_username" type="xsd:string"/>
+</message>
+<message name="ChangeUserNameOut">
+<part name="return" type="xsd:int"/>
+</message>
+<message name="GetUserDataIn">
+<part name="client_id" type="xsd:string"/>
+<part name="username" type="xsd:string"/>
+</message>
+<message name="GetUserDataOut">
+<part name="return" type="xsd:anyType"/>
+</message>
+<message name="GetUserDataByEmailIn">
+<part name="client_id" type="xsd:string"/>
+<part name="email" type="xsd:string"/>
+</message>
+<message name="GetUserDataByEmailOut">
+<part name="return" type="xsd:anyType"/>
+</message>
+<message name="GetUserDataByMobileIn">
+<part name="client_id" type="xsd:string"/>
+<part name="mobile" type="xsd:string"/>
+</message>
+<message name="GetUserDataByMobileOut">
+<part name="return" type="xsd:anyType"/>
+</message>
+<message name="GetPaymentDataIn">
+<part name="client_id" type="xsd:string"/>
+<part name="username" type="xsd:string"/>
+<part name="payment_type" type="xsd:string"/>
+<part name="validated" type="xsd:string"/>
+</message>
+<message name="GetPaymentDataOut">
+<part name="return" type="xsd:anyType"/>
+</message>
+<message name="PaymentIn">
+<part name="client_id" type="xsd:string"/>
+<part name="mobile" type="xsd:string"/>
+<part name="timestamp" type="xsd:int"/>
+<part name="days" type="xsd:int"/>
+<part name="transaction_id" type="xsd:string"/>
+<part name="payment_type" type="xsd:string"/>
+<part name="payment_extra" type="xsd:string"/>
+<part name="validated" type="xsd:int"/>
+</message>
+<message name="PaymentOut">
+<part name="return" type="xsd:int"/>
+</message>
+<message name="ValidatePaymentIn">
+<part name="client_id" type="xsd:string"/>
+<part name="transaction_id" type="xsd:string"/>
+</message>
+<message name="ValidatePaymentOut">
+<part name="return" type="xsd:string"/>
+</message>
+</definitions>

@@ -1,0 +1,164 @@
+<?
+include_once "$plusdot./lang/$language/common.lang"; #plusdot: defined in grafnew/bars.php
+# statistics.lang is used by subs_stat.php,mess_stat.php,grafnew/bars.php,mygroups14.php,
+# report_mygroups14.php,clickthrough_group.php,report_clickthrough_group.php
+# clickthrough.php,report_clickthrough.php,clickthrough_url.php
+$word["aff_members"]="affiliate tagok";
+$word["aff"]="affiliate";
+
+$word['demog_info'] = "találat";
+$word['demog_matrix_neither'] = "Egyik sem";
+
+$word["open"] = "kezdet";
+$word["close"] = "vég";
+
+$word["customperiod"] = "Választott időtartam";
+$word["zoom"] = "Nagyítás";
+
+$word["datedef"] = "a dátumon";
+$word["smoothed"] = "Finomítva";
+
+$word["title1"]="Tagok száma (hitelesítés dátuma alapján) - jelenleg összesen";
+$word["title12"]="tag";
+$word["title13"]="Tagok száma";
+$word["title14"]="(hitelesítés dátuma alapján)";
+
+$word["title2"]="Új tagok száma (hitelesítés dátuma alapján) - jelenleg összesen";
+$word["title22"]="tag";
+$word["title23"]="Új tagok száma";
+$word["title24"]="(hitelesítés dátuma alapján)";
+
+$word["title3"]="Leiratkozott tagok száma (leiratkozás[hitelesítésének] dátuma alapján) - jelenleg összesen";
+$word["title32"]="leiratkozott tag";
+$word["title33"]="Leiratkozott tagok száma";
+$word["title34"]="(leiratkozás hitelesítésének dátuma alapján)";
+
+$word["title4"]="Nem hitelesített feliratkozások (feliratkozás dátuma alapján) - jelenleg összesen";
+$word["title42"]="nem hitelesített feliratkozás";
+$word["title43"]="Nem hitelesített feliratkozások";
+$word["title44"]="(feliratkozás dátuma alapján)";
+
+$word["title5"]="Knorr tagok száma (a mobilszám és a feliratkozás dátuma alapján) - jelenleg összesen ";
+$word["title52"]="Knorr tag";
+
+$word["title6"]="Knorr nyeremények száma (a feliratkozás dátuma alapján) - jelenleg összesen ";
+$word["title62"]="Knorr nyeremény";
+
+$word["titlemess"]="Kiküldött üzenetek száma (küldés dátuma alapján) - ";
+$word["titlemess2"]="üzenet";
+$word["titlemess3"]="Kiküldött üzenet";
+$word["titlemess4"]="(küldés dátuma alapján)";
+
+$word["titlect"]="Átkattintási statisztika - az egész csoportban (az átkattintás dátuma alapján)";
+$word["titlect2"]="átkattintás";
+$word["titlect3"]="Átkattintás";
+$word["titlect4"]="(az átkattintás dátuma alapján)";
+
+$word["titleclick"]="Klikkelések száma (klikkelés dátuma alapján) - ";
+$word["titleclick2"]="klikk";
+$word["titleclick3"]="Klikk";
+$word["titleclick4"]="(klikkelés dátuma alapján)"; 
+
+$word["total"]="Összesen";
+$word["pdf_report"]="PDF Report";
+$word["html_report"]="Nyomtatás";
+$word["aff_filt"]="Affiliate szűrő:";
+$word["aff_all"]="-- Minden tag --";
+$word["t_date"]="dátum";
+$word["t_members"]="tagok";
+$word["ct_dist"]="Eloszlás napok/órák szerint";
+$word["members"]="Tagok száma";
+$word["new_members"]="Új tagok";
+$word["unsub_members"]="Leiratkozott tagok";
+$word["unval_members"]="Nem hitelesített feliratkozások";
+$word["copies"]="Példányszám";
+$word["b_hour"]="óra";
+$word["b_day"]="nap";
+$word["b_avg"]="(átlag)";
+$word["b_col"]="oszlop";
+$word["mess_sent"]="Kiküldött üzenetek száma";
+$word["t_messages"]="üzenet";
+$word["t_copies"]="példányszám";
+$word["total_of"]="Összesen";
+$word["of_those"]="tag, ebből";
+$word["satisfies"]="tag felel meg a filterben megadott feltételeknek";
+$word["m_members"]="tag";
+$word["demog_max_alert"]="A demographic statisztikák a &quot;Maximum ... tag&quot; filter kifejezéseket nem veszik figyelembe";
+$word["filter"]="Filter";
+$word["select"]="--válasszon--";
+$word["clear_filter"]="Filter törlése";
+$word["vd_question"]="Az infóhoz tartozó kérdés";
+$word["ds_period"]="Érték";
+$word["ds_values"]="Előfordulás száma";
+$word["no_demog_question"]="A csoporthoz nincs hozzárendelve demographic info";
+$word["years_old"]="éves";
+$word["most_freq1"]="A(z)";
+$word["most_freq2"]="leggyakrabban (legalább kétszer) előforduló érték";
+$word["demog_stat"]="Demographic statisztikák";
+$word["ct_all"]="Átkattintási statisztika - az egész csoportban";
+$word["ct_click_first"]="Első klikk";
+$word["ct_click_last"]="Utolsó klikk";
+$word["ct_copies_all"]="Példányszám összesen";
+$word["ct_ct_ct"]="CT / CT%";
+$word["t_sender"]="Feladó";
+$word["t_message"]="Üzenet";
+$word["t_copies"]="Példányszám";
+$word["email_archive"]="Emailek archívuma";
+$word["link"]="link";
+$word["ct"]="CT";
+$word["ctp"]="CT%";
+$word["go"]="mehet";
+$word["thread"]="Téma";
+$word["my_45_sender"]="Az üzenet feladója";
+$word["time"]="Idő";
+$word["ct_"]="Részletes statisztika";
+$word["ct_mailnum"]="Kimenő levelek száma";
+$word["ct_clicknum"]="Összes klikk";
+$word["ct_clicknum_dist"]="Hány levélben klikkeltek erre az URL-re";
+$word["ct_click_first"]="Első klikk";
+$word["ct_click_last"]="Utolsó klikk";
+$word["ct_url"]="URL";
+$word["by_ct_url_asc"]="URL alapján növekvő";
+$word["by_ct_url_desc"]="URL alapján csökkenő";
+$word["url_page"]="URL / oldal";
+$word["t_click"]="klikkelések száma";
+$word["t_dclick"]="egyedi klikkelések száma";
+$word["ct_any"]="bármelyik";
+$word["ctu_"]=" URL-re klikkelő felhasználók listája";
+$word["ctu_num"]="Hányszor";
+$word["email"]="Email cím";
+$word["by_ct_url_asc"]="URL alapján növekvő";
+$word["by_ct_url_desc"]="URL alapján csökkenő";
+$word["member_page"]="tag / oldal";
+$word["notnulluser"]="felhasználóról van ilyen demog info";
+$word["titlesg4"]="Feliratkozások (hitelesítéssel)";
+$word["sg_subs_members"]="Hitelesített feliratkozások";
+$word["sgs_all"]="Feliratkozások";
+$word["sgs_yes"]="Hitelesített";
+$word["sgs_no"]="Nem hitelesített";
+$word["sgs_avg"]="Hitelesítésig eltelt idő (átlag, órában)";
+$word["t_1x1"]="Megjelenések";
+$word["t_d1x1"]="Megjelenések (distinct)";
+$word["all1x1"]="Összes megjelenések száma";
+$word["all1x1dist"]="Összes megjelenések száma (distinct)";
+$word["excel_report"]="Excel Report";
+$word["ct_gdist"]="Összes klikk eloszlása";
+$word["1x1_gdist"]="Összes megjelenés eloszlása";
+$word["t_form_title"]="Kérdőiv neve";
+$word["t_state"]="Állapot";
+$word["t_fill_time"]="Kitöltési idő";
+$word["t_comm"]="Kommentár";
+$word["t_fdate"]="Dátum";
+$word["t_search_text"]="Keresett szó";
+$word["t_form_number"]="Kitöltött kerdőivek száma:";
+$word["t_fastest_fill"]="Leggyorsabban kitöltött:";
+$word["t_slowest_fill"]="Leglassabban kitöltött:";
+$word["t_average"]="Átlag:";
+$word["t_ratio"]="Összes klikk (levelező)/(böngésző)";
+$word["t_n_finished_endlink"]="Endlink miatt megszakadt kitöltések száma:";
+$word["t_n_finished_or"]="Egyéb okok miatt megszakadt kitöltések száma:";
+$word["t_nof_values"]="Lehetséges értékek száma:";
+$word["t_quick_stat"]="Gyors statisztika";
+$word["boolTrue"]="Igaz";
+$word["boolFalse"]="Hamis";
+?>

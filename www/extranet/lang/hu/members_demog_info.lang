@@ -33,4 +33,11 @@ $word["affiliate"]="Affiliate";
 $word["demog_err_8a"]="Már létezik";
 $word["demog_err_8b"]="azonosító a csoportban.";
 $word["tstamp"]="utolsó frissítés";
+$word["dt_variable"]="Változó";
+$word["dt_value"]="Érték";
+$word["md_statistics"]="Statisztika";
+$word["scope_user"]="Tag demog info";
+$word["scope_filter"]="Több tag demog infoja, filter alapján";
+$word["multiupdate_warn"]="Ezzel a művelettel a filter által talált MINDEN tag adatát megváltoztatja. Folytassam?";
+$word["update_successful"]="Az adatok megváltoztatása sikeres volt.";
 ?>

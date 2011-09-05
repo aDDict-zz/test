@@ -1,0 +1,19 @@
+<?
+include_once "./lang/$language/common.lang";
+//$word["error_handling"]="Hibakezelés";
+$word["error_handling"]="Alapadatok";
+$word["st_admin_phones"]="Rendszergazdák telefonszáma";
+$word["st_admin_emails"]="Rendszergazdák email címei";
+$word["st_cloudmark_email"]="Cloudmark email cím";
+$word["st_sms_maxima0"]="SMS értesítés - levél kiküldés";
+$word["st_sms_sender_engine"]="SMS értesítés - levélküldő";
+$word["st_log_maxima0"]="Küldési hibák";
+$word["st_log_sender_engine"]="Levélküldő hibák";
+$word["data_changed"]="Az adatok megváltoztatása sikeres volt.";
+$word["t_datum"]="Dátum";
+$word["t_error"]="Leírás";
+$word["st_question_pos"]="Kérdések fent a kérdőíveknél";
+$word["st_subscribe_id"]="Subscribe ID";
+$word["st_check_subscribe_id"]="Ellenőrzés feliratkozáskor";
+$word["st_domains_linked_images"]="Domainlista a linkelt képekhez (vesszővel elválasztva)";
+?>

@@ -1,13 +1,10 @@
 <?
-
-//include "main.php";
-
 include "auth.php";
 $weare=20;
 include "cookie_auth.php";
 include "decode.php";
 
-if (!$tpl) {
+if (empty($tpl)) {
     include "class.FastTemplate.php";
     $tpl=new FastTemplate("./templates");
     $tpl->no_strict();
@@ -22,8 +19,8 @@ $dropdown_year=2001;
 $nav_id="messages";
 
 $tpl->assign("FORM_ACTION","subs_stat.php");
-$tpl->assign("HIDDEN_PARTS","<input type='hidden' name='type' value='$type'><input type='hidden' name='group_id' value='$group_id'><input type='hidden' name='aff' value='$aff'>");
-$tpl->assign("AFF_HIDDEN_PARTS","<input type='hidden' name='type' value='$type'><input type='hidden' name='group_id' value='$group_id'>");
+$tpl->assign("HIDDEN_PARTS","<input type='hidden' name='group_id' value='$group_id'>");
+$tpl->assign("AFF_HIDDEN_PARTS","<input type='hidden' name='group_id' value='$group_id'>");
 $tpl->assign("GROUP_ID",$group_id);
 include "dategen.php";
 $tpl->parse("DATEGEN","dategen");
@@ -323,7 +320,7 @@ if ($maxrecords) {
             array("Technikai hiba miatt átmenetileg nem kézbesíthetõ (pl. kapcsolati probléma)","error_code like '4__'"),
         );
         for ($bi=0;$bi<count($bounce_cats);$bi++) {
-            $tres2 = $_MX_var->sql("select count(distinct email),message_id from $_MX_var->bounce_database.bounced_back where 
+            $tres2 = $_MX_var->sql("select count(distinct email),message_id from bounced_back where 
                                   message_id in ($messlist) and group_id='$group_id'
                                   and ". $bounce_cats[$bi][1] ."
                                   and email not in ('postmaster@maxima.hu','krisztina@egyperces.hu','') group by message_id");
@@ -435,30 +432,48 @@ if ($maxrecords) {
         print "</SPAN></TD>
                <TD $bgrnd vAlign=top><SPAN class=szoveg>".nl2br(htmlspecialchars(quoted_printable_decode(decode_mime_string($subject))))."$cataddon<br>
                <A href='#' class='vastag' onClick='window.open(\"$_MX_var->baseUrl/message.php?id=$message_id&group_id=$group_id\", \"message$message_id\", \"resizable=yes,toolbar=no,location=no,directories=no,status=no,scrollbars=yes,width=400,height=450\"); return false;'>[$word[plaintext]]</A>\n";
-        if ($mimes["$message_id"]) {
+        if (!empty($mimes["$message_id"])) {
             print "<A href='#' class='vastag' onClick='window.open(\"$_MX_var->baseUrl/message_source.php?message_id=$message_id&group_id=$group_id\", \"message_source$message_id\", \"resizable=yes,toolbar=no,location=no,directories=no,status=no,scrollbars=yes,width=600,height=550\"); return false;'>[$word[source]]</A>
                    <A href='#' class='vastag' onClick='window.open(\"$_MX_var->baseUrl/mime.php?message_id=$message_id&group_id=$group_id\", \"message$message_id\", \"resizable=yes,toolbar=no,location=no,directories=no,status=no,scrollbars=yes,width=600,height=550\"); return false;'>[$word[mime_rendered]]</A>\n";
         }
-        $mails=intval($mailsnum["$message_id"]);
-	$qqr = $_MX_var->sql("select tlb_count from messages where id='$message_id'");
-	if ($qqr and mysql_num_rows($qqr))
-	{
-		$realmails = mysql_result($qqr,0,0);
-	} 
-	else
-	{
-		$realmails = 0;
-	}
+        if (!isset($mailsnum["$message_id"])) {
+            $mails = 0;
+        }
+        else {
+            $mails=intval($mailsnum["$message_id"]);
+        }
+        $qqr = $_MX_var->sql("select tlb_count from messages where id='$message_id'");
+        if ($qqr and mysql_num_rows($qqr)) {
+            $realmails = mysql_result($qqr,0,0);
+        } 
+        else {
+            $realmails = 0;
+        }
         $ctstats="";
         if ($permtoall==1 || in_array(1,$stattypes)) {
             $ctstats="<br>";
-            $clicknum=intval($ctnums_nounique["$message_id"]);
-            $clicknum_dist=intval($ctnums["$message_id"]);
+            if (!isset($ctnums_nounique["$message_id"])) {
+                $clicknum = 0;
+            }
+            else {
+                $clicknum=intval($ctnums_nounique["$message_id"]);
+            }
+            if (!isset($ctnums["$message_id"])) {
+                $clicknum_dist = 0;
+            }
+            else {
+                $clicknum_dist=intval($ctnums["$message_id"]);
+            }
             if ($mails)
                 $percent=$clicknum==0?"":"&nbsp;".number_format($clicknum/$mails*100,2)."%";  
             else
                 $percent="&nbsp;";
-            $urls=intval($urlnums[$message_id]);
+            if (!isset($urlnums["$message_id"])) {
+                $urls = 0;
+            }
+            else {
+                $urls=intval($urlnums["$message_id"]);
+            }
             $ctstats.="<SPAN class=szoveg>$urls $word[link], ";
             if ($permtoall==1 || in_array(2,$stattypes))
                 $ctstats.="<A href='clickthrough.php?group_id=$group_id&message_id=$message_id'>";
@@ -496,7 +511,7 @@ if ($maxrecords) {
             if ($permtoall==1 || in_array(5,$stattypes))
                 $t1x1.="</A>";
             */
-            if (($permtoall==1 || in_array(6,$stattypes)) && $opnums["$message_id"])
+            if (($permtoall==1 || in_array(6,$stattypes)) && !empty($opnums["$message_id"]))
                 $t1x1.="&nbsp;<A href='#' class='vastag' onClick='window.open(\"message_opened.php?group_id=$group_id&message_id=$message_id\", \"mtcz$message_id\", \"resizable=yes,toolbar=no,location=no,directories=no,status=no,scrollbars=yes,width=420,height=500\"); return false;'>$word[user_list]</a>";
         }
         $bback="";
@@ -504,8 +519,14 @@ if ($maxrecords) {
             $bounce_parts=array();
             $bototal=0;
             for ($bi=0;$bi<count($bounce_cats);$bi++) {
-                $bounce_parts[]="<span style='cursor:pointer;' title='". $bounce_cats[$bi][0] ."'>". intval($bonums["$message_id"][$bi]) ."</span>";
-                $bototal+=$bonums["$message_id"][$bi];
+                if (!isset($bonums["$message_id"]) || !isset($bonums["$message_id"][$bi])) {
+                    $bounces = 0;
+                }
+                else {
+                    $bounces=intval($bonums["$message_id"][$bi]);
+                }
+                $bounce_parts[]="<span style='cursor:pointer;' title='". $bounce_cats[$bi][0] ."'>$bounces</span>";
+                $bototal+=$bounces;
             }
             $bosummary=implode(" / ",$bounce_parts);
             if ($bototal && ($permtoall==1 || in_array(8,$stattypes))) {
@@ -518,22 +539,30 @@ if ($maxrecords) {
         }
         $unsubbed="";
         if ($permtoall==1 || in_array(9,$stattypes)) {
-            if ($unsnums["$message_id"] && ($permtoall==1 || in_array(10,$stattypes)))
+            if (!empty($unsnums["$message_id"]) && ($permtoall==1 || in_array(10,$stattypes))) {
                 $unsubbed="<br>$unsnums[$message_id]&nbsp;$word[unsubbed]&nbsp;<A href='#' class='vastag' onClick='window.open(\"$_MX_var->baseUrl/message_unsub.php?message_id=$message_id&group_id=$group_id\", \"musu$message_id\", \"resizable=yes,toolbar=no,location=no,directories=no,status=no,scrollbars=yes,width=420,height=500\"); return false;'>$word[user_list]</a>";
-            else 
+            }
+            else { 
+                if (empty($unsnums["$message_id"])) {
+                    $unsnums["$message_id"]=0;
+                }
                 $unsubbed="<br>[".intval($unsnums["$message_id"])."&nbsp;$word[unsubbed]]";
+            }
         }
         print "$t1x1$bback$unsubbed&nbsp;</span></TD>\n"; // column 3 end
 
         $t_filter="";
-        if ($filters["$message_id"])    
+        if (!empty($filters["$message_id"]) && !empty($filtnames["$filters[$message_id]"])) {    
             $t_filter="$word[filterd]: ".nl2br(htmlspecialchars($filtnames["$filters[$message_id]"]));
-        if ($user_groups["$message_id"])    
+        }
+        if (!empty($user_groups["$message_id"]) && !empty($ugnames["$user_groups[$message_id]"])) {
             $t_filter="$word[user_group]: ".nl2br(htmlspecialchars($ugnames["$user_groups[$message_id]"]));
+        }
         print "<TD align=middle $bgrnd vAlign=top><SPAN class=szoveg>$t_filter&nbsp;</span></TD>\n"; // column 4 end
 
-        if ($active_membership == "owner" || $active_membership=="moderator")
+        if ($active_membership == "owner" || $active_membership=="moderator") {
             print "<td $bgrnd align='center'><input type='checkbox' name='delmess[$message_id]' value='1'></span></TD>\n"; //column 5 end
+        }
 
         print "</TR>\n";
     }
@@ -541,7 +570,7 @@ if ($maxrecords) {
     PrintNavigation($maxpages,$pagenum);
 } 
 else {
-    PrintNavigation($maxpages,$pagenum);    
+    PrintNavigation("","");    
     print "<tr>    
            <td align='left' class=COLUMN1>
            <span class='szovegvastag'>$word[no_messages]</span></td>
@@ -579,8 +608,12 @@ function PrintNavigation($maxpages, $pagenum) {
     $LastPage = (ceil($maxrecords / $maxPerPage)-1) * $maxPerPage;
     $OnePageLeft = $first - $maxPerPage; if($OnePageLeft<1) $OnePageLeft = 0;
     $OnePageRight = $maxPerPage + $first; if($OnePageRight>$LastPage) $OnePageRight = $LastPage;
-    $sel_sort[$sortt] = "selecteD"; 
     $params="group_id=$group_id";
+
+    for ($i=0;$i<10;$i++) {
+        $sel_sort[$i] = "";
+    }
+    $sel_sort[$sortt] = "selected"; 
 
     echo '
     <tr>

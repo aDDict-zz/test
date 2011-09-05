@@ -1,0 +1,75 @@
+<?
+include_once "./lang/$language/common.lang";
+# sms.lang is used by send_sms.php,sms_list.php,sms_threads.php
+$word["sms_validate"]="&nbsp;Validate letter sent. check your e-mail";
+$word["sms_nomessage"]="Error: No message.";
+$word["sms_date_err"]="Invalid date / time";
+$word["no_filter"]="No filter";
+$word["filter"]="filter";
+$word["member_group"]="group of members";
+$word["sms_message"]="Message";
+$word["sms_warn"]="Send notification about the message delivery";
+$word["sms_new"]="New SMS message";
+$word["filterlist"]="Filter";
+$word["sms_delivery_time"]="Delayed delivery:";
+$word["sms_obsolete"]="Do not send if not sent in";
+$word["sms_hours"]="hours";
+$word["sms_forward1"]="If user replies, send mail with user data to";
+$word["sms_forward2"]="email address";
+$word["sms_forward3"]="If user replies, send the following mail to the user:";
+$word["thread"]="Subject";
+$word["body"]="Body";
+$word["submit"]="Submit";
+$word["sms_not_yet"]="You haven't sent any SMS messages yet.";
+$word["lfilter"]="Filter";
+$word["lmemgr"]="Group of members";
+$word["mess_page"]="messages/page";
+$word["by_date_asc"]="date ascending";
+$word["by_date_desc"]="date descending";
+$word["sms_automat"]="Definition of the answering automat";
+$word["sms_help"]="help";
+$word["sms_wrongparms"]="More or less than 4 parameters";
+$word["sms_wrongid"]="Empty or existing response id";
+$word["sms_wrongresp"]="Response to nonexistent id";
+$word["sms_help_text"]="The answering automat is defined by A1|B1|C1|D1 ... An|Bn|Cn|Dn quartets, where<br><br>
+the quartets are delimited with &lt;enter&gt;<br>
+A: id of the message, positive integer,<br>
+id of the starting message is always 1.<br>
+B,C,D: if the user responds with C to message B, send message D.<br>
+C can be any string, if it is a *, means any answer, range may be given, for example 25-40<br>
+D can be any string, if it's form is #n, where n is id of a message,<br>
+points back to message n.<br>
+D may be empty, which means that the user will not get any answer<br><br>
+For example:<br>
+2|1|A|<br>
+3|1|B|Your age?<br>
+4|3|20-25|Answer 1<br> 
+5|3|26-40|Another question<br> 
+6|5|Y|Look at www.xx.ww<br>
+7|5|*|#3<br>
+8|*|*|Thank you";
+$word["st_nousers"]="Nobody has received this message";
+$word["st_no_automat_response"]="no response";
+$word["st_threads"]="SMS response statistics";
+$word["conversation"]="User responses - date, response [answer of automat]";
+$word["email"]="Email address";
+$word["mobil"]="Mobil phone";
+$word["messnum_asc"]="by number of messages ascending";
+$word["messnum_desc"]="by number of messages descending";
+$word["lastmess_asc"]="by last message ascending";
+$word["lastmess_desc"]="by last message descending";
+$word["user_page"]="users / page";
+$word["st_noresponse"]="The user did not answer";
+$word["sms_s2"]=" messages, ";
+$word["sms_s4"]=" responses total";
+$word["sms_s5"]=" user has responded once ore more times";
+$word["messparts_explain"]="If message has more than one part, use delimiter character";
+$word["not_delivered"]="Not delivered";
+$word["t_not_delivered"]="sms - not delivered";
+$word["t_phone"]="phone";
+$word["t_status"]="status";
+$word["test_numbers"]="Test numbers, delimited by commas";
+$word["test"]="Test";
+$word["sms_testnum_err"]="You should define at least on phone number for test, in +36xxxxx[,+36yyyyy,+36zzzzz...] format.";
+$word["sms_no_filter"]="You must define a filter to send.";
+?>

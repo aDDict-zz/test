@@ -278,4 +278,8 @@ $word["iform_export_elements_type"]="Format:";
 $word["iform_export_elements_type_general"]="General";
 $word["fe_mandatory_all"]="All mandatory";
 $word["fe_mandatory_none"]="None mandatory";
+$word["fe_show_all_options"]="Show all options";
+$word["fe_show_no_options"]="Show none";
+$word["fe_show_all_options_set"]="All options of all enum elements selected";
+$word["fe_show_no_options_set"]="All options of all enum elements removed";
 ?>

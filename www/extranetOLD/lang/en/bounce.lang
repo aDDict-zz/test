@@ -1,0 +1,39 @@
+<?
+include_once "./lang/$language/common.lang";
+# bounce.lang is used by bounce.php,bounce_detail.php
+$word["total_of"]="Total of";
+$word["b_emails"]="bounced back email addresses";
+$word["t_email"]="Email address";
+$word["t_bounced"]="Bounced back emails";
+$word["t_first"]="First";
+$word["t_last"]="Last";
+$word["select_all"]="Select all";
+$word["select_none"]="Select none";
+$word["delete_sure"]="Do you really want to delete the selected users from all of your groups?";
+$word["sign_sure"]="Do you really want to sign the selected users in all your groups?";
+$word["delete"]="Delete";
+$word["sign"]="Sign";
+$word["in_this"]="in this group";
+$word["select"]="--select--";
+$word["filterr"]="Error filter";
+$word["del_filterr"]="Delete error filter";
+$word["filt"]="Email filter";
+$word["del_filt"]="Delete filter";
+$word["sel_notsigned"]="Not signed users only";
+$word["sel_all"]="All users";
+$word["go"]="go";
+$word["email_page"]="email/page";
+$word["email_asc"]="email ascending";
+$word["email_desc"]="email descending";
+$word["last_asc"]="last mail ascending";
+$word["last_desc"]="last mail descending";
+$word["first_asc"]="first mail ascending";
+$word["first_desc"]="first mail descending";
+$word["bounced_mails"]="bounced back emails";
+$word["inall"]="in all groups, total";
+$word["t_error"]="Error";
+$word["t_date"]="Date";
+$word["t_group"]="Group";
+$word["date_desc"]="date ascending";
+$word["date_asc"]="date descending";
+?>

@@ -28,7 +28,7 @@ if ($res && mysql_num_rows($res)) {
 }
 
 $addmulti=get_http('addmulti','');
-if (isset($addmulti)) {
+if (!empty($addmulti)) {
     $multi_error="";
     $newtitle=get_http('newtitle','');
     if(!eregi("^[a-z]+[0-9a-z]*$", $newtitle)) 
@@ -61,7 +61,6 @@ if (isset($addmulti)) {
 		mysql_query($query);        
     }
     unset($addmulti);
-    logger($query,0,"",$newtitle,"multi");
 }
   
 if(!$sortm)
@@ -92,7 +91,7 @@ if($res && mysql_num_rows($res)) {
             $k=mysql_fetch_row($cres);
             $multinum=$k[0];
         }
-        if ($kedvencek!=1 || $row["kedvenc"]=="yes") {
+        if (empty($kedvencek) || $row["kedvenc"]=="yes") {
             $multi_groups.="<tr><TD $bgrnd><SPAN class=szovegvastag>&nbsp;$row[title]</SPAN></TD>
                             <td colspan=2 $bgrnd VAlign=center align=middle><span class='szoveg'>$multinum</span></td>
                             <td $bgrnd VAlign=center align=middle>
@@ -158,6 +157,9 @@ function printfoot() {
 function PrintNavigation($print_text,$nosubhead=0) {
     global $_MX_var,$sortm,$word;
   
+    for ($i=0;$i<10;$i++) {
+        $sel_sort[$i] = "";
+    }
     $sel_sort[$sortm] = "selected";
     echo "<tr>
           <td colspan=4 bgcolor=$_MX_var->main_table_border_color>

@@ -1,0 +1,18 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["t_title"]="Name";
+$word["t_actions"]="Actions";
+$word["dg_delete"]="Delete";
+$word["dg_confirm"]="Are you sure?";
+$word["dg_new"]="New demographic category";
+$word["dg_title"]=" demographic category";
+$word["dg_name"]="Name";
+$word["by_name_asc"]="name ascending";
+$word["by_name_desc"]="name descending";
+$word["total_of"]="Total of";
+$word["dg_change"]="Change";
+$word["e_success"]="Data has been succesfully changed";
+$word["e_name"]="You must specify the name of the category.";
+$word["ft_common"]="Common";
+
+?>

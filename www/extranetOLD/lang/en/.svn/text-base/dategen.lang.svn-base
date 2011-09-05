@@ -1,0 +1,28 @@
+<?
+$word["month1"]="january";
+$word["month2"]="february";
+$word["month3"]="march";
+$word["month4"]="april";
+$word["month5"]="may";
+$word["month6"]="june";
+$word["month7"]="july";
+$word["month8"]="august";
+$word["month9"]="september";
+$word["month10"]="october";
+$word["month11"]="november";
+$word["month12"]="december";
+$word["day1"]="monday";
+$word["day2"]="tuesday";
+$word["day3"]="wednesday";
+$word["day4"]="thursday";
+$word["day5"]="friday";
+$word["day6"]="saturday";
+$word["day0"]="sunday";
+$word["dg_period"]="-- period --";
+$word["dg_all"]="overall";
+$word["dg_lastmonth"]="last month";
+$word["dg_lastweek"]="last week";
+$word["dg_yesterday"]="yesterday";
+$word["dg_today"]="today";
+$word["dg_go"]="go";
+?>

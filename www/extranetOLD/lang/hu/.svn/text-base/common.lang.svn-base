@@ -1,0 +1,34 @@
+<?
+# in this file are project-wide language vars.
+$word["az"]="A(z)";
+$word["az_lower"]="a(z)";
+$word["delete"]="Törlés";
+$word["submit3"]="Mentés";
+$word["multi_groups"]="Csoportok csoportjai";
+$word["members"]="Tagok";
+$word["groups"]="Csoportok";
+$word["sort_order"]="Sorrend";
+$word["messages"]="Üzenetek";
+$word["group"]="Csoport";
+$word["group_lower"]="csoport";
+$word["filt_engine_error"]="Filter engine hiba";
+$word["filt_syntax_error"]="Filter szintaktikai hiba";
+$word["view"]="Nézet";
+$word["owner"]="Tulajdonos";
+$word["moderator"]="Adminisztrátor";
+$word["support"]="Ügyfélszolgálat ";
+$word["client"]="Egyedi (kampány-alapú)";
+$word["admin"]="Egyedi (csoport-alapú)";
+$word["affiliate"]="Affiliate";
+$word["sender"]="Küldő";
+$word["pdf_report"]="PDF Report";
+$word["html_report"]="HTML Report";
+$word["maxima_report"]="Maxima Report";
+$word["by_asc"]="szerint növekvő";
+$word["by_desc"]="szerint csökkenő";
+$word["proc_list"]="Folyamatlista:";
+$word["run_proc"]="futó folyamat,";
+$word["sent"]="elküldve";
+$word["keep_list_open"]="Lista nyitvahagyása";
+$word["open_list"]="Lista lenyitása";
+?>

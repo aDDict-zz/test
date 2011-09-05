@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.maxima.hu/soap/Simplexvital.php" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="WS_Simplexvital" targetNamespace="http://www.maxima.hu/soap/Simplexvital.php">
+<types>
+<xsd:schema targetNamespace="http://www.maxima.hu/soap/Simplexvital.php"/>
+</types>
+<portType name="WS_SimplexvitalPort">
+<operation name="Synchronize">
+<documentation>Synchronizes user data - tries to update, if the user does not exist then subscribes and validates</documentation>
+<input message="tns:SynchronizeIn"/>
+<output message="tns:SynchronizeOut"/>
+</operation>
+<operation name="Subscribe">
+<documentation>Subscribes new user</documentation>
+<input message="tns:SubscribeIn"/>
+<output message="tns:SubscribeOut"/>
+</operation>
+<operation name="UpdateUserData">
+<documentation>Updates $email's user data - if a parameter is empty it's not updated</documentation>
+<input message="tns:UpdateUserDataIn"/>
+<output message="tns:UpdateUserDataOut"/>
+</operation>
+<operation name="GetUserData">
+<documentation>Gets user data</documentation>
+<input message="tns:GetUserDataIn"/>
+<output message="tns:GetUserDataOut"/>
+</operation>
+<operation name="Validate">
+<documentation>Validates user</documentation>
+<input message="tns:ValidateIn"/>
+<output message="tns:ValidateOut"/>
+</operation>
+<operation name="Order">
+<documentation>Called upon a successful order</documentation>
+<input message="tns:OrderIn"/>
+<output message="tns:OrderOut"/>
+</operation>
+</portType>
+<binding name="WS_SimplexvitalBinding" type="tns:WS_SimplexvitalPort">
+<soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+<operation name="Synchronize">
+<soap:operation soapAction="http://www.maxima.hu/soap/Simplexvital.php#Synchronize"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Simplexvital.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Simplexvital.php"/>
+</output>
+</operation>
+<operation name="Subscribe">
+<soap:operation soapAction="http://www.maxima.hu/soap/Simplexvital.php#Subscribe"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Simplexvital.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Simplexvital.php"/>
+</output>
+</operation>
+<operation name="UpdateUserData">
+<soap:operation soapAction="http://www.maxima.hu/soap/Simplexvital.php#UpdateUserData"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Simplexvital.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Simplexvital.php"/>
+</output>
+</operation>
+<operation name="GetUserData">
+<soap:operation soapAction="http://www.maxima.hu/soap/Simplexvital.php#GetUserData"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Simplexvital.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Simplexvital.php"/>
+</output>
+</operation>
+<operation name="Validate">
+<soap:operation soapAction="http://www.maxima.hu/soap/Simplexvital.php#Validate"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Simplexvital.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Simplexvital.php"/>
+</output>
+</operation>
+<operation name="Order">
+<soap:operation soapAction="http://www.maxima.hu/soap/Simplexvital.php#Order"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Simplexvital.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.maxima.hu/soap/Simplexvital.php"/>
+</output>
+</operation>
+</binding>
+<service name="WS_SimplexvitalService">
+<port name="WS_SimplexvitalPort" binding="tns:WS_SimplexvitalBinding">
+<soap:address location="http://www.maxima.hu/soap/Simplexvital.php"/>
+</port>
+</service>
+<message name="SynchronizeIn">
+<part name="client_id" type="xsd:string"/>
+<part name="userdata" type="xsd:anyType"/>
+</message>
+<message name="SynchronizeOut">
+<part name="return" type="xsd:string"/>
+</message>
+<message name="SubscribeIn">
+<part name="client_id" type="xsd:string"/>
+<part name="userdata" type="xsd:anyType"/>
+</message>
+<message name="SubscribeOut">
+<part name="return" type="xsd:string"/>
+</message>
+<message name="UpdateUserDataIn">
+<part name="client_id" type="xsd:string"/>
+<part name="userdata" type="xsd:anyType"/>
+</message>
+<message name="UpdateUserDataOut">
+<part name="return" type="xsd:int"/>
+</message>
+<message name="GetUserDataIn">
+<part name="client_id" type="xsd:string"/>
+<part name="email" type="xsd:string"/>
+</message>
+<message name="GetUserDataOut">
+<part name="return" type="xsd:anyType"/>
+</message>
+<message name="ValidateIn">
+<part name="client_id" type="xsd:string"/>
+<part name="validator_code" type="xsd:string"/>
+</message>
+<message name="ValidateOut">
+<part name="return" type="xsd:string"/>
+</message>
+<message name="OrderIn">
+<part name="client_id" type="xsd:string"/>
+<part name="email" type="xsd:string"/>
+<part name="timestamp" type="xsd:int"/>
+<part name="quantity" type="xsd:float"/>
+<part name="product_id" type="xsd:int"/>
+</message>
+<message name="OrderOut">
+<part name="return" type="xsd:int"/>
+</message>
+</definitions>

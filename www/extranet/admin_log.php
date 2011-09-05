@@ -1,7 +1,19 @@
 <?
+$_MX_superadmin=0;
+include "auth.php";
+$weare = '200';
+include "cookie_auth.php";  
 
+$view_logs="no";
 
+$rlusr=mysql_query("select view_logs from user where id='$active_userid'");
+if ($rlusr && mysql_num_rows($rlusr)) {
+    $view_logs=mysql_result($rlusr,0,0);
+}
 
+if (!$_MX_superadmin && $view_logs!="yes") {
+    exit;
+}
 if (empty($sortt) && isset($admin_sortt)) {
   $sortt=$admin_sortt;
 }
@@ -23,22 +35,6 @@ if (isset($filt_clear)) {
 }
 else
   setcookie("admin_filt_group_name",$filt_group_name,time()+30*24*3600);
-
-$_MX_superadmin=0;
-include "auth.php";
-$weare = '200';
-include "cookie_auth.php";  
-
-$view_logs="no";
-
-$rlusr=mysql_query("select view_logs from user where id='$active_userid'");
-if ($rlusr && mysql_num_rows($rlusr)) {
-    $view_logs=mysql_result($rlusr,0,0);
-}
-
-if (!$_MX_superadmin && $view_logs!="yes") {
-    exit;
-}
 include "menugen.php";
 
 if (!$sortt) $sortt=8;
@@ -97,7 +93,6 @@ if ($user) $sql.=" and t.user_id=$user";
 if ($datumtol) $sql.=" and t.date>='$datumtol'";
 if ($datumig) $sql.=" and t.date<='$datumig 23:59:59'";
 
-echo "SELECT COUNT(t.id) AS maxrecords $sql";
 $res = mysql_query("SELECT COUNT(t.id) AS maxrecords $sql");
 $l=mysql_fetch_array($res);                                         
 $maxrecords = $l["maxrecords"];                                          

@@ -1,4 +1,10 @@
-<? //print_r($_POST); print_r($_GET); die();
+<?
+
+
+// print_r($_POST);
+// 
+// print_r($_GET);   die();
+
 include "auth.php";
 include "decode.php";
 $weare=34;
@@ -23,9 +29,7 @@ $form_element_subscribe_id=get_http("form_element_subscribe_id",0);
 $page_id=get_http("page_id",0);
 $action=get_http("action","");
 
-$rule=get_http("rule","");
-
-$res=mysql_query("select * from form where id='$form_id' and group_id='$group_id'"); //echo "select * from form where id='$form_id' and group_id='$group_id'"; die();
+$res=mysql_query("select * from form where id='$form_id' and group_id='$group_id'");
 if ($res && mysql_num_rows($res))
     $formdata=mysql_fetch_array($res);
 else
@@ -131,11 +135,11 @@ elseif ($form_email_id) {
         exit;
     }
 }
-elseif ($form_element_id) {
+elseif ($form_element_id) { // ez az
     $res=mysql_query("select f.*,fe.question,fe.dependency,fe.parent,fe.parent_dependency,fe.widget,fe.demog_id,fe.page from form f,form_element fe 
         where fe.id='$form_element_id' and f.group_id='$group_id' and fe.form_id=f.id");
     if ($res && mysql_num_rows($res)) {
-        $formdata=mysql_fetch_array($res);
+        $formdata=mysql_fetch_array($res); //die( print_r( $formdata ) );
         $dep_object="form_element";
         $dep_id=$form_element_id;
         $demog_id=$formdata["demog_id"];
@@ -241,7 +245,7 @@ if ($action=="enter") {
         $parent_dependency_negation = array();
         $parent_dependency_ids = array();
         while (list($dvkey,$dvval)=each($_POST)) {
-            if (ereg("^parent_([0-9]+)$",$dvkey,$regs)) {
+            if (ereg("^parent_([0-9]+)$",$dvkey,$regs)) {// echo $dvkey . "<br />"; print_r($regs);
                 $parent_id=$regs[1];
                 $parent_elements[]=$parent_id;
                 $parent_columns = get_http("parent_columns_$parent_id","");
@@ -323,7 +327,7 @@ if ($action=="enter") {
             }
         }
     }
-//print_r( $dependency_values ); die(); 
+
     if (count($error)==0) {
         $qys_list = array($qys);
         $dep_id_list = array($dep_id);
@@ -335,8 +339,8 @@ if ($action=="enter") {
             $qys_item = $qys_list[$qi];
             $dep_id_item = $dep_id_list[$qi];
             $dependency_ids = array();
-            foreach ($dependency_values as $key=>$values) {
-                $r=mysql_query("select id from ".$dep_object."_dep where $qys_item and dependent_id=$key"); //echo "select id from ".$dep_object."_dep where $qys_item and dependent_id=$key<br />\n";
+            foreach ($dependency_values as $key=>$values) { //echo $key . "  :  " . $value . "<br />";
+                $r=mysql_query("select id from ".$dep_object."_dep where $qys_item and dependent_id=$key");
                 $fed=mysql_fetch_array($r);
                 $ng="";
                 if (in_array($key,$dependency_negation)) {
@@ -345,34 +349,25 @@ if ($action=="enter") {
                 $value = implode(",",$values);
                 if ($r && mysql_num_rows($r)) {
                     $query="update ".$dep_object."_dep set dependent_value='$value',neg='$ng' where $qys_item and dependent_id=$key";
-                    mysql_query($query); echo "ez simple: {$query}<br />";
+
+echo $query . "<BR />";
+                    mysql_query($query);
                     $dependency_ids["$key"]=mysql_result($r,0,0);
                 }
                 else {
                     $query="insert into ".$dep_object."_dep set dependent_id='$key',dependent_value='$value'," . str_replace(" and ",",",$qys_item) . ", neg='$ng'";
-                    mysql_query($query); echo "az simple: {$query}<br />";
+                    
+                  echo $query . "<BR />";
+
+                    mysql_query($query);
                     $dependency_ids["$key"]=mysql_insert_id();
                 }
+            } //die();
+            $query="delete from ".$dep_object."_dep where $qys_item";
+            if (count(array_keys($dependency_values))) {
+                $query .= " and dependent_id not in (" . implode(",",array_keys($dependency_values)) . ")";
             }
-            
-            if(isset($rule) && $rule == "global"){
-              for($i=1;$i<=$pages;$i++) {
-                $query="delete from ".$dep_object."_dep where form_id = {$form_id} and page_id = {$i}";
-                if (count(array_keys($dependency_values))) {
-                    $query .= " and dependent_id not in (" . implode(",",array_keys($dependency_values)) . ")";
-                } echo "delete stuff : $query<br />";
-                mysql_query($query);
-              }
-            } else {
-              for($i=1;$i<=$pages;$i++) {
-                $query="delete from ".$dep_object."_dep where form_id = {$form_id} and page_id = {$i}";
-                if (count(array_keys($dependency_values))) {
-                    $query .= " and dependent_id not in (" . implode(",",array_keys($dependency_values)) . ")";
-                } echo "delete simple : $query<br />";
-                mysql_query($query);
-              }
-            }
-            
+            mysql_query($query);
             $js_dependency = $_MX_form->set_dependency($_POST["dependency"],$dependency_ids,$dependency_negation);
             if (preg_match("/^error:(.+)$/i",$js_dependency,$regs)) {
                 $error[]= "Hiba: Logikai kapcsolat a feltételek között: $regs[1]";
@@ -385,7 +380,7 @@ if ($action=="enter") {
                 }
                 mysql_query($query);
             }
-        } //echo "dddddd:  {$form_id}"; die();
+        }
         if (count($error)==0) {
             print "<script>
             window.location='form_" . ($dep_object=="form_endlink"?"ch":"elements") . ".php?form_id=$form_id&group_id=$group_id#$dep_object" 
@@ -396,7 +391,7 @@ if ($action=="enter") {
     }
 }
 echo "<a href='form_elements.php?group_id=$group_id&form_id=$form_id'>&lt;-Vissza</a>";
-printhead($rule);
+printhead();
 
 if (count($error)) {
     echo "<tr>
@@ -408,7 +403,7 @@ echo "<tr>
 </tr>\n";
 
 $dep=array();
-$res=mysql_query("select * from ".$dep_object."_dep where $qys");
+$res=mysql_query("select * from ".$dep_object."_dep where $qys"); //die("select * from ".$dep_object."_dep where $qys");
 while ($w=mysql_fetch_array($res)) {
     $dep[$w["dependent_id"]]=$w;
 }
@@ -423,7 +418,7 @@ if ($handle_parents) {
 
 $widget_list="";
 if ($form_element_subscribe_id) {
-    $widget_list.="<input type='hidden' name='subscribe_dep' value='1'>
+    $widget_list="<input type='hidden' name='subscribe_dep' value='1'>
                   $word[fe_depend_subscribe_groups]:<br><textarea name='groups'>". htmlspecialchars($fes_groups) ."</textarea><br>$word[fe_depend_subscribe_condition]:";
 }
 
@@ -433,6 +428,12 @@ $js_data=array();
 $widget_list .= "<table style='width:100%'>";
 $r2=mysql_query("select fe.id,fe.demog_id,fe.question,fe.widget,fe.dependency,fe.parent,d.variable_name,d.variable_type,d.code,d.question as demog_question
                  from form_element fe left join demog d on fe.demog_id=d.id where form_id='$form_id' order by page,box_id,sortorder");
+                 
+                 
+#                 echo "select fe.id,fe.demog_id,fe.question,fe.widget,fe.dependency,fe.parent,d.variable_name,d.variable_type,d.code,d.question as demog_question
+#                 from form_element fe left join demog d on fe.demog_id=d.id where form_id='$form_id' order by page,box_id,sortorder"; die();
+                 
+                 
 while ($w=mysql_fetch_array($r2)) {
 	if ((!$subscribe_dep && $w["id"]!=$form_element_id && !in_array($w["id"],$copy_dependencies_to) 
                          && !in_array($w["widget"],array('comment','separator','cim','ceg_cim','captcha'))) 
@@ -476,7 +477,10 @@ while ($w=mysql_fetch_array($r2)) {
             $widget_id = "dv".$dependent_id."_*2";
             $js_data_parts[]= "'$widget_id'";
             $depwidget.="<input type='checkbox' $dis_two onclick='control($dependent_id,this,1);deplog();' name='$widget_id' id='$widget_id' value='1' $sel_two> <b>$word[two_option]</b><br>"; 
-            $r3=mysql_query("select * from demog_enumvals where demog_id='$dependent_id' and deleted='no'");
+            $r3=mysql_query("select * from demog_enumvals where demog_id='$dependent_id' and deleted='no' order by code,id");
+            
+            //echo "select * from demog_enumvals where demog_id='$dependent_id' and deleted='no' order by code,id<br />";
+            
             if ($r3 && mysql_num_rows($r3)) {
                 while ($k3=mysql_fetch_array($r3)) {
                     if (in_array($k3["id"],$dependent_array)) {
@@ -640,7 +644,7 @@ printfoot();
 include "footer.php";
 // ------------ ------------- ------------- -------------
 
-function printhead($rule) {
+function printhead() {
 
     global $_MX_var,$stat_text,$userlist_yn,$filt_demog_options,$group_id,$pagenum,$word, $formdata, $form_element_id, $group_id, $page_id, $form_id,$form_endlink_id,$form_email_id,$word,$copy_dependency_ids,$copy_dependencies_to_names;
 
@@ -766,9 +770,9 @@ function find_object(id) {
     return pointers[id];
 }
 
-</script><form method='post' action='form_element_options.php' name='fops'>"
- . ($rule == "global" ? "<input type='hidden' name='rule' value='global'>" : "") . 
-"<input type='hidden' name='action' value='seldep'>
+</script>
+<form method='post' action='form_element_options.php' name='fops'>
+<input type='hidden' name='action' value='seldep'>
 <input type='hidden' name='form_element_id' value='$form_element_id'>
 <input type='hidden' name='form_email_id' value='$form_email_id'>
 <input type='hidden' name='form_endlink_id' value='$form_endlink_id'>

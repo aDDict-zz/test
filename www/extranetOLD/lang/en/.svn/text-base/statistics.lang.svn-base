@@ -1,0 +1,163 @@
+<?
+include_once "$plusdot./lang/$language/common.lang";
+# statistics.lang is used by subs_stat.php,mess_stat.php,grafnew/bars.php,mygroups14.php,
+# report_mygroups14.php,clickthrough_group.php,report_clickthrough_group.php
+# clickthrough.php,report_clickthrough.php,clickthrough_url.php
+$word["aff_members"]="affiliate members";
+$word["aff"]="affiliate";
+
+$word['demog_info'] = "found";
+$word['demog_matrix_neither'] = "Neither";
+
+$word["open"] = "start";
+$word["close"] = "end";
+
+$word["customperiod"] = "Custom period";
+$word["zoom"] = "Zoom";
+
+$word["datedef"] = "in";
+$word["smoothed"] = "Smoothed";
+
+$word["title1"]="Members (based on date of validation) - ";
+$word["title12"]="members total";
+$word["title13"]="Members total";
+$word["title14"]="(based on date of validation)";
+
+$word["title2"]="New members (based on date of validation) - ";
+$word["title22"]="new members total";
+$word["title23"]="New members total";
+$word["title24"]="(based on date of validation)";
+
+$word["title3"]="Unsubscribed members (based on date of unsubscribe[validation]) - ";
+$word["title32"]="unsubscribed members";
+$word["title33"]="Unsubscribed members";
+$word["title34"]="(based on date of unsubscribe validation)";
+
+$word["title4"]="Not validated subscriptions (based on date of subscription) - ";
+$word["title42"]="not validated subscriptions";
+$word["title43"]="Not validated subscriptions";
+$word["title44"]="(based on date of subscription)"; 
+
+$word["title5"]="Knorr users (based on mobile number and the date of subscription) - ";
+$word["title52"]="Knorr users";
+
+$word["title6"]="Knorr winners (based on the date of subscription) - ";
+$word["title62"]="Knorr winners";
+
+$word["titlemess"]="Copies sent (based on date of sending) - ";
+$word["titlemess2"]="copies";
+$word["titlemess3"]="Copies sent";
+$word["titlemess4"]="(based on date of sending)";
+
+$word["titlect"]="Clickthrough statistics - whole group (based on date of clicking) - ";
+$word["titlect2"]="clickthroughs";
+$word["titlect3"]="Clickthroughs";
+$word["titlect4"]="(based on date of clicking)";
+
+$word["titleclick"]="Clicks (based on date of clicking) - ";
+$word["titleclick2"]="clicks";
+$word["titleclick3"]="Clicks";
+$word["titleclick4"]="(based on date of clicking)"; 
+
+$word["total"]="Total";
+$word["pdf_report"]="PDF Report";
+$word["html_report"]="Print page";
+$word["aff_filt"]="Affiliate filter:";
+$word["aff_all"]="-- All members --";
+$word["t_date"]="date";
+$word["t_members"]="members";
+$word["ct_dist"]="Distribution by days/hours";
+$word["members"]="Members";
+$word["new_members"]="New members";
+$word["unsub_members"]="Unsubscribed members";
+$word["unval_members"]="Not validated subscribers";
+$word["copies"]="Copies";
+$word["b_hour"]="hours";
+$word["b_day"]="days";
+$word["b_avg"]="average";
+$word["b_col"]="cols";
+$word["mess_sent"]="Number of messages";
+$word["t_messages"]="messages";
+$word["t_copies"]="copies";
+$word["total_of"]="Total of";
+$word["of_those"]="members, of those";
+$word["satisfies"]="members have data satisfying the filter";
+$word["m_members"]="members";
+$word["demog_max_alert"]="&quot;Max ... members&quot; filter expressions have no effect on demographic statistics";
+$word["filter"]="Filter";
+$word["select"]="-- select --";
+$word["clear_filter"]="Delete filter";
+$word["vd_question"]="Question";
+$word["ds_period"]="Value";
+$word["ds_values"]="Occurence";
+$word["no_demog_question"]="No demographic info is assigned to this group";
+$word["years_old"]="years old";
+$word["most_freq1"]="The";
+$word["most_freq2"]="most frequent values (appearing at least two times)";
+$word["demog_stat"]="Demographic statistics";
+$word["ct_all"]="Clickthrough statistics - whole group";
+$word["ct_click_first"]="First click";
+$word["ct_click_last"]="Last click";
+$word["ct_copies_all"]="Copies in all group";
+$word["ct_ct_ct"]="CT / CT%";
+$word["t_sender"]="Sender";
+$word["t_message"]="Message";
+$word["t_copies"]="Copies";
+$word["email_archive"]="Email archive";
+$word["link"]="links";
+$word["ct"]="CT";
+$word["ctp"]="CT%";
+$word["go"]="go";
+$word["thread"]="Subject";
+$word["my_45_sender"]="Sender";
+$word["time"]="Time";
+$word["ct_"]="Detailed statistics";
+$word["ct_mailnum"]="Outgoing mails";
+$word["ct_clicknum"]="Sum of all clicks";
+$word["ct_clicknum_dist"]="Distinct sum of clicks";
+$word["ct_click_first"]="First click";
+$word["ct_click_last"]="Last click";
+$word["ct_url"]="URL";
+$word["by_ct_url_asc"]="by URL ascending";
+$word["by_ct_url_desc"]="by URL descending";
+$word["url_page"]="URL / page";
+$word["t_click"]="number of clicks";
+$word["t_dclick"]="number of distinct clicks";
+$word["ct_any"]="any URL";
+$word["ctu_"]=" - list of users who clicked on this URL.";
+$word["ctu_num"]="Times";
+$word["email"]="Email address";
+$word["by_ct_url_asc"]="by URL ascending";
+$word["by_ct_url_desc"]="by URL descending";
+$word["member_page"]="members / page";
+$word["notnulluser"]="users have this demog. info";
+$word["titlesg4"]="Subscriptions (with validation)";
+$word["sg_subs_members"]="Validated subscriptions";
+$word["sgs_all"]="Subscriptions";
+$word["sgs_yes"]="Validated";
+$word["sgs_no"]="Not validated";
+$word["sgs_avg"]="Time needed for validation (avg, in hours)";
+$word["t_1x1"]="Views";
+$word["t_d1x1"]="Distinct views";
+$word["all1x1"]="All views";
+$word["all1x1dist"]="All views distinct by user";
+$word["excel_report"]="Excel Report";
+$word["ct_gdist"]="Distribution of all clicks";
+$word["1x1_gdist"]="Distribution of all views";
+$word["t_form_title"]="Form title";
+$word["t_state"]="Status";
+$word["t_fill_time"]="Fill out time";
+$word["t_comm"]="Comment";
+$word["t_fdate"]="Date";
+$word["t_search_text"]="Search text";
+$word["t_form_number"]="Num. of forms";
+$word["t_fastest_fill"]="Fastest fill out time:";
+$word["t_slowest_fill"]="Slowest fill out time:";
+$word["t_average"]="Average time:";
+$word["t_ratio"]="all clicks (mail)/(browser)";
+$word["t_n_finished_endlink"]="Not finished bcz of endlink:";
+$word["t_n_finished_or"]="Not finished bcz of other reason:";
+$word["t_nof_values"]="Number of possible values:";
+$word["boolTrue"]="True";
+$word["boolFalse"]="False";
+?>

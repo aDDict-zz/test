@@ -5,53 +5,84 @@ include "cookie_auth.php";
 include "common.php";
 $language=select_lang();
 include "./lang/$language/members_demog_info.lang";  
-
-if(isset($_GET["users"])){
-  $users  = array();  
-  $arr    = explode("|",$_GET["users"]);
-  foreach($arr as $user){
-    if($user != "")  
-      $users[] = $user;
-  }
-}
+include "./lang/$language/members.lang";
+include "_filter.php";
 
 $_MX_popup = 1;
 include "menugen.php";
 
+$demog_id = get_http('demog_id','');
+$group_id = get_http('group_id','');
+$user_id = get_http('user_id','');
+$filt_demog = get_http('filt_demog','');
+$enter = get_http('enter','');
+$a = get_http('a','');
+if (isset($_POST['demvars'])) {
+    $demvars = $_POST['demvars'];
+}
+else {
+    $demvars = array();
+}
+$error = "";
+$warn_empty = "no";
 
-  $demog_id = get_http('demog_id','');
-  $group_id = get_http('group_id','');
-  $user_id = get_http('user_id','');
-  $enter = get_http('enter','');
-  $a = get_http('a','');
-  $demvars = get_http('demvars','');
+$user_id=intval($user_id);
+$filt_demog=intval($filt_demog);
+$group_id=intval($group_id);
+$demog_id=intval($demog_id);
+$mres = mysql_query("select groups.id,title,num_of_mess,unique_col from groups,members where groups.id=members.group_id
+                   and groups.id='$group_id' and (membership='owner' or membership='moderator' or membership='support')
+                   and user_id='$active_userid'");
+if ($mres && mysql_num_rows($mres)) {
+    $rowg=mysql_fetch_array($mres);  
+}
+else {
+    exit;
+} 
+$title=$rowg["title"];
+$unique_col=$rowg["unique_col"];
 
+$ru=mysql_query("select * from users_$title where id='$user_id'");
+$rf=mysql_query("select * from filter where id='$filt_demog' and group_id='$group_id'");
+if ($ru && mysql_num_rows($ru)) {
+    $user_data=mysql_fetch_array($ru);
+    $scope="user";
+}
+elseif ($rf && mysql_num_rows($rf)) {
+    $filter_data=mysql_fetch_array($rf);
+    $scope="filter";
+}
+else {
+    print "$word[no_such_user]";
+    exit;
+}
 
-  $user_id=intval($user_id);
-  $group_id=intval($group_id);
-  $demog_id=intval($demog_id);
-  $mres = mysql_query("select title,num_of_mess,unique_col from groups,members where groups.id=members.group_id
-                       and groups.id='$group_id' and (membership='owner' or membership='moderator' or membership='support')
-                       and user_id='$active_userid'");
-  if ($mres && mysql_num_rows($mres))
-      $rowg=mysql_fetch_array($mres);  
-  else
-      exit; 
-  $title=$rowg["title"];
-  $unique_col=$rowg["unique_col"];
- 
-  $finished=0;
-  $error="";
-  if ($enter=="yes") {
+if ($scope == "user") {
+    echo "<span class='szovegvastag'>$word[scope_user]:</span><span class='szoveg'> " . $user_data["ui_$rowg[unique_col]"] . "<br><br></span>";
+}
+if ($scope == "filter") {
+    $_MX_filter = new MxFilter($rowg,1);
+    $_MX_filter->GetParams();
+    $_MX_filter->params["show_user_list"] = "no";
+    $_MX_filter->GetSql();
+    if (empty($_MX_filter->update_query)) {
+        exit;
+    }
+    echo "<span class='szovegvastag'>$word[scope_filter]:</span><span class='szoveg'>$filter_data[name]<br><br>$_MX_filter->stat_text<br><br><a target='_blank' href='mygroups14.php?group_id=$group_id&filt_demog=$filt_demog&demog_id=$demog_id'>$word[md_statistics]</a><br><br></span>";
+}
+
+$finished=0;
+$error="";
+if ($enter=="yes") {
     $finished=1;
     VerifyDemog();
-    if (!empty($error)) 
-      $finished=0;
-  }
+    if (!empty($error)) {
+        $finished=0;
+    }
+}
 if ($finished) {
-  $res=mysql_query("select * from demog where id='$demog_id'");
-   if ($res && mysql_num_rows($res))
-     while ($k=mysql_fetch_array($res)) {
+    $res=mysql_query("select * from demog where id='$demog_id'");
+    if ($k=mysql_fetch_array($res)) {
         $variable_name=$k["variable_name"];
         if ($k["variable_type"]=="date" || $k["variable_type"]=="enum" || $k["variable_type"]=="number")
            $vt=$k["variable_type"];
@@ -85,13 +116,19 @@ if ($finished) {
         else 
            $value=$demvars["$variable_name"];
         $value=slasher($value);
-        if(isset($users) && count($users) > 0){
-          foreach($users as $user){
-            mysql_query("update users_$title set ui_$variable_name='$value',tstamp=now() where id='$user'");
-          }
-        } else {
-          mysql_query("update users_$title set ui_$variable_name='$value',tstamp=now() where id='$user_id'"); 
+        $query = "update users_$title set ui_$variable_name='$value',tstamp=now(),data_changed=now() where ";
+        if ($scope == "filter" && !empty($_MX_filter->update_query)) {
+            $query .= $_MX_filter->update_query;
+            $logger_info = "by $scope, filter_id=$filt_demog, total=$_MX_filter->maxrecords";
         }
+        else {
+            $query .= "id='$user_id'";
+            $logger_info = "by $scope $user_id";
+        }
+        //print "$query<br>";
+        logger($query,$group_id,"update",$logger_info,"users_$rowg[title]");
+        mysql_query($query);
+        $error = $word["update_successful"];
      }        
 }
   
@@ -102,7 +139,6 @@ PrintHead();
   echo "
 <tr>
 <td valign='center' align='left'>
-<span class='szovegvastag'>&nbsp;$word[demog_change]: $email</span>
 </td>
 </tr>
 <tr>
@@ -111,7 +147,7 @@ PrintHead();
 <form name='mainform' method='post'>
 <input type='hidden' name='enter' value='yes'>  
 <tr>
-<td colspan=2><span class=ERROR>$error</span></td>
+<td colspan=2><span class='szovegvastag' style='color:red;'>$error</span></td>
 </tr>
 ";
 
@@ -120,12 +156,12 @@ PrintHead();
    echo "
 <tr>
 <td class=INPUTNAME valign='top' colspan=2 align='center'>
-<a href='$_MX_var->baseUrl/members_demog_info.php?group_id=$group_id&user_id=$user_id'>$word[back]</a>&nbsp;
+<input class='tovabbgomb' type='button' value='$word[submit]' name='a' onclick='CheckAll()'><br>&nbsp;
 </td>
 </tr>
 <tr>
 <td class=INPUTNAME valign='top' colspan=2 align='center'>
-<input class='tovabbgomb' type='button' value='$word[submit]' name='a' onclick='CheckAll()'><br>&nbsp;
+<a href='$_MX_var->baseUrl/members_demog_info.php?group_id=$group_id&user_id=$user_id&filt_demog=$filt_demog'>$word[back]</a>&nbsp;
 </td>
 </tr>
 </form>
@@ -166,20 +202,23 @@ include "footer.php";
 #############################################################
 function PrintDemog()
 {
-  global $_MX_var,$word,$demvars,$enter,$active_userid,$multi_id,$user_id,$group_id,$demog_id,$title;
+  global $_MX_var,$word,$demvars,$enter,$active_userid,$multi_id,$user_id,$group_id,$demog_id,$title,$scope;
   
   $res=mysql_query("select * from demog where id='$demog_id'");
   if ($res && mysql_num_rows($res))
      while ($k=mysql_fetch_array($res)) {
         $variable_name=$k["variable_name"];
-        if ($enter=="yes")
-            $value=slasher($demvars["$variable_name"],-1);
+        if ($enter=="yes" && !empty($demvars["$variable_name"])) {
+            $value=htmlspecialchars($demvars["$variable_name"]);
+        }
+        elseif ($scope == "filter") {
+            $value="";
+        }
         else {
           $r5=mysql_query("select ui_$variable_name from users_$title where id='$user_id'");
-          if ($r5 && mysql_num_rows($r5))
+          if ($r5 && mysql_num_rows($r5)) {
              $value=htmlspecialchars(mysql_result($r5,0,0));
-          else
-             $k5="";
+          }
         }
                    
         echo "<tr>
@@ -273,7 +312,7 @@ function PrintDemog()
                     else
                        $demvars[$multisel_varname]=0;
                  }
-                 if ($val==$demvars[$multisel_varname])
+                 if (isset($demvars[$multisel_varname]) && $val==$demvars[$multisel_varname])
                     $sel="checked";
                  else
                     $sel="";
@@ -281,7 +320,7 @@ function PrintDemog()
                        &nbsp;&nbsp;<input type='checkbox' value='$val' name='demvars[$multisel_varname]' $sel>
                        <span class=szoveg>$val2</span></td></tr>";
               }
-           echo "<tr><td colspan='2'><img src='$_MX_var->application_instance/gfx/shim.gif' height='2' width='2'></td>";
+           echo "<tr><td colspan='2'><img src='$_MX_var->application_instance/gfx/spacer.gif' height='2' width='2'></td>";
         }
         echo "</tr>";
      }
@@ -290,17 +329,20 @@ function PrintDemog()
 #############################################################
 function VerifyDemog()
 {
-  global $_MX_var,$word,$demvars,$group_id,$finished,$error,$multi,$multi_id,$demog_id,$unique_col,$title;
+    global $_MX_var,$word,$demvars,$group_id,$finished,$error,$multi,$multi_id,$demog_id,$unique_col,$title,$warn_empty;
   
-  $res=mysql_query("select * from demog where id='$demog_id'");
-  if ($res && mysql_num_rows($res))
-     while ($k=mysql_fetch_array($res)) {
+    $res=mysql_query("select * from demog where id='$demog_id'");
+  
+    while ($k=mysql_fetch_array($res)) {
         $variable_name=$k["variable_name"];
-        $value=slasher($demvars["$variable_name"],0);
-        if (($k["variable_type"]=="text" || $k["variable_type"]=="number" || $k["variable_type"]=="nick" 
-            || $k["variable_type"]=="phone" || $k["variable_type"]=="email") 
-            && $k["mandatory"]=="yes" && trim($value)=="") 
-           $error.= "$word[demog_err_1a] &quot;$k[question]&quot; $word[demog_err_1b].<br>"; 
+        $value = "";
+        if (isset($demvars["$variable_name"])) {
+            $value=slasher($demvars["$variable_name"],0);
+        }
+        if (($k["variable_type"]=="text" || $k["variable_type"]=="number" || $k["variable_type"]=="nick"
+            || $k["variable_type"]=="phone" || $k["variable_type"]=="email")
+            && $warn_empty=="yes" && trim($value)=="")
+           $error.= "$word[demog_err_1a] &quot;$k[question]&quot; $word[demog_err_1b].<br>";
         if ($k["variable_type"]=="number" && trim($value)!="" && !ereg("^[0-9]+$",$value)) 
            $error.= "$word[az] &quot;$k[question]&quot; $word[demog_err_2].<br>"; 
         if ($k["variable_type"]=="phone" && trim($value)!="" && !ereg("^\+?[0-9]+$",$value)) 
@@ -317,27 +359,34 @@ function VerifyDemog()
            $month=intval($demvars["$mname"]);
            $dname=$variable_name."-day";
            $day=intval($demvars["$dname"]);
-           if ($k["mandatory"]=="yes" && $year==0 && $month==0 && $day==0)
+           if ($warn_empty=="yes" && $year==0 && $month==0 && $day==0)
               $error.= "$word[demog_err_1a] &quot;$k[question]&quot; $word[demog_err_1b].<br>";
            if (!($year==0 && $month==0 && $day==0) && !checkdate ($month, $day, $year))
               $error.= "$word[demog_err_6]: $year-$month-$day<br>";
         }
-        if ($k["variable_type"]=="enum" && $k["mandatory"]=="yes" && $k["multiselect"]=="no" && $value==0) 
+        if ($k["variable_type"]=="enum" && $warn_empty=="yes" && $k["multiselect"]=="no" && $value==0) {
            $error.= "$word[demog_err_7a] &quot;$k[question]&quot; $word[demog_err_7b].<br>"; 
         }
-        if ($variable_name==$unique_col) {
+    }
+    if ($variable_name==$unique_col) {
+        if ($scope!="user") {
+            $error.="Can not update unique demog for mutiple users.<br>";
+        }
+        else {
             $svalue=addslashes($value);
             $hvalue=htmlspecialchars($value);
             $res=mysql_query("select id from users_$title where ui_$unique_col='$svalue'");
-            if ($res && mysql_num_rows($res))
+            if ($res && mysql_num_rows($res)) {
                  $error.= "$word[demog_err_8a] &quot;$hvalue&quot; $word[demog_err_8b].<br>"; 
-        }        
+            }
+        }
+    }        
 }
 
 #############################################################
 function MakeJava()
 {
-  global $_MX_var,$word,$demvars,$changenick,$multi_id,$group_id,$demog_id;
+  global $_MX_var,$word,$demvars,$changenick,$multi_id,$group_id,$demog_id,$warn_empty,$scope;
 
 echo "<script>
    function CheckEmpty(val) {
@@ -350,21 +399,31 @@ echo "<script>
    }
    function CheckAll() {
 ";
+    if ($scope != "user") {
+        print "
+            if (!confirm('$word[multiupdate_warn]')) {
+                return false;
+            }
+        ";
+    }
 
   $res=mysql_query("select * from demog where id='$demog_id'");
   $elements=1;
   if ($res && mysql_num_rows($res))
      while ($k=mysql_fetch_array($res)) {
         $variable_name=$k["variable_name"];
-        $value=$demvars["$variable_name"];
-        $question=addslashes($k[question]);
+        $value="";
+        if (!empty($demvars["$variable_name"])) {
+            $value=$demvars["$variable_name"];
+        }
+        $question=addslashes($k["question"]);
         if ($k["variable_type"]=="text" || $k["variable_type"]=="number" || $k["variable_type"]=="nick" 
            || $k["variable_type"]=="phone" || $k["variable_type"]=="email") {
            echo "
               val=document.mainform.elements[$elements].value;
               i=CheckEmpty(val);
            ";           
-           if($k["mandatory"]=="yes")
+          if($warn_empty=="yes")
               echo "
                  if(!i) {
                     alert(\"$word[demog_err_1a] '$question' $word[demog_err_1b].\");
@@ -411,7 +470,7 @@ echo "<script>
               di=document.mainform.elements[$elem3].selectedIndex;
               day=document.mainform.elements[$elem3].options[di].value*1;              
            "; 
-           if ($k["mandatory"]=="yes")
+           if ($warn_empty=="yes")
               echo "
                  if(year<1 && month<1 && day<1) {
                     alert(\"$word[demog_err_1a] '$question' $word[demog_err_1b].\");
@@ -431,7 +490,7 @@ echo "<script>
                  }
               ";           
         }
-        if ($k["variable_type"]=="enum" && $k["mandatory"]=="yes" && $k["multiselect"]=="no") 
+        if ($k["variable_type"]=="enum" && $warn_empty=="yes" && $k["multiselect"]=="no") 
               echo "
                  if(document.mainform.elements[$elements].selectedIndex==0) {
                     alert(\"$word[demog_err_7a] '$question' $word[demog_err_7b].\");
@@ -443,7 +502,7 @@ echo "<script>
            if ($r9 && mysql_num_rows($r9)) {
               $boxnum = mysql_result($r9,0,0);
               $boxend = $elements+$boxnum;
-              if ($k["mandatory"]=="yes") {
+              if ($warn_empty=="yes") {
                  echo "
                    var i=0;
                    var k=0;

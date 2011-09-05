@@ -1,0 +1,13 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["num_of_memb"]="Tagok száma";
+$word["num_of_mess"]="Üzenetek száma";
+$word["mails_total"]="Összes kiküldött emailek száma";
+$word["ct"]="Clickthrough";
+$word["whole_group"]="A teljes csoport";
+$word["not_validated"]="Nem jóváhagyott tagok";
+$word["unsubbed"]="Leiratkozott tagok";
+$word["affs"]="Affiliate tagok";
+$word["unsuccessful_subscribes"]="Nem hitelesített feliratkozások"; 
+$word["bounced"]="Visszapattanó címek";
+?>

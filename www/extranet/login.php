@@ -7,6 +7,7 @@ $password=slasher($_POST["password"]);
 $susername=slasher($_POST["username"]);
 $abstract_login=0;
 $ugyfelkapu_message="";
+$loginerr="";
 
 if (!empty($_MX_ugyfelkapu_request)) {
     $qpart="md5(concat(email,password))='$_MX_ugyfelkapu_request'";
@@ -67,10 +68,10 @@ if ($pw_mod_ask && $pw_mod_days>30) {   // nem valtoztatta meg a jelszavat egy h
 elseif ($memberships && $abstract_login) {
     mt_srand ((double) microtime() * 1000000);
     $randval = mt_rand();
-    $hash=time().$REMOTE_ADDR.$randval.$abstract_login;
+    $hash=time().$_SERVER["REMOTE_ADDR"].$randval.$abstract_login;
     //echo $hash;
     $unique_id = md5($hash);
-    $params = $request_uri;
+    $params = $_SERVER["REQUEST_URI"];
     setcookie("cunique_id",$unique_id,0,"/");
     setcookie("cuser_id",$abstract_login,0,"/");
     mysql_query("update user set unique_id = '$unique_id' where id='$abstract_login'");

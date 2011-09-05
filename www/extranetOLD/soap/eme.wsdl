@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://89.135.48.163:8080/teszt/mff/soap/maxima.php" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="WS_SB_EME" targetNamespace="http://89.135.48.163:8080/teszt/mff/soap/maxima.php">
+<types>
+<xsd:schema targetNamespace="http://89.135.48.163:8080/teszt/mff/soap/maxima.php"/>
+</types>
+<portType name="WS_SB_EMEPort">
+<operation name="Expiring">
+<documentation>Sends information about subscriptions that will expire within 3 days</documentation>
+<input message="tns:ExpiringIn"/>
+<output message="tns:ExpiringOut"/>
+</operation>
+</portType>
+<binding name="WS_SB_EMEBinding" type="tns:WS_SB_EMEPort">
+<soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+<operation name="Expiring">
+<soap:operation soapAction="http://89.135.48.163:8080/teszt/mff/soap/maxima.php#Expiring"/>
+<input>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://89.135.48.163:8080/teszt/mff/soap/maxima.php"/>
+</input>
+<output>
+<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://89.135.48.163:8080/teszt/mff/soap/maxima.php"/>
+</output>
+</operation>
+</binding>
+<service name="WS_SB_EMEService">
+<port name="WS_SB_EMEPort" binding="tns:WS_SB_EMEBinding">
+<soap:address location="http://89.135.48.163:8080/teszt/mff/soap/maxima.php"/>
+</port>
+</service>
+<message name="ExpiringIn">
+<part name="client_id" type="xsd:string"/>
+<part name="mobiles" type="soap-enc:Array"/>
+</message>
+<message name="ExpiringOut">
+<part name="return" type="xsd:int"/>
+</message>
+</definitions>

@@ -110,7 +110,7 @@ $error=array();
 
 if ($enter == 'yes') {
     if (is_array($_POST['de'])) {
-        $res = mysql_query("select * from demog_enumvals where demog_id='$formdata[demog_id]' and deleted='no'"); //die("select * from demog_enumvals where demog_id='$formdata[demog_id]' and deleted='no'");
+        $res = mysql_query("select * from demog_enumvals where demog_id='$formdata[demog_id]' and deleted='no'");
         //print("select * from demog_enumvals where demog_id='$formdata[demog_id]' and deleted='no'");
         if (isset($_POST["default_value"]) && ereg("^[0-9]+$",$_POST["default_value"])) {
             $default_value=$_POST["default_value"];
@@ -153,7 +153,19 @@ if ($enter == 'yes') {
             $multi_append="yes";
         }
         $_POST["direction"]=="horizontal"?$direction="horizontal":$direction="vertical";
-        $_POST["maxlength"]=="100"?$maxlength="100":$maxlength="0";
+        // For matrices, we use maxlength to set the width of the first column:
+        // 0 - not set
+        // 100 - maximum length, 100%
+        // <0 - -maxlength pixels
+        if (isset($_POST["maxlength"])) {
+            $maxlength="100";
+        }
+        elseif (isset($_POST["maxlengthpx"])) {
+            $maxlength= - abs(intval($_POST["maxlengthpx"]));
+        }
+        else {
+            $maxlength="0";
+        }
         mysql_query("update form_element set maxlength='$maxlength',hide_option='$hide_option',multi_append='$multi_append',
                      direction='$direction',default_value='$default_value' where id='$form_element_id'");
         $formdata["hide_option"]=$hide_option;
@@ -188,14 +200,27 @@ echo "<tr>
 </tr>";
 $formdata["hide_option"]=="yes"?$hocheck="checked":$hocheck="";
 $formdata["direction"]=="horizontal"?$dicheck="checked":$dicheck="";
-$formdata["maxlength"]=="100"?$mlcheck="checked":$mlcheck="";
+$mlcheck="";
+$maxlengthpx="";
+if ($formdata["maxlength"]=="100") {
+    $mlcheck="checked";
+}
+if ($formdata["maxlength"]<0) {
+    $maxlengthpx= - $formdata["maxlength"];
+}
 
 if ($formdata["widget"]!="hidden") {
     if (in_array($formdata["widget"],array("radio_matrix","checkbox_matrix"))) {
-        print "<tr><td colspan='$colspan' bgcolor='white'><span class='szoveg'><input type='checkbox' name='direction' value='horizontal' $dicheck> $word[fe_m_direction]</span></td></tr><tr><td colspan='$colspan' bgcolor='white'><span class='szoveg'><input type='checkbox' name='maxlength' value='100' $mlcheck> $word[fe_m_maxlength]</span></td></tr>";
+        print "<tr><td colspan='$colspan' bgcolor='white'><span class='szoveg'>
+               <input type='checkbox' name='direction' value='horizontal' $dicheck> $word[fe_m_direction]
+                    </span></td></tr><tr><td colspan='$colspan' bgcolor='white'><span class='szoveg'>
+               $word[fe_m_firstlength] <input size='4' name='maxlengthpx' value='$maxlengthpx'>px <input type='checkbox' name='maxlength' value='100' $mlcheck> $word[fe_m_maxlength]</span></td></tr>";
     }
     else {
-        print "<tr><td colspan='$colspan' bgcolor='white'><span class='szoveg'><input type='checkbox' name='hide_option' value='yes' $hocheck> $word[fe_hide_option]</span></td></tr><tr><td colspan='$colspan' bgcolor='white'><span class='szoveg'><input type='checkbox' name='direction' value='horizontal' $dicheck> $word[fe_direction]</span></td></tr>";
+        print "<tr><td colspan='$colspan' bgcolor='white'><span class='szoveg'>
+                <input type='checkbox' name='hide_option' value='yes' $hocheck> $word[fe_hide_option]
+                    </span></td></tr><tr><td colspan='$colspan' bgcolor='white'><span class='szoveg'>
+                <input type='checkbox' name='direction' value='horizontal' $dicheck> $word[fe_direction]</span></td></tr>";
     }
     if ($formdata["widget"]=="radio_matrix") {
         print "<tr><td colspan='$colspan' bgcolor='white'><span class='szoveg'><input type='checkbox' name='hide_option' value='yes' $hocheck> $word[fe_m_hide_option]</span></td></tr>";
@@ -218,7 +243,7 @@ if ($demogdata["multiselect"]=="yes") {
 }
 
 $fsel=array();
-$r2=mysql_query("select demog_enumvals_id,title,default_aff from form_element_enumvals where form_element_id='$form_element_id'"); //die("select demog_enumvals_id,title,default_aff from form_element_enumvals where form_element_id='$form_element_id'");
+$r2=mysql_query("select demog_enumvals_id,title,default_aff from form_element_enumvals where form_element_id='$form_element_id'");
 if ($r2 && mysql_num_rows($r2)) {
     while ($z=mysql_fetch_array($r2)) {
         $fsel[$z['demog_enumvals_id']] = 1;

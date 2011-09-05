@@ -1,0 +1,36 @@
+<?
+# members_demog_info.lang is used by members_demog_info.php,members_demog_info_change.php,invite.php
+include_once "./lang/$language/common.lang";
+$word["no_such_user"]="Nincs ilyen user!";
+$word["change"]="változtatás";
+$word["demog_change"]="Demographic info változtatása";
+$word["submit"]="Mehet";
+$word["year"]="év";
+$word["not_specified"]="- válasszon -";
+$word["demog_err_1a"]="Nem töltötte ki a(z)";
+$word["demog_err_1b"]="mezőt";
+$word["demog_err_2"]="mező csak számjegyekből állhat";
+$word["demog_err_3"]="mező csak számjegyekből állhat, az elején lehet + jel";
+$word["demog_err_4"]="Hibás email cím";
+$word["demog_err_5"]="mező csak . + - _ a-z ből állhat";
+$word["demog_err_6"]="Hibás dátum";
+$word["demog_err_7a"]="Nem választott a(z)";
+$word["demog_err_7b"]="opciói közül";
+$word["m01"]="Január";
+$word["m02"]="Február";
+$word["m03"]="Március";
+$word["m04"]="Április";
+$word["m05"]="Május";
+$word["m06"]="Június";
+$word["m07"]="Július";
+$word["m08"]="Augusztus";
+$word["m09"]="Szeptember";
+$word["m10"]="Október";
+$word["m11"]="November";
+$word["m12"]="December";
+$word["back"]="Vissza";
+$word["affiliate"]="Affiliate";
+$word["demog_err_8a"]="Már létezik";
+$word["demog_err_8b"]="azonosító a csoportban.";
+$word["tstamp"]="utolsó frissítés";
+?>

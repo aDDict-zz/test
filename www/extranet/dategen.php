@@ -15,17 +15,12 @@ $max_graph_diff=50;
 $start_daynum=0;
 $end_daynum=$now;
 
-$messdebug.= ${"sessperiod$nav_id"};
-$messdebug.= "*";
-$messdebug.= ${"sessstart_daynum$nav_id"};
-$messdebug.= "*";
-$messdebug.= ${"sessend_daynum$nav_id"};
-$messdebug.= "|0*$end_daynum";
-
 $vartypes=array("lday","lmonth","lyear","startyear","endyear","startmonth","endmonth","startday","endday","period","period_left","peiod_right","sessperiod$nav_id","sessstart_daynum$nav_id","sessend_daynum$nav_id");
 foreach ($vartypes as $vvvt) {
     $$vvvt=get_http($vvvt,"");
-    if (!$$vvvt) $$vvvt=slasher($_COOKIE[$vvvt]);
+    if (empty($$vvvt) && isset($_COOKIE[$vvvt])) {
+        $$vvvt=slasher($_COOKIE[$vvvt]);
+    }
 }
 
 if (!($lday || $lmonth || $lyear || $startyear || !empty($period))) {
@@ -37,7 +32,6 @@ if (!($lday || $lmonth || $lyear || $startyear || !empty($period))) {
     }
     else
         $period="lastmonth";
-$messdebug.= "|1*$end_daynum";
 }
 
 if ($lday) {
@@ -46,7 +40,6 @@ if ($lday) {
       $start_daynum=mysql_result($res,0,0);
       $end_daynum=$start_daynum;
    }
-$messdebug.= "|2*$end_daynum";
 }
 elseif ($lmonth) {
    $month_end=date("t",mktime(0,0,0,$lmonth,15,$lyear));
@@ -55,7 +48,6 @@ elseif ($lmonth) {
       $start_daynum=mysql_result($res,0,0);
       $end_daynum=mysql_result($res,0,1);
    }
-$messdebug.= "|3*$end_daynum";
 }
 elseif ($lyear) {
    $res=mysql_query("select to_days('$lyear-1-1'),to_days('$lyear-12-31')");
@@ -63,7 +55,6 @@ elseif ($lyear) {
       $start_daynum=mysql_result($res,0,0);
       $end_daynum=mysql_result($res,0,1);
    }
-$messdebug.= "|4*$end_daynum";
 }
 
 if ($startyear) {
@@ -73,7 +64,6 @@ if ($startyear) {
       $start_daynum=mysql_result($res,0,0);
       $end_daynum=mysql_result($res,0,1);
    }
-$messdebug.= "|5*$end_daynum";
 }
 if ($period=="today") {
    $start_daynum=$now;
@@ -98,14 +88,13 @@ if ($period=="allcamp") {
 	   $end_daynum=$now;
    }
 }
-$messdebug.= "|6*$end_daynum";
 
-if (strlen($period_right)) {
+if (!empty($period_right)) {
    $daynum_diff=$end_daynum-$start_daynum;
    $start_daynum=$start_daynum+$daynum_diff+1;
    $end_daynum=$end_daynum+$daynum_diff+1;
 }
-if (strlen($period_left)) {
+if (!empty($period_left)) {
    $daynum_diff=$end_daynum-$start_daynum;
    $start_daynum=$start_daynum-$daynum_diff-1;
    $end_daynum=$end_daynum-$daynum_diff-1;
@@ -121,9 +110,8 @@ if ($start_daynum>$end_daynum)
    $start_daynum=$end_daynum;
 if ($end_daynum-$start_daynum>$max_daynum_diff)
    $start_daynum=$end_daynum-$max_daynum_diff;
-$messdebug.= "|7*$end_daynum";
 
-if (!empty($period) && !strlen($period_left) && !strlen($period_right)) {
+if (!empty($period) && empty($period_left) && empty($period_right)) {
     setcookie("sessperiod$nav_id",$period,time()+3600);
     setcookie("sessend_daynum$nav_id");
     setcookie("sessstart_daynum$nav_id");

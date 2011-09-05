@@ -11,7 +11,7 @@ function logger($query="",$group_id=0,$action="",$info="",$table_name="",$multig
 	$qr=strtolower(substr($query,0,6));
 	if ($action==null && $query!=null) 
 		$action=$logger_actions[$qr];
-	else
+	elseif (isset($logger_actions[$action]))
 		$action=$logger_actions[$action];	
 	if ($action==null) $action=$logger_actions["select"];	
 	if ($active_userid==null) $active_userid=0;

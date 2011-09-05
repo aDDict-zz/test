@@ -1,0 +1,18 @@
+<?
+include_once "./lang/$language/common.lang";
+$word["error_handling"]="Error handling";
+$word["st_admin_phones"]="System administrators' phone numbers";
+$word["st_admin_emails"]="System administrators' email addresses";
+$word["st_cloudmark_email"]="Cloudmark email address";
+$word["st_sms_maxima0"]="SMS alert - mail sending";
+$word["st_sms_sender_engine"]="SMS alert - sender engine";
+$word["st_log_maxima0"]="Mail sending errors";
+$word["st_log_sender_engine"]="Sender engine errors";
+$word["data_changed"]="Data has been succesfully changed.";
+$word["t_datum"]="Date";
+$word["t_error"]="Description";
+$word["st_question_pos"]="Question at top in query forms"
+$word["st_subscribe_id"]="Subscribe ID";
+$word["st_check_subscribe_id"]="Checked at subscribe";
+$word["st_domains_linked_images"]="Domains for linked images (separated by commas)";
+?>

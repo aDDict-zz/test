@@ -44,13 +44,26 @@ else {
 if ($k["variable_type"]!="matrix" && $k["variable_type"]!="enum") {
     exit;
 }
-//!!!!!!!!!!!!!!!!! TODO
-$readonly=0;
+$readonly=1; 
 // 2007-03-31 - $_MX_change_variables - az ilyen felhasznalo valtoztathat minden, a csoporthoz hozzaadhato demog infot
 // a csoporthoz azok a demog infok adhatok hozza amelyek ehhez a csoporthoz vannak rendelve vagy nincsenek csoporthoz rendelve.
 //if ($_MX_superadmin || $k["groups"]==$group_id || ($_MX_change_variables && $k["groups"]=="")) {
 if ($_MX_superadmin || $k["groups"]==$group_id || $_MX_change_variables) {
     $readonly=0;
+}
+$in_this_group=0;
+$issue_warning = "";
+$rin = mysql_query("select * from vip_demog where group_id=$group_id and demog_id=$demog_id");
+if ($rin && mysql_num_rows($rin)) {
+    $in_this_group=1;
+}
+if ($readonly && $in_this_group) {
+    $readonly=0;
+    $rin = mysql_query("select group_concat(g.name order by g.name) from vip_demog vd,groups g 
+                        where g.id=vd.group_id and vd.group_id!=$group_id and vd.demog_id=$demog_id");
+    if ($rin && mysql_num_rows($rin)) {
+        $issue_warning = $word["variable_in_other_groups"] . " " . str_replace(",",", ",mysql_result($rin,0,0));
+    }
 }
 
 $allparm=$_MX_demog->GetParams();
@@ -102,6 +115,10 @@ if (isset($_POST["enter"]) && !$readonly) {
     }
 }
 
+if ($issue_warning) {
+    print "<tr><td colspan='3' style='padding:12px;'><span class='szovegvastag'>$issue_warning</span></td></tr>\n";
+}
+
 print "<tr><td class='bgkiemelt2' align=left colspan='3'><span class=szovegvastag>$k[variable_name] - $hvert</span>$hallparm<input type='hidden' name='demog_id' value='$demog_id'><input type='hidden' name='optvert' value='$optvert'><input type='hidden' name='enter' value='1'><input type='hidden' name='from' value='$from'></td></tr>
 <tr><td class='bgkiemelt2'><span class=szovegvastag>$hhvert</span></td><td class='bgkiemelt2'>$word[ev_code]</td>";
 if (!$readonly) {
@@ -131,7 +148,6 @@ print "</tbody>
 if (!$readonly) {
     print "<input name='enterx' type='button' value='$word[ev_save]' class='btn' onclick='v.submit();'>";
 }
-
 print "<input name='entery' type='button' value='$word[ev_close]' class='btn' onclick='$refr window.close();'></div>
 </form>
 <script language=\"javascript\">
@@ -155,12 +171,6 @@ function aeinit() {
 }
 aeinit();
 </script>
-
-<br /><br />"
-. (!$readonly ? getAnotherRelevantGroups($demog_id) : null) .
-"
-
 </body>
 </html>\n";
-
 ?>

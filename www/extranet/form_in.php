@@ -29,6 +29,30 @@ if (isset($_GET["form_email_id"])) {
         $form_id=mysql_result($res,0,0);
     }
 }
+if (isset($_GET["form_id"])) {
+    $form_id = intval($_GET["form_id"]);
+}
+
+$res=mysql_query("select * from form where id='$form_id' and group_id='$group_id'");
+if ($res && mysql_num_rows($res))
+    $formdata=mysql_fetch_array($res);
+else
+    exit;
+
+if (isset($_GET["toggle_options"])) {
+    if (empty($_GET["toggle_options"])) {
+        mysql_query("delete fee from form_element fe, form_element_enumvals fee where fe.form_id=$form_id and fe.id=fee.form_element_id");
+    }
+    else {
+        mysql_query("insert into form_element_enumvals (form_element_id,demog_enumvals_id,sortorder) 
+                     select fe.id,de.id,de.id from 
+                        form_element fe inner join demog_enumvals de on fe.demog_id=de.demog_id 
+                        left join form_element_enumvals fee on de.id=fee.demog_enumvals_id and fe.id=fee.form_element_id 
+                        where fe.form_id=$form_id and de.deleted='no' and fee.demog_enumvals_id is null");
+    }
+    header("Location: form_elements.php?form_id=$form_id&group_id=$group_id&toggle_options=$_GET[toggle_options]");
+    exit;
+}
 
 if (isset($_GET["addspec"]) && isset($_GET["form_element_id"])) {
     $addspec=$_GET["addspec"];
@@ -104,22 +128,9 @@ if (isset($_GET["addspec"]) && isset($_GET["form_element_id"])) {
     exit;
 }
 
-$res=mysql_query("select * from form where id='$form_id' and group_id='$group_id'");
-if ($res && mysql_num_rows($res))
-    $formdata=mysql_fetch_array($res);
-else
-    exit;
-
 //http://www.manufacture.co.yu/maxima/form_in.php?group_id=543&move=1&form_element_id=2&dir=0&by=4
 if (isset($_GET["move"])) {
     $form_element_id=get_http("form_element_id",0,1);
-    // Look up the ID of the form
-    $query=mysql_query("select form_id from form_element where id='$form_element_id'");
-    if (!$query || !mysql_num_rows($query)) {
-        exit;
-    }
-    $row=mysql_fetch_array($query);
-    $form_id=$row['form_id'];
     // Get all the elements of the form, sorted the same way as visible to the user
     $query="select id, page, box_id, sortorder from form_element
                          where form_id='$form_id' order by page, box_id, sortorder";
@@ -334,8 +345,8 @@ function add_element($demog_id, $page_id, $box_id, $where, $new = false)
             if ($row["variable_type"] == "enum") {
                 $widget = $row["multiselect"] == "yes"? "checkbox": "radio";
             } elseif ($row["variable_type"] == "enum_other") {
-                $widget = $row["multiselect"] == "yes"? "checkbox_other": "radio_other"; 
-            } elseif ($row["variable_type"] == "matrix") { 
+                $widget = $row["multiselect"] == "yes"? "checkbox_other": "radio_other";
+            } elseif ($row["variable_type"] == "matrix") {
                 $widget = $row["multiselect"] == "yes"? "checkbox_matrix": "radio_matrix";
             } elseif ($row["variable_type"] == "date") {
                 $widget = "datum";
@@ -349,11 +360,6 @@ function add_element($demog_id, $page_id, $box_id, $where, $new = false)
                                  '$demog_id', '$question', '$widget', '$row[mandatory]','".trim($rowg["question_position"]
 )."')";
             mysql_query($query);
-            
-            if ($row["variable_type"] == "enum" && $_GET["enum"] == "true"){ 
-              setEnumValuesOn(mysql_insert_id(),$demog_id);
-            }
-            
 			logger($query,$group_id,"","","form_element");                                 
         }
     } else {
@@ -363,24 +369,6 @@ function add_element($demog_id, $page_id, $box_id, $where, $new = false)
         mysql_query($query);
 		logger($query,$group_id,"","form_element_id=$form_id","form_element");                                                       
     }   
-}
-
-function setEnumValuesOn($formElementId,$demogId){
-  $PDO = getPDO::get();
-  $res = $PDO->query("select id from demog_enumvals where demog_id = {$demogId} and deleted = 'no'")->fetchAll(PDO::FETCH_ASSOC);
-    //print_r($res);
-  foreach($res as $arr){
-    //echo $arr["id"] . "<br />";
-    $PDO->query("
-      insert into 
-        form_element_enumvals
-          (form_element_id,demog_enumvals_id,sortorder,break_after,excludes_others)
-      values
-        ('{$formElementId}','{$arr["id"]}','{$arr["id"]}','no','no');
-    ");
-  }
-  
-  //die();
 }
 
 function next_sortorder($page_id, $box_id)

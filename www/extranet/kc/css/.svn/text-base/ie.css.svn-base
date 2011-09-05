@@ -1,0 +1,17 @@
+/* 4 simplemodal*/
+/*
+#simplemodal-container a.modalCloseImg {background:none; right:-14px; width:22px; height:26px; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../gfx/x.png',sizingMethod='scale');}
+*/
+
+div.dropmenudiv { margin-top:22px;margin-left:-4px; }
+#smenu1 {margin-left:-9px;width:140px;}
+#smenu5 {width:85px;}
+#smenu4 {width:155px;}
+#smenu3 {width:200px;}
+#smenu6 {width:121px;}
+#smenu2 {width:190px;}
+#smenu14 {width:92px;}
+
+div#header_right_stuff div { margin-left:8px; }
+
+.trborderblue {border-style: none; border-width: 0px 1px 1px 0px; border-color: #336699; padding: 2px;}

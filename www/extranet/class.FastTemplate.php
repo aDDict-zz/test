@@ -300,7 +300,7 @@ class FastTemplate {
 			if($append)
 			{
 				$this->$ReturnVar .= $this->parse_template($this->$val,$this->PARSEVARS);
-			} else if ($preappend) {
+			} else if (!empty($preappend)) {
 				$this->$ReturnVar = $this->parse_template($this->$val,$this->PARSEVARS).$this->$ReturnVar;
       }
 			else

@@ -1,0 +1,21 @@
+<?
+include_once "./lang/$language/common.lang";
+# invite.lang is used by mygroups6.php,mygroups17.php,invite.php
+$word["mail_invited"]="the owner of this group has invited you to this group.";
+$word["self_email_addr"]="Error! This is address of a list:";
+$word["is_already_member"]="is already member of this group";
+$word["is_already_invited"]="is already invited";
+$word["mail_ensure"]="just to ensure that you are not faking someone's e-mail, please just reply to this message to validate yourself. thank you.";
+$word["mail_subscr_pref"]="subscription to group";
+$word["mail_subscr_suff"]="";
+$word["invite_success"]="The invitations were successfully sent.";
+$word["wrong_email_addr"]="Invalid email address";
+$word["prefix_invite"]="Invitation to";
+$word["sufix_invite"]="group";
+$word["invite_description"]="Enter the email adresses delimited with spaces";
+$word["submit"]="Go";
+$word["invite_text"]="Invite text";
+$word["take_new_member"]="Take new member to the group";
+$word["new_member"]="New member";
+
+?>

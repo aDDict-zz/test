@@ -1,14 +1,10 @@
 <?
-
-
-
-
 require_once "_variables.php";
 
 $_MX_testversion = "";
 $_MX_testsite = "";
 
-if (preg_match("'(alfa|beta).(maxima.hu|lightmail.hu)'",$_SERVER["HTTP_HOST"],$regs)) {
+if (preg_match("'(alfa|beta).(maxima.hu|lightmail.hu|kutatocentrum.hu|researchcenter.hu)'",$_SERVER["HTTP_HOST"],$regs)) {
     $_MX_testversion = $regs[1];
     $_MX_testsite = $regs[2];
 }
@@ -28,22 +24,29 @@ if (!empty($_MX_testversion)) {
     }
 }
 
-$_MX_var->db_connect("main",/*$_MX_public_database*/ 0); //print_r($_MX_var); die();
+if (!isset($_MX_public_database)) {
+    $_MX_public_database = 0;
+}
+$_MX_var->db_connect("main",$_MX_public_database);
 
+session_start();
 header("Expires: Mon, 5 Sep 1991 12:49:00 GMT");
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . "GMT"); 
 header("Cache-Control: no-cache, must-revalidate");
 header("Pragma: no-cache");
-session_start();
 
-$id=intval($_REQUEST["id"]); 
-$group_id=intval($_REQUEST["group_id"]); 
-$base_id=intval($_REQUEST["base_id"]); 
-$delete_id=intval($_REQUEST["delete_id"]); 
-$form_id=intval($_REQUEST["form_id"]);   
-$message_id=intval($_REQUEST["message_id"]);
+$ints = array("id","group_id","base_id","delete_id","form_id","message_id","multiid","weare");
+foreach ($ints as $intset) {
+    if (isset($_REQUEST["$intset"])) {
+        $$intset = intval($_REQUEST["$intset"]);
+    }
+    else {
+        $$intset = 0;
+    }
+}
 
-$language=select_lang();
+$language = select_lang();
+$plusdot = "";
 
 // As the project is being prepared to be moved to php5, we should use this function to get data from GET/POST
 function get_http($var,$default,$sql_escape=1) {
@@ -53,14 +56,7 @@ function get_http($var,$default,$sql_escape=1) {
         return rawurldecode(slasher($_GET["$var"],$sql_escape));
     }
     elseif (isset($_POST["$var"])) {
-      switch(gettype($_POST["$var"])){
-        case "string":
-          return slasher($_POST["$var"],$sql_escape);
-        break;
-        default:
-          return $_POST["$var"];
-        break;
-      }
+        return slasher($_POST["$var"],$sql_escape);
     }
     else {
         return $default;
