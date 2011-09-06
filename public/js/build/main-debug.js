@@ -70,7 +70,7 @@ Ext.define('Model', {
 	router 		: {},
 	
 	constructor	: function(reference) {
-		// storing the relevant controller instance reference
+		// storing the relevant controller instance reference for the ajax callback
 		this.router = reference;
 		this.getAjaxData();
 	}
@@ -83,27 +83,43 @@ Ext.define('View', {
 	render 		: function() {},
 	constructor	: function() {}
 });
-Ext.define('GroupController', {
+/**
+ * class FormBuilder
+ */
+Ext.define('FormBuilder', {
+	
+	statics     : {
+		// its a wrapper for Ext.domHelper.append
+		render 		: function(parent, data) {
+			for(var i = 0,len = data.elements.length; i < len; i++){
+				console.log(data.elements[i]);
+			}
+		}
+	},
+	
+	constructor	: function() {
+	}
+});Ext.define('GroupController', {
 
 	extend: 'Controller',
 	
 	//this time the relevant model is done with his job, all response data are stored in scope.data
 	ajaxCallback: function(scope){
-		var groupView = new GroupsView();
+		var groupView = new GroupView();
 		groupView.render(scope.data);
 	},
 	
 	getData : function(){
 		var self = this;
-		new GroupsModel(self);
+		new GroupModel(self);
 	}
 	
 });Ext.define('LoginController', {
 
 	extend: 'Controller',
 	
-	ajaxCallback: function(scope){ alert("sadasds");
-		var loginView = new GroupsView();
+	ajaxCallback: function(scope){
+		var loginView = new LoginView();
 		loginView.render(scope.data);
 	},
 	
@@ -112,45 +128,12 @@ Ext.define('GroupController', {
 		new LoginModel(self);
 	}
 	
-});Ext.define('GroupsView', {
+});Ext.define('LoginView', {
 
 	extend: 'View',
 	
-	render: function(data){ console.log("sadsad");
-		console.log(data);
-	}
-	
-});Ext.define('GroupsModel', {
-
-	extend: 'Model',
-	
-	mapper: function(data){
-		
-		var self 	= this;
-		// store the data
-		self.data 	= Ext.JSON.decode(data.responseText);
-		// call the callback method of the relevant controller
-		self.router.ajaxCallback(self);
-	},
-	
-	getAjaxData: function(){
-		
-		var self = this;
-		
-		var datas = {
-			'elso' : 'ELSO',
-			'masodik' : {
-				'valami' 	: [0,1,2,3],
-				'masvalami' : 'SEMMISEM'
-			}
-		};
-		
-		AJAX.post(
-			"group/",
-			['data=',Ext.JSON.encode(datas)].join(''),
-			this.mapper,
-			self
-		);
+	render: function(data){
+		var thisView = FormBuilder.render(document.body,data);
 	}
 	
 });Ext.define('LoginModel', {

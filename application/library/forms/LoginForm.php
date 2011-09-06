@@ -1,6 +1,46 @@
 <?php
 
-class LoginForm extends Zend_Form {
+class LoginForm extends FormBuilder{
+  
+  protected function login(){
+    return array(
+      "name"      => "loginForm",
+      "elements"  => array(
+          array(
+            "tag" => "input",
+            "type" => "text",
+            "name" => "username",
+            "value" => "",
+            "label" => "user",
+           ),
+           array(
+            "tag" => "input",
+            "type" => "hidden",
+            "name" => "{$this->form}token",
+            "value" => $this->getHash(),
+            "label" => "",
+           ),
+           array(
+            "tag" => "input",
+            "type" => "password",
+            "name" => "password",
+            "value" => "",
+            "label" => "pass",
+           ),
+           array(
+            "tag" => "input",
+            "type" => "submit",
+            "name" => "submit",
+            "value" => "Go",
+            "label" => "submit",
+           )
+      )
+    );
+  }
+  
+}
+
+/*class LoginForm extends Zend_Form {
   
   public function init() {
     $username = $this->addElement('text', 'username', array(
@@ -39,4 +79,4 @@ class LoginForm extends Zend_Form {
       'Form'
     ));
   }
-}
+}*/

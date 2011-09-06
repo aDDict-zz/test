@@ -3,7 +3,7 @@
 class LoginController extends Zend_Controller_Action {
   
   public function indexAction() {
-    $form = new FormBuilder("login");
+    $form = new LoginForm("login");
     echo  $form->getJSONCfg();
     
     $this->_helper->viewRenderer->setNoRender(true);

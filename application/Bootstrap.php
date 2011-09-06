@@ -32,6 +32,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
     define('ROOT_DIR', $rootDir);
     set_include_path(get_include_path()
       . PATH_SEPARATOR . ROOT_DIR . '/application/library/forms/'
+      . PATH_SEPARATOR . ROOT_DIR . '/library/'
       . PATH_SEPARATOR . ROOT_DIR . '/application/library/auth/'
     );
     

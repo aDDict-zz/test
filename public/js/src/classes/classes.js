@@ -67,7 +67,7 @@ Ext.define('Model', {
 	router 		: {},
 	
 	constructor	: function(reference) {
-		// storing the relevant controller instance reference
+		// storing the relevant controller instance reference for the ajax callback
 		this.router = reference;
 		this.getAjaxData();
 	}
@@ -79,4 +79,37 @@ Ext.define('View', {
 	
 	render 		: function() {},
 	constructor	: function() {}
+});
+/**
+ * class FormBuilder
+ */
+Ext.define('FormBuilder', {
+	
+	statics     : {
+		// its a wrapper for Ext.domHelper.append
+		render 		: function(parent, data) {
+			var el;
+			for(var i = 0,len = data.elements.length; i < len; i++){
+				el = data.elements[i];
+				Ext.domHelper.append(parent, {
+					tag		: "div",
+					cls		: "formElementWrapper",
+					style	: "",
+					htmlFor	: "",
+					html	: "",
+					cn: [{
+						tag: el.tag,
+						cls: "formElement",
+						style: "",
+						htmlFor: "",
+						html: "",
+						value : (el.value ? el.value : "")
+					}]
+				});
+			}
+		}
+	},
+	
+	constructor	: function() {
+	}
 });
