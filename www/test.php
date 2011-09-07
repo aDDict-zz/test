@@ -11,21 +11,31 @@ header("Content-Type: text/html; charset={$charset}");
 #  echo "need params";
 
 
-#if(isset($_GET["group"]) && isset($_GET["form"]) && isset($_GET["newgroup"]))
-#  cloneFormAndDemogsByGroup($_GET["group"], $_GET["form"], $_GET["newgroup"]);
-#else
-#  echo "need params";
+if(isset($_GET["group"]) && isset($_GET["form"]) && isset($_GET["newgroup"]))
+  cloneFormAndDemogsByGroup($_GET["group"], $_GET["form"], $_GET["newgroup"]);
+else
+  echo "need params";
 
 //joinGroups2Members(1554, 59446); //59446  Tamas, 81241 sajat
-//joinGroups2Members(1629, 59446);
+//joinGroups2Members(1629, 59446); 59446
+
+copymembersgroups(59446,81241);
+
+
+function copymembersgroups($from,$to){
+  $PDO = getPDO::get();
+  $res = $PDO->query("
+    select group_id from members where user_id = {$from}
+  ")->fetchAll(PDO::FETCH_ASSOC);
+  foreach($res as $group_id){
+    joinGroups2Members($group_id["group_id"],$to);
+  }
+}
 
 function joinGroups2Members($group_id, $user_id){
   $PDO        = getPDO::get();
   $PDO->query("insert into members(user_id,group_id,membership,create_date,modify_date,tstamp,trusted_affiliate,kedvenc) values({$user_id},{$group_id},'moderator','2011-09-02','2011-09-02',NOW(),'no','no')");
 }
-
-//showResult("select id from form where group_id = 1629");
-
 
 function showResult($sql){
   $PDO        = getPDO::get();
@@ -33,22 +43,7 @@ function showResult($sql){
 }
 
 
-addFormElementDeps(305,230);
 
-//305
-function addFormElementDeps($toID, $frID){
-	$PDO  = getPDO::get();
-  $res  = $PDO->query("
-    select fe.id, fed.dependent_id, fed.id as fedId from form_element fe
-    join form_element_dep fed on fe.id = fed.form_element_id
-    where fe.form_id = {$frID} 
-  ")->fetchAll(PDO::FETCH_ASSOC);
-  
-  foreach($res as $result){
-    $thisRes  = $PDO->query("select id from form_element where demog_id = {$result["dependent_id"]} and form_id = {$toID}")->fetchAll(PDO::FETCH_ASSOC);
-    $PDO->query( getSQLInsert($result["fedId"], "form_element_dep", array("form_element_id" => $thisRes[0]["id"])) );
-  }
-}
 
 
 // example query: group=1554&form=230&newgroup=1629
@@ -101,7 +96,7 @@ function cloneFormAndDemogsByGroup($group, $form_id, $new_group_id){
         select * from form_element_dep where form_element_id = {$formElementId["id"]};
       ")->fetchAll(PDO::FETCH_ASSOC);
       
-      
+      //TODO  a beirt form_element_dep recordot vissza kell irni a form_elementbe
       
       foreach($res as $depIds){
         $PDO->query( getSQLInsert($depIds["id"], "form_element_dep", array("form_element_id" => $newFormElementId)) );
@@ -118,31 +113,82 @@ function cloneFormAndDemogsByGroup($group, $form_id, $new_group_id){
     $PDO->query( getSQLInsert($vipDemogId["id"], "vip_demog", array("group_id" => $new_group_id)) );
   }
   
-}
-
-function getSQLInsert($id, $table, $arr = ""){
-
-  $PDO        = getPDO::get();
-  $thisRes    = $PDO->query("
-    select * from {$table} where id={$id}
+  // egyeb stuff
+  // form_banner
+  $banners = $PDO->query("
+    select id from form_banner where form_id = {$form_id};
+  ")->fetchAll(PDO::FETCH_ASSOC);
+  if(count($banners) > 0){
+    foreach($banners as $banner){
+      $PDO->query( getSQLInsert($banner["id"], "form_banner", array("form_id" => $newFormId)) );
+    }
+  }
+  // form_css
+  $css = $PDO->query("
+    select id from form_css where form_id = {$form_id};
+  ")->fetchAll(PDO::FETCH_ASSOC);
+  if(count($css) > 0){
+    foreach($css as $cs){
+      $PDO->query( getSQLInsert($cs["id"], "form_css", array("form_id" => $newFormId)) );
+    }
+  }
+  // form_email
+  $emails = $PDO->query("
+    select id from form_email where form_id = {$form_id};
+  ")->fetchAll(PDO::FETCH_ASSOC);
+  if(count($emails) > 0){
+    foreach($emails as $email){
+      $PDO->query( getSQLInsert($email["id"], "form_email", array("form_id" => $newFormId)) );
+    }
+  }
+  
+  // form_page
+  $pages = $PDO->query("
+    select * from form_page where form_id = {$form_id} and group_id = {$group};
   ")->fetchAll(PDO::FETCH_ASSOC);
   
-  $keys = array(); $values = array();
+  if(count($pages) > 0){
+    foreach($pages as $page){
+      $PDO->query(getSQLInsert("", "form_page", array("group_id" => $new_group_id, "form_id" => $newFormId), "select * from form_page where form_id = {$form_id} and group_id = {$group} and page_id = {$page["page_id"]}"));
+    }
+  }
+  
+  // form_page_box
+  $pages = $PDO->query("
+    select * from form_page_box where form_id = {$form_id} and group_id = {$group};
+  ")->fetchAll(PDO::FETCH_ASSOC);
+  
+  if(count($pages) > 0){
+    foreach($pages as $page){
+      $PDO->query(getSQLInsert("", "form_page_box", array("group_id" => $new_group_id, "form_id" => $newFormId), "select * from form_page_box where form_id = {$form_id} and group_id = {$group} and page_id = {$page["page_id"]}"));
+    }
+  }
+	
+	
+	
+}
+
+function getSQLInsert($id, $table, $arr = "", $query = ""){
+
+  $PDO        = getPDO::get();
+  $query == "" ? $query = "select * from {$table} where id={$id}" : "";
+  $thisRes    = $PDO->query($query)->fetchAll(PDO::FETCH_ASSOC);
+  
+  $keys       = array();
+  $values     = array();
   
   if(gettype($arr) == "array"){
     $thisArr = array_keys($arr);
     foreach($thisRes[0] as $k => $v){
-      if($k == $thisArr[0]){
-        $keys[]   = mysql_escape_string($thisArr[0]);
-        $values[] = mysql_escape_string($arr[$thisArr[0]]);
-      }
-      else if($k != "id"){
+			if(in_array($k,$thisArr)){
+				$keys[]   = mysql_escape_string($k);		
+				$values[] = mysql_escape_string($arr[$k]);
+      } else if($k != "id"){
         $keys[]   = mysql_escape_string($k);
         $values[] = mysql_escape_string($v);
       }
     }
-  }
-  else if(gettype($arr) == "string")
+  } else if(gettype($arr) == "string")
     foreach($thisRes[0] as $k => $v){
       if($k != "id"){
         $keys[]   = mysql_escape_string($k);
@@ -150,7 +196,6 @@ function getSQLInsert($id, $table, $arr = ""){
       }
     }
   
-  $sql          = "";
   $columnlist   = "";
   $columnVals   = "";
   
