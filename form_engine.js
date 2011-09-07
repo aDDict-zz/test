@@ -355,7 +355,7 @@ function mx_create(w,pws) {
         z("<img src='img261/spacer.gif' style='width:252px;height:546px;' id='"+w.id+"_img'>");
     }
     if (w.image_position=="above") {
-        mx_printimage(w,'');
+        mx_printimage(w,'<br /><br /><br />');
     }
     if (w.question_position=='above') {
         var cust_wd='width: 100%;';
@@ -644,7 +644,7 @@ function mx_create(w,pws) {
         if (w.id=='kuthriflora_sq10' || w.id=='kuthriflora_q16' || w.id=='kutfeminarapid_k4' || w.id=='kuttnsnivea_q15' || w.id=='mobil1103conjoint2_q25' || w.id=='mobil1103conjoint2_q28' || w.id=='sakkomkekpont_2' || w.id=='sakkomkekpont_10' || w.id=='sakkomkekpont_20' || w.id=='kuttnsicoregon_q40_1' || w.id=='kuttnsicoregon_q25' || w.id=='kuttnsicoregon_q42_v_1' || w.id=='tnserstetexas_20') {
             staylast=1;
         }
-        if (w.id=='kuttnsnivea_s3' || w.id=='mobil1103conjoint2_q32' || w.id=='sakkomkekpont_4' || w.id=='sakkomkekpont_5') {
+        if (w.id=='kuttnsnivea_s3' || w.id=='mobil1103conjoint2_q32' || w.id=='sakkomkekpont_4' || w.id=='sakkomkekpont_5' || w.id =='kutlaptophu_k2') {
             staylast=2;
         }
         if (w.type=='checkbox') {
