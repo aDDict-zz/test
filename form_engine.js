@@ -1342,8 +1342,11 @@ function mx_display(jump,chpg,init,evid) {
 function mx_ga_track(ga_event) {
     if (ga_virtual!='') {
         var ga_track=ga_virtual+'/'+ga_event;
-       // alert(ga_track);
-        eval('pageTrac' + 'ker._' + 'tr' + 'ack' + 'Pageview("'+ga_track+'")');
+				if(typeof pageTracker == "undefined")
+					var pageTracker = _gat._getTracker("UA-21823542-2");
+				
+        pageTracker._trackPageview(ga_track);
+				return false;
     }
 }
 // saves the filled data to cookie
