@@ -3,6 +3,9 @@
 $charset = "utf-8"; //"utf-8"  //iso-8859-1
 header("Content-Type: text/html; charset={$charset}");
 
+
+//showResult("select * from user order by id desc limit 0,1");
+
 #print_r(getNewGroupAttrs(1629));
 
 #if(isset($_GET["id"]) && isset($_GET["table"]))
@@ -10,17 +13,19 @@ header("Content-Type: text/html; charset={$charset}");
 #else
 #  echo "need params";
 
+copyTableAttributes("user", "testTable");
 
-if(isset($_GET["group"]) && isset($_GET["form"]) && isset($_GET["newgroup"]))
-  cloneFormAndDemogsByGroup($_GET["group"], $_GET["form"], $_GET["newgroup"]);
-else
-  echo "need params";
+#if(isset($_GET["group"]) && isset($_GET["form"]) && isset($_GET["newgroup"]))
+#  cloneFormAndDemogsByGroup($_GET["group"], $_GET["form"], $_GET["newgroup"]);
+#else
+#  echo "need params";
 
 //joinGroups2Members(1554, 59446); //59446  Tamas, 81241 sajat
 //joinGroups2Members(1629, 59446); 59446
 
-copymembersgroups(59446,81241);
-
+//copymembersgroups(59446,81241);
+#echo "sfsdfds";
+//echo getSQLInsert("15827", "form_element", "", "");
 
 function copymembersgroups($from,$to){
   $PDO = getPDO::get();
@@ -39,7 +44,12 @@ function joinGroups2Members($group_id, $user_id){
 
 function showResult($sql){
   $PDO        = getPDO::get();
-  $res = $PDO->query($sql)->fetchAll(PDO::FETCH_ASSOC); print_r($res);
+  $res = $PDO->query($sql)->fetchAll(PDO::FETCH_ASSOC); 
+  
+  if(preg_match("/insert into/", $sql))
+    echo "lastinsertid:   " . $PDO->lastInsertId();
+  else
+    print_r($res);
 }
 
 
@@ -96,10 +106,13 @@ function cloneFormAndDemogsByGroup($group, $form_id, $new_group_id){
         select * from form_element_dep where form_element_id = {$formElementId["id"]};
       ")->fetchAll(PDO::FETCH_ASSOC);
       
-      //TODO  a beirt form_element_dep recordot vissza kell irni a form_elementbe
+      //TODO  a beirt form_element_dep recordot vissza kell irni a form_elementbe, tobb is van !!!! 
       
       foreach($res as $depIds){
         $PDO->query( getSQLInsert($depIds["id"], "form_element_dep", array("form_element_id" => $newFormElementId)) );
+        $lastInsertId = $PDO->lastInsertId();
+        $thisids = $PDO->query("select dependency from form_element where id = {$newFormElementId}")->fetchAll(PDO::FETCH_ASSOC);
+        //if()
       }
     }
   }
@@ -163,16 +176,29 @@ function cloneFormAndDemogsByGroup($group, $form_id, $new_group_id){
       $PDO->query(getSQLInsert("", "form_page_box", array("group_id" => $new_group_id, "form_id" => $newFormId), "select * from form_page_box where form_id = {$form_id} and group_id = {$group} and page_id = {$page["page_id"]}"));
     }
   }
-	
-	
-	
 }
+
+function copyTableAttributes($tableFrom, $tableTo){
+  $PDO = getPDO::get();
+  $origColumns = array();
+  $res = $PDO->query("describe {$tableTo}")->fetchAll(PDO::FETCH_ASSOC);
+  foreach($res as $columns){
+    $origColumns[] = $columns["Field"];
+  }
+  $res = $PDO->query("describe {$tableFrom}")->fetchAll(PDO::FETCH_ASSOC);
+  foreach($res as $columns){
+    if(!in_array($columns["Field"],$origColumns)){
+      $PDO->query("alter table {$tableTo} add {$columns["Field"]} {$columns["Type"]}"); 
+    }
+  }
+}
+
 
 function getSQLInsert($id, $table, $arr = "", $query = ""){
 
   $PDO        = getPDO::get();
   $query == "" ? $query = "select * from {$table} where id={$id}" : "";
-  $thisRes    = $PDO->query($query)->fetchAll(PDO::FETCH_ASSOC);
+  $thisRes    = $PDO->query($query)->fetchAll(PDO::FETCH_ASSOC); 
   
   $keys       = array();
   $values     = array();
