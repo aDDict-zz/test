@@ -4,79 +4,93 @@ class LoginForm extends FormBuilder{
   
   protected function login(){
     return array(
-      "name"      => "loginForm",
-      "elements"  => array(
-          array(
-            "tag" => "input",
-            "type" => "text",
-            "name" => "username",
-            "value" => "",
-            "label" => "user",
-           ),
-           array(
-            "tag" => "input",
-            "type" => "hidden",
-            "name" => "{$this->form}token",
-            "value" => $this->getHash(),
-            "label" => "",
-           ),
-           array(
-            "tag" => "input",
-            "type" => "password",
-            "name" => "password",
-            "value" => "",
-            "label" => "pass",
-           ),
-           array(
-            "tag" => "input",
-            "type" => "submit",
-            "name" => "submit",
-            "value" => "Go",
-            "label" => "submit",
-           )
+      "title"   => "Login",
+      "action"  => WEB_ROOT."/login/process",
+      "method"  => "post",
+      "items"   => array(
+        array(
+          "xtype"       => 'textfield',
+          "fieldLabel"  => 'username',
+          "name"        => 'username'
+        ),
+        array(
+          "xtype"       => 'textfield',
+          "fieldLabel"  => 'password',
+          "name"        => 'password'
+        ),
+        array(
+          "xtype"       => 'hidden',
+          "fieldLabel"  => '',
+          "name"        => "{$this->form}token",
+          "value"       => $this->getHash()
+        )
       )
     );
-  }
-  
+  }  
 }
 
-/*class LoginForm extends Zend_Form {
-  
-  public function init() {
-    $username = $this->addElement('text', 'username', array(
-      'filters'    => array('StringTrim', 'StringToLower'),
-      'validators' => array(
-        'Alpha',
-        array('StringLength', false, array(3, 20)),
-      ),
-      'required'   => true,
-      'label'      => 'Your username:',
-    ));
 
-    $password = $this->addElement('password', 'password', array(
-      'filters'    => array('StringTrim'),
-      'validators' => array(
-        'Alnum',
-        array('StringLength', false, array(6, 20)),
-      ),
-      'required'   => true,
-      'label'      => 'Password:',
-    ));
 
-    $login = $this->addElement('submit', 'login', array(
-      'required' => false,
-      'ignore'   => true,
-      'label'    => 'Login',
-    ));
-
-    // We want to display a 'failed authentication' message if necessary;
-    // we'll do that with the form 'description', so we need to add that
-    // decorator.
-    $this->setDecorators(array(
-      'FormElements',
-      array('HtmlTag', array('tag' => 'dl', 'class' => 'zend_form')),
-      array('Description', array('placement' => 'prepend')),
-      'Form'
-    ));
-  }
-}*/
+/*
+    return array(
+      "title"      => "loginForm",
+      "action"    => "/login/process",
+      "method"    => "post",
+      "submit"    => "loginSubmit",
+      "elements"  => array(
+        array(
+          "tag"   => "div",
+          "cls"   => "formElementWrapper",
+          "style" => "",
+          "html"  => "",
+          "cn"    => array(
+            array(
+              "tag"   => "label",
+              "html"  => "user"
+            ),
+            array(
+              "tag"   => "input",
+              "id"    => "user",
+              "type"  => "text",
+              "cls"   => "formElement",
+              "name"  => "username",
+              "value" => ""
+            )
+          )
+        ),
+        array(
+          "tag"   => "div",
+          "cls"   => "formElementWrapper",
+          "style" => "",
+          "html"  => "",
+          "cn"    => array(
+            array(
+              "tag"   => "label",
+              "html"  => "password"
+            ),
+            array(
+              "tag"   => "input",
+              "id"    => "password",
+              "type"  => "password",
+              "cls"   => "formElement",
+              "name"  => "password",
+              "value" => ""
+            )
+          )
+        ),
+        array(
+          "tag"   => "input",
+          "type"  => "hidden",
+          "name"  => "{$this->form}token",
+          "value" => $this->getHash()
+        ),
+        array(
+          "tag"   => "input",
+          "type"  => "submit",
+          "id"    => "loginSubmit",
+          "name"  => "submit",
+          "value" => "login"
+        )
+      )
+    ); 
+ */
