@@ -3,6 +3,64 @@
 $charset = "utf-8"; //"utf-8"  //iso-8859-1
 header("Content-Type: text/html; charset={$charset}");
 
+//15925
+
+$str = "";
+$str = mysql_escape_string($str);
+showResult("
+   select * from form_element where id = 15925;
+ ");
+
+#  $str = 'A következőkben mutatunk Önnek egy TV reklámot. Látta-e Ön ezt a HÉRA TV reklámot mostanában?<br /><br /><div style="with:100;text-align:center"><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" 
+# codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,16,0" 
+# width="427" height="350" >
+# <param name="movie" value="http://www.maxima.hu/extranet/video_a_kc_web.swf">
+# <param name="quality" value="high">
+# <param name="play" value="true">
+# <param name="LOOP" value="false">
+# <embed src="http://www.maxima.hu/extranet/video_a_kc_web.swf" width="427" height="350" play="true" loop="false" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" 
+# type="application/x-shockwave-flash">
+# </embed>
+# </object></div>';
+#  $str = mysql_escape_string($str);
+# showResult("
+#   update form_element set question = '{$str}' where id = 15939;
+# ");
+
+#  $str = 'A következőkben mutatunk Önnek egy TV reklámot. Látta-e Ön ezt a HÉRA TV reklámot mostanában?<br /><br /><div style="with:100;text-align:center"><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" 
+# codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,16,0" 
+# width="427" height="350" >
+# <param name="movie" value="http://www.maxima.hu/extranet/video_b_kc_web.swf">
+# <param name="quality" value="high">
+# <param name="play" value="true">
+# <param name="LOOP" value="false">
+# <embed src="http://www.maxima.hu/extranet/video_b_kc_web.swf" width="427" height="350" play="true" loop="false" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" 
+# type="application/x-shockwave-flash">
+# </embed>
+# </object></div>';
+#  $str = mysql_escape_string($str);
+# showResult("
+#   update form_element set question = '{$str}' where id = 15940;
+# ");
+
+
+#  $str = 'A következőkben mutatunk Önnek egy TV reklámot. Látta-e Ön ezt a HÉRA TV reklámot mostanában?<br /><br /><div style="with:100;text-align:center"><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" 
+# codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,16,0" 
+# width="427" height="350" >
+# <param name="movie" value="http://www.maxima.hu/extranet/video_c_kc_web.swf">
+# <param name="quality" value="high">
+# <param name="play" value="true">
+# <param name="LOOP" value="false">
+# <embed src="http://www.maxima.hu/extranet/video_c_kc_web.swf" width="427" height="350" play="true" loop="false" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" 
+# type="application/x-shockwave-flash">
+# </embed>
+# </object></div>';
+#  $str = mysql_escape_string($str);
+# showResult("
+#   update form_element set question = '{$str}' where id = 15944;
+# ");
+
+//showResult("select * from form_element where id = 15939");
 
 //showResult("select * from user order by id desc limit 0,1");
 
@@ -13,7 +71,7 @@ header("Content-Type: text/html; charset={$charset}");
 #else
 #  echo "need params";
 
-copyTableAttributes("user", "testTable");
+//copyTableAttributes("user", "testTable");
 
 #if(isset($_GET["group"]) && isset($_GET["form"]) && isset($_GET["newgroup"]))
 #  cloneFormAndDemogsByGroup($_GET["group"], $_GET["form"], $_GET["newgroup"]);

@@ -84,5 +84,4 @@ $word["st_sortitem"]="You can change the order of items with drag and drop metho
 $word["st_sortitemdis"]="You can change the order of items when the filters are inactive.";
 $word["ev_code"]="code";
 $word["t_code"]="Code";
-$word["variable_in_other_groups"]="The variable used in other groups too, change will affect them:";
 ?>

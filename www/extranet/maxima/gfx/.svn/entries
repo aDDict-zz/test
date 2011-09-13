@@ -1,7 +1,7 @@
 10
 
 dir
-79
+70
 svn://maxima.hu/maxima_engine/branches/beta/www/maxima/gfx
 svn://maxima.hu/maxima_engine
 
@@ -638,40 +638,6 @@ has-props
 
 1235
 
-up2.gif
-file
-
-
-
-
-2011-03-24T15:18:42.000000Z
-c6bb57d25fe07169b24a8fc0b2f7b972
-2011-03-22T15:06:36.787386Z
-6
-marci
-has-props
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-1268
-
 down2_dead.gif
 file
 
@@ -705,6 +671,40 @@ has-props
 
 
 1376
+
+up2.gif
+file
+
+
+
+
+2011-03-24T15:18:42.000000Z
+c6bb57d25fe07169b24a8fc0b2f7b972
+2011-03-22T15:06:36.787386Z
+6
+marci
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1268
 
 1x1.gif
 file
@@ -774,40 +774,6 @@ has-props
 
 6760
 
-en.jpg
-file
-
-
-
-
-2011-03-24T15:18:42.000000Z
-60e907255b4d26b96c532691e273c5c9
-2011-03-22T15:06:36.787386Z
-6
-marci
-has-props
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-727
-
 spacer.gif
 file
 
@@ -842,14 +808,14 @@ has-props
 
 43
 
-bgx2.png
+en.jpg
 file
 
 
 
 
 2011-03-24T15:18:42.000000Z
-8501a8d3ff55057c373ad3cad7974db0
+60e907255b4d26b96c532691e273c5c9
 2011-03-22T15:06:36.787386Z
 6
 marci
@@ -874,7 +840,41 @@ has-props
 
 
 
-56019
+727
+
+edit_remove.png
+file
+
+
+
+
+2011-07-26T13:14:53.000000Z
+75695601810e2fa14abede1e98c55912
+2011-07-26T13:14:36.216671Z
+67
+marci
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+449
 
 edit_link.png
 file
@@ -910,16 +910,16 @@ has-props
 
 361
 
-edit_remove.png
+bgx2.png
 file
 
 
 
 
-2011-07-26T13:14:53.000000Z
-75695601810e2fa14abede1e98c55912
-2011-07-26T13:14:36.216671Z
-67
+2011-03-24T15:18:42.000000Z
+8501a8d3ff55057c373ad3cad7974db0
+2011-03-22T15:06:36.787386Z
+6
 marci
 has-props
 
@@ -942,7 +942,7 @@ has-props
 
 
 
-449
+56019
 
 up1_dead.gif
 file

@@ -33,11 +33,4 @@ $word["affiliate"]="Affiliate";
 $word["demog_err_8a"]="Identifier";
 $word["demog_err_8b"]="already exists in this group.";
 $word["tstamp"]="last modification";
-$word["dt_variable"]="Variable";
-$word["dt_value"]="Value";
-$word["md_statistics"]="Statistics";
-$word["scope_user"]="Member demog info";
-$word["scope_filter"]="Demog info of more members based on filter";
-$word["multiupdate_warn"]="You are about to update data of all users found by the filter - do you wish to continue?";
-$word["update_successful"]="The update was successful.";
 ?>

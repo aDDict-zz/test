@@ -1,15 +1,15 @@
 10
 
 dir
-79
+70
 svn://maxima.hu/maxima_engine/branches/beta/www/lang/hu
 svn://maxima.hu/maxima_engine
 
 
 
-2011-08-17T11:18:29.221102Z
-74
-janos
+2011-07-20T11:30:03.607217Z
+64
+marci
 
 
 
@@ -134,11 +134,11 @@ file
 
 
 
-2011-08-17T11:20:32.000000Z
-90328a52937a67cd956a036e045086a2
-2011-08-17T11:18:29.221102Z
-74
-janos
+2011-07-20T11:30:29.000000Z
+44e67053acb99f7a9f92fa8c2c792321
+2011-07-20T11:30:03.607217Z
+64
+marci
 has-props
 
 
@@ -160,7 +160,7 @@ has-props
 
 
 
-15769
+15381
 
 xmlreqlist.lang
 file
@@ -604,40 +604,6 @@ has-props
 
 1075
 
-sms.lang
-file
-
-
-
-
-2011-03-24T15:18:41.000000Z
-eedf76d311a11d256119feab9eaa13fd
-2011-03-22T15:06:36.787386Z
-6
-marci
-has-props
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-3894
-
 password.lang
 file
 
@@ -672,14 +638,14 @@ has-props
 
 1120
 
-supergroup.lang
+sms.lang
 file
 
 
 
 
 2011-03-24T15:18:41.000000Z
-7cf5ea1ba5e4882bb96592bd6decfc56
+eedf76d311a11d256119feab9eaa13fd
 2011-03-22T15:06:36.787386Z
 6
 marci
@@ -704,7 +670,7 @@ has-props
 
 
 
-477
+3894
 
 export_import.lang
 file
@@ -740,6 +706,40 @@ has-props
 
 4274
 
+supergroup.lang
+file
+
+
+
+
+2011-03-24T15:18:41.000000Z
+7cf5ea1ba5e4882bb96592bd6decfc56
+2011-03-22T15:06:36.787386Z
+6
+marci
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+477
+
 moderators.lang
 file
 
@@ -774,6 +774,40 @@ has-props
 
 2765
 
+members_demog_info.lang
+file
+
+
+
+
+2011-03-24T15:18:41.000000Z
+2bb3b82ecdaf33fec01211d1885c8cca
+2011-03-22T15:06:36.787386Z
+6
+marci
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1340
+
 sender.lang
 file
 
@@ -807,40 +841,6 @@ has-props
 
 
 6057
-
-members_demog_info.lang
-file
-
-
-
-
-2011-08-17T11:20:32.000000Z
-d85f4b9ed4fb66b12450e3111cc7939e
-2011-08-17T11:18:29.221102Z
-74
-janos
-has-props
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-1744
 
 ajax.lang
 file
@@ -910,6 +910,40 @@ has-props
 
 5384
 
+mygroups13.lang
+file
+
+
+
+
+2011-03-24T15:18:41.000000Z
+9618d8d19d609d70068879999d5c3f68
+2011-03-22T15:06:36.787386Z
+6
+marci
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4839
+
 mygroups_main.lang
 file
 
@@ -944,17 +978,17 @@ has-props
 
 506
 
-mygroups13.lang
+members.lang
 file
 
 
 
 
-2011-08-17T11:20:32.000000Z
-0c25c61ea8f676d1862ea35527f7341d
-2011-08-17T11:18:29.221102Z
-74
-janos
+2011-03-24T15:18:41.000000Z
+6070833e112820083cd12341b149e735
+2011-03-22T15:06:36.787386Z
+6
+marci
 has-props
 
 
@@ -976,7 +1010,7 @@ has-props
 
 
 
-4973
+1816
 
 statistics.lang
 file
@@ -1011,40 +1045,6 @@ has-props
 
 
 6975
-
-members.lang
-file
-
-
-
-
-2011-03-24T15:18:41.000000Z
-6070833e112820083cd12341b149e735
-2011-03-22T15:06:36.787386Z
-6
-marci
-has-props
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-1816
 
 menugen.lang
 file

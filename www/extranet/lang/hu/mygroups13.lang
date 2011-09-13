@@ -84,5 +84,4 @@ $word["st_sortitem"]="A sorok felcseréléséhez használja a fogd es vidd móds
 $word["st_sortitemdis"]="A sorok felcseréléséhez kapcsolja ki a filtereket.";
 $word["ev_code"]="kód";
 $word["t_code"]="Kód";
-$word["variable_in_other_groups"]="A változó az alábbi csoportokban van még használva, módosítása ezekre is hatással van:";
 ?>

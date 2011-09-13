@@ -1,0 +1,36 @@
+@import url("reset.css");
+
+body, div.bg {background-image: none;}
+
+div.center {margin:0 auto;width:966px;}
+
+span.szovegvastag {
+	font-weight: bold; font-size: 9pt; color: #000044; font-family: Verdana, Arial, Helvetica, sans-serif
+}
+
+.fl {float:left;}
+.fr {float:right;}
+
+.tal {text-align:left;}
+.tar {text-align:right;}
+.tac {text-align:center;}
+
+td.bgwhite { background-color: #ffffff;font-size: 10pt; border-top:1px solid #000000;}
+td.bggray { font-size: 10pt; border-top:1px solid #000000;}
+
+td.formmezo, .formmezo {
+	font-weight: bold; font-size: 9pt; color: #ffffff; font-family: Arial, Helvetica, sans-serif; background-color: #791739;padding:1px 0 1px 3px;
+}
+
+a {color:#791739;text-decoration:underline;font-family: Arial, Helvetica, sans-serif;font-size: 9pt; }
+a:hover {color:#791739;text-decoration:none;}
+
+.header_pad, .header_menu, .navigation, .noprint, #basic-modal-content, #print_page {display:none;}
+
+.print_title {margin-top:15px;}
+
+.page_break {page-break-before: always;}
+
+.activetitle {display:inline;}
+
+tr.oddbgcolor td, tr.evenbgcolor td {border-top:1px solid #000000;}
