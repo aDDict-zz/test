@@ -1,0 +1,76 @@
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="page_title">Felhaszn&aacute;l&oacute;k</td>
+  </tr>
+  {if $error != ''}
+  <tr>
+  	<td style="color:#FF0000;font-weight:bold;">{$error}</td>
+  </tr>
+  {/if}
+  <tr>
+  	<td>
+		<form name="search_users" method="get" action="index.php">
+		<input type="hidden" name="id" value="{$id}" />
+		<input type="hidden" name="sub_id" value="{$sub_id}" />		
+		{capture name=search_users}
+			<table border="0" cellspacing="0" cellpadding="5">
+			  <tr>
+				<td><b>E-mail:&nbsp;</b><input type="text" name="email" value="{$email}" /></td>
+				<td><input type="submit" value="Keres" class="button" /></td>
+			  </tr>
+			</table>
+		{/capture}
+		{include file="dialog.html" title="Felhaszn&aacute;l&oacute;kkeres&eacute;se" content=$smarty.capture.search_users extra="width=100%"}
+		</form>
+	</td>
+  </tr>
+  <tr>
+  	<td class="page_title"></td>
+  </tr>
+  <tr>
+    <td>
+		<table width="100%" border="0" cellspacing="0" cellpadding="4" style="border:1px solid #BDBEBD;">
+		  <tr style="height:20px;background-image:url('../i/bh.gif');background-repeat:repeat-x;">
+			<td align="center" style="border-bottom:1px solid #BDBEBD;"><b>ID</b></td>
+			<td style="border-bottom:1px solid #BDBEBD;"><b>Email</b></td>
+			<td align="center" style="border-bottom:1px solid #BDBEBD;"><b>M&#369;veletek</b></td>
+		  </tr>
+		  {section name=i loop=$users}
+		  <tr bgcolor="{cycle values="#EAEAEA,#F4F4F4"}" id="a_{$agencies[i].agency_id}">
+			<td align="center">{$users[i].user_id}</td>
+			<td><a href="mailto:{$users[i].user_email}">{$users[i].user_email}</a></td>			
+			<td align="center">[ <a href="?id={$id}&sub_id=2&uid={$users[i].user_id}">M&oacute;dos&iacute;t</a> ] [ <a href="#" onClick="if(confirm('Biztos benne?')) document.delete_user_{$users[i].user_id}.submit();">T&ouml;r&ouml;l</a> ]
+				<form name="delete_user_{$users[i].user_id}" method="post" action="index.php?id={$id}&sub_id={$sub_id}">
+					<input type="hidden" name="action" value="delete_user" />
+					<input type="hidden" name="user_id" value="{$users[i].user_id}" />
+				</form>
+			</td>				
+		  </tr>
+		  {/section}		  
+		</table>
+	</td>
+  </tr>
+</table>
+<table border="0" cellspacing="4" cellpadding="2" align="center" class="paging">
+  <tr>		
+	<td>{if $__GT.current != 1 && $__GT.total_pages != 0}<a href="index.php?{$url}&page=1&plimit={$__GT.limit}" target="_self">Els&#337;</a>{/if}</td>
+	<td>{if $__GT.current != 1 && $__GT.total_pages != 0}<a href="index.php?{$url}&page={$__GT.prev.link}&plimit={$__GT.limit}" target="_self">El&#337;z&#337;</a>{/if}</td>
+	<td>
+		<table border="0" cellspacing="3" cellpadding="0" align="center" class="paging">
+			<tr>
+				{section name=i loop=$__GT.pages}	  		
+					<td align="center">								
+						{if $__GT.pages[i].link == $__GT.current}
+						<b>{$__GT.pages[i].link}</b>
+						{else}
+						<a href="index.php?{$url}&page={$__GT.pages[i].link}&plimit={$__GT.limit}" target="_self">{$__GT.pages[i].link}</a>
+						{/if}						
+					</td>			
+				{/section}			
+			</tr>
+		</table>
+	</td>				
+	<td>{if $__GT.current != $__GT.total_pages && $__GT.total_pages != 0}<a href="index.php?{$url}&page={$__GT.next.link}&plimit={$__GT.limit}" target="_self">K&ouml;vetkez&#337;</a>{/if}</td>
+	<td>{if $__GT.current != $__GT.total_pages && $__GT.total_pages != 0}<a href="index.php?{$url}&page={$__GT.total_pages}&plimit={$__GT.limit}" target="_self">Utols&oacute;</a>{/if}</td>
+  </tr>  
+</table>

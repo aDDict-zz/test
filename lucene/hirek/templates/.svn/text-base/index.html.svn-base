@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>${page_title} - H&iacute;rek.hu - ${page_keywords}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="main.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<#include "header.html">  
+<div id="content">	
+	<#assign x = 1>
+	<#list categories as category>	
+			<#if x == 1 || x == 2>
+				<div class="col" style="margin-right:8px;">
+			<#else>
+				<div class="col">	
+			</#if>
+			<#assign x = x + 1>			
+			<#list category as cat>
+				<div class="box">
+				<h1>${cat.categoryName}</h1>
+				<ul>
+				<#list cat.rss as rss>
+					<li><A href="${rss.newsURL}" target="_blank">${rss.newsTitle}</A></li>
+				</#list>
+				</ul>
+				</div>
+			</#list>
+			</div>
+	</#list>  
+</div>	
+</body>
+</html>

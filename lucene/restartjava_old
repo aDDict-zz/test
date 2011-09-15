@@ -1,0 +1,66 @@
+#!/usr/bin/perl 
+
+$multicheck = `ps -A|grep restartjava`;
+if (length($multicheck) > 40)
+{
+	print "There are other instances of restartjava running, end them first. Thank you.\n";
+	exit;
+}
+$screencheck = `set|grep STY=|grep -v grep`;
+print $screencheck;
+if (!$screencheck)
+{
+	print "You must start restartjava from within a screen otherwise itt will terminate with your session. Thank you.\n";
+	exit;
+}
+
+system("killall java");
+sleep 3;
+system("killall -9 java");
+$child = fork();
+$motor = $bridge = $updater = 0;
+unlink "check";
+
+while ($child ne 0)
+{
+	++$bridge;
+#	system("cd /usr/local/lib/php/extensions/no-debug-non-zts-20050922/ && java -jar JavaBridge.jar INET_LOCAL:9676 3 ");
+	do
+	{
+		sleep 60;
+		system('wget "http://www.hirek.hu/search.php?p=Keres&q=ember&period=0&category=" -Y off -O check --quiet');
+		system("ls -l check >> check.sizes");
+	}
+	while (-s "check" > 7000 );
+	system("echo emergency restart ! >> check.sizes");
+	system("/etc/init.d/lighttpd stop");
+	system("chown wwwrun.www  /var/log/lighty/access.log");
+	system("killall php");
+	system("killall -9 java");
+	sleep 3;
+	system("/etc/init.d/lighttpd start");
+	
+	print "Restarting Bridge for the ".$bridge.". time\n";
+	sleep 3;
+}
+$child = fork();
+while ($child ne 0)
+{
+	++$motor;
+	print "(re)Restarting Motor for the ".$motor.". time\n";
+	system("cd /srv/www_/lucene/hirek/ && java Motor");
+	sleep(1);
+}
+$child = fork();
+while ($child ne 0)
+{
+	++$updater;
+	print "(re)Restarting Updater for the ".$updater.". time\n";
+	system("cd /srv/www_/lucene/hirek/ && java Updater");
+	sleep 1;
+}
+$child = fork();
+
+system("chown -R wwwrun.www  /var/log/lighty/");
+while (1) { sleep(10); }
+

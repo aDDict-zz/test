@@ -1,0 +1,14 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /ajax/
+Disallow: /cache/
+Disallow: /fixbox/
+Disallow: /inc/
+Disallow: /js/
+Disallow: /lang/
+Disallow: /libs/
+Disallow: /lucene/
+Disallow: /mysql/
+Disallow: /pear/
+Disallow: /templates/
+Disallow: /templates_c/

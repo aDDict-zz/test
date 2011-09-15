@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Hirek.hu top</title>
+    <description>Legolvasottabb cikkek</description>
+    <language>hu</language>
+    <link>http://www.hirek.hu/</link>
+    <image>
+      <title>Hirek.hu top</title>
+      <url>http://www.hirek.hu/i/hirek.gif</url>
+      <link>http://www.hirek.hu/</link>
+    </image>
+    <generator>Hirek.hu</generator>
+    {foreach from=$intervals item=interval key=i}
+    {foreach from=$top.$i item=item}
+    <item>
+      <pubDate>{$item.pubdate}</pubDate>
+      <title><![CDATA[{$item.title}]]></title>
+      <link><![CDATA[{$item.url}]]></link>
+      <guid>http://www.hirek.hu/?news_id={$item.news_id}</guid>
+      <description><![CDATA[{$item.lead}]]></description>
+      <category><![CDATA[{$item.rss_name}]]></category>
+    </item>
+    {/foreach}
+    {/foreach}
+ </channel>
+</rss>

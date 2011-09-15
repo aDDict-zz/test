@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+   <channel>
+      <title>Infotech</title>
+      <link>http://www.hirek.hu/rss.php?page=infotech</link>
+      <description></description>
+      <language>hu-HU</language>
+      <copyright>Hirek.hu 2011</copyright>
+      <managingEditor>szerkeszto@hirek.hu (Szerkesztő)</managingEditor>
+      <webMaster>webmester@hirek.hu (Webmester)</webMaster>      
+      <pubDate>Wed, 14 Sep 2011 9:50:01 +0200</pubDate>
+      <lastBuildDate>Wed, 14 Sep 2011 9:50:01 +0200</lastBuildDate>
+      <category></category>
+      <generator>Hirek.hu</generator>
+      <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+      <ttl>60</ttl>
+	<atom:link href="http://www.hirek.hu/rss.php?page=infotech" rel="self" type="application/rss+xml" />
+      
+      <item>
+         <title>A HTC is saját operációs rendszert fontolgat - PCworld</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267623</link>         
+         <description>Cher Wang asszony, a HTC elnöke megerősítette, hogy cége a Samsung-féle Bada OS példáján felbuzdulva egy saját operációs rendszert fontolgat. A fejlesztést nem az alapoktól kezdenék, inkább vásárolnának egy meglévőt, de az idő egyelőre nem sürgeti őket. Talán a HP kezében félresiklott webOS-t szemelték ki?</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267623</guid>
+      </item>
+      <item>
+         <title>Wireless Touchpad a Logitech-től - PCworld</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267622</link>         
+         <description>A gyártó új perifériája ismét a hasznos dolgok tárházát bővíti.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267622</guid>
+      </item>
+      <item>
+         <title>Steampunk Fight Stick, ami szinte már túl szép ahhoz, hogy használjuk - PCworld</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267621</link>         
+         <description>A steampunk dolgok az egyediségük okán mindig lenyűgözőek. Főleg akkor, ha valaki perifériát állít elő ebben a stílusban.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267621</guid>
+      </item>
+      <item>
+         <title>Androidos PMP a Sony műhelyéből - PCworld</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267620</link>         
+         <description>Kétmagos NVIDIA Tegra 2 processzor került az új Walkmanbe.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267620</guid>
+      </item>
+      <item>
+         <title>A legnagyobbak bukásai - Computerworld</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267611</link>         
+         <description>Elhibázott termékkoncepciók, rossz időzítés, túlzásba vitt forradalmiság vagy éppen a felhasználók életét megkeserítő hibákkal tűzdelt korán kiadott verziók... Csupa olyan eset, amiből a kisebbek is okulhatnak, de a legnagyobbak - a Google és a Microsoft - követték el őket. </description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267611</guid>
+      </item>
+      <item>
+         <title>Garmin nüvi30 - a legkisebb is számít - Mobilarena</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267579</link>         
+         <description>Belépő szintű Garmin navi járt nálunk, olcsó és hozza a gyártóra jellemző tulajdonságokat.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267579</guid>
+      </item>
+      <item>
+         <title>Sony Walkman Z: Tegra 2 és Android - Mobilarena</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267578</link>         
+         <description>Kétmagos processzor köré épülő, Android alapokon nyugvó médialejátszóval rukkolt elő a Sony.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267578</guid>
+      </item>
+      <item>
+         <title>Megadóztatják a netes szerencsejátékot - PDAMania</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267557</link>         
+         <description>A pénznyerő automaták idei adóztatása mellett a kormány jövőre megadóztatná a online szerencsejátékot is.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267557</guid>
+      </item>
+      <item>
+         <title>Fontosra sikerült a hibajavító kedd - Computerworld</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267538</link>         
+         <description>A Microsoft kiadta a szeptemberi hibajavításait, amelyek között Windows, Excel, SharePoint és Groove frissítések is feltűnnek.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267538</guid>
+      </item>
+      <item>
+         <title>Bővült a HP biztonsági portfóliója - Computerworld</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267537</link>         
+         <description>A HP bemutatta a legújabb IT-biztonsági megoldásait, amelyek a cég által korábban felvásárolt technológiákat és szoftvereket vonultatják fel.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267537</guid>
+      </item>
+      <item>
+         <title>Hogyan szerezzünk Office 2003-külsejű irodai programcsomagot ingyen? - PCworld</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267509</link>         
+         <description>A Kingsoft Office Suite ismerős megjelenést, ingyenes használatot és nagyfokú kompatibilitást ígér.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267509</guid>
+      </item>
+      <item>
+         <title>Andoridra támad a hírhedt banki vírus - PDAMania</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267489</link>         
+         <description>A Spitmo az első olyan pénzünkre áhítozó trójai faló, amely asztali gépünk után mobilunkat is megfertőzné, hogy az SMS ellenőrzést megfogja.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267489</guid>
+      </item>
+      <item>
+         <title>Windows 8: ilyen lesz a jövő? - PDAMania</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267488</link>         
+         <description>A Microsoft tegnap este bemutatta új operációs rendszerét, amely nem ígérget, nem csak utal a vérfrissítésre, hanem rárúgta az ajtót a világra.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267488</guid>
+      </item>
+      <item>
+         <title>Frontális baleset a rákospalotai szemétégető mögött - Index</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267467</link>         
+         <description>Egy személyautó és egy kisteherautó frontálisan ütközött Budapesten, a XV. kerületi szemétégető mögötti úton szerda hajnalban - közölte a tűzoltóság az MTI-vel.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267467</guid>
+      </item>
+      <item>
+         <title>Enermax Platimax tápegységek kimagasló hatásfokkal - PCworld</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267429</link>         
+         <description>Öt Enermax PSU közeleg a legjobb, 80Plus Platinum minősítéssel.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267429</guid>
+      </item>
+      <item>
+         <title>AMD Bulldozer processzor 8,429 GHz-es órajellel - PCworld</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267428</link>         
+         <description>Az AMD világrekordot döntött az egyik nyolcmagos FX szériás processzorával. Videó.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267428</guid>
+      </item>
+      <item>
+         <title>Windows 8 - nincs itt semmi kockázat! - PCworld</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267427</link>         
+         <description>Le sem tagadhatná a rendszer, hogy készítőit az okostelefonok világa ihlette meg. Habár az Asztal és az ablakok nem tűnnek el, az új Windows inkább egy mobil platform lesz, mint desktop.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267427</guid>
+      </item>
+      <item>
+         <title>1234 milliárd dolláros hiány az USA-ban - Index</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267190</link>         
+         <description>Az amerikai költségvetés augusztusban már 35. hónapja volt folyamatosan deficites.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267190</guid>
+      </item>
+      <item>
+         <title>Ablakok nélkül jön a Windows 8 - HWSW</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267048</link>         
+         <description>A héten a kaliforniai Anaheimben zajló BUILD rendezvény &#8222;nulladik&#8221; napján a Microsoft a világon először a sajtó meghívott képviselőinek mutatta be, hogy néz ki és mit tud majd a Windows 8. Az operációs rendszer a Windows Phone 7-ből már ismerős &#8222;Metro&#8221; felülettel érkezik, amely nélkülözi az ablakokat &#8211; a név ettől függetlenül biztosan Windows marad.&lt;br /&gt;&lt;br /&gt;&lt;a href="http://www.hwsw.hu/hirek/47346/microsoft-windows-8-operacios-rendszer-metro-kiprobaltuk.html#kommentek" target="_blank"&gt;&lt;img src="http://www.hwsw.hu/kommentszam.php?d=NDczNDY=" width="220" height="20" border="0" alt="" title="Olvasd el a kommenteket!" /&gt;&lt;/a&gt;</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3267048</guid>
+      </item>
+      <item>
+         <title>Az LG szállítja az iPad kijelzőket - Mobilarena</title>
+         <link>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3266933</link>         
+         <description>A gyártási nehézségek leküzdése után ismét az LG lett az iPad megjelenítők legnagyobb beszállítója.</description>
+	<guid>http://www.hirek.hu/?from=infotech.xml&amp;page_id=8&amp;news_id=3266933</guid>
+      </item>
+   </channel>
+</rss>

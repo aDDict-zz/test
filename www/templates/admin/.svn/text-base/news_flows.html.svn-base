@@ -1,0 +1,48 @@
+{literal}
+<script language="javascript">
+function delFeed(feedID, feedName){
+	if(confirm('Biztos, hogy torli a(z) `' + feedName + '` hrifolyamot?')){
+		document.forms['del_news_flow_'+feedID].submit();
+	}
+	return false;
+}
+</script>
+{/literal}
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="page_title">H&iacute;rfolyamok</td>
+  </tr>
+  <tr>
+    <td>
+		<table width="100%" border="0" cellspacing="0" cellpadding="4" style="border:1px solid #BDBEBD;">
+		  <tr style="height:20px;background-image:url('../i/bh.gif');background-repeat:repeat-x;">
+			<td align="center" style="border-bottom:1px solid #BDBEBD;"><b>ID</b></td>
+			<td style="border-bottom:1px solid #BDBEBD;"><b>H&iacute;rforr&aacute;s</b></td>
+			<td style="border-bottom:1px solid #BDBEBD;"><b>N&eacute;v</b></td>
+			<td style="border-bottom:1px solid #BDBEBD;" align="center"><b>Tipus</b></td>
+			<td align="center" style="border-bottom:1px solid #BDBEBD;"><b>M&#369;veletek</b></td>
+		  </tr>
+		  {section name=i loop=$rss}
+		  <tr bgcolor="{cycle values="#EAEAEA,#F4F4F4"}">		  	
+			<td align="center">{$rss[i].id}</td>
+			<td><a href="{$rss[i].agency_url}" target="_blank">{$rss[i].agency_name}</a></td>			
+			<td><a href="{$rss[i].rss_url}" target="_blank">{$rss[i].rss_name}</a></td>			
+			<td align="center">
+				{if $rss[i].feed_type == 1}
+					RSS
+				{else if $rss[i].feed_type == 2}
+					HTML
+				{/if}
+			</td>
+			<td align="center">[ <a href="index.php?id={$id}&sub_id=4&rss_id={$rss[i].id}">M&oacute;dos&iacute;t</a> ] [ <a href="#" onClick="delFeed('{$rss[i].id}', '{$rss[i].rss_name}')">T&ouml;r&ouml;l</a> ]
+				<form name="del_news_flow_{$rss[i].id}" method="post" action="index.php?id={$id}&sub_id={$sub_id}">
+					<input type="hidden" name="action" value="del_news_flow" />
+					<input type="hidden" name="rss_id" value="{$rss[i].id}" />
+				</form>
+			</td>
+		  </tr>
+		  {/section}		  
+		</table>
+	</td>
+  </tr>
+</table>

@@ -1,0 +1,373 @@
+<script>
+var fCat = new Array();
+var fCatFeedTypes = new Array();
+{if $fixed_categories[0][0].cat.cat_type == 1 || $fixed_categories[0][0].cat.cat_type == 3}
+	fCat['{$fixed_categories[0][0].id}'] = '{$fixed_categories[0][0].cat.cat_rss}';
+{/if}
+{if $fixed_categories[0][0].cat.feed_type == 4}
+    fCatFeedTypes['{$fixed_categories[0][0].id}'] = '{$fixed_categories[0][0].cat.feed_type}';
+{/if}
+{if $fixed_categories[0][1].cat.cat_type == 1 || $fixed_categories[0][1].cat.cat_type == 3}
+	fCat['{$fixed_categories[0][1].id}'] = '{$fixed_categories[0][1].cat.cat_rss}';
+{/if}
+{if $fixed_categories[0][2].cat.cat_type == 1 || $fixed_categories[0][2].cat.cat_type == 3}
+	fCat['{$fixed_categories[0][2].id}'] = '{$fixed_categories[0][2].cat.cat_rss}';
+{/if}
+{if $fixed_categories[1][0].cat.cat_type == 1 || $fixed_categories[1][0].cat.cat_type == 3}
+	fCat['{$fixed_categories[1][0].id}'] = '{$fixed_categories[1][0].cat.cat_rss}';
+{/if}
+
+{if $fixed_categories[1][1].cat.cat_type == 1 || $fixed_categories[1][1].cat.cat_type == 3}
+	fCat['{$fixed_categories[1][1].id}'] = '{$fixed_categories[1][1].cat.cat_rss}';
+{/if}
+{if $fixed_categories[1][2].cat.cat_type == 1 || $fixed_categories[1][2].cat.cat_type == 3}
+	fCat['{$fixed_categories[1][2].id}'] = '{$fixed_categories[1][2].cat.cat_rss}';
+{/if}
+{if $fixed_categories[1][3].cat.cat_type == 1 || $fixed_categories[1][3].cat.cat_type == 3}
+	fCat['{$fixed_categories[1][3].id}'] = '{$fixed_categories[1][3].cat.cat_rss}';
+{/if}
+{if $fixed_categories[1][4].cat.cat_type == 1 || $fixed_categories[1][4].cat.cat_type == 3}
+	fCat['{$fixed_categories[1][4].id}'] = '{$fixed_categories[1][4].cat.cat_rss}';
+{/if}
+
+
+var maxBoxID = {$max_box_id|default:0};
+var components = new Array();
+{foreach from=$struc item=col key=i}
+	var box = new Array();
+    {foreach from=$col item=cell key=j}
+		box[{$j}] = {literal}{{/literal}
+			'component' : 'comp_{$page_prefix}{$page_id}_{$i}_{$j}',
+			'title'     : '{$cell.title|escape:javascript}', 
+			'feed'      : '{$cell.feed_encoded}',
+            'feed_type' : '{$cell.feed_type}',
+			'keywords'      : '{$cell.keywords_encoded}',
+			'closed'    : '{$cell.closed}', 
+			'items_nr'  : '{$cell.items_nr}', 
+			'color'  : '{$cell.color}', 
+			'type'  : '{if $cell.feed_type > 3}{$cell.feed_type}{else}{$cell.type}{/if}',
+			'editable' : '{$cell.editable}',
+			'moveable' : '{$cell.moveable}', 
+			'closeable' : '{$cell.closeable}',
+            'owner' : '{$cell.owner}'
+		{literal}}{/literal};
+		
+	{/foreach}		
+	components[{$i}] = box;
+{/foreach}
+</script>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" id="main_content" style="margin:5px 0 0 0;padding:0 0 5px 0;">
+		  <tr>
+			{counter start=-1 skip=1 print=false assing=$boxnr}
+			{section name=i loop=$struc}				
+				{if $smarty.section.i.index == 0}		
+					<td class="container" valign="top" width="33%">
+				{elseif $smarty.section.i.index == 1}
+					<td class="container" valign="top" width="33%">
+				{else}
+					<td class="container" valign="top" width="33%">
+				{/if}
+						 {if $smarty.section.i.index == 1}
+						 	{if $fixed_categories[0][0] != ''}
+								<div class="box">
+									<div class="blue">															
+    <div class="topboxcont"><div class="bottombox"><div class="leftbox"><div class="rightbox"><div class="blbox"><div class="brbox"><div class="tlbox"><div class="trbox">
+										<div class="head">											
+											<h3><img src="{if $fixed_categories[0][0].cat.cat_favicon}{$fixed_categories[0][0].cat.cat_favicon}{else}i/nfi.gif{/if}" style="margin-top:-5px;width:16px; height:16px;" align="absmiddle" /> {$fixed_categories[0][0].cat.cat_name}</h3>
+										</div>										
+										<div class="content_2" id="fc_{$page_prefix}{$page_id}_{$fixed_categories[0][0].id}">
+											{if $fixed_categories[0][0].cat.cat_type == 2}
+												<div style="padding:3px;">{$fixed_categories[0][0].cat.cat_html}</div>												
+												{if $fixed_categories[0][0].cat.cat_links !='' && $fixed_categories[0][0].cat.cat_links|@count}
+													<ul>
+														{section name=k loop=$fixed_categories[0][0].cat.cat_links}
+															<li><a href="http://{$fixed_categories[0][0].cat.cat_links[k].link_url}" title="{$fixed_categories[0][0].cat.cat_links[k].link_title}">{$fixed_categories[0][0].cat.cat_links[k].link_name}</a></li>
+														{/section}
+													</ul>
+												{/if}
+											{elseif $fixed_categories[0][0].cat.cat_type == 1 || $fixed_categories[0][0].cat.cat_type == 3}	
+												Bet&ouml;lt&eacute;s alatt...
+											{/if}
+											
+										</div>
+    </div></div></div></div></div></div></div></div>
+									</div>
+								</div>
+							{/if}
+						 	{if $fixed_categories[0][1] != ''}
+								<div class="box">
+									<div class="blue">															
+    <div class="topboxcont"><div class="bottombox"><div class="leftbox"><div class="rightbox"><div class="blbox"><div class="brbox"><div class="tlbox"><div class="trbox">
+										<div class="head">											
+											<h3><img src="{if $fixed_categories[0][1].cat.cat_favicon}{$fixed_categories[0][1].cat.cat_favicon}{else}i/nfi.gif{/if}" style="margin-top:-5px;width:16px; height:16px;" align="absmiddle" /> {$fixed_categories[0][1].cat.cat_name}</h3>
+										</div>										
+										<div class="content_2" id="fc_{$page_prefix}{$page_id}_{$fixed_categories[0][1].id}">
+											{if $fixed_categories[0][1].cat.cat_type == 2}
+												<div style="padding:3px;">{$fixed_categories[0][1].cat.cat_html}</div>												
+												{if $fixed_categories[0][1].cat.cat_links !='' && $fixed_categories[0][1].cat.cat_links|@count}
+													<ul>
+														{section name=k loop=$fixed_categories[0][1].cat.cat_links}
+															<li><a href="http://{$fixed_categories[0][1].cat.cat_links[k].link_url}" title="{$fixed_categories[0][1].cat.cat_links[k].link_title}">{$fixed_categories[0][1].cat.cat_links[k].link_name}</a></li>
+														{/section}
+													</ul>
+												{/if}
+											{elseif $fixed_categories[0][1].cat.cat_type == 1 || $fixed_categories[0][1].cat.cat_type == 3}	
+												Bet&ouml;lt&eacute;s alatt...
+											{/if}
+											
+										</div>
+    </div></div></div></div></div></div></div></div>
+									</div>
+								</div>
+							{/if}
+						 	{if $fixed_categories[0][2] != ''}
+								<div class="box">
+									<div class="blue">															
+    <div class="topboxcont"><div class="bottombox"><div class="leftbox"><div class="rightbox"><div class="blbox"><div class="brbox"><div class="tlbox"><div class="trbox">
+										<div class="head">											
+											<h3><img src="{if $fixed_categories[0][2].cat.cat_favicon}{$fixed_categories[0][2].cat.cat_favicon}{else}i/nfi.gif{/if}" style="margin-top:-5px;width:16px; height:16px;" align="absmiddle" /> {$fixed_categories[0][2].cat.cat_name}</h3>
+										</div>										
+										<div class="content_2" id="fc_{$page_prefix}{$page_id}_{$fixed_categories[0][2].id}">
+											{if $fixed_categories[0][2].cat.cat_type == 2}
+												<div style="padding:3px;">{$fixed_categories[0][2].cat.cat_html}</div>												
+												{if $fixed_categories[0][2].cat.cat_links !='' && $fixed_categories[0][2].cat.cat_links|@count}
+													<ul>
+														{section name=k loop=$fixed_categories[0][2].cat.cat_links}
+															<li><a href="http://{$fixed_categories[0][2].cat.cat_links[k].link_url}" title="{$fixed_categories[0][2].cat.cat_links[k].link_title}">{$fixed_categories[0][2].cat.cat_links[k].link_name}</a></li>
+														{/section}
+													</ul>
+												{/if}
+											{elseif $fixed_categories[0][2].cat.cat_type == 1 || $fixed_categories[0][2].cat.cat_type == 3}	
+												Bet&ouml;lt&eacute;s alatt...
+											{/if}
+											
+										</div>
+    </div></div></div></div></div></div></div></div>
+									</div>
+								</div>
+							{/if}
+						 {elseif $smarty.section.i.index == 2}
+						 	{if $fixed_categories[1][0] != ''}
+								<div class="box">
+									<div class="blue">															
+    <div class="topboxcont"><div class="bottombox"><div class="leftbox"><div class="rightbox"><div class="blbox"><div class="brbox"><div class="tlbox"><div class="trbox">
+										<div class="head">											
+											<h3><img src="{if $fixed_categories[1][0].cat.cat_favicon}{$fixed_categories[1][0].cat.cat_favicon}{else}i/nfi.gif{/if}" style="margin-top:-5px;width:16px; height:16px;" align="absmiddle" /> {$fixed_categories[1][0].cat.cat_name}</h3>
+										</div>										
+										<div class="content_2" id="fc_{$page_prefix}{$page_id}_{$fixed_categories[1][0].id}">
+											{if $fixed_categories[1][0].cat.cat_type == 2}
+												<div style="padding:3px;">{$fixed_categories[1][0].cat.cat_html}</div>											
+												{if $fixed_categories[1][0].cat.cat_links !='' && $fixed_categories[1][0].cat.cat_links|@count}
+													<ul>
+														{section name=k loop=$fixed_categories[1][0].cat.cat_links}
+															<li><a href="http://{$fixed_categories[1][0].cat.cat_links[k].link_url}" title="{$fixed_categories[1][0].cat.cat_links[k].link_title}">{$fixed_categories[1][0].cat.cat_links[k].link_name}</a></li>
+														{/section}
+													</ul>
+												{/if}
+											{elseif $fixed_categories[1][0].cat.cat_type == 1 || $fixed_categories[1][0].cat.cat_type == 3}	
+												Bet&ouml;lt&eacute;s alatt...	
+											{/if}
+										</div>
+    </div></div></div></div></div></div></div></div>
+									</div>
+								</div>
+							{/if}
+							
+							{if $fixed_categories[1][1].cat.cat_name != ''}								
+								<div class="box">
+									<div class="blue">															
+    <div class="topboxcont"><div class="bottombox"><div class="leftbox"><div class="rightbox"><div class="blbox"><div class="brbox"><div class="tlbox"><div class="trbox">
+										<div class="head">											
+											<h3><img src="{if $fixed_categories[1][1].cat.cat_favicon}{$fixed_categories[1][1].cat.cat_favicon}{else}i/nfi.gif{/if}" style="margin-top:-5px;width:16px; height:16px;" align="absmiddle" /> {$fixed_categories[1][1].cat.cat_name}</h3>
+										</div>										
+										<div class="content_2" id="fc_{$page_prefix}{$page_id}_{$fixed_categories[1][1].id}">
+											{if $fixed_categories[1][1].cat.cat_type == 2}
+												<div style="padding:3px;">{$fixed_categories[1][1].cat.cat_html}</div>												
+												{if $fixed_categories[1][1].cat.cat_links !='' && $fixed_categories[1][1].cat.cat_links|@count}
+													<ul>
+														{section name=k loop=$fixed_categories[1][1].cat.cat_links}
+															<li><a href="http://{$fixed_categories[1][1].cat.cat_links[k].link_url}" title="{$fixed_categories[1][1].cat.cat_links[k].link_title}">{$fixed_categories[1][1].cat.cat_links[k].link_name}</a></li>
+														{/section}
+													</ul>
+												{/if}
+											{elseif $fixed_categories[1][1].cat.cat_type == 1 || $fixed_categories[1][1].cat.cat_type == 3}	
+												Bet&ouml;lt&eacute;s alatt...	
+											{/if}											
+										</div>
+    </div></div></div></div></div></div></div></div>
+									</div>
+								</div>
+							{/if}
+							{if $fixed_categories[1][2].cat.cat_name != ''}								
+								<div class="box">
+									<div class="blue">															
+    <div class="topboxcont"><div class="bottombox"><div class="leftbox"><div class="rightbox"><div class="blbox"><div class="brbox"><div class="tlbox"><div class="trbox">
+										<div class="head">											
+											<h3><img src="{if $fixed_categories[1][2].cat.cat_favicon}{$fixed_categories[1][2].cat.cat_favicon}{else}i/nfi.gif{/if}" style="margin-top:-5px;width:16px; height:16px;" align="absmiddle" /> {$fixed_categories[1][2].cat.cat_name}</h3>
+										</div>										
+										<div class="content_2" id="fc_{$page_prefix}{$page_id}_{$fixed_categories[1][2].id}">
+											{if $fixed_categories[1][2].cat.cat_type == 2}
+												<div style="padding:3px;">{$fixed_categories[1][2].cat.cat_html}</div>												
+												{if $fixed_categories[1][2].cat.cat_links !='' && $fixed_categories[1][2].cat.cat_links|@count}
+													<ul>
+														{section name=k loop=$fixed_categories[1][2].cat.cat_links}
+															<li><a href="http://{$fixed_categories[1][2].cat.cat_links[k].link_url}" title="{$fixed_categories[1][2].cat.cat_links[k].link_title}">{$fixed_categories[1][2].cat.cat_links[k].link_name}</a></li>
+														{/section}
+													</ul>
+												{/if}
+											{elseif $fixed_categories[1][2].cat.cat_type == 1 || $fixed_categories[1][2].cat.cat_type == 3}	
+												Bet&ouml;lt&eacute;s alatt...	
+											{/if}											
+										</div>
+    </div></div></div></div></div></div></div></div>
+									</div>
+								</div>
+							{/if}
+							{if $fixed_categories[1][3].cat.cat_name != ''}								
+								<div class="box">
+									<div class="blue">															
+    <div class="topboxcont"><div class="bottombox"><div class="leftbox"><div class="rightbox"><div class="blbox"><div class="brbox"><div class="tlbox"><div class="trbox">
+										<div class="head">											
+											<h3><img src="{if $fixed_categories[1][3].cat.cat_favicon}{$fixed_categories[1][3].cat.cat_favicon}{else}i/nfi.gif{/if}" style="margin-top:-5px;width:16px; height:16px;" align="absmiddle" /> {$fixed_categories[1][3].cat.cat_name}</h3>
+										</div>										
+										<div class="content_2" id="fc_{$page_prefix}{$page_id}_{$fixed_categories[1][3].id}">
+											{if $fixed_categories[1][3].cat.cat_type == 2}
+												<div style="padding:3px;">{$fixed_categories[1][3].cat.cat_html}</div>												
+												{if $fixed_categories[1][3].cat.cat_links !='' && $fixed_categories[1][3].cat.cat_links|@count}
+													<ul>
+														{section name=k loop=$fixed_categories[1][3].cat.cat_links}
+															<li><a href="http://{$fixed_categories[1][3].cat.cat_links[k].link_url}" title="{$fixed_categories[1][3].cat.cat_links[k].link_title}">{$fixed_categories[1][3].cat.cat_links[k].link_name}</a></li>
+														{/section}
+													</ul>
+												{/if}
+											{elseif $fixed_categories[1][3].cat.cat_type == 1 || $fixed_categories[1][3].cat.cat_type == 3}	
+												Bet&ouml;lt&eacute;s alatt...	
+											{/if}											
+										</div>
+    </div></div></div></div></div></div></div></div>
+									</div>
+								</div>
+							{/if}
+							{if $fixed_categories[1][4].cat.cat_name != ''}								
+								<div class="box">
+									<div class="blue">															
+    <div class="topboxcont"><div class="bottombox"><div class="leftbox"><div class="rightbox"><div class="blbox"><div class="brbox"><div class="tlbox"><div class="trbox">
+										<div class="head">											
+											<h3><img src="{if $fixed_categories[1][4].cat.cat_favicon}{$fixed_categories[1][4].cat.cat_favicon}{else}i/nfi.gif{/if}" style="margin-top:-5px;width:16px; height:16px;" align="absmiddle" /> {$fixed_categories[1][4].cat.cat_name}</h3>
+										</div>										
+										<div class="content_2" id="fc_{$page_prefix}{$page_id}_{$fixed_categories[1][4].id}">
+											{if $fixed_categories[1][4].cat.cat_type == 2}
+												<div style="padding:3px;">{$fixed_categories[1][4].cat.cat_html}</div>												
+												{if $fixed_categories[1][4].cat.cat_links !='' && $fixed_categories[1][4].cat.cat_links|@count}
+													<ul>
+														{section name=k loop=$fixed_categories[1][4].cat.cat_links}
+															<li><a href="http://{$fixed_categories[1][4].cat.cat_links[k].link_url}" title="{$fixed_categories[1][4].cat.cat_links[k].link_title}">{$fixed_categories[1][4].cat.cat_links[k].link_name}</a></li>
+														{/section}
+													</ul>
+												{/if}
+											{elseif $fixed_categories[1][4].cat.cat_type == 1 || $fixed_categories[1][4].cat.cat_type == 3}	
+												Bet&ouml;lt&eacute;s alatt...	
+											{/if}											
+										</div>
+    </div></div></div></div></div></div></div></div>
+									</div>
+								</div>
+							{/if}
+						{/if}
+					<div id="{$page_prefix}{$page_id}_{counter}">						
+                    {foreach from=$struc[i] item=cell key=j}						
+						{if $cell.type == 1 || $cell.type == 5}
+						<div class="box" id="comp_{$page_prefix}{$page_id}_{$smarty.section.i.index}_{$j}" alt="{$cell.bid}">
+							<div class="blue" id="rss_box_{$cell.title}">							
+    <div class="topboxcont_{$cell.color}"><div class="bottombox_{$cell.color}"><div class="leftbox_{$cell.color}"><div class="rightbox_{$cell.color}"><div class="blbox_{$cell.color}"><div class="brbox_{$cell.color}"><div class="tlbox_{$cell.color}"><div class="trbox_{$cell.color}">
+								<div class="head">
+									<div class="edit"><a href="#" title="Hírek frissítése"><img align="top" src="i/refresh.gif" alt="Hírek frissítése"></a>{if $cell.editable == 1} <a title="Hírdoboz szerkesztése" href="#">Szerkeszt</a>{else} <a href="#"></a>{/if}{if $cell.closeable == 1}<a href="#" title="H&iacute;rdoboz bez&aacute;r&aacute;sa"><img src="i/var.gif" align="top" alt="H&iacute;rdoboz bez&aacute;r&aacute;sa" /></a><a href="#" title="Hírdoboz törlése"><img src="i/close.gif" align="top" alt="Hírdoboz törlése"/></a>{else}{/if}</div>
+									<h3 ><a href="#"><img src="{if $cell.feed_type == 4}i/in.gif{elseif $cell.feed_favicon != ''}{$cell.feed_favicon}{else}i/rss.gif{/if}" style="margin-top:-5px;width:16px; height:16px;" align="absmiddle" /></a> <a href="{$cell.agency_url}" target="_blank">{$cell.title}<!-- ({$cell.bid})--></a></h3>
+								</div>
+								<div class="editContent">
+									<table border="0" cellspacing="0" cellpadding="2">
+									  <tr>
+										<td>C&iacute;m:</td>
+										<td><input type="text" name="title" {if $cell.owner == 1}disabled{/if} value="{$cell.title|escape:html}" /></td>
+									  </tr>
+									  <tr>
+										<td>Sz&iacute;n:</td>
+										<td>
+											<div id="c0"></div>
+											<div id="c1"></div>
+											<div id="c2"></div>
+											<div id="c3"></div>
+											<div id="c4"></div>
+											<div id="c5"></div>
+											<div id="c6"></div>
+										</td>
+									  </tr>
+									  <tr>
+                                      {if $cell.feed_type == 4}
+										<td>Kulcssz&oacute;:</td>
+										<td><input type="text" name="feed" {if $cell.owner == 1}disabled{/if} value="{$cell.keywords}" /></td>
+                                      {else}
+										<td>Forr&aacute;s:</td>
+										<td><input type="text" name="feed" {if $cell.owner == 1}disabled{/if} value="{$cell.feed}" /></td>
+                                      {/if}
+									  </tr>
+									  <tr>
+										<td>Elemek:</td>
+										<td>
+											<select name="items">
+												{section name=l loop=$items}
+                                                {$items[l]}
+													{if $items[l] == $cell.items_nr}
+														<option value="{$items[l]}" selected>{$items[l]}</option>
+													{else}
+														<option value="{$items[l]}">{$items[l]}</option>
+													{/if}
+												{/section}
+											</select>
+										</td>
+									  </tr>									  
+									  <tr>
+										<td colspan="2"><input type="button" value="Elment" /></td>
+									  </tr>
+									</table>		
+								</div>
+								{if $cell.closed == "1"}
+								<div class="content_{$cell.color}" style="display:none; ">
+								{else}
+								<div class="content_{$cell.color}">
+								{/if}
+                                {if $cell.content}
+                                    {$cell.content}
+                                {else}
+									Bet&ouml;lt&eacute;s alatt...
+                                {/if}
+								</div>
+    </div></div></div></div></div></div></div></div>
+							</div>
+						</div>
+						{elseif $cell.type == 2}						
+						<div class="box" id="comp_{$page_prefix}{$page_id}_{$smarty.section.i.index}_{$j}" alt="{$cell.bid}">
+							{include file="webnote.html" wn_id=$cell.rid wn_bid=$cell.bid}
+						</div>
+						{elseif $cell.type == 3}
+						<div class="box" id="comp_{$page_prefix}{$page_id}_{$smarty.section.i.index}_{$j}" alt="{$cell.bid}">
+							{include file="search_box.html" sb_bid=$cell.bid}
+						</div>			
+                        {/if}
+					{/foreach}
+					</div>
+					</td>
+			{sectionelse}			
+				<td class="container" valign="top" width="33%"><div id="{$page_prefix}{$page_id}_{counter}"></div></td>
+				<td class="container" valign="top" width="33%"><div id="{$page_prefix}{$page_id}_{counter}"></div></td>
+				<td class="container" valign="top" width="33%"><div id="{$page_prefix}{$page_id}_{counter}"></div></td>	
+			{/section}
+			{if $smarty.section.i.max== 1}
+				<td class="container" valign="top" width="33%"><div id="{$page_prefix}{$page_id}_{counter}">-</div></td>
+				<td class="container" valign="top" width="33%"><div id="{$page_prefix}{$page_id}_{counter}">-</div></td>	
+			{elseif  $smarty.section.i.max == 2}
+				<td class="container" valign="top" width="33%"><div id="{$page_prefix}{$page_id}_{counter}"></div></td>
+			{/if}
+	</tr>
+</table>

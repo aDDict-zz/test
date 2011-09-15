@@ -1,0 +1,37 @@
+<table width="100" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tr>
+    <td class="page_title">Bejelentkez&eacute;s</td>
+  </tr>
+  <tr>
+  	<td>
+		{capture name=login}		
+		<form name="login" method="post" action="index.php?id=4">
+		<input type="hidden" name="action" value="login" />
+		<table border="0" cellspacing="0" cellpadding="5">
+		  {if $message != ""}
+		  <tr>
+			<td colspan="2" style="color:#FF0000;font-weight:bold;">
+				{section name=i loop=$message}
+					{$message[i]}<br />
+				{/section}
+			</td>
+		  </tr>
+		  {/if}
+		  <tr>
+			<td>Felhaszn&aacute;l&oacute;n&eacute;v:</td>
+			<td><input type="text" name="login_name" value="{$login_name}" /></td>
+		  </tr>
+		  <tr>
+			<td>Jelsz&oacute;:</td>
+			<td><input type="password" name="password" value="{$password}" /></td>
+		  </tr>
+		  <tr>
+			<td colspan="2" align="center"><input type="submit" name="" value="Bejelentkez&eacute;s" class="button" /></td>
+		  </tr>
+		</table>
+		</form>
+		{/capture}
+		{include file="dialog.html" title="Bejelentkez&eacute;s" content=$smarty.capture.login extra="width=100 align=center"}
+	</td>
+  </tr>	
+</table>

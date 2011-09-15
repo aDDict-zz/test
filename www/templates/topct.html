@@ -1,0 +1,10 @@
+{foreach from=$intervals item=interval key=i}
+    {if $top.$i|@count}
+    <b>{$interval}</b><br/>
+    <ul>
+    {foreach from=$top.$i item=news key=idx}
+        <li><a  class="newsitem" {if $news.highlighted}style="font-weight:bold;color:#bf2e1a;"{/if} target="_blank" href="{$news.url}" {if $news.lead}onmouseover="attachNewsHint(this, '{$news.lead}');" {/if}>{$news.title}</a> - <i>{$news.rss_name}</i></li>
+    {/foreach}
+    </ul>
+    {/if}
+{/foreach}

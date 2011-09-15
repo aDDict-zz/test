@@ -1,0 +1,57 @@
+<html>
+<head>
+<style>
+    #hirek {literal}{{/literal}
+        width:{$width}px;
+        height:{$height}px;
+        {if $border}border:{$border.width}px #{$border.color} {$border.style};{/if}
+        overflow:hidden;
+        {if $bg_color}background-color:#{$bg_color};{/if}
+        color:#{$text_color};
+    {literal}}{/literal}
+    #hirek h1 {literal}{{/literal}
+        color:#{$title_color};
+        font-size:{$title_size}px;
+        margin:5px;
+    {literal}}{/literal}
+    #hirek_keywords {literal}{{/literal}
+        list-style-image: url(http://www.hirek.hu/i/n.gif);
+        vertical-align : middle;
+        margin:0 5px 0 20px;
+        padding:0px;
+        font-size:{$text_size}px;
+    {literal}}{/literal}
+    #hirek_keywords li {literal}{{/literal} 
+        height : {$item_height}px;
+        vertical-align : middle;
+    {literal}}{/literal}
+    #hirek_keywords li a{literal}{{/literal}
+        font-size:{$text_size}px;
+        color : #{$text_color};
+        text-decoration : none;
+    {literal}}{/literal}
+    #hirek h2 a {literal}{{/literal}
+        font-size:11px;
+        color:#ccc;
+        text-decoration : none;
+    {literal}}{/literal}
+    #hirek h2 {literal}{{/literal}
+        margin:5px;
+    {literal}}{/literal}
+</style>
+</head>
+<body>
+<div id="hirek">
+<h1>{$title}</h1>
+{foreach from=$intervals item=interval key=i}
+    {if $top.$i|@count}
+    <ul id="hirek_keywords">
+    {foreach from=$top.$i item=news key=idx}
+        <li><a target="_blank" href="{$var->baseurl}?page_id={$page_id}&news_id={$news.news_id}" >{$news.title}</a><!-- - <i>{$news.rss_name}</i--></li>
+    {/foreach}
+    </ul>
+    {/if}
+{/foreach}
+<!--h2><a href="{$var->baseurl}">{$more}</a></h2-->
+</div>
+</body>

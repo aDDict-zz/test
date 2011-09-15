@@ -1,0 +1,7 @@
+{strip}
+    <ul id="hirek_keywords">
+    {foreach from=$news.entries item=n key=idx}
+    <li><a target="_blank" href="{$var->baseurl}click.php?link={$n.link|escape:"url"}&title={$n.enctitle}&rss={$n.rss_id}">{$n.title}{$n.title_tail}</a></li>
+    {/foreach}
+    </ul>
+{/strip}

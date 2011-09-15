@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>H&iacute;rek.hu - Regisztr&aacute;ci&oacute;</title>
+<base href="{$var->baseurl}">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="templates/main5.css" rel="stylesheet" type="text/css" />
+<script language="javascript" type="text/javascript" src="js/common3.js"></script>
+</head>
+
+<body>
+<div style="margin-top:150px;">
+<div style="width:100%;text-align:center;margin-bottom:10px;"><a href=""><img src="i/hirek.gif" /></a></div>
+<div class="box register">
+    <div class="topboxcont" style="width:300px;margin:auto;"><div class="bottombox"><div class="leftbox"><div class="rightbox"><div class="blbox"><div class="brbox"><div class="tlbox"><div class="trbox">
+		<div class="head" style="cursor:default;padding-top:10px; ">			
+			<h1>&nbsp;Regisztr&aacute;ci&oacute;</h1>
+		</div>
+		<div class="content" style="margin-right:5px;">
+		  <p style="margin:10px 10px 10px 0;">A regisztrációt követően lehetősége nyílik arra, hogy tetszés szerinti hírcsoportokkal saját elképzeléséhez igazítsa a hirek.hu szerkezetét és tartalmát.</p>
+			<form name="register" method="post" action="register.php">
+			<input type="hidden" name="action" value="register" />
+			<table border="0" cellspacing="0" cellpadding="5" align="center" style="width:100%"> 
+			  {if $error_register}
+    		  <tr>
+			  	<td colspan="2">
+					{section name=i loop=$error_register}
+						<span class="error">{$error_register[i]}</span><br />
+					{/section}
+				</td>
+			  </tr>
+			  {/if}
+			  <tr>
+				<td><div style="width:100px;"><b>E-mail c&iacute;m:</b></div></td>
+				<td colspan="2" align="right"><input type="text" name="data[email]" size="25" value="{$datas_register.email}" /></td>
+			  </tr>
+			  <tr>
+				<td ><b>Jelsz&oacute;:</b></td>
+                <td >&nbsp;</td>
+				<td align="right" width="20"><input type="password" name="data[password]" value="{$datas_register.password}" /></td>
+			  </tr>
+			  <tr>
+				<td colspan="2" ><b>Jelsz&oacute; m&eacute;gegyszer:</b></td>
+				<td align="right"><input type="password" name="data[password_again]" value="{$datas_register.password_again}" /></td>
+			  </tr>
+			  <tr>
+				<td colspan="3" align="center"><img alt="Regisztrálok" src="i/reg_button.gif" class="ql" onclick="document.register.submit();" /></td>
+			  </tr>
+			  <tr>
+				<td colspan="3" align="center"><script>mx_hp('http://www.hirek.hu/', 'Legyen a kezdőoldalam!', 'Beállítás kezdőoldalnak: húzza ezt a linket a Kezdőoldal ikonra');</script></td>
+			  </tr>
+			</table>
+			</form>
+		</div>
+	</div>
+    </div></div></div></div></div></div></div></div>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<script language="javascript" type="text/javascript" src="../js/common8.js"></script>
+<script language="javascript" type="text/javascript" src="../js/admin/common.js"></script>
+{literal}
+<script language="javascript" type="text/javascript">
+var getCategorizedFeeds = function(catID){
+	var rssCategorized = document.getElementById('rss_categorized');
+	
+	var showFeeds = function(r){		
+		var xmlDoc = null;
+		if(document.all){			
+			xmlDoc = new ActiveXObject("Microsoft.XMLDOM")
+			xmlDoc.load(r.responseXML);			
+		}else{
+			xmlDoc = loadXML(r.responseText);
+		}
+					
+		var opts = xmlDoc.getElementsByTagName('option');											
+		populateSelect(rssCategorized, opts);
+	}
+	var pars = "action=get_categories_feeds&cat_id=" + catID;		
+	var url = "../ajax/admin/resort_feeds.php";
+	Ajax.send(url, "POST", pars, showFeeds, null);
+}
+var getCategories = function(){
+	var rssCategories = document.getElementById('rss_categories');	
+	var showCategories = function(r){		
+		var xmlDoc = null;
+		if(document.all){			
+			xmlDoc = new ActiveXObject("Microsoft.XMLDOM")
+			xmlDoc.load(r.responseXML);			
+		}else{
+			xmlDoc = loadXML(r.responseText);
+		}
+					
+		var opts = xmlDoc.getElementsByTagName('option');											
+		populateSelect(rssCategories, opts);
+		getCategorizedFeeds(rssCategories.options[0].value);
+	}
+	var pars = "action=get_categories";		
+	var url = "../ajax/admin/resort_feeds.php";
+	Ajax.send(url, "POST", pars, showCategories, null);
+}
+var timeOut = "";
+
+var doFeedSearch = function(obj){ //launch the search process		
+	window.clearTimeout(timeOut);
+	if(obj.value.length>=3) timeOut = setTimeout("searchFeeds()", 1000);
+}
+
+var searchFeeds = function(){
+	var rssFinder = document.getElementById('rss_finder');
+	var rssUnCategorized = document.getElementById('rss_uncategorized');
+	
+	var showFeeds = function(r){
+		var xmlDoc = null;
+		if(document.all){			
+			xmlDoc = new ActiveXObject("Microsoft.XMLDOM")
+			xmlDoc.load(r.responseXML);			
+		}else{
+			xmlDoc = loadXML(r.responseText);
+		}		
+		var opts = xmlDoc.getElementsByTagName('option');											
+		populateSelect(rssUnCategorized, opts);		
+	}
+	var pars = "action=search_feeds&q=" + encodeURIComponent(rssFinder.value);		
+	var url = "../ajax/admin/resort_feeds.php";
+	Ajax.send(url, "POST", pars, showFeeds, null);
+}
+
+var doSubmit = function(){
+	var rssCategorized = document.getElementById('rss_categorized');	
+	selectAll(rssCategorized.options);
+	document.resort_feeds.submit();
+}
+
+var removeFeed = function(s){
+	s.remove(s.selectedIndex);
+}
+var addFeed = function(s){
+	var rssCategorized = document.getElementById('rss_categorized');
+	var id = s.options[s.selectedIndex].value;
+
+	for(var i=0;i<rssCategorized.options.length;i++){
+		if(id==rssCategorized.options[i].value){
+			alert('Ez a feed mar szerepel ebben a kategoriaban!')
+			return false;
+		}
+	}
+	var option = document.createElement('option');
+	option.text = s.options[s.selectedIndex].text;
+	option.value = s.options[s.selectedIndex].value;		
+	if(option.value!="undefined"){
+		try{
+			rssCategorized.add(option, null);
+		}catch(ex){
+			rssCategorized.add(option);
+		}
+	}
+}
+window.onload = getCategories;
+
+</script>
+{/literal}
+<form name="resort_feeds" method="post" action="index.php?id={$id}&sub_id={$sub_id}" onSubmit="return false;">
+<input type="hidden" name="action" value="resort_feeds" />
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="page_title">RSS-ek besorol&aacute;sa</td>
+  </tr>
+  <tr>
+    <td>
+		{capture name=resort_feeds}
+		<table border="0" cellspacing="0" cellpadding="5">
+		  {if $error != ''}
+		  <tr>
+		  	<td colspan="2" style="color:#FF0000;font-weight:bold">{$error}</td>
+		  </tr>
+		  {/if}
+		  <tr>
+			<td>
+				RSS kateg&oacute;ri&aacute;k:<br />
+				<select name="rss_categories" id="rss_categories" onChange="getCategorizedFeeds(this.options[this.selectedIndex].value)"></select>
+			</td>
+			<td>
+				RSS kereső:<br />
+				<input type="text" name="rss_finder" id="rss_finder" onKeyUp="doFeedSearch(this);" />
+			</td>
+		  </tr>
+		  <tr>
+			<td>
+				<select name="rss_cagorized[]" id="rss_categorized" multiple size="10" ondblclick="removeFeed(this);"></select>
+			</td>
+			<td>
+				<select name="rss_uncagorized[]" id="rss_uncategorized" multiple size="10" ondblclick="addFeed(this);"></select>
+			</td>
+		  </tr>
+		</table>
+		{/capture}
+		{include file="dialog.html" title="" content=$smarty.capture.resort_feeds extra="width=100%"}
+	</td>
+  </tr>
+  <tr>
+  	<td><input type="button" name="" value="V&eacute;grehajt" class="button" onClick="doSubmit()" /></td>
+  </tr>
+</table>
+</form>

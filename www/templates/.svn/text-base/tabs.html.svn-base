@@ -1,0 +1,9 @@
+{section name=i loop=$tabs}
+{if $smarty.section.i.index == 0}
+<div class="tabactive" id="tab{$tabs[i].id}">
+{else}
+<div class="tabinactive" id="tab{$tabs[i].id}">
+{/if}	
+<span style="cursor:pointer; ">{$tabs[i].title}</span> {if $smarty.section.i.index == 0}<!--img src="i/close2.gif" style="cursor:pointer;" align="top" /-->{/if}
+</div>
+{/section}

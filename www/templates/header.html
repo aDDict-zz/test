@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$PAGE_TITLE|default:"H&iacute;rek.hu"}</title>
+<base href="{$var->baseurl}">
+{if !$var->test_site}
+<meta name="google-site-verification" content="tN3Wl1lXLREj8Yygc4ZnVLM8e99plIszbzceMRBESik" />
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+{/if}
+<meta name="description" content="{$PAGE_DESCRIPTION|default:""|escape:"html"}" />
+<meta name="keywords" content="{$PAGE_KEYWORDS|default:""}" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+{if !$var->test_site}
+<meta name="verify-v1" content="zG/8fSzPbancCnRu9eiPvRbPjXT9TK16X9uirOgTZ/o=" />
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+{/if}
+
+<link href="templates/main9.css" rel="stylesheet" type="text/css" />
+
+<script language="javascript" type="text/javascript" src="js/main25.js"></script>
+<script language="javascript" type="text/javascript" src="js/common11.js"></script>
+<script type="text/javascript" src="http://www.kepzesinfo.hu/js/embededflash.js"></script>
+{if $valasz}
+<script language="javascript" type="text/javascript" src="js/embededflash.js"></script>
+{/if}
+{if $page == "search"}
+    {*include file="search_header_js.html"*}
+{else}
+    {include file="index_header_js.html"}
+{/if}
+<script language="javascript" type="text/javascript" >var userID = '{$__user_id}';</script>
+{if !$var->test_site}
+{literal}
+    <!--Google analytics-->
+    <script type="text/javascript">
+
+ var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-22219389-1']);
+_gaq.push(['_addOrganic','ok.hu','q']);
+_gaq.push(['_addOrganic','startlap.hu','q']);
+_gaq.push(['_addOrganic','startlapkereso.hu','q']);
+_gaq.push(['_addOrganic','images.google.hu','q']);
+_gaq.push(['_addOrganic','google.com','q']);
+_gaq.push(['_addOrganic', 'bluu.hu', 'kerdes']);
+_gaq.push(['_addOrganic', 'johu.hu', 'q']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+var ga = document.createElement('script');
+ga.type = 'text/javascript'; ga.async = true;
+ga.src = 'http://hirek.hu/js/ga.js';
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+
+    </script>
+    <!--Google analytics end-->
+
+{/literal}
+    {if false}
+    <!--webaudit-->
+    <script language="javascript" type="text/javascript" src="js/webaudit.js"></script>
+    <SCRIPT language="JavaScript">
+    <!--
+    document.write('<!-- Medián WebAudit Hírek Média Hirek.hu 1/2 --><img style="position:absolute;top:-100px;left:-100px" src="http://audit.median.hu/cgi-bin/track.cgi?uc=11731252079918&dc=1&ui='+same+'" width="1" height="1">');
+    //-->
+    </SCRIPT>
+    <NOSCRIPT>
+    <!-- Medián WebAudit Hírek Média Hirek.hu 1/2 -->
+    <img style="position:absolute;top:-100px;left:-100px" src="http://audit.median.hu/cgi-bin/track.cgi?uc=11731252079918&dc=1" width="1" height="1">
+    </NOSCRIPT>
+    <!--webaudit end-->
+    {/if}
+{/if}
+</head>

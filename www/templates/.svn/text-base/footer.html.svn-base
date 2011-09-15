@@ -1,0 +1,14 @@
+<div id="footer">
+    {foreach from=$pages item=p key=id}
+    {if $id > 0}
+    <a href="{if $var->rewrite_engine}{$var->rewrite_baseurl}{$p.page_url}{else}index.php?page_id={$id}{/if}">{$p.page_name}</a>{if !$p.last} | {/if}
+    {/if}
+    {/foreach}
+    <br>
+	<a href="http://www.hirekmedia.hu/portfolio/hirek" target="_blank">Impresszum</a> | 
+    <a href="http://www.hirekmedia.hu/" target="_blank">Adatkezel&eacute;si elvek</a> | 
+    <a href="http://www.hirekmedia.hu/portfolio/hirek" target="_blank">M&eacute;diaaj&aacute;nlat</a> |
+	<a href="#" onClick="showHelp();return false;">S&uacute;g&oacute;</a>
+    <br />
+	Copyright &copy; 2006-{$smarty.now|date_format:"%Y"} Hírek.hu - Minden jog fenntartva
+</div>

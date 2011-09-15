@@ -1,0 +1,8 @@
+{section name=i loop=$feeds}
+	<li  id="myfeed_{$feeds[i].id}">
+        <div {if $feeds[i].myfeed}onmouseover="myFeedOver({$feeds[i].id});" onmouseout="myFeedOver({$feeds[i].id},1);"{/if} > 
+            <img src="{if $feeds[i].type==4}i/in.gif{elseif $feeds[i].agency_favicon != ''}{$feeds[i].agency_favicon}{else}i/rss.gif{/if}" align="absmiddle" width="16" height="16" />
+            <a id="myfeedlink_{$feeds[i].id}" href="#" onClick="addNewFeedBox('{$feeds[i].rss_name|escape:javascript|escape:html}', '{$feeds[i].rss_url}', '{$feeds[i].agency_url}', '{$feeds[i].id}', '{$general}', '{$feeds[i].type}');return false;">{$feeds[i].rss_name}</a>
+        </div>
+    </li>
+{/section}

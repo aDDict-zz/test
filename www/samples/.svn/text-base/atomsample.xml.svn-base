@@ -1,0 +1,707 @@
+<?xml version="1.0" encoding="utf-8"?><feed xml:lang="hu-HU" xmlns="http://www.w3.org/2005/Atom">
+	<title>sztahanov - atom</title>
+  			<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu" />
+			<link rel="self" type="text/html" href="http://sztahanov.blog.hu/atom" />
+			<id>http://sztahanov.blog.hu/atom</id>
+			<subtitle>sztahanov</subtitle>
+			<updated>2006-06-12T11:19:51Z</updated>
+ 						<entry>
+				<title type="text">Útelágazás</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/06/12/utelagazas" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/06/12/utelagazas</id>
+				<published>2006-06-12T11:19:51Z</published>
+				<updated>2006-06-12T11:19:51Z</updated>
+        <content type="html"><![CDATA[<p>Szóval most már hivatalos, hogy a webkettes témák átköltöznek a sztahanovról a <a href="http://webisztan.blog.hu">Webisztán</a>ra, viszont nem csukom be a ezt a blogot, mert van jó pár dolog, ami ott nem fér el, így idekívánkozik, szóval itt ritkábban, de lesz élet a jövőben is, tartsátok szárazon az RSS-olvasókat, a napi élet viszont odaát.</p>]]></content>
+			</entry>
+						<entry>
+				<title type="text">Web 2.0 Symposium live</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/28/web_2_0_symposium_live" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/28/web_2_0_symposium_live</id>
+				<published>2006-05-28T21:05:00Z</published>
+				<updated>2006-05-28T23:24:22Z</updated>
+        <content type="html"><![CDATA[<p>A <del>konferencia</del> szimpózium alatt ezúttal nem valószínű, hogy bloggolni fogok, de szerencsére ha követni akarjátok az eseményeket, azt több blogon megtehetitek:</p>
+<ul>
+    <li>
+    <div><a href="http://web2symp.blog.hu">web2symp.blog.hu</a> - ez a konferencia hivatalos blogja </div>
+    </li>
+    <li>
+    <div><a href="http://20.blog.hu">20.blog.hu</a> - az Index blogközvetítése (fényképek is lesznek!)</div>
+    </li>
+    <li>
+    <div><a href="http://web2symposium.blogter.hu">web2symposium.blogter.hu</a> - a blogteres konfbloggerek blogja</div>
+    </li>
+</ul>
+<p>És most Psycho.</p>]]></content>
+			</entry>
+						<entry>
+				<title type="text">FlexGo - Microsoft kártyás modell a csóró PC-piacokra</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/23/flexgo_microsoft_kartyas_modell_a_csoro_" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/23/flexgo_microsoft_kartyas_modell_a_csoro_</id>
+				<published>2006-05-23T08:04:12Z</published>
+				<updated>2006-05-23T08:04:12Z</updated>
+        <content type="html"><![CDATA[<p>Hát ez a <a href="http://www.microsoft.com/presspass/press/2006/may06/05-21EmergingMarketConsumersPR.mspx">Microsoft Pay-As-You-Go Personal Computing</a> elég borzalmasan hangzik. (Fejlődő országokban értékesíténenek PC-ket alacsony kezdőköltséggel, viszont a használatért havidíjat kellene fizetni előre, pre-paid kártyával, kb. mint a Pannon Praktikum). Van ugye a MIT-Negroponte-féle 100 dolláros laptop, azon persze nincs Microsoft szoftver, pfuj, utálják is:</p>
+<blockquote>&quot;The last thing you want for a shared-use computer is for it to be something without a disk, and with a tiny little screen... If you are going to go have people share the computer, get a broadband connection and have somebody there who can help support the user. Geez, get a decent computer where you can actually read the text and you're not sitting there cranking the thing while you're trying to type.&quot;</blockquote>
+<p>Ezt Bill Gates <a href="http://blogs.siliconvalley.com/gmsv/2006/03/surely_it_was_m.html">mondta</a>&nbsp;még márciusban. Ugyanakkor persze nem lehet kimaradni a fejlődő országok óriási piacáról. A Microsoft először mobiltelefonokra építve <a href="http://www.nytimes.com/2006/01/30/technology/30gates.html?ex=1296277200&amp;en=4e586bd7c9a4b218&amp;ei=5088">képzelte el</a> a harmadik világ felgépesítését, aztán jött az Origami, ami 600-1000 dollár közötti árával azért nem biztos, hogy tarolni fog Afrikában. És most itt a - Brazíilában már egy éve tesztelt - FlexGo, ami egyébként nemcsak a fejlődő világban, hanem az USA-ban is sikeres lehet. Azt mondják,&nbsp;a világon kb&nbsp;<a href="http://seattlepi.nwsource.com/business/271040_msftflex22.html">1 milliárd ember</a> van, aki nem keres eleget egy saját PC vásárlásához, de ahhoz igen, hogy egy ilyen konstrukciót meg tudjon engedni magának. Ja, és a FlexGo szoftverkalózkodást is segít visszaszorítani (legalábbis az alapszoftverek esetében).</p>]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/22/title_1201" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/22/title_1201</id>
+				<published>2006-05-22T09:20:08Z</published>
+				<updated>2006-05-22T09:20:08Z</updated>
+        <content type="html"><![CDATA[<img height="65" width="150" alt="" src="http://sztahanov.blog.hu/media/image/0605/conan_doyle_res.gif" />Arthur Conan Doyle 147 éve született, engem pedig egyre inkább az izgat, hogy mi alapján válogatja ki a Google az ünnepelt születésnapokat?]]></content>
+			</entry>
+						<entry>
+				<title type="text">Az elitcsapda</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/22/az_elitcsapda" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/22/az_elitcsapda</id>
+				<published>2006-05-22T09:11:42Z</published>
+				<updated>2006-05-22T09:11:42Z</updated>
+        <content type="html"><![CDATA[<p>Josh Kopelman VC-blogger írt egy érdekes posztot <a href="http://redeye.firstround.com/2006/05/53651.html">53,651</a> címmel egy-két hete, amiben azt állítja, hogy túl sok olyan&nbsp;startup van, akik a webkettő-geek réteget célozzák be, és ez veszélyes. Egész pontosan Michael Arrington webkettes hírblogjának, a <a href="http://techcrunch.com">Techcrunch</a>nak a közönségéről van szó (53,651 előfizető, bár nekem csak 47,316-ot mutat, mindegy).</p>
+<p>Ha egy startup termékéről Arrington pozitív kritikát ír, akkor a Techcrunch olvasóinak jelentős része - 5-25 ezer felhasználó - átkattint és kipróbálja azt. Ez viszont már egy jelentős felhasználói bázis a startupnak. De ezek nem mainstream felhasználók, hanem geekek, a webkettes&nbsp;elitalakulat. De miért is baj ez?</p>
+<p>Egyrészt a geekek által küldött visszacsatolás torz - ne felejtsük, hogy béta szolgáltatásokról van szó, nem véglegesekről. A másik, fontosabb baj az, hogy abból, hogy ez az első tízezer juzer megvan két nap alatt, egyáltalán nem lehet arra következtetni, hogy a többi tízezer is jönni fog - szegény VC nem tudja megbecsülni jól a potenciált. Az elitcsapat lelkes, de szűk réteg, a szakadék közöttük és a mainstream felhasználók között túl széles. Ráadásul az elit - mivel mindent hajlamos kipróbálni - nem marad meg hosszú távon.</p>
+<p>A szolgáltatások irányát is döntően befolyásolja ez a szűk, de aktív és hangos (blogokban is aktív)&nbsp;célközönség, egyszerűen geekebbek lesznek a kelleténél, kisebb az esélyük az átlagos juzer elérésére. Nem veszik észre, hogy túl kicsi lesz a későbbi potenciális célközönség, mert az elején minden szép és jó. Később viszont képtelenek down-geekesíteni a szolgáltatást.</p>
+<p>(Itthon szerencsére nincs ilyen probléma, remléhetőleg senki nem fog 100 emberre optimalizálni szolgáltatást.)</p>
+<p>A dolog persze nem tűnik ennyire fekete-fehének az elmúlt héten generált feedback tükrében. A down-geekesítés problémája egy szolgáltatás életciklusának egy adott pontján természetes, tervezett is lehet, a geekek által a szolgáltatásba pumpált tartalom pedig segíti a szélesebb elterjedést is. (Amúgy az USA-ban is vannak olyan települések, ahol az iPod ismeretlen, és a reklámok alájn nem szerepelnek URL-ek:&nbsp;<a href="http://thomashawk.com/2006/05/why-53651-people-matter-lot.html">néhány</a> <a href="http://scobleizer.wordpress.com/2006/05/14/outside-the-53651-bubble/">érdekesebb</a> <a href="http://www.scripting.com/2006/05/15.html#isWeb20ABubble">follow-up</a>.</p>]]></content>
+			</entry>
+						<entry>
+				<title type="text">Lekvár, fagyi, nyúl</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/19/title_1198" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/19/title_1198</id>
+				<published>2006-05-19T17:53:00Z</published>
+				<updated>2006-05-22T10:26:58Z</updated>
+        <content type="html"><![CDATA[<p>Az Index ezúttal sok kifelé, blogokra mutató linkkel megtűzdelt cikket hozott&nbsp;<a href="http://index.hu/x?cbl=1&amp;c0_00=http%3A%2F%2Findex.hu%2Ftech%2F%3Fd%3D060518c">Kirúgtak a blogom miatt</a>&nbsp;címmel, hálás téma, de most sincs benne <a href="http://www.istencsaszar.hu/?p=54">köszönet</a>. (A blogok érdekes kis rovarok,&nbsp;de&nbsp;nehogy már visszabeszéljenek!)</p>
+<ins>
+<p>Update: visszabeszélnek mégis! A szemetek!</p>
+<ul>
+    <li><a href="http://www.istencsaszar.hu/?p=54">Istencsászár</a> - kommentélet </li>
+    <li><a href="http://blog.motoska.com/?p=1653">Motoska</a> </li>
+    <li><a href="http://www.bpcity.hu/index.php/kirugott-bloggerek/">BPCity</a> </li>
+    <li><a href="http://mefi.be/muti/912/mit-szolnal-hozza">Mefiblog</a> </li>
+    <li><a href="http://www.enmagam.freeblog.hu/archives/2006_May_enmagam.htm#1576762">Énmagam minap</a> </li>
+    <li><a href="http://onlinemarketing.blog.hu/2006/05/20/miert_nincs_az_indexnek">Onlinemarketingblog</a></li>
+</ul>
+<p>Disclaimer: bevallom, engem a konkrétan <em>kinek van igaza</em> kérdésnél sokkal jobban érdekel a reláció/interakció az Index és a blogoszféra között, hogy miért ilyen, amilyen, és meddig tudja, akarja&nbsp;tartani az Index ezt a lekezelő hangnemet. Meglássuk.</p>
+<p>Update2: és a sesblogot is <a href="http://sesblog.hu/archives/individual/017521-20060520.html">ez érdekli</a>, igen.</p>
+</ins>]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/18/title_1195" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/18/title_1195</id>
+				<published>2006-05-18T15:13:25Z</published>
+				<updated>2006-05-18T15:13:25Z</updated>
+        <content type="html"><![CDATA[Ha beírom a Google-ba, hogy <a href="http://www.google.com/search?sourceid=navclient&amp;ie=UTF-8&amp;rls=GGLJ,GGLJ:2006-10,GGLJ:en&amp;q=29+mpg">29 mpg</a>, akkor a Google Calculator vajon miért km/l-ben adja vissza az eredményt l/100km helyett?]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/18/title_1194" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/18/title_1194</id>
+				<published>2006-05-18T07:42:00Z</published>
+				<updated>2006-05-18T07:53:42Z</updated>
+        <content type="html"><![CDATA[Windows Live Search - így <a href="http://www.microsoft-watch.com/article2/0,1995,1963466,00.asp?kc=MWRSS02129TX1K0000535">fogják hívni</a> a Microsoft új desktop/intranet keresőjét. Persze, így hívják a webes keresőt is már egy ideje. Hah, akkor ez valójában egy termék, csak... nem, szögezi le a Microsoft, ez bizony két külön termék. (Érdekes adat: George Foreman - híres amerikai bokszoló - mind az öt fiának a George keresztnevet adta.)]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/17/title_1193" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/17/title_1193</id>
+				<published>2006-05-17T14:56:04Z</published>
+				<updated>2006-05-17T14:56:04Z</updated>
+        <content type="html"><![CDATA[Haha, és végre <a href="http://sztahanov.blog.hu/2006/05/17/title_1192">tudja</a> a két monitort, az ablakokat szépen monitoronként pakolja! (Ld. illusztráció!) És ha nem unistallálod, nem <a href="http://sztahanov.blog.hu/2006/05/17/title_1192#c16173">törli ki</a> a Start menüt!<br /><img height="195" width="550" alt="" src="http://sztahanov.blog.hu/media/image/0605/refl.jpg" />]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/17/title_1192" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/17/title_1192</id>
+				<published>2006-05-17T11:58:40Z</published>
+				<updated>2006-05-17T11:58:40Z</updated>
+        <content type="html"><![CDATA[Kijött az új Entbloess, amit időközben - ki tudja, miért - átneveztek <a href="http://www.reflexvision.net/">Reflex Vision</a>re. Ez ugye az a szoftver, ami arra való, hogy arcukra fagyasszuk a mosolyt expozéjukkal hencegő mekes ismerőseinknek. (Másra én se használom.) Gyorsabb lett, más újdonságot nem nagyon&nbsp;találok benne.]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/17/title_1191" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/17/title_1191</id>
+				<published>2006-05-17T10:56:28Z</published>
+				<updated>2006-05-17T10:56:28Z</updated>
+        <content type="html"><![CDATA[Az <a href="http://communityvideo.aol.com/Main.do">AOL Uncut</a> szolgáltatása kapcsán - ami a YouTube pofátlan koppintása - <a href="http://www.techcrunch.com/2006/05/16/aol-to-release-youtube-clone/">írja</a> Michael Arrington, hogy a nagyokra egyre inkább az jellemző, hogy újdonságok helyett bevált webkettes startupötleteket klónoznak, kivéve persze a Microsoft, ami megint valami saját dolgot grundol. Ez mondjuk túlzás,&nbsp;szerintem nem&nbsp;baj a kreatív másolás, sőt,&nbsp;a szolgáltatások is remixkultúrában élnek,&nbsp;ilyen direkt lopást meg nem tudok sokat felidézni.]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/17/title_1190" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/17/title_1190</id>
+				<published>2006-05-17T10:04:22Z</published>
+				<updated>2006-05-17T10:04:22Z</updated>
+        <content type="html"><![CDATA[Még a web2konfról: s.k. <a href="http://re.blog.hu/2006/05/17/konferencia0_0">megmondja jól</a>, és egyébként igen.]]></content>
+			</entry>
+						<entry>
+				<title type="text">Megújul a világ legjobb böngészője</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/17/megujul_a_vilag_legjobb_bongeszoje" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/17/megujul_a_vilag_legjobb_bongeszoje</id>
+				<published>2006-05-17T08:29:00Z</published>
+				<updated>2006-05-17T08:32:56Z</updated>
+        <content type="html"><![CDATA[<p><img height="62" alt="" width="63" src="http://sztahanov.blog.hu/media/image/0605/maxthon.jpg" />Heteken belül megjelenik&nbsp;házikedvenc böngészőnknek, a Maxthonnak új, kettes verziója. Aminek épp itt az ideje, mert a kilences Opera kezdi megközelíteni használhatóságban - bár természetesen a Maxthon superdraganddropját még messziről se ugatja.&nbsp;</p>
+<p>A Maxthon kínai böngésző, Ázsiában meglehetősen népszerű (55 millió letöltés fölött), mindazonáltal bizonyos európai szubkultúrákban is megfigyelhető jelenléte. Az IE motorja fölé épül, így az oldalak úgy jelennek meg, mintha IE-ben lennénk, de egy csomó extra featúra van beleépítve, mint pl. hirdetés- illetve popupblokkolás, multitab browsing, és a valaha látott legkönnyebben használható egérgesztusok, közöttük a superdragandrop, amivel a másodperc törtrésze alatt lehet egy oldalról linkeket illetve keresőkifejezéseket kidobálni background fülekbe. És persze az IE pluginok közül is működik néhány, bár sajnos ezen a téren messze áll a tökéletestől. Ilyen&nbsp;IE-wrapper böngésző persze van már jónéhány, de használhatóságban, sebességben, stabilitásban, szóval a részletekben egyik sem éri el a Maxthont.</p>
+<p>A kettes verzióban az apróságokon túl&nbsp;egy nagyobb új featúra lesz, mégpedig az, hogy a böngésző összes beállítását (a bookmarkokat is) egy online accountban lehet tárolni. Kicsit fordított irány, mint pl. a Google &quot;eleve mindent központilag tárolok, de kapsz vékony klienseket&quot; vonala, de arra konvergál. (Screenshotok a <a href="http://www.techcrunch.com/2006/05/16/maxthon-gets-ready-to-face-browser-war/">Techcrunch</a>on.) És pénzt is kaptak, tehát valaki hisz benne, hogy az IE7 után is van esélye még a wrappereknek</p>
+<p>(Nyugi, ez csak egy böngésző :-)</p>]]></content>
+			</entry>
+						<entry>
+				<title type="text">The wrong media</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/16/the_wrong_media" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/16/the_wrong_media</id>
+				<published>2006-05-16T13:47:00Z</published>
+				<updated>2006-05-17T09:41:59Z</updated>
+        <content type="html"><![CDATA[<p>Az Index vezető híre továbbra is, töretlenül, az a vicces, de érdektelen darab, miszerint a BBC rossz embert interjúztatott meg élőadásban. Hát haha. A hír <a href="http://www.boingboing.net/2006/05/14/bbc_mistakes_cab_dri.html">vasárnap jelent meg</a> a BoingBoingon és szárnyalni kezdett a blogoszférában, a magyarok közül Hírbehozó <a href="http://hirbehozo.freeblog.hu/archives/2006_May_hirbehozo.htm#1557693">tegnap délben hozta</a>, a sesblog <a href="http://sesblog.hu/archives/individual/017488-20060515.html">dettó</a>. Az Index - természetesen mindenféle forrásmegjelölés nékül - éjjel hozta <a href="http://comment.blog.hu/2006/05/15/title_1185">először</a> a comment.comban, <a href="http://index.hu/kultur/media/bbc868/">aztán</a> a média rovatban, semmilyen extra információt nem rakva a hír mellé.&nbsp;A források&nbsp;időközben javítottak, mivel kiderült, hogy nem taxisofőrről van szó, az Index természetesen nem nyúlt a kattintásra csalogató címhez egy ilyen apróság miatt, maradt a taxisofőr.</p>
+<p>Tehát&nbsp;a mai kérdésünk arra vonatkozna, hogy akkor hogyan is van ez, nagy média, minőségi újságírás, meg ezek az amatőr bloggerek. De persze nem vonatkozik.</p>
+<ins>
+<p>Update: persze, hogy levették, mire kiraktam, én formám.</p>
+<p>Pontosítok (végülis ez egy blog, nem az Index, nem okoz fizikai fájdalmat a korrekció): a comment.comos cikk már délután kint volt (az időrenden ez nem változtat).</p>
+</ins>]]></content>
+			</entry>
+						<entry>
+				<title type="text">Mutass blogot</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/16/mutass_blogot" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/16/mutass_blogot</id>
+				<published>2006-05-16T13:16:29Z</published>
+				<updated>2006-05-16T13:16:29Z</updated>
+        <content type="html"><![CDATA[<p><img class="imgnotext" height="364" width="550" alt="" src="http://sztahanov.blog.hu/media/image/0605/blogang.jpg" /></p>
+<p>De csak <a href="http://www.spudooli.com/photo-246.html">óvatosan</a>!</p>]]></content>
+			</entry>
+						<entry>
+				<title type="text">Webkettőkonf</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/16/webkettokonf" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/16/webkettokonf</id>
+				<published>2006-05-16T11:15:00Z</published>
+				<updated>2006-05-16T11:33:08Z</updated>
+        <content type="html"><![CDATA[<p>Nem a neve miatt (Web 2.0 Symposium) ajánjuk <a href="http://www.ap.hu/rendezvenyek/18web2/index.html">ezt a rendezvényt</a>, hanem a témák és a résztvevők miatt, meg hát nézzünk a köldökünkbe, végülis ez az első magyar webkettes összeröffenés. Pollner írt róla <a href="http://mediablog.hvg.hu/2006516.aspx">részletesebben</a>, bár szereplésemet illetően kicsit túlzottan hurráoptimista.</p>
+<p>És ha már webkettő itthon:&nbsp;Szabó Gergő tollából&nbsp;az Index le bírta közölni&nbsp;az első&nbsp;nemfikázós típusú&nbsp;webkettes <a href="http://index.hu/tech/net/web2pro06051/">alapozó cikket</a>, ami emiatt igazi <strike>mérföldkő</strike> kilométerkő. (Az, hogy ez az eddigi legjobb (értsd:&nbsp;leglényegretörőbb) webkettes írás, ezek után már teljesen mellékszál.)</p>
+<ins>
+<p>Update: nem mintha le bírná taszítani a vezetőanyag helyéről a taxisofőr nyilatkozik a BBC-nek veretes f*szságot...</p>
+</ins>]]></content>
+			</entry>
+						<entry>
+				<title type="text">Közel a tökéletes bookmark-managerhez</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/16/kozel_a_tokeletes_bookmark_managerhez" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/16/kozel_a_tokeletes_bookmark_managerhez</id>
+				<published>2006-05-16T11:02:00Z</published>
+				<updated>2006-05-16T11:03:45Z</updated>
+        <content type="html"><![CDATA[<p>Igazából a Google Notebookot a del.icio.us-szal kéne keresztezni a tökéletes megoldáshoz, hogy érthető legyen,&nbsp;gyorsan fektessük le az ideális bookmark/snippets/notes manager alapkövetelményeit, kb. fontossági sorrendben:</p>
+<ul>
+    <li>legyen gépfüggetlen, tehát online szolgáltatás legyen, bárhonnan elérhető (GN tudja) </li>
+    <li>legyen böngészőfüggetlen, tehát max. egy olyan plugin, amit mindhárom böngészőhöz le lehet tölteni (a GN Operához még nincs) </li>
+    <li>tudjon kezelni bookmarkokat és snippeteket is (szépen jelenítse meg őket), a szerkesztés és a saját jegyzet beszúrása bónusz (GN tudja) </li>
+    <li>lehessen taggelni (ez nagyon kéne a GN-be!) </li>
+    <li>lehessen foldereket használni, mert egy csomó dolgot feladatorientáltan gyűjt az ember, és ott minek taggelni (GN tudja) </li>
+    <li>a megosztás/publikáció lehessen a privát és a publikus között jobban szabályozható, mint pl. a Writely-ben (GN nem tudja) </li>
+    <li>lehessen együtt látni a - valami szerint összetartozó - snippeteket (GN tudja, de a NetSnippets a király ebben) </li>
+</ul>
+<p>Tulajdonképpen ennyi kellene a boldogsághoz.</p>]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/16/title_1189" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/16/title_1189</id>
+				<published>2006-05-16T10:20:17Z</published>
+				<updated>2006-05-16T10:20:17Z</updated>
+        <content type="html"><![CDATA[Végre, a <a href="http://www.google.com/notebook/">Google Notebook</a> az az alkalmazás, ami hiányzott az életemből! Lehetne rajta csiszolni még persze,&nbsp;nyilván fognak is. Mindenesetre már most használható, konkrét, eddig hajtépéssel járó taszkokra.]]></content>
+			</entry>
+						<entry>
+				<title type="text">Megélhetési költészet 2.0</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/15/megelhetesi_kolteszet_2_0" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/15/megelhetesi_kolteszet_2_0</id>
+				<published>2006-05-15T08:37:00Z</published>
+				<updated>2006-05-15T08:39:39Z</updated>
+        <content type="html"><![CDATA[<p>Élelmes bloggerek kitalálták, hogy a&nbsp;<a href="http://sztahanov.blog.hu/2006/03/28/a_legdragabb_keresoszavak">legdrágább</a> Adsense keresőszavakból verseket lehet faragni, mert ez egyrészt&nbsp;jófejségnek tűnik, másrészt viszont egy idő után elkezdenek megjelenni ezek a hirdetőszavak a saját Adsense-ünkben is. Most tehát mi is megpróbáljuk!</p>
+<code>
+<p>Asbestos tragedies,<br />mesotheliomas<br />happen most frequently<br />inside folks' pleuras.</p>
+<p>Then they get bloodthirsty <br />mesothelioma<br />lawyers to harass their<br />stingy insurers.</p>
+</code>
+<p>(<a href="http://www.yankeefog.com/">Yankeefog</a>, via BB)</p>]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/10/title_1183" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/10/title_1183</id>
+				<published>2006-05-10T17:28:05Z</published>
+				<updated>2006-05-10T17:28:05Z</updated>
+        <content type="html"><![CDATA[Hogy érezzük, mekkora <a href="http://www.sfgate.com/cgi-bin/article.cgi?file=/c/a/2006/05/09/MNGSVIO7NG1.DTL">hatása van</a> a Google-nak az amerikai gazdaságra: a kaliforniában (nem egy szegény állam) most áprilisban beszedett 11 milliárd dollárnyi személyi jövedelmadóból a Google-részvények eladása utáni adó több mint félmilliárd dollárt tett ki (ebből csak 14 topmanager részvényeladásai tettek ki&nbsp;450 millió dollárt, az egész mennyiség nem becsülhető pontosan).]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/08/title_1182" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/08/title_1182</id>
+				<published>2006-05-08T18:33:44Z</published>
+				<updated>2006-05-08T18:33:43Z</updated>
+        <content type="html"><![CDATA[Létezik élő ember, aki beállított már gmail accesst nokia 9300-on?]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/08/title_1181" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/08/title_1181</id>
+				<published>2006-05-08T09:44:00Z</published>
+				<updated>2006-05-08T09:52:01Z</updated>
+        <content type="html"><![CDATA[Még egy a Slashdotról (bár borzalmasan alacsony a jelzaj viszony mostanság): A New York Times <a href="http://www.nytimes.com/2006/05/07/arts/07schi.html">hozott</a> egy hosszabb cikket a Sims-ről tegnap,&nbsp;tengernyi nyilatkozó pszichológussal. Érdekes írás, kb. arról szól, hogyan váltja fel a hagyományos babázást a Sims, persze egy teljesen másik, magasabb szinten helyettesítve azt: <em>&quot;We leave most of the social work in our society to women and The Sims lets young girls, in particular, work out their desires and conflicts about those relationships.&quot;</em>]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/08/title_1180" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/08/title_1180</id>
+				<published>2006-05-08T09:29:27Z</published>
+				<updated>2006-05-08T09:29:26Z</updated>
+        <content type="html"><![CDATA[Még Kína: kanadai hacktivisták ellencenzúra-szoftvert <a href="http://www.thestar.com/NASApp/cs/ContentServer?pagename=thestar/Layout/Article_Type1&amp;c=Article&amp;cid=1146865816987&amp;call_pageid=968332188492&amp;col=968793972154&amp;t=TS_Home">fejlesztenek</a>, a Psiphon nemsokára kész. Bár a cikk hosszú, nem ír semmit arról, hogy működik a cucc, ha valaki esetleg érti, megoszthatná kommentben, köszi.]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/08/title_1179" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/08/title_1179</id>
+				<published>2006-05-08T07:37:00Z</published>
+				<updated>2006-05-08T07:39:14Z</updated>
+        <content type="html"><![CDATA[Kínában év végére 60 millió blogger <a href="http://news.yahoo.com/s/nm/20060506/wr_nm/china_blogs_dc_1">lesz</a> a Baidu.com felmérése szerint. Ez még gombócból is sok (és egyiket sem fogjuk érteni). Nem derül ki pontosan, miért lesz ennyi, ha most még csak 16 millióan bloggolnak a 110 millió kínai netezőből. Ami persze érdekes, az az, hogy vajon hogy a csudába fognak cenzorálni 60m blogot? Hol van az a <em>tipping point</em>, amikor összeomlik a jól felépített rendszer?]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/07/title_1178" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/07/title_1178</id>
+				<published>2006-05-07T21:33:00Z</published>
+				<updated>2006-05-07T21:33:00Z</updated>
+        <content type="html"><![CDATA[Scot Finnie a <a href="http://www.computerworld.com/softwaretopics/software/apps/story/0,10801,111065,00.html">ComputerWorldben</a> a Firefox erőforrásproblémáiról: <em>&quot;not a day goes by when I don't get at least one e-mail from a frustrated Firefox user who has some mix of the problems I've described in the past, including exceptionally high use of physical and virtual memory, CPU usage that climbs to 100%, program hesitations and freezes, a launch failure that requires an operating system reboot or termination of the firefox.exe process in Task Manager, specific Web pages that don't load, and crashes.&quot;</em> A Firefox bajai a tapasztalatok szerint teljesen júzerfüggőek, ami nem öröm, de legalább nem vagyunk egyedül.]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/06/title_1177" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/06/title_1177</id>
+				<published>2006-05-06T11:29:00Z</published>
+				<updated>2006-05-07T09:52:01Z</updated>
+        <content type="html"><![CDATA[A sírótévén (HírTV, na) megy a BBC Click nevű számítógépes műsorának magyar változata ilyen fordításokkal (bár az eredeti sem kutya egyébként):&nbsp;<em>&quot;ehhez a süteményeket is aktiválnunk kell&quot;.</em> És mi lehet az a Pikasszó? Persze, hogy a Picasa.]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/06/title_1176" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/06/title_1176</id>
+				<published>2006-05-06T00:33:04Z</published>
+				<updated>2006-05-06T00:33:03Z</updated>
+        <content type="html"><![CDATA[Elindult az <a href="http://www.urbanlegends.hu">Urban Legends 2.0</a>. Fura egy szájt, Wordpressen fut, ami egy blogmotor, viszont a címlapja nem blogos, hanem szerkesztett, mondhatni portálszerű. Ettől olyan bizonytalanul érzem magam rajta, de ez legyen az én bajom.]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/05/title_1175" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/05/title_1175</id>
+				<published>2006-05-05T15:12:39Z</published>
+				<updated>2006-05-05T15:12:39Z</updated>
+        <content type="html"><![CDATA[A Minority Reportban látott, Tom Cruise által kézzel vezérelt monitorhoz&nbsp;hasonló óriásképernyőt <a href="http://www.adage.com/mediaworks/article?article_id=108964">állított fel</a> az Accenture egy chicagói reptéren, de még több ilyen lesz, legközelebb a New York-i Kennedyn. <em>&quot;The whole idea is moving past the idea that TVs are furniture. Video is wallpaper and you can interact with it as screens are getting better and cheaper.&quot;</em>]]></content>
+			</entry>
+						<entry>
+				<title type="text">Az új link</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/05/az_uj_link" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/05/az_uj_link</id>
+				<published>2006-05-05T09:42:00Z</published>
+				<updated>2006-05-05T09:46:37Z</updated>
+        <content type="html"><![CDATA[<p>A múltkori <a href="http://sztahanov.blog.hu/2006/04/19/title_1071">blink 2.0</a> után végre itt a link 2.0! Mennyire 1.0-ás dolog az AJAX-érában egy egyszerű statikus urlt írni a href után, amikor azt is lehet, hogy:</p>
+<code>&lt;a href="Javascript: followLink(124);"&gt;View Products&lt;/a&gt;</code>
+<p>A megoldást nem részletezem, itt a <a href="http://thedailywtf.com/forums/70666/ShowPost.aspx">link</a>, az előnye egyébként - az olvashatatlan kód mellett - az, hogy loggolhatók a kimenő kattintások is (bár egyébként erre vannak már olyan JS eszközök is, amik az oldal érintetlenül hagyásával is tudják követni ezt). Ráadásul szépen be lehet sötéteni a képernyőt, homokórázni, amíg az új oldal töltődik. Szuper.</p>]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/04/title_1172" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/04/title_1172</id>
+				<published>2006-05-04T19:40:00Z</published>
+				<updated>2006-05-04T19:56:53Z</updated>
+        <content type="html"><![CDATA[<p>Újabb <a href="http://hvg.hu/print/200618HVGFriss1515289.aspx">webkettes cikk</a> a magyar hagyományos online médiában, Hírbehozó <a href="http://hirbehozo.freeblog.hu/archives/2006_May_hirbehozo.htm#1510829">szerint</a> ez már a második vállalható írás - mmm, hiába töröm a fejem harmadik ellenpéldáért -, ezúttal a HVG-ben, Andersen Dávid tollából (oké, nyilván nem tollal írta, de mégis). Figyeljük meg a webkettő lassú, de határozott nyomulását az MSM felé, a Narancsban még nagyon szűk réteget ért el, a HVG ehhez képest kánaán, jövőre ilyenkor pedig már a Blikk is címlapon hozza (<em>Feldarabolta feleségét a webkettő szülőatyja</em>, vagy hasonló). <ins>Update: hát azért alaposabban végolvasva van benne marhaság rendesen, szóval Csordás Attila <a href="http://mancs.hu/index.php?gcPage=/public/hirek/hir.php&amp;id=12407">cikke</a> marad az etalon.)</ins></p>]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/04/title_1171" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/04/title_1171</id>
+				<published>2006-05-04T16:11:00Z</published>
+				<updated>2006-05-04T16:12:27Z</updated>
+        <content type="html"><![CDATA[Történelmi pillanat: kínai blog vezeti a Technorati <a href="http://www.technorati.com/pop/blogs/">Top 100</a>-as listáját, méghozzá Xu Jing Lei blogja, a <a href="http://blog.sina.com.cn/m/xujinglei">?? ??? ?? BLOG</a>. Hát eddig tartott a Boing Boing uralma, de az ezüstérem is szépen csillog!]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/04/title_1169" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/04/title_1169</id>
+				<published>2006-05-04T12:34:52Z</published>
+				<updated>2006-05-04T12:34:52Z</updated>
+        <content type="html"><![CDATA[Durva DoS-támadást <a href="http://news.zdnet.com/2100-1009_22-6068344.html?tag=zdfd.newsfeed">szenvedett</a> el kedden a Sixapart, kb. 10 millió blog (Typepad, LiveJournal) vált órákig elérhetetlenné. A támadás természetesen szétosztott volt, sok helyről érkezett, és a források gyorsan változtak, nem nagyon lehetett védekezni. A 6A kb. azt nyilatkozta, hogy nincsenek ellenségeik, de tippjeik azért vannak.]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/04/title_1168" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/04/title_1168</id>
+				<published>2006-05-04T10:30:50Z</published>
+				<updated>2006-05-04T10:30:49Z</updated>
+        <content type="html"><![CDATA[Még iwiw utózöngék: Konrád egy <a href="http://onlinemarketing.blog.hu/2006/05/04/t_iwiw_hoax_nevessunk_egyutt">új iwiwes hoaxról</a> ír, aztán megjelent egy Cseh Gábor-interjú az SG-ben a némileg naív <a href="http://www.sg.hu/cikk.php?cid=44357">Miért adtak el az iWiW-et?</a> címmel.]]></content>
+			</entry>
+						<entry>
+				<title type="text">A tegnapi nap képe</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/04/a_tegnapi_nap_kepe" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/04/a_tegnapi_nap_kepe</id>
+				<published>2006-05-04T10:22:00Z</published>
+				<updated>2006-05-04T10:23:10Z</updated>
+        <content type="html"><![CDATA[<p><img class="imgleft" height="312" alt="" width="420" src="http://sztahanov.blog.hu/media/image/0605/calacanis-denton.jpg" /></p>
+<p>A Blogebrity paparazzija <a href="http://blogebrity.com/blog/2006/05/caught-on-tape-calacanis-and-denton-together-in-nyc.php">kapta le</a> New York-ban Jason Calacanist és Nick Dentont együtt. (Ők egyébként jóban vannak, annak ellenére, hogy a médiában sokat szidják egymást, erre mondjuk hazai példákat is tudnék hozni.) </p>
+<p>Nick Dentonnal nekem is van közös képem, de az sajnos nem került fel a Blogebrityre (ezt még meg fogják bánni).</p>]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/04/title_1167" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/04/title_1167</id>
+				<published>2006-05-04T10:10:40Z</published>
+				<updated>2006-05-04T10:10:40Z</updated>
+        <content type="html"><![CDATA[Duncan Riley azon <a href="http://duncanriley.com/2006/05/04/sphere-just-another-blog-search-engine/">mereng</a> a Sphere kapcsán, hogy létezik-e olyan webkettes újdonság, amivel szemben a Micropersuasion vagy a Techcrunch megenged magának némi kritikát. Nyilván nem, Steve Rubelnek nincs ideje, hogy elmélyüljön, Micahel Arrington pedig nem szeretne egyetlen jövőbeli launchpartyt sem kihagyni, haha. Sphere boncolás <a href="http://www.wolf-howl.com/?p=365">itten</a>.]]></content>
+			</entry>
+						<entry>
+				<title type="text">A nap képe</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/04/a_nap_kepe" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/04/a_nap_kepe</id>
+				<published>2006-05-04T09:57:31Z</published>
+				<updated>2006-05-04T09:57:30Z</updated>
+        <content type="html"><![CDATA[<p><img class="imgnotext" height="380" width="500" alt="" src="http://sztahanov.blog.hu/media/image/0605/silo.jpg" /></p>
+<p>Dave Winer <a href="http://www.flickr.com/photos/scriptingnews/140068566/">flickrjéből</a>, azt írja, hogy:</p>
+<blockquote>When people talk about silos in computers, they're thinking about piles of data that are used by one application that can't be used by others.</blockquote>
+<p>Persze a mekes alkalmazások kapcsán írja, <a href="http://sztahanov.blog.hu/2005/12/28/ipod">régi szálka</a> a szemében.</p>]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/04/title_1166" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/04/title_1166</id>
+				<published>2006-05-04T08:05:39Z</published>
+				<updated>2006-05-04T08:05:39Z</updated>
+        <content type="html"><![CDATA[Elromlott az orkutom, segítség! Azt írja ki login után, hogy 'Click here to continue', de persze nem csinál semmit, amikor kattintok. A FAQ-ban az van, hogy ki kell szedni a google-t a restricted szájtok közül - azaz nem elég, hogy nem megy, még komplett idiótának is néznek. Valaki látott már ilyet?]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/03/title_1165" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/03/title_1165</id>
+				<published>2006-05-03T18:01:00Z</published>
+				<updated>2006-05-03T18:02:49Z</updated>
+        <content type="html"><![CDATA[<img height="155" width="250" alt="" src="http://sztahanov.blog.hu/media/image/0605/mini.jpg" />Az Opera Mini 2.0 <a href="http://hirbehozo.freeblog.hu/archives/2006_May_hirbehozo.htm#1507870">kijövetele</a> kapcsán egy régebbi <a href="http://mobilecrunch.com/2006/04/07/operas-mini-scales-to-profits/">posztban</a> olvasom a Mobile Crunchon: <em>"in direct contradiction of operator&rsquo;s fears, the use of the Opera browser - which <font style="BACKGROUND-COLOR: #ffff99">circumvents the &ldquo;walled garden&rdquo; that many operators attempt to maintain as a means of further monetizing data customers</font> - is clearly increasing the ARPU that operators receive based upon customer data usage."</em> Ott is kaszálnak, ahol azt gondolták, nem fognak kaszálni, szegények.]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/03/title_1164" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/03/title_1164</id>
+				<published>2006-05-03T17:51:05Z</published>
+				<updated>2006-05-03T17:51:04Z</updated>
+        <content type="html"><![CDATA[<em>&bdquo;Nem szokásos például, hogy egy miniszterelnök naponta internetes naplóban számol be arról, hogy mi történt vele, és ezekben a szövegekben gyakran valóság van.&rdquo;</em> - lol, <a href="http://mediablog.hvg.hu/2006531.aspx">pollnernél</a>.]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/03/title_1163" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/03/title_1163</id>
+				<published>2006-05-03T17:40:51Z</published>
+				<updated>2006-05-03T17:40:51Z</updated>
+        <content type="html"><![CDATA[Szidják a Wiredben a múltkor <a href="http://www.wired.com/news/columns/0,70796-0.html?tw=rss.index">említett</a> Start Trek 2.0-t, mert spoilereznek a képernyőn megjelenített triviákban. Úgy látszik a Wiredben nem hallottak még az Indexben Földes Andris által meghonosított <em>'spoilereket a filmkritikákba!'</em>, <em>'spoilereket a kritikák címeibe is!'</em> újságírói alapvetésekről.]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/03/title_1162" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/03/title_1162</id>
+				<published>2006-05-03T13:44:00Z</published>
+				<updated>2006-05-03T13:46:36Z</updated>
+        <content type="html"><![CDATA[Az előző bejegyzéshez egy gyors korrekció: Hírbehozó nem említi, de a Blogter 78 ezer látogatójából csak 14 ezer hazai, a többi külföldi, akik valami más - számunkra ezek szerint titkos - Blogter oldalt nézegetnek. Tehát a Freeblog egyelőre nagyobb. (Bár maguk a számok nagyon picik abszolút értelemben - szerintem.)]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/03/title_1160" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/03/title_1160</id>
+				<published>2006-05-03T10:02:02Z</published>
+				<updated>2006-05-03T10:02:01Z</updated>
+        <content type="html"><![CDATA[Hírbehozó <a href="http://www.hirbehozo.freeblog.hu/archives/2006_May_hirbehozo.htm#1506774">írja</a>, hogy a Blogter végre megjelent a Webauditban, 78 ezer látogatóval, amivel jócskán előzi a Freeblog 42 ezrét (utóbbi számot nem nagyon akarom elhinni, mindegy). Van pár összehasonlító Alexa-grafikonja is, ezekkel viszont óvatosan, szerintem az Alexa magyar szájtokra nagyon korlátozottan használható csak (kevés hazai internetező használja, torzít).]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/03/title_1159" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/03/title_1159</id>
+				<published>2006-05-03T09:29:02Z</published>
+				<updated>2006-05-03T09:29:01Z</updated>
+        <content type="html"><![CDATA[<p>A Wall Street Journal az 'internethasználat a filmekben' című <a href="http://sztahanov.blog.hu/2005/10/23/mozi">hálás</a> topikról <a href="http://online.wsj.com/public/article/SB114417762246516812-JafduzlqqrJNqD9QzSSA0d3LIk8_20060508.html?mod=blogs">ír</a> (lehet, hogy regisztrációt kér). Sok újdonság nincs benne, azon merengtem el, hogy az emailküldés mennyire sematikus, egyrészt egyforma klisékből épül fel (túlegyszerűsített címek, az óriás, egész képernyőt betöltő, animáló levélikon), másrészt nagyon nem az online életformát, hanem a csigapostát utánozza, amennyiben egy levél érkezése <em>esemény</em>, ld. pl. a Christopher Reeve-es Hátsó ablak, nemrég ment valahol. Ja, és a 72 pontos betűk, amikkel a levelet írják, lol.</p>]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/03/title_1158" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/03/title_1158</id>
+				<published>2006-05-03T09:03:01Z</published>
+				<updated>2006-05-03T09:03:01Z</updated>
+        <content type="html"><![CDATA[Olvasom egy listán: <em>"...azt irta, hogy mar reg unsubs, mert 'information overload. megeszik az időmet a gépek amikből zenét sajtolok, és talán ez így is van jól. :)' meg hogy hetente 1x olvas emailt, es ilyenek."</em> Hetente egyszer olvasni emailt, az olyan, mint hetente egyszer enni, nem?]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/03/title_1157" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/03/title_1157</id>
+				<published>2006-05-03T08:09:42Z</published>
+				<updated>2006-05-03T08:09:42Z</updated>
+        <content type="html"><![CDATA[Nem nagyon szeretnék foglalkozni az iwiw körüli sajnálatos vagy örömteli (kinekhogy) eseményekklel, megteszi ezt helyettem <a href="http://onlinemarketing.blog.hu/tags/iwiw">Konrád</a>, illetve ott van még Hírbehozó <a href="http://hirbehozo.freeblog.hu/archives/2006_May_hirbehozo.htm#1501928">elemzése</a>, olvassátok!]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/03/title_1156" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/03/title_1156</id>
+				<published>2006-05-03T07:55:18Z</published>
+				<updated>2006-05-03T07:55:18Z</updated>
+        <content type="html"><![CDATA[<p>A Microsoft körül megint csomagolási ügy van kibontakozóban, de most nem az a baj, hogy böngészőt adnak az operációs rendszer mellé, hanem az, hogy az IE7 beépített keresője az MSN lesz. (Ez eddig is így volt, vagy csak rosszul emlékszem?) A Google persze nem örül, és megkezdte a különböző intézményekhez rohangálást az ügyben. A hétfői New York Times <a href="http://www.nytimes.com/2006/05/01/technology/01google.html?ex=1304136000&amp;en=69417a0bdae611a3&amp;ei=5090&amp;partner=rssuserland&amp;emc=rss">hozza</a> a sztorit, a blogoszféra pedig <a href="http://tech.memeorandum.com/060501/p52">reagál</a>. (Felteszem, ez lesz a heti slágertéma, de egyelőre nem izgatott fel.) Ja, a Google részvények tegnap már meg is zuhantak kicsit, bár nem tudom, ez az oka vagy más. </p>]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/02/title_1154" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/02/title_1154</id>
+				<published>2006-05-02T18:30:00Z</published>
+				<updated>2006-05-02T18:25:24Z</updated>
+        <content type="html"><![CDATA[Kijött bétából a <a href="http://sphere.com">Sphere</a>, mindenki ujjong, pár millió (kb iwiwnyi) dollárnyi VC-t is besöpörtek, ha már. Pont fél éve <a href="http://sztahanov.blog.hu/2005/11/01/sphere_bactaizais">fanyalogtam</a> róla, szerintem nem volt nagy szám, legalábbis a többi blogkeresőnél nem volt jobb. Hogy most milyen, az kiderül, ha majd nagyon kell keresnem valamit (de most nem kell).]]></content>
+			</entry>
+						<entry>
+				<title type="text"></title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/02/title_1155" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/05/02/title_1155</id>
+				<published>2006-05-02T18:30:00Z</published>
+				<updated>2006-05-03T08:12:51Z</updated>
+        <content type="html"><![CDATA[Sztahanov vagyok, feedaholista, és ma kitöröltem egy feedet! (FeedBurner blog.)]]></content>
+			</entry>
+						<entry>
+				<title type="text">Arról, hogy nem lehet lépést tartani </title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/05/02/arrol_hogy_nem_lehet_lepest_tartani" />
+				<author>
+					<name>márai neó</name>
+									</author>
+				<id>http://sztahanov.blog.hu/2006/05/02/arrol_hogy_nem_lehet_lepest_tartani</id>
+				<published>2006-05-02T12:10:00Z</published>
+				<updated>2006-05-04T10:24:23Z</updated>
+        <content type="html"><![CDATA[<p>A hosszú hétvége ideális alkalom lenne az olvasatlan feedek rohamának visszaszorítására, de valahogy mindig úgy alakul, hogy utána még több van, mint előtte volt. Egyszerűen képtelenség kordában tartani a különböző inboxokat és tennivalókat. Az ember mindig optimista, ha arról van szó, mire lesz képes majd a jövő héten, tervei mindig nagyobbak teljesítőképességénél - erről nem tehetünk, ez kódolva van az emberi természetben, jó mélyen, kiírthatatlanul. Ezért görgetünk magunk előtt egy egyre nagyobb hógolyót todo-kból, olvasnivalókból, levelekből, félkész projektekből. És ez a halom egyre nagyobb lesz, míg a végén, amikor már puszta méretével is bénítja munkánkat, egyszerűen az asztal alá söpörjük és újra kezdjük, ugyanúgy. </p>
+<p>Pedig a realitás az, hogy nem tarthatjuk rajta a szemünket mindenen, ami fontos, egyszerűen nem tudjuk tartani az ütemet. Két alapstratégiánk lehet, lehetünk szakbarbárok - egy témában mélyen akarunk elmerülni, mindent tudni - vagy polihisztorok - mindenből a felszínt karcolni - (a két stratégia persze sohasem tisztán alkalmazandó, hanem keverve). A szakbarbárnak könnyebb, mert jobban fókuszálhat, de az állandó változás kényszere őt is űzi, a szakterület fogalma ugyanis időben nem létezik, nem állandó, hanem korral relatív, folyton transzformálódó valami. A világ egy nagy karfiol, ahogy fraktalizálódik minden, a leghajszálvékonyabb niche is egyre duzzad és egyre több ágra bomlik, mindig újabb alterületre kell specializálódnunk, ha valahol tökéletességet szeretnénk elérni. Öt évvel ezelőtt mindent lehetett tudni a blogokról, elég volt néhány meghatározó forrást követni - ma már ez egy egész univerzum. Vannak persze alterületek - vagy alterületkombinációk -, amiket ma is lehet uralni, de ezek is csak ideig-óráig alkalmasak arra, hogy lefedjük őket, napról napra több új forrás, információ, feed keletkezik belőlük is, elborít, betemet. És akkor nem beszéltünk még arról, hogy az ember élete többdimenziós, többet jelent egyetlen szakterület követésénél.</p>
+<p>Mit tehetünk? Kathy Sierra <a href="http://headrush.typepad.com/creating_passionate_users/2006/04/the_myth_of_kee.html">szerint</a> van néhány módszer arra, hogy megpróbáljunk lépést tartani (csak feedekről lesz szó), de mielőtt belevágnunk, tudatosítsuk magunkban, hogy ez nem több, mint szemfényvesztés, illúzió, valójában sosem leszünk képesek elérni célunkat, csak többé-kevésbé megközelíteni azt. Mindig lesznek feedek, amiket nem olvasunk végig, mindig lesznek fekete lyukak, mindig bűntudatot fogunk érezni.</p>
+<ul>
+    <li>
+    <div><strong>Válasszunk megfelelő eszközöket!</strong> - Vegyük axiómának, hogy a világon nem létezik tökéletes aggregátor. Egyrészt az emberek nem egyformák, de még ha létezne is egy ideája a feedolvasó embernek, akkor sem találnánk meg a megfelelő eszközt hozzá. De meg kell tennünk mindent, hogy a számunkra legmegfelelőbbet megtaláljuk - ez olyan befeketetés, ami hosszú távon nagyon sok megtakarítást tud összekumulálni nekünk.</div>
+    </li>
+    <li>
+    <div><strong>Olvassunk zömítve!</strong> - Létezik pl. egy szolgáltatás, a <a href="http://www.getabstract.com/index.jsp">getAbstract</a>, ami szakkönyvekből néhány oldalas kivonatot készít, persze pénzért. Borzasztó arra gondolni, hogy ez lenne az út, félműveltnek lenni szakmailag is legalább olyan otrombaság, mint a 100 híres regényt olvasni az eredetiek helyett, de arra jó lehet, hogy <em>kizárjuk</em> azokat a könyveket, amiket biztosan nem érdemes elolvasni. </div>
+    </li>
+    <li>
+    <div><strong>Próbáljunk meg leiratkozni a felesleges feedekről!</strong> - Ez nagyon nehéz, egyrészt az olvasott feedek száma értékmérő, saját magunk számára is (mutasd meg feedjeid, megmondom, ki vagy!), de bevethetjük pl. olyan vitákban, ahol kifogytunk az érvekből - mert mi van annál meggyőzőbb, mint az, hogy mi 200 feedre iratkoztunk fel, vitapartnerünkről pedig tudjuk, hogy csak 100-at olvas (és abban már Scott Adams blogja is benne van). Feedekről leiratkozni mindazonáltal borzalmas kín, de ha látjuk egyikről-másikról, hogy már hetek/hónapok óta nagyon rossz a jell/zaj aránya, fogunkat összeszorítva tegyük meg, közben gondoljunk arra, hogy a megtakarított időben egy erősebb feedet olvashatunk és ezáltal többek lehetünk.</div>
+    </li>
+    <li>
+    <div><strong>Szüntessük meg a redundanciát!</strong> - A fontos híreket mindenki megírja. De ki az, aki csak ezeket írja meg? Ha az ilyen feedeket kidobjuk, nem veszítünk információt. nyerünk viszont időt, amit eredetibb forrásokra pazarolhatunk.</div>
+    </li>
+    <li>
+    <div><strong>Osszuk szét az olvasnivalót!</strong> - Nem kell nekünk elolvasni mindent, használjuk ki a blogoszféra alapmechanizmusait, ha van egy jó blogger, aki egy szűk területet elég jól lefed, valószínűleg elég őt olvasni az eredeti források helyett. Ugyanígy, ha vannak hasonló érdeklődésű blogger ismerőseink, kollégáink, megtehetjük azt, hogy <em>szervezettséget</em> viszünk a feldolgozásba, területfelosztással, témafigyeléssel.</div>
+    </li>
+    <li>
+    <div><strong>Ismerjük fel, hogy a bulvár nem információ!</strong> - Valójában persze az, de túl sok áttétellel. El kell döntenünk: szórakozni járunk az aggregátorba, vagy azért, hogy többet tudjunk meg a világról? (Illetve annak általunk ökényesen kiválasztott szűk szeletéről.)</div>
+    </li>
+    <li>
+    <div><strong>Ne legyünk túlságosan szakbarbárok!</strong> - Meg kell találni a szakbarbárság és (az eggyel szélesebb területen érvényes) polihisztorság közötti egyensúlyt. Három redundáns forrás közül bátran áldozzunk fel egyet, és olvassunk helyette egy kicsit távolibb, nézőpontszélesítő feedet. Ne feledjük, hogy szakbarbárnak lenni a könnyebb út, polihisztornak lenni viszont értékesebb.</div>
+    </li>
+    <li>
+    <div><strong>Legyünk realisták az olvasási kapacitásunkat illetően!</strong> - Sokkal bátrabban dobáljuk ki - raktározás, görgetés helyett - a <em>'fontos, de mégsem annyira, majd talán később'</em> típusú posztokat! Jóval messzebb jutunk egy agresszív szelekciós technika permanens alkalmazásával, mint azzal, hogy egy idő után - amikor már tényleg kezelhetetlen a tömeg - kényszerből mindent olvasottá állítunk, válogatás nélkül.</div>
+    </li>
+    <li>
+    <div><strong>Amikor épp írunk, képzeljük magunkat az olvasók helyébe!</strong> - Mindig gondoljunk arra, amikor blogot írunk - tehát amikor mi vagyunk a túloldalon -, hogy az olvasóink ugyanazokkal a problémákkal küzdenek, mint mi. És le fognak iratkozni a feedünkről, ha nem vagyunk elég informatívak, pontosak, stb. Rettegjünk, jót tesz.</div>
+    </li>
+</ul>
+<p>Tehát mégegyszer: próbálkozni érdemes, de a sikerben hinni nem szabad, inkább biztassuk magunkat azzal, hogy a többieknek sem sikerül. Így sokkal könnyebb lesz lemaradni.</p>]]></content>
+			</entry>
+						<entry>
+				<title type="text">Az internet már otthon van!</title>
+				<link rel="alternate" type="text/html" href="http://sztahanov.blog.hu/2006/04/28/az_internet_mar_otthon_van" />
+				<author>
+					<name>sztahanov</name>
+					<uri>http://sztahanov.blog.hu</uri>
+				</author>
+				<id>http://sztahanov.blog.hu/2006/04/28/az_internet_mar_otthon_van</id>
+				<published>2006-04-28T16:04:30Z</published>
+				<updated>2006-04-28T16:04:30Z</updated>
+        <content type="html"><![CDATA[<p><img class="imgnotext" height="138" width="531" alt="" src="http://sztahanov.blog.hu/media/image/0604/net.jpg" /></p>
+<p>Mint a mellékelt ábra mutatja, az előbb az otthon több mint egy hete internet nélkül szomorkodó gépem belépett az ircre, azaz VAN OTTHON NET! HURRÁ! A Tigernek minden elfelejtve!</p>]]></content>
+			</entry>
+			</feed>

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+   <channel>
+      <title>${title}</title>
+      <link>${link}</link>
+      <description>${description}</description>
+      <language>${language}</language>
+      <copyright>${copyright}</copyright>
+      <managingEditor>${managingEditor}</managingEditor>
+      <webMaster>${webMaster}</webMaster>      
+      <pubDate>${pubDate}</pubDate>
+      <lastBuildDate>${lastBuildDate}</lastBuildDate>
+      <category>${category}</category>
+      <generator>${generator}</generator>
+      <docs>${docs}</docs>
+      <ttl>${ttl}</ttl>
+      
+      <#list items as item>
+      <item>
+         <title>${item.title}</title>
+         <link>${item.link}</link>         
+      </item>
+      </#list>      
+   </channel>
+</rss>

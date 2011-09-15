@@ -1,0 +1,14 @@
+{foreach from=$results item=result key=idx}
+{if $result.entries|@count}
+{if $titles.$idx}<b>{$titles.$idx}</b>{/if}
+<ul>
+	{section name=i loop=$result.entries}		
+			<li {if $smarty.section.i.index >= $result.entries_nr && $result.entries_nr !=''}class="hidden"{/if}><a class="newsitem" href="click.php?link={$result.entries[i].link|escape:url}&title={$result.entries[i].title|escape:url}{$rss_link_tail}" alt="{$result.entries[i].description}" target="_blank" >
+			{if $result.entries[i].title == ""} [...]
+            {else}<span {if $result.entries[i].marked}id="news_{$result.entries[i].news_id}" style="font-weight:bold;color:#bf2e1a;"{/if}>{$result.entries[i].title}{$result.entries[i].title_tail}</span>
+			{/if}	
+			</a></li>
+	{/section}
+</ul>
+{/if}
+{/foreach}

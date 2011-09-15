@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>H&iacute;rek.hu</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="templates/main.css" rel="stylesheet" type="text/css" />
+<script language="javascript" type="text/javascript" src="js/lang.js"></script>
+<!-- script language="javascript" type="text/javascript" src="js/prototype.js"></script -->
+<script language="javascript" type="text/javascript" src="js/main.js"></script>
+<script language="javascript" type="text/javascript" src="js/common.js"></script>
+<script language="javascript" type="text/javascript" src="js/feed.js"></script>
+<script language="javascript" type="text/javascript" src="js/websearch.js"></script>
+<script language="javascript" type="text/javascript" src="js/webnote.js"></script>
+{literal}
+<script language="javascript" type="text/javascript">
+var tabs = null;
+window.onload = function(){	
+	tabs = document.getElementById('tabs');
+	var pars = "action=get_tabs";
+	var url = "ajax/page.php";		
+	Ajax.send(url, "POST", pars, createTabs, null);		
+}
+var searchSelected = 'lnews';
+var changeSearch = function(type){
+	document.getElementById(searchSelected).className = '';
+	document.getElementById(type).className = 'selected';
+	searchSelected = type;
+	var hiddenInputs = document.getElementById('hiddenInputs');
+	var searchText = document.getElementById('searchText');
+	var searchForm = document.getElementById('searchForm');
+	switch(type){
+		case 'lnews':
+			hiddenInputs.innerHTML = '';
+			var input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = 'p';
+			input.value = 'Keres';
+			hiddenInputs.appendChild(input);
+			
+			searchText.name = 'q';
+			searchForm.method = 'GET';
+			searchForm.action= 'search.php';
+			break;
+		case 'lweb':
+			hiddenInputs.innerHTML = '';
+			var input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = 'page';
+			input.value = '1';
+			hiddenInputs.appendChild(input);
+			
+			input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = 'page_number';
+			input.value = '2';
+			hiddenInputs.appendChild(input);
+			
+			input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = 'lap';
+			input.value = '0';
+			hiddenInputs.appendChild(input);
+			
+			input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = 'searchmode';
+			input.value = '1';
+			hiddenInputs.appendChild(input);
+			
+			input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = 'akt';
+			input.value = '0';
+			hiddenInputs.appendChild(input);
+			
+			input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = 'host';
+			input.value = 'kurzor.hu';
+			hiddenInputs.appendChild(input);
+			
+			searchText.name = 'word';
+			searchForm.method = 'POST';
+			searchForm.action= 'http://kurzor.hu/search.php';
+			break;
+		case 'limage':
+			hiddenInputs.innerHTML = '';
+			
+			searchText.name = 'q';
+			searchForm.method = 'GET';
+			searchForm.action= 'http://kurzor.hu/kepkereso/';
+			break;
+		case 'lproducts':
+			hiddenInputs.innerHTML = '';
+			var input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = 'pn';
+			input.value = 'search';
+			hiddenInputs.appendChild(input);
+			
+			input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = 'host';
+			input.value = 'depo.hu';
+			hiddenInputs.appendChild(input);
+			
+			input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = 'searchcat';
+			input.value = '0';
+			hiddenInputs.appendChild(input);			
+			
+			searchText.name = 'searchstring';
+			searchForm.method = 'GET';
+			searchForm.action= 'http://www2.depo.hu/';
+			break;
+	}
+}
+</script>
+{/literal}
+</head>
+
+<body>
+<div id="hintContainer" style="position:absolute; width:280px; padding:5px;border:1px solid #336699; background:#FFFFFF;z-index:100; display:none;"></div>
+<div id="header">	
+	<div id="addContent"><A href="#" onClick="showManager();return false;">&Uacute;j tartalom</A></div>	
+	
+	<table width="341" border="0" cellspacing="5" cellpadding="0" align="right">
+	  <tr>
+		<td align="right">
+			{*if $__user_email != '' && $__user_id != -1}<a href="#">Egy&eacute;ni be&aacute;l&iacute;t&aacute;sok</a> |{/if*} 
+			{if $__user_email == '' || $__user_id == -1}
+				<a href="login.php">Bejelentkez&eacute;s</a> / <a href="register.php">Regisztr&aacute;ci&oacute;</a>
+			{else}
+				<a href="logout.php">Kijelentkez&eacute;s {$__user_email}</a>
+			{/if}
+		</td>
+	  </tr>
+	  <tr>
+		<td class="search"> 
+			<form name="search2" method="get" action="search.php" style="margin:0;" target="_blank" id="searchForm">
+			<div id="hiddenInputs"><input type="hidden" name="p" value="Keres" /></div>
+			<table width="100%" border="0" cellspacing="2" cellpadding="0">
+			  <tr>
+				<td><input type="text" name="q" value="{$q}" class="text" id="searchText" /></td>
+				<td><input type="submit" value="Keres&eacute;s" class="button" /></td>
+			  </tr>
+			  <tr>
+				<td class="radio">
+					<input type="radio" name="where" id="rnews" checked onclick="changeSearch('lnews')" /> <label for="rnews" id="lnews" class="selected" onclick="changeSearch('lnews')">h&iacute;rek</label> 
+					<input type="radio" name="where" id="rweb" onclick="changeSearch('lweb')" /> <label for="rweb" id="lweb" onclick="changeSearch('lweb')">web</label> 
+					<input type="radio" name="where" id="rimage" onclick="changeSearch('limage')" /> <label for="rimage" id="limage" onclick="changeSearch('limage')">k&eacute;p</label> 
+					<input type="radio" name="where" id="rpoducts" onclick="changeSearch('lproducts')" /> <label for="rpoducts" id="lproducts" onclick="changeSearch('lproducts')">term&eacute;k</label>
+				</td>
+				<td></td>
+			  </tr>
+			</table>
+			</form>
+		</td>
+	  </tr>
+	</table>
+	<div id="logo"><img src="i/logo.gif" alt="H&iacute;rek.hu" /><span>beta <a href="mailto:beta@hirek.hu" style="font-size:11px;font-weight:normal;">Kérjük, írja meg véleményét!</a></span></div>
+	<div id="pages">
+		<div id="dp_1" onclick="showDefaultPage(1, this);">C&iacute;mlap</div><b>|</b>
+		<div id="dp_4" onclick="showDefaultPage(4, this);">Itthon</div><b>|</b>
+		<div id="dp_5" onclick="showDefaultPage(5, this);">K&uuml;lf&ouml;ld</div><b>|</b>
+		<div id="dp_2" onclick="showDefaultPage(2, this);">Sport</div><b>|</b>
+		<div id="dp_6" onclick="showDefaultPage(6, this);">Bulv&aacute;r</div><b>|</b>
+		<div id="dp_7" onclick="showDefaultPage(7, this);">Kult&uacute;ra</div><b>|</b>
+		<div id="dp_3" onclick="showDefaultPage(3, this);">Aut&oacute;</div><b>|</b>
+		<div id="dp_8" onclick="showDefaultPage(8, this);">Infotech</div><b>|</b>
+		<div id="dp_9" onclick="showDefaultPage(9, this);">Tudom&aacute;ny</div><b>|</b>
+		<div id="dp_10" onclick="showDefaultPage(10, this);">Gazdas&aacute;g</div><b>|</b>
+		<div id="dp_11" onclick="showDefaultPage(11, this);">&Eacute;letm&oacute;d</div>
+		<div style="clear:both;font-size:0;"></div>
+	</div>
+</div>
+<div id="line"></div>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td id="manager" style="display:none;">
+		<div class="box" style="z-index:100;position:absolute;width:210px;">
+			<div class="grey">			
+				<div class="lightblue">
+															
+					<ul>
+						<li><img src="i/close.gif" align="right" style="cursor:pointer;" onClick="hideManager();" /><img src="i/add2.gif" align="texttop" /> <a href="#" onClick="showAddNewFeedBox(this);return false;"><b>&Uacute;j h&iacute;rforr&aacute;s</b></a></li>
+						<li class="line"></li>
+						<li><img src="i/ha.gif" align="texttop"> <a href="#" onclick="showMyFeeds(this);return false;"><b>H&iacute;rforr&aacute;saim</b></a></li>
+						<li><img src="i/ha.gif" align="texttop"> <A href="#" onclick="showFeaturedFeeds(this);return false;"><b>Kiemelt h&iacute;rforr&aacute;sok</b></A></li>
+						<li><img src="i/ha.gif" align="texttop"> <A href="#" onClick="getFeedCategories(this);return false;"><b>Tematikus h&iacute;rforr&aacute;sok</b></A></li>
+							<ul style="margin-left:10px;display:none;" id="feedDirectory"></ul>
+						<li class="line"></li>
+						<li><img src="i/search.gif" align="texttop"> <A href="#" onClick="WebSearch.show();return false;"><b>Keres&#337;</b></A></li>
+						<li><img src="i/note.gif" align="texttop"> <A href="#" onClick="WebNote.show();return false;"><b>Jegyzet</b></A></li>
+					</ul>
+					&nbsp;													
+				</div>				
+			</div>			
+		</div>
+	</td>
+    <td valign="top">
+		<table width="99%" border="0" cellspacing="0" cellpadding="0" align="center" class="tabs">
+			<tr>
+				<td width="25%">
+					<div id="tabs">
+						
+						
+					</div>
+					
+					<div style="padding:4px;">&nbsp; <a href="#" onclick="createNewTab();return false;">&Uacute;j oldal</a></div>
+					
+				</td>
+			</tr>
+		</table>
+		<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" style="margin:5px 0 0 0;padding:0 0 5px 0;">
+		  <tr>
+		  	<td><div id="mainContent"></div></td>	
+		  </tr>
+		</table>	
+	</td>
+  </tr>
+</table>
+<div id="footer">
+	<a href="#" onclick="showDefaultPage(1, null);return false;">C&iacute;mlap</a> |
+	<a href="#" onclick="showDefaultPage(4, null);return false;">Itthon</a> |
+	<a href="#" onclick="showDefaultPage(5, null);return false;">K&uuml;lf&ouml;ld</a> |
+	<a href="#" onclick="showDefaultPage(2, null);return false;">Sport</a> |
+	<a href="#" onclick="showDefaultPage(6, null);return false;">Bulv&aacute;r</a> |
+	<a href="#" onclick="showDefaultPage(7, null);return false;">Kult&uacute;ra</a> |
+	<a href="#" onclick="showDefaultPage(3, null);return false;">Aut&oacute;</a> |
+	<a href="#" onclick="showDefaultPage(8, null);return false;">Infotech</a> |
+	<a href="#" onclick="showDefaultPage(9, null);return false;">Tudom&aacute;ny</a> |
+	<a href="#" onclick="showDefaultPage(10, null);return false;">Gazdas&aacute;g</a> |
+	<a href="#" onclick="showDefaultPage(11, null);return false;">&Eacute;letm&oacute;d</a> <br />
+	<a href="http://www.hirekmedia.hu/" target="_blank">Impresszum</a> | <a href="http://www.hirekmedia.hu/" target="_blank">Adatkezel&eacute;si elvek</a> | <a href="http://www.hirekmedia.hu/" target="_blank">M&eacute;diaaja&aacute;nlat</a><br />
+	Copyright &copy; 2006 Hírek.hu - Minden jog fentartva
+</div>
+</body>
+</html>

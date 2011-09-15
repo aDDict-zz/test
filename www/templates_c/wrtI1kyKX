@@ -1,0 +1,3 @@
+<?php /* Smarty version 2.6.6, created on 2010-03-14 06:25:33
+         compiled from news_html.html */ ?>
+<?php if (count($_from = (array)$this->_tpl_vars['news'])):foreach ($_from as $this->_tpl_vars['page_id'] => $this->_tpl_vars['page']): if (count($_from = (array)$this->_tpl_vars['page'])):foreach ($_from as $this->_tpl_vars['news_id'] => $this->_tpl_vars['n']):?><a target="_blank" href="<?php echo $this->_tpl_vars['var']->baseurl; ?>?page_id=<?php echo $this->_tpl_vars['page_id']; ?>&news_id=<?php echo $this->_tpl_vars['news_id'];  echo $this->_tpl_vars['fromparam']; ?>"><?php echo $this->_tpl_vars['n']['title']; ?></a>&nbsp;&nbsp;&nbsp;<?php endforeach; unset($_from); endif;  endforeach; unset($_from); endif; ?>

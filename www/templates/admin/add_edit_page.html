@@ -1,0 +1,82 @@
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="page_title">
+        {if $page_id == ''}
+			Új oldal létrehozása
+        {else}
+			Oldal m&oacute;dos&iacute;t&aacute;sa
+		{/if}
+	</td>
+  </tr>
+  <tr>
+    <td style="padding-bottom:15px; padding-top:15px;">
+		{capture name=domain_update}		
+		<form name="page" method="post" action="index.php?id={$id}&sub_id={$sub_id}">
+		{if $page.page_id != ""}
+			<input type="hidden" name="action" value="update_page" />
+			<input type="hidden" name="page_id" value="{$page.page_id}" />
+		{else}
+			<input type="hidden" name="action" value="add_page" />
+		{/if}
+		<table border="0" cellspacing="0" cellpadding="5">
+		  {if $message != ""}
+		  <tr>
+			<td colspan="2" style="color:#FF0000;font-weight:bold;">{$message}</td>
+		  </tr>
+		  {/if}
+		  <tr>
+			<td>Oldaln&eacute;v:</td>
+			<td><input type="text" name="page_name" value="{$page.page_name}" /></td>
+		  </tr>
+		  <tr>
+			<td>Oldal URL:</td>
+			<td><input type="text" name="page_url" value="{$page.page_url}" /></td>
+		  </tr>
+		  <tr>
+			<td>Oldalc&iacute;m:</td>
+			<td><input type="text" name="page_title" value="{$page.page_title}" /></td>
+		  </tr>
+		  <tr>
+			<td>Oldalle&iacute;r&aacute;s</td>
+			<td>
+				<textarea name="page_description" cols="15" rows="5">{$page.page_description}</textarea>
+			</td>
+		  </tr>
+		  <tr>
+			<td>Kulcsszavak:</td>
+			<td>
+				<textarea name="page_keywords" cols="15" rows="5">{$page.page_keywords}</textarea>
+			</td>
+		  </tr>
+		  <tr style="display:none;">
+			<td>Template:</td>
+			<td>
+				<select name="page_template" style="width:100%; ">
+					{section name=i loop=$templates}
+						{if $page.page_template == $templates[i].template_url}
+						<option value="{$templates[i].template_url}" selected>{$templates[i].template_name}</option>	
+						{else}
+						<option value="{$templates[i].template_url}">{$templates[i].template_name}</option>
+						{/if}
+					{/section}
+				</select>
+			</td>
+		  </tr>
+		  <tr style="display:none;">
+			<td>HTML:</td>
+			<td><input type="text" name="page_html" value="{$page.page_html}" /></td>
+		  </tr>
+		  <tr>
+			<td>Oldal RSS:</td>
+			<td><input type="text" name="page_xml" value="{$page.page_xml}" /></td>
+		  </tr>
+		  <tr>
+		  	<td colspan="2"><input type="submit" name="" value="V&eacute;grehajt" class="button" /></td>
+		  </tr>
+		</table>
+		</form>
+		{/capture}
+		{include file="dialog.html" title="Oldal param&eacute;terek" content=$smarty.capture.domain_update extra="width=100%"}
+	</td>
+  </tr>	
+</table>

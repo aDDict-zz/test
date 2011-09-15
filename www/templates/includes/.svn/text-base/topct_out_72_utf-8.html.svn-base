@@ -1,0 +1,51 @@
+<html>
+<head>
+<style>
+    #hirek {
+        width:176px;
+        height:138px;
+        border:1px #000 solid;        overflow:hidden;
+                color:#000;
+    }
+    #hirek h1 {
+        color:#c00;
+        font-size:11px;
+        margin:5px;
+    }
+    #hirek_keywords {
+        list-style-image: url(http://www.hirek.hu/i/n.gif);
+        vertical-align : middle;
+        margin:0 5px 0 20px;
+        padding:0px;
+        font-size:11px;
+    }
+    #hirek_keywords li { 
+        height : 35px;
+        vertical-align : middle;
+    }
+    #hirek_keywords li a{
+        font-size:11px;
+        color : #000;
+        text-decoration : none;
+    }
+    #hirek h2 a {
+        font-size:11px;
+        color:#ccc;
+        text-decoration : none;
+    }
+    #hirek h2 {
+        margin:5px;
+    }
+</style>
+</head>
+<body>
+<div id="hirek">
+<h1>Legolvasottabb hírek az elmúlt 24 órában</h1>
+        <ul id="hirek_keywords">
+            <li><a target="_blank" href="http://www.hirek.hu/?page_id=4&news_id=1317038" >Kettészakadt egy BKV-busz az Astoriánál</a><!-- - <i>Index - Belföld</i--></li>
+            <li><a target="_blank" href="http://www.hirek.hu/?page_id=4&news_id=1320411" >Betonba öntve találták meg a pénzbeszedőt</a><!-- - <i>Nethírlap - Összes</i--></li>
+            <li><a target="_blank" href="http://www.hirek.hu/?page_id=4&news_id=1318743" >Milliós kártérítésre kötelezték a magyar államot</a><!-- - <i>Nethírlap - Összes</i--></li>
+        </ul>
+    <!--h2><a href="http://www.hirek.hu/">további érdekes hírek</a></h2-->
+</div>
+</body>

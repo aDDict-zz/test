@@ -1,0 +1,14 @@
+<div class="topboxcont"><div class="bottombox"><div class="leftbox"><div class="rightbox"><div class="blbox"><div class="brbox"><div class="tlbox"><div class="trbox">
+			<div class="edit" style="display:block; "><a href="#" onClick="removeNewFeedBox();return false;"><img src="i/close.gif" align="absmiddle" /></a></div>	
+			<div style="padding:10px;">
+                {if !$keywords}
+                <p><b>H&iacute;rforr&aacute;s URL:</b></p>
+                <input type="text" size="40" id="newFeedURL"/> <input type="button" value="Felvisz" onClick="addNewFeedBoxByFeed(document.getElementById('newFeedURL').value);" class="button" />
+                {else}
+                <p><b>H&iacute;rforr&aacute;s kulcssz&oacute; alapj&aacute;n:</b></p>
+                <p>H&iacute;rforr&aacute;s megnevez&eacute;se: <input type="text" size="20" id="newFeedKeywordsTitle"/></p>
+                <p>Kulcssz&oacute;: <input type="text" id="newFeedKeywords"/> <input type="button" value="Felvisz" onClick="addNewFeedBoxByKeywords(document.getElementById('newFeedKeywordsTitle').value, document.getElementById('newFeedKeywords').value);" class="button" /></p>
+                {/if}
+                <p id="feedVerifyProgress"></p>
+			</div>
+</div></div></div></div></div></div></div></div>

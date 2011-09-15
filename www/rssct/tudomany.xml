@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+   <channel>
+      <title>Tudomány</title>
+      <link>http://www.hirek.hu/rss.php?page=tudomany</link>
+      <description></description>
+      <language>hu-HU</language>
+      <copyright>Hirek.hu 2011</copyright>
+      <managingEditor>szerkeszto@hirek.hu (Szerkesztő)</managingEditor>
+      <webMaster>webmester@hirek.hu (Webmester)</webMaster>      
+      <pubDate>Wed, 14 Sep 2011 9:50:01 +0200</pubDate>
+      <lastBuildDate>Wed, 14 Sep 2011 9:50:01 +0200</lastBuildDate>
+      <category></category>
+      <generator>Hirek.hu</generator>
+      <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+      <ttl>60</ttl>
+	<atom:link href="http://www.hirek.hu/rss.php?page=tudomany" rel="self" type="application/rss+xml" />
+      
+      <item>
+         <title>Frontális baleset a rákospalotai szemétégető mögött - Index</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3267467&amp;rss=4</link>         
+         <description>Egy személyautó és egy kisteherautó frontálisan ütközött Budapesten, a XV. kerületi szemétégető mögötti úton szerda hajnalban - közölte a tűzoltóság az MTI-vel.</description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3267467&amp;rss=4</guid>
+      </item>
+      <item>
+         <title> Bármilyen operációs rendszert futtathatunk majd Windows 8 alatt   - Hvg.hu</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3267226&amp;rss=84</link>         
+         <description> A Windows 8 esetében is megérkezett a hivatalos információ: az operációs rendszerrel együtt megkapjuk a Hyper V virtuális gépet is, hivatalos nevén a „Hypervisor” alapú Windows Server Virtualizációt.   </description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3267226&amp;rss=84</guid>
+      </item>
+      <item>
+         <title>1234 milliárd dolláros hiány az USA-ban - Index</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3267190&amp;rss=4</link>         
+         <description>Az amerikai költségvetés augusztusban már 35. hónapja volt folyamatosan deficites.</description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3267190&amp;rss=4</guid>
+      </item>
+      <item>
+         <title> Zselés elem: kisebb, biztonságosabb, olcsóbb és nagyobb a teljesítménye   - Hvg.hu</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3267145&amp;rss=84</link>         
+         <description> Zselé helyettesítheti a jelenleg a legtöbb lítium elemben vagy akkumulátorban található veszélyes folyékony elektrolitot.  </description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3267145&amp;rss=84</guid>
+      </item>
+      <item>
+         <title> Fél életünket a Facebookon töltjük   - Hvg.hu</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3267021&amp;rss=84</link>         
+         <description> Az amerikaiak 53,5 milliárd percet töltöttek a világ legnagyobb közösségi oldalán májusban a Nielsen tanulmánya szerint.  </description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3267021&amp;rss=84</guid>
+      </item>
+      <item>
+         <title>Nyolc perces promó az X-Factornak - Index</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266496&amp;rss=4</link>         
+         <description>Szeptember 21-én mutatkozik be az X-Factor című tehetségkutató amerikai változata, aminek kedvéért Simon Cowell otthagyta az egy évre 90 millió dollárt fizető állását az American Idol zsűrijében, szóval ezzel tuti több jön majd a konyhára (Cowell az X-Factor kiötlője, készítője és zsűritagja is egyben).</description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266496&amp;rss=4</guid>
+      </item>
+      <item>
+         <title>Leleplezték a leggyorsabb Lamborghini Gallardót - Index</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266495&amp;rss=4</link>         
+         <description>A legerősebb V10-es motorral, látványosabb külsővel és versenypályán kipróbált alkatrészekkel teszik élvezetesebbé a kisebbik Lambót.</description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266495&amp;rss=4</guid>
+      </item>
+      <item>
+         <title>Öttusa-vb: két szám után első helyen a női váltó - Index</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266494&amp;rss=4</link>         
+         <description>A magyarok a britek előtt 34 ponttal vezetnek.</description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266494&amp;rss=4</guid>
+      </item>
+      <item>
+         <title> Újabb 50 Naprendszeren kívüli bolygót fedeztek fel   - Hvg.hu</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266436&amp;rss=84</link>         
+         <description> Újabb ötven exobolygót, azaz a Naprendszeren kívüli bolygót fedeztek fel genfi csillagászok, akik szerint a Naphoz hasonló csillagok nem kevesebb mint negyven százalékának van legalább egy olyan planétája, amely könnyebb a Szaturnusznál.
+  </description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266436&amp;rss=84</guid>
+      </item>
+      <item>
+         <title> A merevedési zavarok szívproblémákra is utalhatnak   - Hvg.hu</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266435&amp;rss=84</link>         
+         <description> A merevedés zavarai szívbetegségek előjelei lehetnek egyes férfiaknál - állapították meg korábbi tanulmányok metaelemzésével kínai kutatók.
+  </description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266435&amp;rss=84</guid>
+      </item>
+      <item>
+         <title> Formabontó doppingtesztet vezetnek be a londoni olimpián   - Hvg.hu</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266434&amp;rss=84</link>         
+         <description> Egy újfajta doppingtesztet fognak alkalmazni a 2012-es londoni olimpián, amelynek segítségével a versenyeken minden eddiginél szigorúbb szűrések várhatóak - állítja David Cowan, az olimpia doppingmentességéért felelős tudós.   </description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266434&amp;rss=84</guid>
+      </item>
+      <item>
+         <title>Magyarország második a kick-box karate utánpótlás Eb-n - Index</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266337&amp;rss=4</link>         
+         <description></description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266337&amp;rss=4</guid>
+      </item>
+      <item>
+         <title>A halolaj hátráltathatja a kemoterápiát - Index</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266336&amp;rss=4</link>         
+         <description>Megakadályozza, hogy a kemoterápiás szerek megtámadják a daganatot.</description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266336&amp;rss=4</guid>
+      </item>
+      <item>
+         <title>Már a mobilokat is figyeli a Decide.com - Index</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266335&amp;rss=4</link>         
+         <description>Most már azt is megmondja az oldal, hogy érdemes-e megvenni a kinézett mobilt, vagy várjunk az új modellre.</description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266335&amp;rss=4</guid>
+      </item>
+      <item>
+         <title>A Jobbik feljelenti Kertész Ákost - Index</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266334&amp;rss=4</link>         
+         <description>A gyanú közösség elleni izgatás. Gergényi Pétertől pedig a kitüntetéseit vennék el.</description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266334&amp;rss=4</guid>
+      </item>
+      <item>
+         <title>Sir Ian McKellen 300 éves kocsmát vett - Index</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266333&amp;rss=4</link>         
+         <description>A Gyűrűk Ura Gandalfja azt a kocsmát vette meg, ahova többek között Charles Dickens is járt.</description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266333&amp;rss=4</guid>
+      </item>
+      <item>
+         <title>Libegőn a csillagokba - Hírek.csillagászat.hu</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266217&amp;rss=74</link>         
+         <description>Hagyományainkhoz híven az ősz beköszöntével ismét csillagnéző túrára invitáljuk az égbolt szerelmeseit. Ezúttal - könnyítésképp - a túra egy jelentős szakaszát libegőn tesszük meg.</description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266217&amp;rss=74</guid>
+      </item>
+      <item>
+         <title> Angry Birds: 350 millió letöltés   - Hvg.hu</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266216&amp;rss=84</link>         
+         <description> A letöltések száma 150 millióval nőtt a júniusi adathoz képest, és most a tavaly márciusi szám háromszorosa. Szépen teljesít a merchandising is.  </description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266216&amp;rss=84</guid>
+      </item>
+      <item>
+         <title> Egész testfelületükkel látnak a tengeri sünök   - Hvg.hu</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266047&amp;rss=84</link>         
+         <description>  A tengeri sünök egész testfelületükkel látnak - derítették ki svéd biológusok, akik eredményeiket az amerikai tudományos akadémia folyóiratában, a PNAS (Proceedings of the National Academy of Science) legújabb számában ismertették.
+  </description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266047&amp;rss=84</guid>
+      </item>
+      <item>
+         <title> Világító logó az iPhone 4 hátlapjára   - Hvg.hu</title>
+         <link>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266046&amp;rss=84</link>         
+         <description> Hamarosan jön az iPatch egy új iPhone 4 átalakítása, amelynek köszönhetően a hátoldali alma logó felragyoghat.
+  </description>
+	<guid>http://www.hirek.hu/click.php?from=tudomany.xml&amp;page_id=9&amp;news_id=3266046&amp;rss=84</guid>
+      </item>
+   </channel>
+</rss>

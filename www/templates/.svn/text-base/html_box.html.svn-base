@@ -1,0 +1,34 @@
+	<div class="blue" id="html_box_{$htmlbox.user_htmlbox_id}" alt="bid_{$htmlbox.bid}_{$cl|default:0}">
+<div class="topboxcont"><div class="bottombox"><div class="leftbox"><div class="rightbox"><div class="blbox"><div class="brbox"><div class="tlbox"><div class="trbox">
+		<div class="head">
+			<div class="edit"><a href="#"  title="Frissítés"><img align="top" src="i/refresh.gif"></a>{if $htmlbox.editable == "yes"}<a href="#" title="Doboz szerkesztése">Szerkeszt</a>{else} <a href="#"></a>{/if}<a> </a><a href="#" title="Doboz törlése"><img src="i/close.gif" align="top" alt="Doboz törlése"  /></a></div>
+			<h1><a href="#"><img src="{$htmlbox.favicon|default:'i/in.gif'}" style="margin-top:-5px;height:16px;width:16px;" align="absmiddle" /></a> <a>{$htmlbox.title}<!-- ({$htmlbox.bid})--></a></h1>
+		</div>
+		<div class="editContent">
+			<table border="0" cellspacing="0" cellpadding="2">
+			  <tr>
+				<td>C&iacute;m:</td>
+				<td><input type="text" name="title" value="{$htmlbox.rss_name|escape:html}" /></td>
+			  </tr>
+			  <tr>
+				<td>Sz&iacute;n:</td>
+				<td>
+                    <div id="c0"></div>
+                    <div id="c1"></div>
+                    <div id="c2"></div>
+                    <div id="c3"></div>
+                    <div id="c4"></div>
+                    <div id="c5"></div>
+                    <div id="c6"></div>
+				</td>
+			  </tr>
+			  <tr>
+				<td colspan="2"><input type="button" value="Elment" /></td>
+			  </tr>
+			</table>		
+		</div>	
+		<div class="content_2">
+        {$htmlbox.html}
+		</div>
+</div></div></div></div></div></div></div></div>
+	</div>	

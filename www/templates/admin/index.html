@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>H&iacute;rek.hu - Adminisztr&aacute;ci&oacute;s fel&uuml;let</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="../templates/admin/main.css" rel="stylesheet" type="text/css">
+<script language="javascript" type="text/javascript" src="../js/main25.js"></script>
+<script language="javascript" type="text/javascript" src="../js/admin/jquery-1.4.2.min.js"></script>
+<script language="javascript" type="text/javascript" src="../js/admin/jquery.tablednd_0_5.js"></script>
+
+{if $sub_id == 1}
+{literal}
+<script>
+$(document).ready(function() {
+
+    $("#pagelist").tableDnD({
+        onDrop: function(table, row) {
+            var rows = table.tBodies[0].rows;
+            var pagesort = '';
+            for (var i=0; i<rows.length; i++) {
+                pagesort += rows[i].id.replace('page-', '')+'|';
+            }
+            $.ajax({ url: '../ajax/admin/pages.php?pagesort='+pagesort});
+        },
+    });
+});
+</script>
+{/literal}
+{/if}
+
+</head>
+
+<body>
+{if $__user_name !=""}
+<div id="content">	
+	<div id="row">&Uuml;dv&ouml;zl&uuml;nk {$__user_name}&nbsp;| <a href="index.php?id=-1" class="sub_menu_link">Kil&eacute;p&eacute;s</a>&nbsp;</div>
+	<div id="header"></div>
+	{include file="menu.html"}
+	{if $id == 1 }
+		{if $sub_id == 1}
+			{include file="pages.html"}
+		{elseif $sub_id == 2}	
+			{include file="add_edit_page.html"}
+		{elseif $sub_id == 3}	
+			{include file="page_categories.html"}
+		{elseif $sub_id == 4}	
+			{include file="fixed_categories.html"}	
+		{/if}	
+	{elseif $id == 2}	
+		{if $sub_id == 1}
+			{include file="cat_colors.html"}
+		{elseif $sub_id == 2}			
+			{include file="add_edit_cat_colors.html"}
+		{/if}	
+	{elseif $id == 3}
+		{if $sub_id == 1}
+			{include file="agencies.html"}
+		{elseif $sub_id == 2}	
+			{include file="add_edit_agency.html"}
+		{elseif $sub_id == 3}	
+			{include file="news_flows.html"}	
+		{elseif $sub_id == 4}	
+			{include file="add_edit_news_flow.html"}		
+		{/if}
+	{elseif $id == 5}		
+		{if $sub_id == 1}
+			{include file="list_users.html"}
+		{elseif $sub_id == 2}	
+			{include file="edit_users.html"}
+		{/if}
+	{elseif $id == 6}	
+		{if $sub_id == 1}
+			{include file="list_rss_categories.html"}
+		{elseif $sub_id == 2}	
+			{include file="add_edit_rss_categories.html"}
+		{elseif $sub_id == 3}	
+			{include file="resort_feeds.html"}
+		{elseif $sub_id == 4}	
+			{include file="highlighted_feeds.html"}	
+		{/if}
+	{elseif $id == 7}	
+		{if $sub_id == 1}
+			{include file="stat.html"}	
+        {/if}
+	{/if}
+</div>
+{else}
+	{include file="login.html"}
+{/if}
+</body>
+</html>

@@ -1,0 +1,36 @@
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="page_title">RSS kateg&oacute;ri&aacute;k</td>
+  </tr>
+  <tr>
+    <td>
+		<table width="100%" border="0" cellspacing="0" cellpadding="4" style="border:1px solid #BDBEBD;">
+		  <tr style="height:20px;background-image:url('../i/bh.gif');background-repeat:repeat-x;">
+			<td align="center" style="border-bottom:1px solid #BDBEBD;"><b>ID</b></td>
+			<td style="border-bottom:1px solid #BDBEBD;"><b>N&eacute;v</b></td>
+			<td style="border-bottom:1px solid #BDBEBD;"><b>Sorrend</b></td>			
+			<td align="center" style="border-bottom:1px solid #BDBEBD;"><b>M&#369;veletek</b></td>
+		  </tr>
+		  {section name=i loop=$categories}
+		  <tr bgcolor="{cycle values="#EAEAEA,#F4F4F4"}">
+			<td align="center">{$categories[i].cat_id}</td>
+			<td>{$categories[i].cat_name}</td>
+			<td align="center">
+				<input type="text" name="position_{$categories[i].cat_id}" value="{$categories[i].order_by}" size="3" style="width:auto;" dir="rtl" />
+			</td>			
+			<td align="center">
+				[ <a href="index.php?id={$id}&sub_id=2&cat_id={$categories[i].cat_id}">M&oacute;dos&iacute;t</a> ] [ <a href="#" onClick="if(confirm('Biztos benne?')) document.del_cat_{$categories[i].cat_id}.submit();return false;">T&ouml;r&ouml;l</a> ]
+				<form name="del_cat_{$categories[i].cat_id}" method="post" action="index.php?id={$id}&sub_id={$sub_id}">
+					<input type="hidden" name="action" value="del_cat" />
+					<input type="hidden" name="cat_id" value="{$categories[i].cat_id}" />
+				</form>				
+			</td>
+		  </tr>
+		  {/section}		  
+		</table>
+	</td>
+  </tr>
+  <tr>
+  	<td style="padding:10px 0px 10px 0px; "><input type="button" value="V&eacute;grehajt" class="button" onclick="document.getElementById('update_pages').submit();return false;"/></td>
+  </tr>
+</table>

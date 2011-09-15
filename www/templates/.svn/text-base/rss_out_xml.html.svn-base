@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hirek_news>
+{foreach from=$news.entries item=n key=idx}
+<item>
+    <id>{$n.id}</id>
+    <title><![CDATA[{$n.title}]]></title>
+    <link><![CDATA[{$var->baseurl}?kw={$news.kw}&news_id={$n.id}{$fromparam}]]></link>
+</item>
+{/foreach}
+</hirek_news>

@@ -1,0 +1,10 @@
+{include file="header.html"}
+<body style="text-align:center;"> 
+<style>
+</style>
+{include file="menu.html"}
+<h1>Tisztelt Hírolvasónk! </h1>
+<h2>A Hírek.hu oldalán a mai napon karbantartási munkálatokat végzünk. Kérjük szíves megértését!
+<h3>üdvözlettel: a Hírek.hu szerkesztői</h3>
+</body>
+</html>

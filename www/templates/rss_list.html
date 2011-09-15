@@ -1,0 +1,9 @@
+<ul>
+	{section name=i loop=$items}		
+			<li {if $smarty.section.i.index >= $items_nr && $items_nr !=''}class="hidden"{/if}><a class="newsitem" href="click.php?link={$items[i].link|escape:url}&title={$items[i].title|escape:url}{$rss_link_tail}" alt="{$items[i].description}" target="_blank" >
+			{if $items[i].title == ""} [...]
+            {else}<span {if $items[i].marked}id="news_{$items[i].news_id}" style="font-weight:bold;color:#bf2e1a;"{/if}>{$items[i].title}{$items[i].title_tail}</span>
+			{/if}	
+			</a></li>
+	{/section}
+</ul>

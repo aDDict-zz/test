@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-2"?>
+<connection>
+	<host>192.168.1.102</host>
+	<user>wiw_gen</user>
+	<psw>foci06vb</psw>
+	<database>hirek_old</database>
+</connection>

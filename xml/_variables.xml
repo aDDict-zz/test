@@ -1,0 +1,59 @@
+<matton>
+    <object name="hirek">
+        <protected>
+            <variables>
+                <variable name="baseurl">
+                    <value>http://www.hirek.hu/</value>
+                </variable>
+                <variable name="basedir">
+                    <value>/home/vvv/sites/hirekhu/www</value>
+                </variable>
+                <variable name="fixed_category_search">
+                    <value>16</value>
+                </variable>
+                <variable name="fixed_category_register">
+                    <value>12</value>
+                </variable>
+                <variable name="test_site">
+                    <value>0</value>
+                </variable>
+                <variable name="dbtest_dir">
+                    <value>/var/www</value>
+                </variable>
+                <variable name="rewrite_engine">
+                    <value>1</value>
+                </variable>
+                <variable name="rewrite_baseurl">
+                    <value>http://localhost/hirek/</value>
+                </variable>
+                <variable name="page_title_login">
+                    <value>Bejelentkezés - Hírek.hu</value>
+                </variable>
+                <variable name="page_title_register">
+                    <value>Regisztráció - Hirek.hu</value>
+                </variable>
+                <variable name="page_title_search">
+                    <value>Keresés - Hirek.hu</value>
+                </variable>
+                <variable name="page_url_login">
+                    <value>bejelentkezes</value>
+                </variable>
+                <variable name="page_url_register">
+                    <value>regisztracio</value>
+                </variable>
+                <variable name="page_url_search">
+                    <value>kereses</value>
+                </variable>
+                <variable name="page_slogan">
+                    <value>Hírek.hu - Saját híroldalt mindenkinek</value>
+                </variable>
+                <variable name="db" type="hash">
+                    <value key="host">localhost</value>
+                    <value key="user">root</value>
+                    <value key="password">v</value>
+                    <value key="base">hirekhu</value>
+                </variable>
+            </variables>
+        </protected>
+    </object>
+</matton>

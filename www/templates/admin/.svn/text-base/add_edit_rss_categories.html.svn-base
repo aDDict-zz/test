@@ -1,0 +1,46 @@
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="page_title">
+		{if $category.cat_id == ''}
+			&Uacute;j RSS  kateg&oacute;ria
+		{else}
+			RSS kateg&oacute;ria m&oacute;dos&iacute;t&aacute;sa
+		{/if}
+	</td>
+  </tr>
+  <tr>
+    <td>
+		{capture name=category}	
+		<form name="add_edit_rss_cat" method="post" action="index.php?id={$id}&sub_id={$sub_id}">
+		{if $category.cat_id == ''}
+		<input type="hidden" name="action" value="add_new_cat" />
+		{else}
+		<input type="hidden" name="action" value="update_cat" />
+		<input type="hidden" name="category[cat_id]" value="{$category.cat_id}" />
+		{/if}
+		<table border="0" cellspacing="0" cellpadding="4">
+		  {if $error != ''}
+		  <tr>
+		  	<td colspan="2" style="color:#FF0000;font-weight:bold">{$error}</td>
+		  </tr>
+		  {/if}
+		  <tr>
+			<td>N&eacute;v:</td>
+			<td><input type="text" name="category[cat_name]" value="{$category.cat_name}" /></td>
+		  </tr>
+		  <tr>
+			<td>C&iacute;m:</td>
+			<td><input type="text" name="category[cat_title]" value="{$category.cat_title}" /></td>
+		  </tr>
+		  <tr>
+			<td colspan="2">
+				<input type="submit" value="V&eacute;grehajt" class="button" />
+			</td>
+		  </tr>
+		</table>
+		</form>
+		{/capture}
+		{include file="dialog.html" title="Kateg&oacute;ria" content=$smarty.capture.category extra="width=100%"}
+	</td>
+  </tr> 
+</table>

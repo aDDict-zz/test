@@ -1,0 +1,58 @@
+<form name="search2" method="get" action="search.php" style="margin:0;" {if !$searchpage && false}target="_blank"{/if} id="searchForm">
+<div id="hiddenInputs"><input type="hidden" name="p" value="Keres" /></div>
+<div style="position:absolute;top:5px;width:100%;text-align:right;height:95px;">
+    <div style="margin-right:30px;" class="search">
+        <table border="0" cellspacing="2" cellpadding="0" align="right" width="{if $searchpage}380{else}250{/if}">
+          <tr>
+            <td align="left" width="100%"><input type="text" name="q" value="{$q}" class="text" id="searchText" /></td>
+            <td class="button" onclick="document.search2.submit();">Keres&eacute;s</td>
+          </tr>
+          {if !$searchpage}
+          <tr>
+            <td id="search_where" class="radio" colspan="2" align="left">
+                <label for="rnews" id="lnews" class="selected" onclick="changeSearch('lnews')">h&iacute;rek</label><input type="checkbox" name="rnews" id="rnews" checked onclick="changeSearch('lnews')" />  
+                <label for="rweb" id="lweb" onclick="changeSearch('lweb')">web</label><input class="cb" type="checkbox" name="rweb" id="rweb" onclick="changeSearch('lweb')" /> 
+            </td>
+          </tr>
+        {else}
+        <tr>
+            <td id="search_lead" colspan="2" class="radio" align="left"><input type="checkbox" name="lead" value="1"{if $lead == 1} checked{/if} style="border:0px;" onclick="if (document.search2 && document.search2.lead) document.search2.lead.value = this.checked ? 1 : 0;"/> keres&eacute;s a bevezet&#337;ben is</td>
+        </tr>
+        <tr>
+            <td id="search_filter" colspan="2" class="radio" align="left">
+                &nbsp;Id&#337;szak: 
+                <select name="period" onchange="if (document.search2 && document.search2.period) document.search2.period.value = this.options[this.selectedIndex].value;">
+                {section name=i loop=$periods}
+                {if $period == $smarty.section.i.index}
+                    <option value="{$smarty.section.i.index}" selected>{$periods[i]}</option>
+                {else}
+                    <option value="{$smarty.section.i.index}">{$periods[i]}</option>
+                {/if}
+                {/section}
+                </select> 
+                Kateg&oacute;ria: 
+                <select name="category" onchange="if (document.search2 && document.search2.category) document.search2.category.value = this.options[this.selectedIndex].value;">
+                    <option value="">Mindegy</option>
+                    {section name=i loop=$categories}
+                    {if $selected_category == $categories[i].cat_id}
+                    <option value="{$categories[i].cat_id}" selected>{$categories[i].cat_name}</option>
+                   {else}
+                    <option value="{$categories[i].cat_id}">{$categories[i].cat_name}</option>
+                    {/if}
+                    {/section}
+                </select>					
+                <script>
+                    if (document.search2 && document.search2.q) document.search2.q.value = '{$q}';
+                    if (document.search2 && document.search2.lead) document.search2.lead.value = '{$lead}';
+                    if (document.search2 && document.search2.agency) document.search2.agency.value = '{$agency}';
+                    if (document.search2 && document.search2.period) document.search2.period.value = '{$period}';
+                    if (document.search2 && document.search2.category) document.search2.category.value = '{$selected_category}';
+                    var o; if (o = document.getElementById('search_radio')) o.style.display = 'none';
+                </script>
+            </td>
+        </tr>
+        {/if}
+        </table>
+    </div>
+</div>
+</form>

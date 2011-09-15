@@ -1,0 +1,92 @@
+{literal}
+<style>
+    #statperiod select, input {width : auto;}
+</style>
+{/literal}
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+    <td class="page_title">Cikkre kattint&aacute;sok</td>
+</tr>
+<tr>
+    <td>
+        <form name="statperiod" action="index.php?id={$id}&sub_id={$sub_id}" method="post">
+        <div id="statperiod">
+        <input type="hidden" name="action" value="ct_news" />
+        <select name="period" onchange="if (this.options[this.selectedIndex].value != '') document.statperiod.submit();">
+            <option value="">-- id&#337;szak --</option>
+            <option value="today" {if $period=="today"}selected{/if}>Ma</option>
+            <option value="yesterday" {if $period=="yesterday"}selected{/if}>Tegnap</option>
+            <option value="week" {if $period=="week"}selected{/if}>Legut&oacute;bbi h&eacute;t</option>
+            <option value="month" {if $period=="month"}selected{/if}>Legut&oacute;bbi 30 nap</option>
+        </select>
+        &nbsp;
+        {html_select_date prefix="from_" start_year="2007" field_order="YMD" time="$from_date"}&nbsp;-&nbsp;{html_select_date prefix="to_" start_year="2007" field_order="YMD" time="$to_date"}
+        <input type="button" name="go" value="mehet" onclick="document.statperiod.period.value='';document.statperiod.submit();">
+        </div>
+        <div id="statperiod">
+        <p>a kiválasztott hírforrásra - hírfolyamra:</p>
+        <select name="agency_id" onchange="document.statperiod.rss_id.value=0;document.statperiod.submit();">
+            <option value="0">-- összes hírforrás --</option>
+            {foreach from=$agencies item=a key=idx}
+            <option value="{$a.agency_id}" {if $a.selected}selected{/if}>{$a.agency_name}</option>
+            {/foreach}
+        </select>
+        <select name="rss_id" onchange="document.statperiod.submit();">
+            <option value="0">-- összes hírfolyam --</option>
+            {foreach from=$rss_feeds item=a key=idx}
+            <option value="{$a.id}" {if $a.selected}selected{/if}>{$a.rss_name}</option>
+            {/foreach}
+        </select>
+        </div>
+        </form>
+    </td>
+</tr>
+</table>
+    <p>&Ouml;sszes kattint&aacute;s: {$ct_logged_in.2}</p>
+{if $ct_logged_in.2}
+    <p>Bejelentkezett felhaszn&aacute;l&oacute;k: {$ct_logged_in.1}</p>
+    <p>Be nem jelentkezett felhaszn&aacute;l&oacute;k: {$ct_logged_in.0}</p>
+{/if}
+{if $ct_url|@count}
+    <div style="width:100%;margin 20px 10px; ">
+    <p class="page_subtitle">Legt&ouml;bbet l&aacute;togatott cikkek</p>
+    <table width="100%" cellspacing="0" cellpadding="5" style="border:2px #f3f3f3 solid;">
+    <tr>
+        <td style="width:50%;font-weight:bold;">Hírforrás</td>
+        <td style="width:50%;font-weight:bold;">Hírfolyam</td>
+        <td style="font-weight:bold;">Megjelenés</td>
+        <td style="font-weight:bold;">Naponta</td>
+        <td style="font-weight:bold;">Összesen<br>(bejel.)</td>
+    </tr>
+    {foreach from=$ct_url item=u key=url}
+    <tr style="background-color:{cycle values="#f3f3f3,#fff"}">
+        <td>{$u.agency|default:"-"}</td>
+        <td>{$u.rss|default:"-"}</td>
+        <td>{$u.date_from}-{$u.date_to}</td>
+        <td align="right">{$u.ctperday}</td>
+        <td align="right">{$u.c}&nbsp;({$u.1|default:"-"})</td>
+    </tr>
+    <tr style="background-color:{cycle values="#f3f3f3,#fff"}">
+        <td colspan="5"><a style="text-decoration:underline;" target="_blank" href="{$url}">{$u.title}</a></td>
+    </tr>
+    {/foreach}
+    </table>
+    </div>
+{/if}
+{if $ct_days|@count}
+    <div style="width:100%;margin 20px 10px; ">
+    <p class="page_subtitle">Napi kattint&aacute;sok</p>
+    <table width="100%" cellspacing="0" cellpadding="5" style="border:2px #f3f3f3 solid;">
+    <tr>
+        <td style="width:100%;font-weight:bold;">Nap</td>
+        <td><div style="width:120px;font-weight:bold;">Kattint&aacute;s<br>(bejel.)</div></td>
+    </tr>
+    {foreach from=$ct_days item=d key=day}
+    <tr style="background-color:{cycle values="#f3f3f3,#fff"}">
+        <td>{$day}</td>
+        <td style="text-align:right;">{$d.c}&nbsp;({$d.1|default:"-"})</td>
+    </tr>
+    {/foreach}
+    </table>
+    </div>
+{/if}

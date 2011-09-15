@@ -1,0 +1,12 @@
+<title>hirek.hu</title>
+<link type="text/css" rel="stylesheet" href="css/style.css" />
+<script type="text/javascript" src="js/swfobject.js"></script>
+<!-- saved from url=(0013)about:internet -->
+<body>
+<table width="100%" height="100%"><tr><td><table align="center"><tr><td>
+<div id="flash" />
+<script type="text/javascript">
+	var so = new SWFObject("banner.swf", "id", "320", "320", "8", "#FFFFFF");
+	so.write("flash");
+</script>
+</td></tr></table></td></tr></table>

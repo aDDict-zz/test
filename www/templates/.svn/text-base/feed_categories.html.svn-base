@@ -1,0 +1,3 @@
+{section name=i loop=$feed_categories}
+	<li><img src="i/ha.gif" align="texttop" /> <a href="#" title="{$feed_categories[i].cat_title}" onClick="getFeedsByCat(this, '{$feed_categories[i].cat_id}');return false;">{$feed_categories[i].cat_name}</a></li>
+{/section}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items>
+{section name=i loop=$feeds}
+<option value="{$feeds[i].id}">{$feeds[i].rss_name}</option>
+{/section}
+</items>

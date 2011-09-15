@@ -1,0 +1,38 @@
+<div id="hintContainer" style="position:absolute; width:280px; padding:5px;border:1px solid #336699; background:#FFFFFF;z-index:100; display:none;"></div>
+<h1 id="header" ><a href="{$var->baseurl}" >{$var->page_slogan}</a></h1>
+<div id="pages">
+<table width="100%" cellspacing="0" cellpadding="0" border="0" id="menutable">
+<tr>
+    {if $page=="index" || $page==""}
+    <td width="90" height="41" style="padding-left:5px;" align="left">
+        <table style="width:105px;" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            <td><img style="cursor:pointer;" onClick="showManager()" src="i/add2.gif" border="0" /></td>
+            <td><div id="addContent" onClick="showManager()" style="text-align:left;">&Uacute;j tartalom</div></td>
+        </tr>
+        </table>
+    </td>
+    {/if}
+    {foreach from=$pages item=p key=id}
+    {if $id > 0}
+    <td width="7%" height="41">
+    <!--[if IE]>
+    <div style="height:15px;">
+    <![endif]-->
+    <div id="menudiv">
+        {if $id==$page_id}<h2>{/if}<a id="dp_{$id}" class="menuitem" href="{if $var->rewrite_engine}{$var->rewrite_baseurl}{$p.page_url}{else}index.php?page_id={$id}{/if}">{$p.page_name}</a>{if $id==$page_id}</h2>{/if}
+    </div>
+    <!--[if IE]>
+    </div>
+    <![endif]-->
+    </td>
+    <td>
+    {if !$p.last}<b>|</b>{/if}
+    </td>
+    {/if}
+    {/foreach}
+
+</tr>
+</table>
+</div>
+

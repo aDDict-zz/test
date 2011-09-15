@@ -1,0 +1,42 @@
+{literal}
+<script language="javascript">
+function delCatColor(cssID, name){
+	if(confirm('Biztos benne, hogy torli a(z) `' + name +'` kategoria szint?')){
+		document.forms['del_cat_color_'+cssID].submit();
+	}
+	return false;
+}
+</script>
+{/literal} 
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="page_title">Kateg&oacute;ria sz&iacute;nek</td>
+  </tr>
+  <tr>
+    <td>
+		<table width="100%" border="0" cellspacing="0" cellpadding="4" style="border:1px solid #BDBEBD;">
+		  <tr style="height:20px;background-image:url('../i/bh.gif');background-repeat:repeat-x;">
+			<td align="center" style="border-bottom:1px solid #BDBEBD;"><b>ID</b></td>
+			<td style="border-bottom:1px solid #BDBEBD;"><b>N&eacute;v</b></td>
+			<td style="border-bottom:1px solid #BDBEBD;"><b>CSS oszt&aacute;ly</b></td>			
+			<td align="center" style="border-bottom:1px solid #BDBEBD;"><b>M&#369;veletek</b></td>
+		  </tr>
+		  {section name=i loop=$cat_colors}
+		  <tr bgcolor="{cycle values="#EAEAEA,#F4F4F4"}">
+			<td align="center">{$cat_colors[i].id}</td>
+			<td>{$cat_colors[i].name}</td>
+			<td>{$cat_colors[i].css}</td>
+			<td align="center">
+				[ <a href="index.php?id={$id}&sub_id=2&cat_css_id={$cat_colors[i].id}">M&oacute;dos&iacute;t</a> ] [ <a href="#" onClick="delCatColor('{$cat_colors[i].id}', '{$cat_colors[i].name}');">T&ouml;r&ouml;l</a> ]				
+				<form name="del_cat_color_{$cat_colors[i].id}" method="post" action="index.php?id={$id}&sub_id={$sub_id}">
+					<input type="hidden" name="action" value="del_cat_color" />
+					<input type="hidden" name="cat_css_id" value="{$cat_colors[i].id}" />
+				</form>
+			</td>
+		  </tr>
+		  {/section}		  
+		</table>
+	</td>
+  </tr>
+</table>

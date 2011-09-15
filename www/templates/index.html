@@ -1,0 +1,115 @@
+{include file="header.html"}
+<body> 
+{include file="header_search.html"}
+{include file="menu.html"}
+{if $valasz}
+<div id="igaze" style="display:none;position:absolute;top:100px;left:400px;z-index:1000;">
+<script type="text/javascript">
+    embededflash('igaz-e','{$var->baseurl}fixbox/igaze/flash/igaz-e.swf','400','320','#555555','transparent','tipus={$valasz}&katt=javascript:bezar();', '{$var->baseurl}fixbox/igaze/');
+    function valaszFlash() {literal}{{/literal}
+        var l = (document.documentElement.clientWidth ? document.documentElement.clientWidth : document.body.clientWidth)/2-400/2;
+        var t = (document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.clientHeight)/2-320/2;
+        var o = document.getElementById('igaze');
+        {literal}
+            o.style.left=l+'px';
+            o.style.top = t+'px';
+            o.style.display='block';
+            igazeToTop(1000);
+        {/literal}
+    {literal}}{/literal}
+    {literal}
+    function bezar() {document.getElementById("igaze").style.display='none';}
+    function igazeToTop(i) {
+        var zi = 2000-i;
+        var o = document.getElementById('igaze');
+        if (o) {
+            o.style.zIndex = zi;
+            if (i) {
+                i--;
+                setTimeout('igazeToTop('+i+')', 200);
+            }
+        }
+    }
+    {/literal}
+</script>
+</div>
+{/if}
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td id="manager" style="display:none;" valign="top">
+        <div style="display:block;top:157px;left:195px;z-index:10000;position:absolute;"><img src="i/close.gif" style="cursor:pointer;" onClick="hideManager();" /></div>
+        <div style="width:220px;">
+            <div class="tabs" style="height:27px;">&nbsp;</div>
+            <div style="padding:5px;position:relative;top:-31px;z-index:200;">
+    <div class="topboxcont11"><div class="bottombox11"><div class="leftbox11"><div class="rightbox11"><div class="blbox11"><div class="brbox11"><div class="tlbox11"><div class="trbox11">
+                    <div>
+                        <ul>
+                            <li><a id="uj_hirforras_felvetele" href="#" onClick="showAddNewFeedBox(this);return false;"><b>&Uacute;j h&iacute;rforr&aacute;s felv&eacute;tele</b></a></li>
+                            <li><img src="i/ha.gif" align="texttop"> <a id="show_my_feeds" href="#" onclick="showMyFeeds(this);return false;"><b>H&iacute;rforr&aacute;saim</b></a></li>
+                            <li><img src="i/ha.gif" align="texttop"> <A id="kiemelt_hirforrasok" href="#" onclick="showFeaturedFeeds(this);return false;"><b>Kiemelt h&iacute;rforr&aacute;sok</b></A></li>
+                            <li><img src="i/ha.gif" align="texttop"> <A id="tematikus_hirforrasok" href="#" onClick="getFeedCategories(this);return false;"><b>Tematikus h&iacute;rforr&aacute;sok</b></A></li>
+                            <li style="display:none;"><ul style="margin-left:10px;" id="feedDirectory"><li>&nbsp;</li></ul></li>
+                            <li><img src="i/ha.gif" align="texttop"> <A id="kulcsszavas_hirforrasok" href="#" onClick="showAddNewFeedBox(this, 1);return false;"><b>Kulcsszavas hírforrások</b></A></li>
+                            <li><img src="i/search.gif" align="texttop"> <A id="kereso" href="#" onClick="WebSearch.show();return false;"><b>Keres&#337;</b></A></li>
+                            {if $__user_id != -1}
+                            <li><img src="i/note.gif" align="texttop"> <A id="jegyzet" href="#" onClick="WebNote.show();return false;"><b>Jegyzet</b></A></li>
+                            {/if}
+                            <li><img src="i/helpmovie.gif" width="16" height="16" align="texttop"> <A id="utmutato" href="#" onClick="addNewHtmlBox('Súgó - képekben', '', '', 1, 1);return false;"><b>S&uacute;g&oacute; k&eacute;pekben</b></A></li>
+                        </ul>
+                    </div>
+                    <div id="feed_actions" style="position:absolute;display:none;z-index:1000;" onmouseover="myFeedActionOver(0);" onmouseout="myFeedActionOut();"><img src="i/ha.gif" ></div>
+                    <div id="feed_action_links" class="feedActionList" style="position:absolute;display:none;z-index:1000;" onmouseover="myFeedActionOver(1);" onmouseout="myFeedActionOut();">
+                        <table>
+                        <tr>
+                            <td valign="top"><a class="ql" onclick="showFeedRename();" >átnevezés</a><br>
+                                <a class="ql" onclick="showFeedDelete();">törlés</a>
+                            </td>
+                            <td>
+                                <div id="feed_action_rename" style="display:none;width:260px;" >
+                                    <input size="30" id="renameFeedField" value="" />&nbsp;<input type="button" onclick="renameFeed(document.getElementById('renameFeedField').value);" value="OK">
+                                </div>
+                                <div id="feed_action_delete" style="display:none;width:260px;" >biztos törlöd a hirforrást?&nbsp;<input type="button" value="Igen" onclick="deleteFeed();">&nbsp;<input type="button" value="Mégsem" onclick="myFeedActionOut();" ></div>
+                                <div id="feed_action_response" style="display:none;"></div>
+                            </td>
+                        </tr>
+                        </table>
+                    </div>
+                </div></div></div></div></div></div></div></div>
+            </div>
+        </div>
+	</td>
+    <td valign="top" style="width:100%;">
+		<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" class="tabs">
+			<tr>
+				<td style="padding-left:5px;" align="left" class="nwr">
+					<div id="reg"><img src="i/in.gif" align="absmiddle" />
+                    {if $__user_email == '' || $__user_id == -1}
+                        <a style="font-weight:bold;" id="login" href="{if $var->rewrite_engine}{$var->rewrite_baseurl}{$var->page_url_login}{else}login.php{/if}">Bejelentkez&eacute;s</a> / <a style="font-weight:bold;" id="register" href="{if $var->rewrite_engine}{$var->rewrite_baseurl}{$var->page_url_register}{else}register.php{/if}">Regisztr&aacute;ci&oacute;</a>
+                    {else}
+                        <a style="font-weight:bold;" href="logout.php">Kijelentkez&eacute;s {$__user_email}</a>
+                    {/if}
+                    </div>
+				</td>
+				<td width="100%">
+					<div id="tabs">Saj&aacute;t oldal</div>
+					<div style="padding:4px;white-space:nowrap;float:left;">&nbsp; <a href="#" id="uj_oldal" onclick="{if $__user_id != -1}createNewTab();{/if}return false;">&Uacute;j oldal</a></div>
+				</td>
+				<td class="nwr" ><div id="beallitas"><img align="absmiddle" src="i/in2.gif" />&nbsp;<script>mx_hp('http://www.hirek.hu/', 'Legyen a kezdőoldalam!', 'Beállítás kezdőoldalnak: húzza ezt a linket a Kezdőoldal ikonra');</script></div></td>
+                <td class="nwr"><div id="sugo"><a href="#" onClick="showHelp();return false;"><img src="i/help.png" align="absmiddle" />&nbsp;S&uacute;g&oacute; - r&eacute;szletesen</a></div></td>
+			</tr>
+		</table>
+		<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" style="margin:5px 0 0 5px;">
+	    <tr>
+            <td style="padding-left:5px;"><div id="mainContent"></div></td>	
+        </tr>
+        </table>
+    </td>
+  </tr>
+</table>
+{include file="footer.html"}
+{if $endscript}
+<script type="text/javascript" language="javascript">{$endscript}</script>
+{/if}
+{$maxi_hirekson}
+</body>
+</html>

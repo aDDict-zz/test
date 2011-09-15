@@ -1,0 +1,50 @@
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="page_title">
+        {if $css.id == ''}
+			&Uacute;j kateg&oacute;ria sz&iacute;n l&eacute;trehoz&aacute;sa
+        {else}
+			Kateg&oacute;ria sz&iacute;n m&oacute;dos&iacute;t&aacute;sa
+		{/if}
+	</td>
+  </tr>
+  <tr>
+    <td style="padding-bottom:15px; padding-top:15px;">
+		{capture name=cat_color_update}		
+		<form name="page" method="post" action="index.php?id={$id}&sub_id={$sub_id}">
+		{if $css.id != ""}
+			<input type="hidden" name="action" value="update_cat_color" />
+			<input type="hidden" name="cat_css_id" value="{$css.id}" />
+		{else}
+			<input type="hidden" name="action" value="add_cat_color" />
+		{/if}
+		<table border="0" cellspacing="0" cellpadding="5">
+		  {if $message != ""}
+		  <tr>
+			<td colspan="2" style="color:#FF0000;font-weight:bold;">{$message}</td>
+		  </tr>
+		  {/if}
+		  <tr>
+			<td>N&eacute;v:</td>
+			<td><input type="text" name="name" value="{$css.name}" /></td>
+		  </tr>
+		  <tr>
+			<td>URL:</td>
+			<td><input type="text" name="css" value="{$css.css}" /></td>
+		  </tr>
+		  <tr>
+			<td>Le&iacute;r&aacute;s:</td>
+			<td>
+				<textarea name="description" cols="15" rows="5">{$css.description}</textarea>
+			</td>
+		  </tr>		  
+		  <tr>
+		  	<td colspan="2"><input type="submit" name="" value="V&eacute;grehajt" class="button" /></td>
+		  </tr>
+		</table>
+		</form>
+		{/capture}
+		{include file="dialog.html" title="Kateg&oacute;ria sz&iacute;n  param&eacute;terek" content=$smarty.capture.cat_color_update extra="width=100%"}
+	</td>
+  </tr>	
+</table>

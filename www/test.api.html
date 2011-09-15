@@ -1,0 +1,456 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  	<title>Finance -  13:26</title>
+  	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="icon" href="http://nvmodules.typhon.net/ben/quotes.ico" type="image/x-icon" />
+	<link rel="stylesheet" type="text/css" href="http://www.netvibes.com/api/0.3/style.css" />
+  	<script type="text/javascript" src="http://www.netvibes.com/api/0.3/emulation.js"></script>
+</head>
+
+<body>
+
+<script type="text/javascript">
+
+    var ActionDelete = false;
+
+    toggle = function(obj,quote)
+    {
+		if(!ActionDelete)
+		{
+			quote = quote.replace('.','ZZZ');
+			quote = quote.replace('=','YYY');
+			quote = quote.replace('%','XXX');
+			quote = quote.replace('^','WWW');
+
+	      	if(obj.style.display == 'none') 
+			{
+				obj.style.display = 'block';
+				saveValue(quote,0);
+			}
+	      	else 
+			{
+				obj.style.display = 'none';
+				saveValue(quote,1);
+			}
+		}
+		
+		ActionDelete = false;
+    }
+	
+	AddFinanceCode = function()
+	{
+		if(document.getElementById('finance_code').value != '')
+		{
+			document.getElementById('finance_content').innerHTML = '<center>Loading. Please wait ...</center>';
+
+			if(liste_code != '')
+			{
+				if(document.getElementById('finance_bourse').value == 'USA') liste_code = liste_code+'|'+document.getElementById('finance_code').value;
+				else liste_code = liste_code = liste_code+'|'+document.getElementById('finance_code').value+'.'+document.getElementById('finance_bourse').value;
+			}
+			else
+			{
+				if(document.getElementById('finance_bourse').value == 'USA') liste_code = document.getElementById('finance_code').value;
+				else liste_code = document.getElementById('finance_code').value+'.'+document.getElementById('finance_bourse').value;
+			}
+			
+			saveValue('codes2_',liste_code);
+			document.getElementById('finance_submit').click();
+		}
+		else alert('Please enter a code.');
+	}
+    
+	
+	AddFinanceIndice = function()
+	{
+		if(document.getElementById('finance_indice').value != '')
+		{
+			document.getElementById('finance_content').innerHTML = '<center>Loading. Please wait ...</center>';
+
+			if(liste_code != '')
+			{
+				liste_code = liste_code = liste_code+'|'+document.getElementById('finance_indice').value;
+			}
+			else
+			{
+				liste_code = document.getElementById('finance_indice').value;
+			}
+			
+			saveValue('codes2_',x);
+			document.getElementById('finance_submit').click();
+		}
+		else alert('Please select an indice.');
+	}
+	
+	AddFinanceCurrency = function()
+	{
+		if(document.getElementById('finance_currency').value != '')
+		{
+			document.getElementById('finance_content').innerHTML = '<center>Loading. Please wait ...</center>';
+
+			if(liste_code != '')
+			{
+				liste_code = liste_code+'|'+document.getElementById('finance_currency').value+'=X';
+			}
+			else
+			{
+				liste_code = document.getElementById('finance_currency').value+'=X';
+			}
+			
+			saveValue('codes2_',liste_code);
+			document.getElementById('finance_submit').click();
+		}
+		else alert('Please select a currency');
+	}
+	
+	AddFinanceSep = function()
+	{
+		document.getElementById('finance_content').innerHTML = '<center>Loading. Please wait ...</center>';
+
+		if(liste_code != '')
+		{
+			liste_code = liste_code = liste_code+'|*';
+		}
+		else
+		{
+			liste_code = '*';
+		}
+		
+		saveValue('codes2_',liste_code);
+		document.getElementById('finance_submit').click();
+	}
+
+    Efface = function(index)
+    {
+      ActionDelete = true;
+	  
+	  if(confirm("Are you sure you to delete this quote ?"))
+	  {
+		  document.getElementById('finance_content').innerHTML = '<center>Loading. Please wait ...</center>';
+
+	      var NewCodes = '';
+	      tableau = liste_code.split('|');
+	      for(var ii=0;ii<tableau.length;ii++)
+	      {
+	        if(ii != index) 
+			{
+				NewCodes += tableau[ii] + '|';
+			}
+	      }
+		  if(NewCodes != '') NewCodes = NewCodes.substr(0,NewCodes.length-1);
+		  
+		  tableau2 = NewCodes.split('|');
+		  var NewCodes2 = '';
+		  
+		  for(var ii=0;ii<tableau2.length;ii++)
+	      {
+	        if(tableau2[ii] != 'undefined') 
+			{
+				NewCodes2 += tableau2[ii] + '|';
+			}
+	      }
+		  
+		  if(NewCodes2 != '') NewCodes2 = NewCodes2.substr(0,NewCodes2.length-1);
+	
+	     saveValue('codes2_',NewCodes2);
+		 FinanceStart();
+	  }
+    }
+	
+	Up = function(index)
+    {
+		ActionDelete = true;
+		
+		document.getElementById('finance_content').innerHTML = '<center>Loading. Please wait ...</center>';
+		
+		var NewCodes = '';
+		tableau = liste_code.split('|');
+		if(index>0)
+		{
+			var valIndex = tableau[index];
+			tableau[index] = tableau[index-1];
+			tableau[index-1] = valIndex;
+
+			for(var ii=0;ii<tableau.length;ii++) NewCodes += tableau[ii] + '|';
+			if(NewCodes != '') NewCodes = NewCodes.substr(0,NewCodes.length-1);
+			
+			saveValue('codes2_',NewCodes);
+		    FinanceStart();
+		}
+    }
+	
+	Down = function(index)
+    {
+		ActionDelete = true;
+		
+		document.getElementById('finance_content').innerHTML = '<center>Loading. Please wait ...</center>';
+
+		var NewCodes = '';
+		tableau = liste_code.split('|');
+
+		if(index<tableau.length-1)
+		{
+			var valIndex = tableau[index];
+			tableau[index] = tableau[index+1];
+			tableau[index+1] = valIndex;
+
+			for(var ii=0;ii<tableau.length;ii++) NewCodes += tableau[ii] + '|';
+			if(NewCodes != '') NewCodes = NewCodes.substr(0,NewCodes.length-1);
+			
+			saveValue('codes2_',NewCodes);
+		    FinanceStart();
+		}
+    }
+	
+	Day_1 = function(code)
+	{
+		document.getElementById('chart'+code).innerHTML = '<img src=\"http://uk.ichart.yahoo.com/t?s='+code+'\" alt=\"\"/>';
+	}
+	
+	Day_5 = function(code)
+	{
+		document.getElementById('chart'+code).innerHTML = '<img src=\"http://uk.ichart.yahoo.com/v?s='+code+'\" alt=\"\"/>';
+	}
+	
+	Year_1 = function(code)
+	{
+		document.getElementById('chart'+code).innerHTML = '<img src=\"http://ichart.europe.yahoo.com/c/0b/e/'+code.toLowerCase()+'\" alt=\"\"/>';
+	}
+	
+	AjaxShowFinance = function(xhr)
+	{
+		document.getElementById('finance_content').innerHTML = xhr.responseText;
+	}
+	
+	FinanceStart = function()
+	{
+		if(getValue('codes2_') && getValue('codes2_')!='') liste_code = getValue('codes2_');
+		else liste_code = '';
+		
+		if(getValue('lang') && getValue('lang')!='') lang = getValue('lang');
+		else lang = '0';
+		
+		if(getValue('finance_server') && getValue('finance_server')!='') server = getValue('finance_server');
+		else server = 'fr.';
+		
+		var url = 'http://nvmodules.typhon.net/ben/finance_ajax.php?liste='+liste_code+'&rand='+Math.random()+'&lang='+lang+'&server='+server;
+		request = new Ajax.Request(NV_XML_REQUEST_URL + '?url=' + escape(url), { method: 'get', onSuccess: AjaxShowFinance }); 
+
+		tableau = liste_code.split('|');
+		for(var ii=0;ii<tableau.length;ii++) 
+		{
+			if(tableau[ii] != '*')
+			{
+				quote = tableau[ii].replace('.','ZZZ');
+				quote = quote.replace('=','YYY');
+				quote = quote.replace('%','XXX');
+				quote = quote.replace('^','WWW');
+				
+				if(getValue(quote)=='0') 
+				{
+					quote = tableau[ii].replace('ZZZ','.');
+					quote = tableau[ii].replace('YYY','=');
+					quote = tableau[ii].replace('XXX','%');
+					quote = tableau[ii].replace('WWW','^');
+					document.getElementById('graph'+quote).style.display = 'block';
+				}
+				else 
+				{
+					quote = tableau[ii].replace('ZZZ','.');
+					quote = tableau[ii].replace('YYY','=');
+					quote = tableau[ii].replace('XXX','%');
+					quote = tableau[ii].replace('WWW','^');
+					document.getElementById('graph'+quote).style.display = 'none';
+				}
+			}
+		}
+	}
+	
+	NV_ONLOAD = function()
+	{
+		FinanceStart();
+	}
+	
+	ChangeFinanceLang = function()
+	{
+		document.getElementById('finance_submit').click();
+	}
+	
+	ChangeFinanceServer = function()
+	{
+		document.getElementById('finance_submit').click();
+	}
+	
+	FinanceKeyPress = function(event)
+	{
+		if((event.keyCode >= 65 && event.keyCode <= 90) || (event.keyCode >= 97 && event.keyCode <= 122) || (event.keyCode >= 48 && event.keyCode <= 57) ||
+		(event.which >= 65 && event.which <= 90) || (event.which >= 97 && event.which <= 122) || (event.which >= 48 && event.which <= 57)) return true;	
+		else return false;
+	}
+</script>
+  
+  <div id="finance_content"><center>Loading. Please wait ...</center></div>
+<form name="setup_usatv" method="post" action="usatv.php" class="configuration">
+	<fieldset>
+		<table width="100%">
+		  <tbody>
+			  <tr><td colspan="3"><b>Quotes</b></td></tr>
+
+			  <tr>
+				  <td>&#160;&#160;&#160;&#160;Enter a code					<input name="finance_code" id="finance_code" size="10" type="text" value="" onKeypress="if(FinanceKeyPress(event) == false) return false;"/>
+				    </td>
+					<td>
+					<select name="finance_bourse" id="finance_bourse" style="width:85px;">
+				    	  <option value="PA">France</option>
+				    	  <option value="USA">USA</option>
+
+					      <option value="L">UK</option>
+						  <option value="DE">Germany</option>
+						  <option value="TO">Canada</option>
+						  <option value="MI">Italia</option>
+						  <option value="CO">Denmark </option>
+						  <option value="MC">Spain</option>
+
+						  <option value="OL">Norway</option>
+						  <option value="ST">Sweden</option>
+						  <option value="AX">Australia</option>
+						  <option value="NZ">NewZealand</option>
+						  <option value="SA">Brazil</option>
+						  <option value="BR">Belgium</option>
+
+				    </select>
+					</td>
+					<td>
+					<input id="finance_addcode" name="finance_addcode" type="button" value="Add" onclick="AddFinanceCode();"/>
+					</td>
+			  </tr>
+			  <tr>
+				 <td>&#160;&#160;&#160;&#160;Select an indice</td>
+
+			  	  <td>
+					<select name="finance_indice" id="finance_indice" style="width:85px;">
+				    	  <option value="%5EFCHI">CAC 40</option>
+				    	  <option value="%5EDJI">Dow Jones</option>
+					      <option value="%5EIXIC">NASDAQ</option>
+						  <option value="%5EXAX">AMEX</option>
+						  <option value="%5EFTSE">FTSE 100</option>
+
+						  <option value="%5EN225">Nikkei</option>
+						  <option value="%5EGDAXI">DAX</option>
+						  <option value="%5ESPMIB">S-P MIB</option>
+						  <option value="%5EIBEX">IBEX 35</option>
+						  <option value="%5EOMX">OMX 30</option>
+						  <option value="%5EOSEAX">OSEAS</option>
+
+						  <option value="%5EBFX">BEL-20</option>
+				    </select>
+					</td>
+					<td>
+					<input id="finance_addindice" name="finance_addindice" type="button" value="Add" onclick="AddFinanceIndice();"/>
+				  </td>
+			  </tr>
+			  <tr>
+
+				  <td>&#160;&#160;&#160;&#160;Select a currency</td>
+			  	  <td>
+				  	<select name="finance_currency" id="finance_currency" style="width:85px;">
+				    	  <option value="EURUSD">EUR to USD</option>
+				    	  <option value="USDEUR">USD to EUR</option>
+						  <option value="JPYUSD">JPY to USD</option>
+				    	  <option value="USDJPY">USD to JPY</option>
+
+						  <option value="JPYEUR">JPY to EUR</option>
+				    	  <option value="EURJPY">EUR to JPY</option>
+						  <option value="CADUSD">CAD to USD</option>
+				    	  <option value="USDCAD">USD to CAD</option>
+						  <option value="CHFUSD">CHF to USD</option>
+				    	  <option value="USDCHF">USD to CHF</option>
+
+						  <option value="CHFEUR">CHF to EUR</option>
+				    	  <option value="EURCHF">EUR to CHF</option>
+						  <option value="GBPEUR">GBP to EUR</option>
+				    	  <option value="EURGBP">EUR to GBP</option>
+						  <option value="GBPUSD">GBP to USD</option>
+				    	  <option value="USDGBP">USD to GBP</option>
+
+						  <option value="NZDUSD">NZD to USD</option>
+				    	  <option value="USDNZD">USD to NZD</option>
+						  <option value="AUDUSD">AUD to USD</option>
+				    	  <option value="USDAUD">USD to AUD</option>
+						  <option value="ZARUSD">ZAR to USD</option>
+				    	  <option value="USDZAR">USD to ZAR</option>
+
+						  <option value="HUFUSD">HUF to USD</option>
+				    	  <option value="USDHUF">USD to HUF</option>
+						  <option value="NZDEUR">NZD to EUR</option>
+				    	  <option value="EURNZD">EUR to NZD</option>
+						  <option value="AUDEUR">AUD to EUR</option>
+				    	  <option value="EURAUD">EUR to AUD</option>
+
+						  <option value="ZAREUR">ZAR to EUR</option>
+				    	  <option value="EURZAR">EUR to ZAR</option>
+						  <option value="HUFEUR">HUF to EUR</option>
+				    	  <option value="EURHUF">EUR to HUF</option>
+						  <option value="NZDGBP">NZD to GBP</option>
+				    	  <option value="GBPNZD">GBP to NZD</option>
+
+						  <option value="AUDGBP">AUD to GBP</option>
+				    	  <option value="GBPAUD">GBP to AUD</option>
+						  <option value="ZARGBP">ZAR to GBP</option>
+				    	  <option value="GBPZAR">GBP to ZAR</option>
+						  <option value="HUFGBP">HUF to GBP</option>
+				    	  <option value="GBPHUF">GBP to HUF</option>
+
+				    	</select>
+					</td>
+					<td>
+						<input id="finance_addcurrency" name="finance_addcurrency" type="button" value="Add" onclick="AddFinanceCurrency();"/>
+				  </td>
+			  </tr>
+			  <tr>
+				  <td>&#160;&#160;&#160;&#160;Add separator</td>
+
+				  <td colspan="2">
+				    <input id="finance_addsep" name="finance_addsep" type="button" value="Add separator" onclick="AddFinanceSep();" style="width:85px;"/>
+				  </td>
+			  </tr>
+			  
+			  <tr><td colspan="3"><b>Options</b></td></tr>
+			  <tr>
+				  <td>&#160;&#160;&#160;&#160;Select a server</td>
+				  <td colspan="2">
+
+				    <select name="finance_server" id="finance_server" onchange="ChangeFinanceServer();" style="width:85px;">
+							<option value="fr">France</option>							
+							<option value="USA">USA</option>
+					      	<option value="de">Germany</option>
+							<option value="uk">UK</option>
+							<option value="it">Italia</option>
+							<option value="es">Spain</option>
+
+				    </select>
+				  </td>
+			  </tr>
+			  <tr>
+				  <td>&#160;&#160;&#160;&#160;Language</td>
+				  <td colspan="2">
+				    <select name="finance_lang" id="finance_lang" onchange="ChangeFinanceLang();" style="width:85px;">			
+							<option value="0">English</option>
+
+							<option value="1">French</option>	
+				    </select>
+				  </td>
+			  </tr>
+			  <tr><td colspan="3"><input style="display:none;" id="finance_submit" name="finance_submit" type="submit" value="submit"/></td></tr>
+		  </tbody>
+		</table>
+	</fieldset>	
+	<img src="http://nvmodules.typhon.net/ben/about.gif" align="texttop" /> <span style="font-size:10px;">Version <b>0.5</b> by <a href="http://www.colon.com.fr/netvibes/" target="_blank">ben</a></span>	
+
+</form>
+
+
+</body>
+</html>

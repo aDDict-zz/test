@@ -1,0 +1,72 @@
+<div class="box">
+    <div class="blue">															
+        <div class="head">											
+            <h1><img src="{if $category.cat_favicon}{$category.cat_favicon}{else}i/nfi.gif{/if}" style="margin-top:-5px;width:16px; height:16px;" align="absmiddle" /> {$category.cat_name}</h1>
+        </div>										
+        <div class="content" id="fc_{$page_id}_{$category.id}" style="margin-bottom: 10px;">
+            {if $category.cat_type == 2}
+                <div style="padding:3px;">{$category.cat_html}</div>											
+                {if $category.cat_links !=''}
+                    {if $category.cat_links|@count}
+                    <ul>
+                        {section name=k loop=$category.cat_links}
+                            <li><a href="http://{$category.cat_links[k].link_url}" title="{$category.cat_links[k].link_title}">{$category.cat_links[k].link_name}</a></li>
+                        {/section}
+                    </ul>
+                    {/if}
+                    <div>
+                        {*}
+                        Forr&aacute;s: 
+                        <select name="agency" onchange="if (document.search2 && document.search2.agency) document.search2.agency.value = this.options[this.selectedIndex].value;">
+                            <option value="">Mindegy</option>
+                            {section name=i loop=$agencies}
+                                {if $agency == $agencies[i].agency_id}
+                                    <option value="{$agencies[i].agency_id}" selected>{$agencies[i].agency_name}</option>
+                                {else}
+                                    <option value="{$agencies[i].agency_id}">{$agencies[i].agency_name}</option>
+                                {/if}
+                            {/section}
+                        </select> 
+                        {*}
+                    </div>
+                    <div>
+                        <input type="checkbox" name="lead" value="1"{if $lead == 1} checked{/if} style="border:0px;" onclick="if (document.search2 && document.search2.lead) document.search2.lead.value = this.checked ? 1 : 0;"/> keres&eacute;s a bevezet&#337;ben is<br> 
+                    </div>
+                    <div style="margin-top:5px;">
+                        &nbsp;Id&#337;szak: 
+                        <select name="period" onchange="if (document.search2 && document.search2.period) document.search2.period.value = this.options[this.selectedIndex].value;">
+                            {section name=i loop=$periods}
+                                {if $period == $smarty.section.i.index}
+                                    <option value="{$smarty.section.i.index}" selected>{$periods[i]}</option>
+                                {else}
+                                    <option value="{$smarty.section.i.index}">{$periods[i]}</option>
+                                {/if}
+                            {/section}
+                        </select> 
+                        Kateg&oacute;ria: 
+                        <select name="category" onchange="if (document.search2 && document.search2.category) document.search2.category.value = this.options[this.selectedIndex].value;">
+                            <option value="">Mindegy</option>
+                            {section name=i loop=$categories}
+                                {if $selected_category == $categories[i].cat_id}
+                                    <option value="{$categories[i].cat_id}" selected>{$categories[i].cat_name}</option>
+                                {else}
+                                    <option value="{$categories[i].cat_id}">{$categories[i].cat_name}</option>
+                                {/if}
+                            {/section}
+                        </select>					
+                        <script>
+                            if (document.search2 && document.search2.q) document.search2.q.value = '{$q}';
+                            if (document.search2 && document.search2.lead) document.search2.lead.value = '{$lead}';
+                            if (document.search2 && document.search2.agency) document.search2.agency.value = '{$agency}';
+                            if (document.search2 && document.search2.period) document.search2.period.value = '{$period}';
+                            if (document.search2 && document.search2.category) document.search2.category.value = '{$selected_category}';
+                            var o; if (o = document.getElementById('search_radio')) o.style.display = 'none';
+                        </script>
+                    </div>
+                {/if}
+            {elseif $selected_category.cat_type == 1}	
+                Bet&ouml;lt&eacute;s alatt...	
+            {/if}
+        </div>
+    </div>
+</div>

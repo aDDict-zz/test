@@ -1,0 +1,11 @@
+{if $user_id == -1}
+<div>
+Saját hírforrás felvételéhez kérjük regisztráljon vagy jelentkezzen be!<br>
+<a style="font-weight:bold;" href="login.php">Bejelentkez&eacute;s</a> / <a style="font-weight:bold;" href="regiseter.php">Regisztr&aacute;ci&oacute;</a>
+</div>
+{else}
+<div>
+Még nem vett fel saját hírforrást.<br>
+Saját hírforrás felviteléhez kattintson <a style="font-weight:bold;" href="#" onclick="showAddNewFeedBox();return false;">ide</a>
+</div>
+{/if}

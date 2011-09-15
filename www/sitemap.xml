@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+<url>
+  <loc>http://www.hirek.hu/</loc>
+  <changefreq>always</changefreq>
+</url>
+<url>
+  <loc>http://www.hirek.hu/gazdasagi-hirek</loc>
+  <changefreq>always</changefreq>
+</url>
+<url>
+  <loc>http://www.hirek.hu/belfoldi-hirek</loc>
+  <changefreq>always</changefreq>
+</url>
+<url>
+  <loc>http://www.hirek.hu/kulfoldi-hirek</loc>
+  <changefreq>always</changefreq>
+</url>
+<url>
+  <loc>http://www.hirek.hu/sport-hirek</loc>
+  <changefreq>always</changefreq>
+</url>
+<url>
+  <loc>http://www.hirek.hu/bulvar-hirek</loc>
+  <changefreq>always</changefreq>
+</url>
+<url>
+  <loc>http://www.hirek.hu/autos-hirek</loc>
+  <changefreq>always</changefreq>
+</url>
+<url>
+  <loc>http://www.hirek.hu/tudomany-hirek</loc>
+  <changefreq>always</changefreq>
+</url>
+<url>
+  <loc>http://www.hirek.hu/eletmod-hirek</loc>
+  <changefreq>always</changefreq>
+</url>
+<url>
+  <loc>http://www.hirek.hu/bejelentkezes</loc>
+  <changefreq>always</changefreq>
+</url>
+<url>
+  <loc>http://www.hirek.hu/regisztracio</loc>
+  <changefreq>always</changefreq>
+</url>
+<url>
+  <loc>http://www.hirek.hu/login.php?id=1</loc>
+  <changefreq>always</changefreq>
+</url>
+<url>
+  <loc>http://www.hirek.hu/login.php</loc>
+  <changefreq>always</changefreq>
+</url>
+</urlset>

@@ -1,0 +1,7 @@
+{strip}
+{foreach from=$news item=page key=page_id}
+    {foreach from=$page item=n key=news_id}
+    <a target="_blank" href="{$var->baseurl}?page_id={$page_id}&news_id={$news_id}{$fromparam}">{$n.title}</a>&nbsp;&nbsp;&nbsp;
+    {/foreach}
+{/foreach}
+{/strip}

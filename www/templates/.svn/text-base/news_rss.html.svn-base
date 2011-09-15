@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="{$encoding|default:"utf-8"}" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title><![CDATA[Hírek.hu{if $page_name} - {$page_name}{/if}]]></title>
+        <description></description>
+        <link><![CDATA[{$var->baseurl}{if $page_id}?page_id={$page_id}{/if}]]></link>
+        <atom:link href="{$var->baseurl}?page_id={$page_id}" rel="self" type="application/rss+xml" />
+        {foreach from=$news item=page key=page_id}
+            {foreach from=$page item=n key=news_id}
+                <item>
+                    <title><![CDATA[{$n.title}]]></title>
+                    <link><![CDATA[{$var->baseurl}?page_id={$page_id}&news_id={$news_id}{$fromparam}]]></link>
+                    <guid>{$news.id}</guid>
+                    <description><![CDATA[{$n.description}]]></description>
+                </item>
+            {/foreach}
+        {/foreach}
+    </channel>
+</rss>

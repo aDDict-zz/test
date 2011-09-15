@@ -1,0 +1,36 @@
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="page_title">
+        Felhaszn&aacute;l&oacute; m&oacute;dos&iacute;t&aacute;sa		
+	</td>
+  </tr>
+  <tr>
+    <td style="padding-bottom:15px; padding-top:15px;">
+		{capture name=user_update}		
+		<form name="user_update" method="post" action="index.php?id={$id}&sub_id={$sub_id}">
+			<input type="hidden" name="action" value="update_user" />
+			<input type="hidden" name="user[user_id]" value="{$user.user_id}" />		
+		<table border="0" cellspacing="0" cellpadding="5">
+		  {if $error != ""}
+		  <tr>
+			<td colspan="2" style="color:#FF0000;font-weight:bold;">{$error}</td>
+		  </tr>
+		  {/if}
+		  <tr>
+			<td>E-maiL:</td>
+			<td><input type="text" name="user[user_email]" value="{$user.user_email}" /></td>
+		  </tr>
+		  <tr>
+			<td>Jelsz&oacute;:</td>
+			<td><input type="text" name="user[user_password]" value="{$user.user_password}" /></td>
+		  </tr>
+		  <tr>
+		  	<td colspan="2"><input type="submit" name="" value="V&eacute;grehajt" class="button" /></td>
+		  </tr>
+		</table>
+		</form>
+		{/capture}
+		{include file="dialog.html" title="Felhaszn&aacute;l&oacute; param&eacute;terek" content=$smarty.capture.user_update extra="width=100%"}
+	</td>
+  </tr>	
+</table>

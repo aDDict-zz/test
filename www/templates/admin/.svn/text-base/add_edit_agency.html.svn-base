@@ -1,0 +1,66 @@
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="page_title">
+        {if $agency.agency_id == ''}
+			Új h&iacute;rforr&aacute;s 
+        {else}
+			H&iacute;rforr&aacute;s m&oacute;dos&iacute;t&aacute;sa
+		{/if}
+	</td>
+  </tr>
+  <tr>
+    <td style="padding-bottom:15px; padding-top:15px;">
+		{capture name=agency}		
+		<form name="page" method="post" action="index.php?id={$id}&sub_id={$sub_id}">
+		{if $agency.agency_id != ""}
+			<input type="hidden" name="action" value="update_agency" />
+			<input type="hidden" name="agency_id" value="{$agency.agency_id}" />
+		{else}
+			<input type="hidden" name="action" value="add_agency" />
+		{/if}
+		<table border="0" cellspacing="0" cellpadding="5">
+		  {if $message != ""}
+		  <tr>
+			<td colspan="2" style="color:#FF0000;font-weight:bold;">{$message}</td>
+		  </tr>
+		  {/if}
+		  <tr>
+			<td>H&iacute;rforr&aacute;s:</td>
+			<td><input type="text" name="agency_name" value="{$agency.agency_name}" /></td>
+		  </tr>
+		  <tr>
+			<td>H&iacute;rforr&aacute;s URL:<br />(http:// kötelező)</td>
+			<td><input type="text" name="agency_url" value="{$agency.agency_url}" /></td>
+		  </tr>
+		  <tr>
+			<td>Favicon URL:<br />(http:// kötelező)</td>
+			<td><input type="text" name="agency_favicon" value="{$agency.agency_favicon}" /></td>
+		  </tr>
+		  <tr>
+		  	<td>Le&iacute;r&aacute;s:</td>
+			<td><textarea name="description" rows="10">{$agency.agency_description}</textarea></td>
+		  </tr>		  		  
+		  <tr>
+		  	<td>Tipus:</td>
+			<td>
+				<select name="agency_type">
+					{if $agency.agency_type == 1 || $agency.agency_type == ''}
+						<option value="1" selected>RSS</option>
+						<option value="2">HTML</option>
+					{else}
+						<option value="1">RSS</option>
+						<option value="2" selected>HTML</option>
+					{/if}
+				</select>
+			</td>
+		  </tr>
+		  <tr>
+		  	<td colspan="2"><input type="submit" name="" value="V&eacute;grehajt" class="button" /></td>
+		  </tr>
+		</table>
+		</form>
+		{/capture}
+		{include file="dialog.html" title="H&iacute;rforr&aacute;s" content=$smarty.capture.agency extra="width=100%"}
+	</td>
+  </tr>	
+</table>

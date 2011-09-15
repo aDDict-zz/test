@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-2"?>
+<root>
+	<index_directory>/var/www/gate/hirek/lucene/</index_directory>
+	<table>news_old</table>
+	<fields>				
+		<field type="string" index="false" return="true" keytype="">news_url</field>
+		<field type="string" index="true" return="true" keytype="">news_title</field>		
+		<field type="string" index="true" return="true" keytype="">news_lead</field>		
+		<field type="string" index="false" return="true" keytype="">agency_name</field>		
+		<field type="string" index="true" return="true" keytype="">dadd</field>		
+	</fields>
+	<limit>10</limit>
+	<where></where>
+</root>

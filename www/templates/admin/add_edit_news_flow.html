@@ -1,0 +1,142 @@
+{literal}
+<script language="javascript" type="text/javascript">
+function changeType(obj){
+	if(obj.options[obj.selectedIndex].value=="1"){ //RSS
+		document.getElementById('html').style.display = "none";
+		document.getElementById('html').style.visibility = "hidden";
+	}else{ //HTML
+		document.getElementById('html').style.display = "block";
+		document.getElementById('html').style.visibility = "visible";
+	}
+}
+</script>
+{/literal}
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="page_title">
+        {if $rss.id == ''}
+			Új h&iacute;rfolyam
+        {else}
+			H&iacute;rfolyam m&oacute;dos&iacute;t&aacute;sa
+		{/if}
+	</td>
+  </tr>
+  <tr>
+    <td style="padding-bottom:15px; padding-top:15px;">
+		{capture name=rss}		
+		<form name="page" method="post" action="index.php?id={$id}&sub_id={$sub_id}">
+		{if $rss.id != ""}
+			<input type="hidden" name="action" value="update_rss" />
+			<input type="hidden" name="rss_id" value="{$rss.id}" />
+		{else}
+			<input type="hidden" name="action" value="add_rss" />
+		{/if}
+		<table border="0" cellspacing="0" cellpadding="5">
+		  {if $message != ""}
+		  <tr>
+			<td colspan="2" style="color:#FF0000;font-weight:bold;">{$message}</td>
+		  </tr>
+		  {/if}
+		  <tr>
+			<td>H&iacute;rforr&aacute;s:</td>
+			<td>
+				<select name="agencies">
+					{section name=i loop=$agencies}
+						{if $rss.agency_id == $agencies[i].agency_id}
+							<option value="{$agencies[i].agency_id}" selected>{$agencies[i].agency_name}</option>
+						{else}
+							<option value="{$agencies[i].agency_id}">{$agencies[i].agency_name}</option>
+						{/if}
+					{/section}
+				</select>
+			</td>
+		  </tr>
+		  <tr>
+		  	<td>Tipus:</td>
+			<td>
+				<select name="type" onChange="changeType(this);">
+					{if $rss.feed_type == 1 || $rss.feed_type == ""}
+					<option value="1" selected>RSS</option>
+					<option value="2">HTML</option>
+					{else}
+					<option value="1">RSS</option>
+					<option value="2" selected>HTML</option>	
+					{/if}
+				</select>
+			</td>
+		  </tr>		  
+		  <tr>
+			<td>H&iacute;rfolyam:</td>
+			<td><input type="text" name="rss_name" value="{$rss.rss_name}" /></td>
+		  </tr>
+		  <tr>
+			<td>H&iacute;rfolyam URL:</td>
+			<td><input type="text" name="rss_url" value="{$rss.rss_url}" /></td>
+		  </tr>
+		  <tr>
+		  	<td>Le&iacute;r&aacute;s:</td>
+			<td><textarea name="description" rows="10">{$rss.rss_description}</textarea></td>
+		  </tr>
+		  <tr>
+		  	<td colspan="2">
+				<table width="100%" border="0" cellspacing="0" cellpadding="5" id="html" {if $rss.feed_type == 1 || $rss.feed_type == ""}style="display:none; visibility:hidden;"{/if}>
+				  <tr>
+					<td>Regul&aacute;ris kifejez&eacute;s:</td>
+					<td><input type="text" name="pattern" value="{$rss.pattern}" /></td>
+				  </tr>
+				  <tr>
+					<td>Kieg&eacute;sz&iacute;t&#337; URL:</td>			
+					<td><input type="text" name="aux_url" value="{$rss.aux_url}" /></td>
+				  </tr>
+				  <tr>
+					<td>H&iacute;r URL tal&aacute;lat:</td>			
+					<td><input type="text" name="match_link" value="{$rss.match_link}" /></td>
+				  </tr>
+				  <tr>
+					<td>H&iacute;r c&iacute;m tal&aacute;lat:</td>			
+					<td><input type="text" name="match_title" value="{$rss.match_title}" /></td>
+				  </tr>
+				  <tr>
+					<td>H&iacute;r bevezet&#337; tal&aacute;lat:</td>			
+					<td><input type="text" name="match_lead" value="{$rss.match_lead}" /></td>
+				  </tr>
+				</table>
+			</td>
+		  </tr>		  
+		  <tr>
+			<td>Ellen&#337;rz&eacute;si peri&oacute;dus:</td>
+			<td><input type="text" name="period" value="{$rss.period}" dir="rtl" /> (perc)</td>
+		  </tr>		  
+		  <tr>
+			<td>Hírek időrendi sorrendje:</td>
+			<td>
+				<select name="news_order">
+                    <option value="desc">Csökkenő</option>
+                    <option value="asc" {if $rss.news_order == "asc"}selected{/if} >Növekvő</option>
+				</select>
+			</td>
+		  </tr>		  
+		  <tr>
+			<td>St&aacute;tusz:</td>
+			<td>
+				<select name="status">
+					{if $rss.status == 1 || $rss.status == ""}
+						<option value="1" selected>Akt&iacute;v</option>
+						<option value="0">Inakt&iacute;v</option>
+					{else}
+						<option value="1">Akt&iacute;v</option>
+						<option value="0" selected>Inakt&iacute;v</option>
+					{/if}
+				</select>
+			</td>
+		  </tr>		  
+		  <tr>
+		  	<td colspan="2"><input type="submit" name="" value="V&eacute;grehajt" class="button" /></td>
+		  </tr>
+		</table>
+		</form>
+		{/capture}
+		{include file="dialog.html" title="H&iacute;rfolyam" content=$smarty.capture.rss extra="width=100%"}
+	</td>
+  </tr>	
+</table>

@@ -1,0 +1,64 @@
+	<div class="blue" id="rss_box_{$feed.user_feed_id}" alt="bid_{$max_box_id}_{$cl|default:0}">
+<div class="topboxcont"><div class="bottombox"><div class="leftbox"><div class="rightbox"><div class="blbox"><div class="brbox"><div class="tlbox"><div class="trbox">
+		<div class="head">
+			<div class="edit"><a href="#"  title="Hírek frissítése"><img align="top" src="i/refresh.gif"></a>{if $feed.editable ==1} <a href="#" title="Hírdoboz szerkesztése">Szerkeszt</a>{else} <a href="#"></a>{/if}<a href="#" title="H&iacute;rdoboz bez&aacute;r&aacute;sa"><img src="i/var.gif" align="top" alt="H&iacute;rdoboz bez&aacute;r&aacute;sa" /></a><a href="#" title="Hírdoboz törlése"><img src="i/close.gif" align="top" alt="Hírdoboz törlése"  /></a></div>
+			<h3><a href="#"><img src="{if $feed.type == 4 }i/in.gif{elseif $feed.agency_favicon != ''}{$feed.agency_favicon}{else}i/rss.gif{/if}" style="margin-top:-5px;height:16px;width:16px;" align="absmiddle" /></a> <a href="{$feed.agency_url}" target="_blank">{$feed.rss_name}<!-- ({$max_box_id}-{$cl|default:0})--></a></h3>
+		</div>
+		<div class="editContent">
+			<table border="0" cellspacing="0" cellpadding="2">
+			  <tr>
+				<td>C&iacute;m:</td>
+				<td><input type="text" name="title" value="{$feed.rss_name|escape:html}" /></td>
+			  </tr>
+			  <tr>
+				<td>Sz&iacute;n:</td>
+				<td>
+                    <div id="c0"></div>
+                    <div id="c1"></div>
+                    <div id="c2"></div>
+                    <div id="c3"></div>
+                    <div id="c4"></div>
+                    <div id="c5"></div>
+                    <div id="c6"></div>
+				</td>
+			  </tr>
+			  <tr>
+                {if $feed.type == 4}
+				<td>Kulcssz&oacute;:</td>
+				<td><input type="text" name="feed" value="{$feed.keywords}" /></td>
+                {else}
+				<td>Forr&aacute;s:</td>
+				<td><input type="text" name="feed" value="{$feed.rss_url}" /></td>
+                {/if}
+			  </tr>
+			  <tr>
+				<td>Elemek:</td>
+				<td>
+					<select name="items">
+						{section name=l loop=$items}
+							{if $items[l] == 10}
+								<option value="{$items[l]}" selected>{$items[l]}</option>
+							{else}
+								<option value="{$items[l]}">{$items[l]}</option>
+							{/if}
+							
+						{/section}
+					</select>
+				</td>
+			  </tr>
+			  {*}
+			  <tr>
+				<td>Linkek:</td>
+				<td><input type="checkbox" name="linkType" class="checkBox" /> &uacute;j ablakba ny&iacute;ljanak</td>
+			  </tr>
+			  {*}
+			  <tr>
+				<td colspan="2"><input type="button" value="Elment" /></td>
+			  </tr>
+			</table>		
+		</div>	
+		<div class="content_2">
+			Bet&ouml;lt&eacute;s alatt...
+		</div>
+</div></div></div></div></div></div></div></div>
+	</div>	

@@ -1,0 +1,111 @@
+<div>
+	<div>		
+		<div style="float:right"><a href="#">Szerk</a> <img src="../i/close.gif" align="absmiddle" /></div>
+		<h2>{$cat_name}</h2>
+	</div>
+	<div class="edit">
+		<table border="0" cellspacing="0" cellpadding="4">
+		  <tr>
+			<td><b>N&eacute;v:</b></td>
+			<td><input type="text" value="{$cat_name}" /></td>
+		  </tr>
+		  <tr>
+			<td><b>Favicon:</b></td>
+			<td><input type="text" value="{$cat_favicon}" /></td>
+		  </tr>
+		  <tr>
+			<td><b>T&iacute;pus:</b></td>
+			<td>
+				<select>
+					{if $cat_type == 1}
+					<option value="1" selected>RSS</option>
+					<option value="3">több RSS</option>
+					<option value="2">HTML + Link</option>
+					<option value="5">Kulcsszó</option>
+					{elseif $cat_type == 2}
+					<option value="1">RSS</option>
+					<option value="3">több RSS</option>
+					<option value="2" selected>HTML + Link</option>	
+					<option value="5">Kulcsszó</option>
+					{elseif $cat_type == 3}
+					<option value="1">RSS</option>
+					<option value="3" selected>több RSS</option>
+					<option value="2">HTML + Link</option>	
+					<option value="5">Kulcsszó</option>
+					{elseif $cat_type == 5}
+					<option value="1">RSS</option>
+					<option value="3">több RSS</option>
+					<option value="2">HTML + Link</option>	
+					<option value="5" selected>Kulcsszó</option>
+					{/if}
+				</select>
+			</td>
+		  </tr>
+		  <tr>
+			<td colspan="2"><input type="button" value="V&eacute;grehajt" style="width:auto; " /></td>
+		  </tr>
+		</table>
+	</div>
+	<div class="content">		
+		<div class="rss"{if $cat_type == 1} style="display:block"{/if}>RSS: <input type="text" value="{$cat_rss}" /> <input type="button" value="Elment" class="button"  style="width:auto;" /></div>
+		<div class="htmllink"{if $cat_type == 2} style="display:block;"{/if}>
+			HTML:<br />
+			<div style="border:1px solid #CCCCCC;padding:2px;">{$cat_html}</div>
+			<div style="float:right"><a href="#">HTML Szerkeszt&eacute;se</a></div>
+		</div>
+		<div class="link_list"{if $cat_type == 2} style="display:block;"{/if}>
+			Linkek:<br />
+			<ul>
+				{section name=i loop=$links}
+				<li>					
+					<div style="float:right"><a href="#" onClick="editLink(this, '{$links[i].link_id}', '{$cat_id}');return false;">Szerk</a> <img src="../i/close.gif" align="absmiddle" onClick="removeLink(this, '{$links[i].link_id}', '{$cat_id}');" /></div>
+					<a href="{$links[i].link_url}" title="{$links[i].link_title}">{$links[i].link_name}</a>										
+				</li>
+				{/section}
+			</ul>
+		</div>
+        <div class="rss"{if $cat_type == 3} style="display:block"{/if}>
+            Hírek száma hírfolyamonként: 
+            <select style="width:50px;">
+                {foreach from=$newsc item=c} 
+                <option value="{$c}" {if $c==$cat_newsperfeed}selected{/if} >{$c}</option>
+                {/foreach}
+            </select>
+            <br>Hírfolyamok:
+            {foreach from=$multi_rss item=rss key=idx}
+            <br>Cím: <input type="text" value="{$multi_titles.$idx}" /> 
+            <br>RSS: <input style="width:260px;" type="text" value="{$multi_rss.$idx}" /> 
+            {/foreach}
+            <br><input type="button" value="Elment" class="button"  style="width:auto;" />
+        </div>
+        <div class="rss"{if $cat_type == 5} style="display:block"{/if}>
+			Kulcsszó:
+            <br><input style="width:200px;" type="text" value="{$cat_keyword}" /> 
+            <br><input type="button" value="Elment" class="button"  style="width:auto;" />
+        </div>
+
+		<div style="clear:both"></div>		
+	</div>
+	<div class="links">
+		<h2{if $cat_type == 2} style="display:block;"{/if}><a href="#">&Uacute;j link</a> | <a href="#">Link kereso</a></h2>
+		<div class="newlink">
+			{include file="add_edit_external_link.html"}
+		</div>
+		<div class="searchlinks">
+			<table border="0" cellspacing="0" cellpadding="4">
+			  <tr>
+				<td>
+					N&eacute;v:<br />
+					<input type="text" />
+				</td>
+			  </tr>
+			  <tr>
+				<td>
+					Tal&aacute;latok:<br />
+					<select name="" multiple size="10"></select>
+				</td>
+			  </tr>			  
+			</table>
+		</div>
+	</div>
+</div>		

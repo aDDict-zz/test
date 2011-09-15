@@ -1,0 +1,55 @@
+<html>
+<head>
+<style>
+    #hirek {literal}{{/literal}
+        width:{$width}px;
+        height:{$height}px;
+        {if $border}border:{$border.width}px #{$border.color} {$border.style};{/if}
+        overflow:hidden;
+        {if $bg_color}background-color:#{$bg_color};{/if}
+        color:#{$text_color};
+    {literal}}{/literal}
+    #hirek h1 {literal}{{/literal}
+        color:#{$title_color};
+        font-size:{$title_size}px;
+        margin:10px 5px;
+    {literal}}{/literal}
+    #hirek_keywords {literal}{{/literal}
+        list-style-image: url(http://www.hirek.hu/i/n.gif);
+        vertical-align : middle;
+        margin:0 5px 0 20px;
+        padding:0px;
+        font-size:{$text_size}px;
+    {literal}}{/literal}
+    #hirek_keywords li {literal}{{/literal} 
+        height : {$item_height}px;
+    {literal}}{/literal}
+    #hirek_keywords li a{literal}{{/literal}
+        font-size:{$text_size}px;
+        color : #{$text_color};
+        text-decoration : none;
+    {literal}}{/literal}
+    #hirek h2 a {literal}{{/literal}
+        font-size:11px;
+        color:#ccc;
+        text-decoration : none;
+    {literal}}{/literal}
+    #hirek h2 {literal}{{/literal}
+        margin:5px;
+    {literal}}{/literal}
+</style>
+</head>
+<body>
+<div id="hirek">
+<h1>Friss h&iacute;rek a hirek.hu oldal&aacute;r&oacute;l</h1>
+{strip}
+    <ul id="hirek_keywords">
+    {foreach from=$news.entries item=n key=idx}
+    <li><a target="_blank" href="{$var->baseurl}?kw={$news.kw}&news_id={$n.id}{$fromparam}">{$n.title}</a></li>
+    {/foreach}
+    </ul>
+{/strip}
+<h2><a href="{$var->baseurl}">> tov&aacute;bbi &eacute;rdekes h&iacute;rek</a></h2>
+</div>
+</body>
+</html>

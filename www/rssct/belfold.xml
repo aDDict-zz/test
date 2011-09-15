@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+   <channel>
+      <title>Belföld</title>
+      <link>http://www.hirek.hu/rss.php?page=belfold</link>
+      <description></description>
+      <language>hu-HU</language>
+      <copyright>Hirek.hu 2011</copyright>
+      <managingEditor>szerkeszto@hirek.hu (Szerkesztő)</managingEditor>
+      <webMaster>webmester@hirek.hu (Webmester)</webMaster>      
+      <pubDate>Wed, 14 Sep 2011 9:50:01 +0200</pubDate>
+      <lastBuildDate>Wed, 14 Sep 2011 9:50:01 +0200</lastBuildDate>
+      <category></category>
+      <generator>Hirek.hu</generator>
+      <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+      <ttl>60</ttl>
+	<atom:link href="http://www.hirek.hu/rss.php?page=belfold" rel="self" type="application/rss+xml" />
+      
+      <item>
+         <title>Beperelte az éttermet, mert beütötte a térdét - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267591&amp;rss=35</link>         
+         <description></description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267591&amp;rss=35</guid>
+      </item>
+      <item>
+         <title>Négy embert ölt meg a baltás ámokfutó - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267590&amp;rss=35</link>         
+         <description></description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267590&amp;rss=35</guid>
+      </item>
+      <item>
+         <title>A Twitter visszamenne Kínába? - Nyelv és Tudomány</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267573&amp;rss=254</link>         
+         <description>A kínai kormány betiltotta a Twittert, a közösségi oldal ennek ellenére „kínai funkcióval” lepi meg felhasználóit. Vajon miért?</description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267573&amp;rss=254</guid>
+      </item>
+      <item>
+         <title>Kérdezd Orbán Viktort! - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267513&amp;rss=37</link>         
+         <description></description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267513&amp;rss=37</guid>
+      </item>
+      <item>
+         <title>Kreditet ér a színházba járás Kecskeméten - Nyelv és Tudomány</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267503&amp;rss=254</link>         
+         <description>Példaértékű a magyar felsőoktatásban az az együttműködés, amely a kecskeméti Katona József Színház és a Kecskeméti Főiskola között jött létre.</description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267503&amp;rss=254</guid>
+      </item>
+      <item>
+         <title>Súlyos sérülés a frontális buszbalesetben - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267485&amp;rss=37</link>         
+         <description>Egy ember súlyosan megsérült, mikor kedden este egy Volán  autóbusz és egy kocsi frontálisan karambolozott Budapesten.</description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267485&amp;rss=37</guid>
+      </item>
+      <item>
+         <title>Veszélyes házak Budapesten - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267415&amp;rss=35</link>         
+         <description></description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267415&amp;rss=35</guid>
+      </item>
+      <item>
+         <title>Már robotok írják a sportösszefoglalókat - Nyelv és Tudomány</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267395&amp;rss=254</link>         
+         <description>Egy amerikai vállalkozás sportújságírói szoftvert fejlesztett ki, ami a meccsek statisztikája alapján másodpercek alatt megír egy nyelvtanilag helyes – és izgalmas – összefoglalót.</description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267395&amp;rss=254</guid>
+      </item>
+      <item>
+         <title>Aranyérmes a magyar női váltó - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267378&amp;rss=35</link>         
+         <description></description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267378&amp;rss=35</guid>
+      </item>
+      <item>
+         <title>140 család kerülhet utcára - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267321&amp;rss=37</link>         
+         <description>Budapest - Akár 140 családnak is költöznie kell otthonából tartozásai miatt Újpalotán!   </description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267321&amp;rss=37</guid>
+      </item>
+      <item>
+         <title>Szász: nagyon pozitív folyamatok indulhatnak a bankszektorban - Nethírlap</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267253&amp;rss=170</link>         
+         <description>Forrás: Portfolio</description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267253&amp;rss=170</guid>
+      </item>
+      <item>
+         <title>Tömegverekedés tört ki Győrben - Nethírlap</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267252&amp;rss=170</link>         
+         <description>Forrás: HVG</description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267252&amp;rss=170</guid>
+      </item>
+      <item>
+         <title>Paul McCartney bármikor nősülhet - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267251&amp;rss=35</link>         
+         <description></description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267251&amp;rss=35</guid>
+      </item>
+      <item>
+         <title>50 ezer dollár az egymondatos levélért  - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267200&amp;rss=35</link>         
+         <description></description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267200&amp;rss=35</guid>
+      </item>
+      <item>
+         <title>Fogva tartotta volt barátnőjét egy férfi - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267140&amp;rss=35</link>         
+         <description></description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267140&amp;rss=35</guid>
+      </item>
+      <item>
+         <title>Orbán áthúzta a szociális boltokat - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267052&amp;rss=37</link>         
+         <description>Budapest - Fontos pont maradt ki Orbán Viktor hétfőn, a parlamentben bejelentett országvédelmi tervéből. </description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267052&amp;rss=37</guid>
+      </item>
+      <item>
+         <title>Megérkezett a pápa vonata - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267051&amp;rss=37</link>         
+         <description>Budapest — Bárki megcsodálhatja csütörtökig II. János Pál pápa  emlékvonatát a fővárosi Vasúttörténeti Parkban, ahová tegnap délelőtt  gördült be a sárga színű, egyterű szerelvény, oldalán az „utazó  pápaként&quot; emlegetett szentatya híres „Totus tuus&quot; jelmondatával, ami  annyit tesz: egészen a tiéd.  </description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267051&amp;rss=37</guid>
+      </item>
+      <item>
+         <title>Magyar nőt öltek Angliában - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267050&amp;rss=37</link>         
+         <description>Sheffield — Rejtélyes bűnesetnek esett áldozatául egy 34 éves magyar nő Sheffieldben.   </description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267050&amp;rss=37</guid>
+      </item>
+      <item>
+         <title>Hírbe hozták Havelt - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267049&amp;rss=37</link>         
+         <description></description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267049&amp;rss=37</guid>
+      </item>
+      <item>
+         <title>Szerbek is keresték a gyilkost - Blikk.hu</title>
+         <link>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267015&amp;rss=37</link>         
+         <description>Budapest – Hiába hazudta, hogy Alexander Mencének (39) hívják, és  macedón állampolgár, a DNS-azonosítás során egyértelműen kiderült: szerb  állampolgár a hajléktalanokból verbuválódott csepeli rablógyilkos-banda  vezetője - írja az Alo!.  </description>
+	<guid>http://www.hirek.hu/click.php?from=belfold.xml&amp;page_id=4&amp;news_id=3267015&amp;rss=37</guid>
+      </item>
+   </channel>
+</rss>

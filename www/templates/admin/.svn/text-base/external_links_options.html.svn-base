@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items>
+{section name=i loop=$links}
+<option value="{$links[i].link_id}">{$links[i].link_name}</option>
+{/section}
+</items>

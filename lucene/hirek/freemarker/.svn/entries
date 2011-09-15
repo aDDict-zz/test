@@ -1,0 +1,80 @@
+9
+
+dir
+28
+svn://web10.hirekmedia.hu/hirek.hu/trunk/lucene/hirek/freemarker
+svn://web10.hirekmedia.hu/hirek.hu
+
+
+
+2009-12-13T20:59:31.508512Z
+2
+root
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+e39dadbe-5537-4c88-ad5e-1a40c4553225
+
+ext
+dir
+
+version.properties
+file
+
+
+
+
+2009-12-18T14:42:12.594878Z
+26669c194b42c81fa4f10e1e87b3493d
+2009-12-13T20:59:31.508512Z
+2
+root
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2288
+
+log
+dir
+
+cache
+dir
+
+debug
+dir
+
+core
+dir
+
+template
+dir
+

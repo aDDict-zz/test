@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>H&iacute;rek.hu - Elfelejtettem a jelszavam</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="templates/main3.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<div style="margin:auto;margin-top:200px;width:300px;">
+	<div class="box">
+		<div class="head" style="cursor:default ">			
+			<h1>&nbsp;Elfelejtettem a jelszavam</h1>
+		</div>
+		<div class="content">
+			<form name="forgott" method="post" action="login.php">
+			<input type="hidden" name="action" value="forgott" />
+			<table border="0" cellspacing="0" cellpadding="5" align="center">
+			  {if $error}
+			  <tr>
+			  	<td colspan="2">
+					{section name=i loop=$error}
+						<span class="error">{$error[i]}</span><br />
+					{/section}
+				</td>
+			  </tr>
+			  {/if}
+			  <tr>
+				<td>E-mail c&iacute;m:</td>
+				<td><input type="text" name="data[email]" value="{$datas.email}" /></td>
+			  </tr>			  
+			  <tr>
+				<td colspan="2" align="center"><input type="submit" value="K&eacute;rem" /></td>
+			  </tr>
+			  <tr>
+				<td colspan="2" align="center"><a href="login.php">Vissza a bel&eacute;p&eacute;shez</a></td>
+			  </tr>
+			</table>
+			</form>
+		</div>
+	</div>
+	
+	</div>
+</div>
+</body>
+</html>

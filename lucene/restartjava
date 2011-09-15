@@ -1,0 +1,38 @@
+#!/usr/bin/perl 
+
+$multicheck = `ps -A|grep restartjava`;
+if (length($multicheck) > 40)
+{
+	print "There are other instances of restartjava running, end them first. Thank you.\n";
+	exit;
+}
+#$screencheck = `set|grep STY=|grep -v grep`;
+#print $screencheck;
+#if (!$screencheck)
+#{
+#	print "You must start restartjava from within a screen otherwise itt will terminate with your session. Thank you.\n";
+#	exit;
+#}
+
+$motor = $updater = 0;
+unlink "check";
+
+$child = fork();
+while ($child ne 0)
+{
+	++$motor;
+	print "(re)Restarting Motor for the ".$motor.". time\n";
+	system("cd /var/www/hirek.hu/www/lucene/hirek/ && java Motor");
+	sleep(1);
+}
+$child = fork();
+while ($child ne 0)
+{
+	++$updater;
+	print "(re)Restarting Updater for the ".$updater.". time\n";
+	system("cd /var/www/hirek.hu/www/lucene/hirek/ && java Updater");
+	sleep 1;
+}
+
+while (1) { sleep(10); }
+

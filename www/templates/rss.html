@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>{$title|escape:"html"}</title>
+        <link>http://www.hirek.hu</link>
+        <description></description>
+        <language>hu-HU</language>
+        <copyright>Hirek.hu {$smarty.now|date_format:"%Y"}</copyright>
+        <managingEditor>szerkeszto@hirek.hu (Szerkesztő)</managingEditor>
+        <webMaster>webmester@hirek.hu (Webmester)</webMaster>      
+        <pubDate>{$pubDate}</pubDate>
+        <lastBuildDate>{$lastBuildDate}</lastBuildDate>
+        <category>{$category|escape:"html"}</category>
+        <generator>Hirek.hu</generator>
+        <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+        <ttl>60</ttl>
+	<atom:link href="http://www.hirek.hu/rss.php?kw={$kw|escape:"url"}{if $category}&amp;category={$category|escape:"url"}{/if}" rel="self" type="application/rss+xml" />
+        {foreach from=$results item=result}
+        <item>
+            <title>{$result.title|escape:"html"}{$result.rss_name|escape:"html"}</title>
+            <description><![CDATA[{$result.description}]]></description>
+            <link>
+            {if $type=="ct"}
+                http://www.hirek.hu/click.php?from=rsskw&amp;link={$result.link|escape:"url"}&amp;news_id={$result.id}
+            {else}
+                http://www.hirek.hu/?from=rsskw&amp;kw={$kw}&amp;news_id={$result.id}
+            {/if}
+            </link>         
+	    <guid>{$result.link|escape:html}</guid>
+        </item>
+        {/foreach}
+    </channel>
+</rss>
