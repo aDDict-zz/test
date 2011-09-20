@@ -1,10 +1,48 @@
-<?
+<?  //die( "dsfsdfdsfdsf" );
 // this script must have access to maxima database, so that form data and the variables could be verified.
 // change this include to direct connect if applicable.
 include "auth.php";
 require_once "_subscribe.php";
 include "common.php";
 include "_form.php";
+
+
+#if( $_POST['data__'] == "301" ) {
+
+
+##  $header = array(
+##    "Host"              => "192.168.0.107",
+##    "private_key"       => "5d9d92e300be43a6f47fbe28c41ad215",
+##    "User-Agent"        => "Mozilla/5.0 Firefox/3.6.12",
+##    "Accept"            => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+##    "Accept-Language"   => "en-us,en;q=0.5",
+##    "Accept-Encoding"   => "deflate",
+##    "Content-Type"      => "text/html; charset=iso-8859-1",
+##    "Accept-Charset"    => "ISO-8859-1,utf-8;q=0.7,*;q=0.7"
+##  );
+#  
+#  
+##  $req = new HttpReq("tr.affiliate.hu","get_security_key.php",$header); // die( print_r( $req ) );
+##  $result = $req->request("get"); 
+
+#  $f = fopen("http://tr.affiliate.hu/get_security_key.php?private_key=5d9d92e300be43a6f47fbe28c41ad215", "r"); //die( print_r( $f  ) );
+#  $aff_sec_key = fread($f, 1024);
+#  fclose($f); 
+#  $aff_reg_id = md5( $_POST[ "email" ] );
+#  $thisScript = "
+#    <script type=\"text/javascript\"><!--//<![CDATA[
+#    var aff_campaign_id = 466;
+#    var aff_url = location.protocol=='https:'?'https://tr.affiliate.hu':'http://tr.affiliate.hu';
+#    var aff_sec_key = '{$aff_sec_key}'; 
+#    var aff_reg_id = '{$aff_reg_id}'; 
+#    document.write(\"<scri\" + \"pt type='text/javascript' src='\" + aff_url);
+#    document.write(\"/aff_reg_js.php\");
+#    document.write(\"'><\/scr\" + \"ipt>\");
+#  //]]>--></script>
+#  "; 
+#} else {
+#  $thisScript = "";
+#} 
 
 $DEBUG=0;
 if (0 && ereg("^tbjanos",$_POST["email"])) {
@@ -50,7 +88,7 @@ if ($res && mysql_num_rows($res)) {
         strlen(mysql_result($r8,0,1))?$gnreplace=mysql_result($r8,0,1):$gnreplace=mysql_result($r8,0,0);
         $formdata["landing_page"]=eregi_replace("{group}",$gnreplace,$formdata["landing_page"]);
         $formdata["landing_page_inactive"]=eregi_replace("{group}",$gnreplace,$formdata["landing_page_inactive"]);
-        $_MX_form = new MxForm($formdata["group_id"],"",0,0);
+        $_MX_form = new MxForm($formdata["group_id"],"",0,0); //die( print_r( $_MX_form ) );
         if ($_MX_form->InitForm($form_id)) {
             $social=$_MX_form->SocialNetworkLinks();
             $formdata["landing_page"] = eregi_replace("{SOCIAL_NETWORK}",$social,$formdata["landing_page"]);
@@ -524,7 +562,7 @@ if ($form_id==282 && isset($_POST["cid"]) && strlen($_POST["cid"])!=12) {
 </body></html>';
 }
 else {
-    if ($form_id==278) {
+    if ($form_id==278/* && $form_id==301*/) {
         $security_key = "";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "http://tr.affiliate.hu/get_security_key.php?private_key=2e5525bb87ad391329e2fc8493bf2e11");
@@ -535,8 +573,19 @@ else {
         $formdata["landing_page"] = str_replace("CHANGE_TO_SECURITY_KEY",$security_key,$formdata["landing_page"]);
         $formdata["landing_page"] = str_replace("CHANGE_TO_REG_ID","8",$formdata["landing_page"]);
     }
+    if($form_id == 301) {
+      $f = fopen("http://tr.affiliate.hu/get_security_key.php?private_key=5d9d92e300be43a6f47fbe28c41ad215", "r"); //die( print_r( $f  ) );
+      $aff_sec_key = fread($f, 1024);
+      fclose($f); 
+      $aff_reg_id = md5( $_POST[ "email" ] );
+      $formdata["landing_page"] = str_replace("CHANGE_TO_SECURITY_KEY",$aff_sec_key,$formdata["landing_page"]);
+      $formdata["landing_page"] = str_replace("CHANGE_TO_REG_ID",$aff_reg_id,$formdata["landing_page"]);
+    }
     print $formdata["landing_page"];
 }
+
+
+
 
 if ($form_id==291) {
     $email_order_to = "support@simplexvital.hu";

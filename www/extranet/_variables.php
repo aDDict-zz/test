@@ -114,7 +114,7 @@ class MxVars {
 	        $this->export_email_report=array("trentin.tamas@hirek.hu","fialka.krisztina@hirek.hu"); // send emails about user data reports to these addresses
             $this->uploaddir = "/var/www/maxima/www/www/extranet/upload";
             $this->uploadurl = "http://www.maxima.hu/extranet/upload";
-            $this->engine_basedir="/var/www/maxima_engine/www"; 
+            $this->engine_basedir="/home/vvv/sites/maxima_engine/"; 
         }
 
         foreach ($this->versions as $instance=>$data) {

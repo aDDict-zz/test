@@ -17,10 +17,10 @@ var cluster_size=150;
 var bg_tds=new Array();
 var block_navigation = 0;
 
+
+
+
 var kuttnshera_p8_collector = [], kuttnshera_p9_collector = [], bit = 0, p8_counter = 0, p9_counter = 0, mx_page_seq_spec = [], mx_page_seq = [], pointer;
-
-
-var thisArray = []; var counter = 0;
 
 function in_array(p_val) {
 	for(var i = 0, l = this.length; i < l; i++) {
@@ -132,27 +132,6 @@ function mx_init() {
             }
         }
         
-<<<<<<< .mine
-        if (mx_maxima=='mxform316' && mxe[i].id.search(new RegExp("^kuttnshera_p8_([0-9])","gi"))>=0) {
-			
-//			    if (RegExp.$1 == 1) {
-//                    firstrot = i;
-//                }
-//                
-//                if(mxform316_loopListener_p8 == 0){
-//				    var firstValue = i;
-//				    mxform316_loopListener_p8 = 1;
-//			    }
-//            
-//          if (firstValue && cid.search(new RegExp("([0-9])[^0-9]*([0-9])[^0-9]*$","gi"))>=0) {
-//              var wshift = RegExp.$2 % 11;
-//              widind += wshift;
-//              if (widind >= firstValue + 10) {
-//                  widind -= 10;
-//              }
-//          }
-        }
-=======
 //        if (mx_maxima=='mxform316' && mxe[i].id.search(new RegExp("^kuttnshera_p8_([0-9])","gi"))>=0) {
 //        
 //          bit = Math.floor(Math.random()*2);
@@ -195,32 +174,10 @@ function mx_init() {
 //            mx_page_seq_spec.push( kuttnshera_p9_collector[r] );
 //          }
 //        }
->>>>>>> .r83
         
-<<<<<<< .mine
-        if (mx_maxima=='mxform316' && mxe[i].id.search(new RegExp("^kuttnshera_p9_([0-9])","gi"))>=0) { console.log(Math.floor(Math.random()*2));
-			
-//			    if (RegExp.$1 == 1) {
-//            firstrot = i;
-//          }
-//			
-//			    if(mxform316_loopListener_p9 == 0){
-//				    var firstValue = i;
-//				    mxform316_loopListener_p9 = 1;
-//			    }
-//			
-//			    if (firstValue && cid.search(new RegExp("([0-9])[^0-9]*([0-9])[^0-9]*$","gi"))>=0) {
-//            var wshift = RegExp.$1 % 13;  
-//            widind += wshift;
-//            if (widind >= firstValue + 13) {
-//                widind -= 13;
-//            }
-//          }
-=======
         if(widind != -1) {
 //          mx_page_seq_spec.push( widind );
           mx_create(mxe[widind],0);
->>>>>>> .r83
         }
     }
     
@@ -590,40 +547,40 @@ function mx_create(w,pws) {
 		if (w.id.search(new RegExp("^kuttnsicoregon_q18_k[0-9]+","gi"))>=0) {
 			z("<div align='center'><img src='img"+data+"/spacer.gif' style='width:351px;height:351px; margin:12px 0;' id='"+w.id+"_img'></div>");
 		}
-		if (w.id.search(new RegExp("^orrszivo_k8$","gi"))>=0) {
-			z("<div align='center'><table border='0'><tr>" + 
-              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo1.argb.jpg'><br>1. termék</td>" + 
-              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo2.argb.jpg'><br>2. termék</td>" + 
-              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo3.argb.jpg'><br>3. termék</td>" + 
-               "</tr></table></div>");
-		}
-		if (w.id.search(new RegExp("^orrszivo_k9$","gi"))>=0) {
-			z("<div align='center'><table border='0'><tr>" + 
-              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo3.argb.jpg'><br>1. termék</td>" + 
-              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo6.argb.jpg'><br>2. termék</td>" + 
-              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo8.argb.jpg'><br>3. termék</td>" + 
-               "</tr></table></div>");
-		}
-		if (w.id.search(new RegExp("^orrszivo_k10$","gi"))>=0) {
-			z("<div align='center'><table border='0'><tr>" + 
-              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo2.argb.jpg'><br>1. termék</td>" + 
-              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo7.argb.jpg'><br>2. termék</td>" + 
-              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo8.argb.jpg'><br>3. termék</td>" + 
-               "</tr></table></div>");
-		}
-		if (w.id.search(new RegExp("^orrszivo_k11$","gi"))>=0) {
-			z("<div align='center'><table border='0'><tr>" + 
-              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo2_K11.argb.jpg'><br>1. termék</td>" + 
-              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo3_K11.argb.jpg'><br>2. termék</td>" + 
-              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo6_K11.argb.jpg'><br>3. termék</td>" + 
-              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo8_K11.argb.jpg'><br>4. termék</td>" + 
-               "</tr></table></div>");
-		}
-		if (w.id.search(new RegExp("^orrszivo_k12$","gi"))>=0) {
-			z("<div align='center'><table border='0'><tr>" + 
-              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 0; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo_K12.jpg'></td>" + 
-               "</tr></table></div>");
-		}
+//		if (w.id.search(new RegExp("^orrszivo_k8$","gi"))>=0) {
+//			z("<div align='center'><table border='0'><tr>" + 
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo1.argb.jpg'><br>1. termék</td>" + 
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo2.argb.jpg'><br>2. termék</td>" + 
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo3.argb.jpg'><br>3. termék</td>" + 
+//               "</tr></table></div>");
+//		}
+//		if (w.id.search(new RegExp("^orrszivo_k9$","gi"))>=0) {
+//			z("<div align='center'><table border='0'><tr>" + 
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo3.argb.jpg'><br>1. termék</td>" + 
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo6.argb.jpg'><br>2. termék</td>" + 
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo8.argb.jpg'><br>3. termék</td>" + 
+//               "</tr></table></div>");
+//		}
+//		if (w.id.search(new RegExp("^orrszivo_k10$","gi"))>=0) {
+//			z("<div align='center'><table border='0'><tr>" + 
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo2.argb.jpg'><br>1. termék</td>" + 
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo7.argb.jpg'><br>2. termék</td>" + 
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo8.argb.jpg'><br>3. termék</td>" + 
+//               "</tr></table></div>");
+//		}
+//		if (w.id.search(new RegExp("^orrszivo_k11$","gi"))>=0) {
+//			z("<div align='center'><table border='0'><tr>" + 
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo2_K11.argb.jpg'><br>1. termék</td>" + 
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo3_K11.argb.jpg'><br>2. termék</td>" + 
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo6_K11.argb.jpg'><br>3. termék</td>" + 
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo8_K11.argb.jpg'><br>4. termék</td>" + 
+//               "</tr></table></div>");
+//		}
+//		if (w.id.search(new RegExp("^orrszivo_k12$","gi"))>=0) {
+//			z("<div align='center'><table border='0'><tr>" + 
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 0; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo_K12.jpg'></td>" + 
+//               "</tr></table></div>");
+//		}
 		if (w.id.search(new RegExp("^tnserstetexas_20$","gi"))>=0) {
             var lindex = set286 - 1;
             if (set286 == 1) {
@@ -887,7 +844,7 @@ function mx_create(w,pws) {
                 }
             }
         }
-        if (w.type=='radio_matrix') {
+        if (w.type=='radio_matrix') { 
         
           if(w.id == "kuttnshera_p6") {
           
@@ -1064,12 +1021,57 @@ function mx_create(w,pws) {
             if (w.rotate=='yes') {
                 var rnmx=Math.floor(Math.random()*w.options.length);
             }
-            var rowcnt=0;
+            
+            if(w.id == "kuttnshera_p15") {
+              var limit = 4;
+              var arr = [], thisBit, optArr = [];
+              for(var i = 0; i < w.options.length; i++) {
+                if(i < limit){
+                  thisBit = Math.floor(Math.random()*2);
+                  if(thisBit == 1) {
+                    arr.unshift(w.options[i]);
+                    optArr.unshift(w.optvals[i]);
+                  } else {
+                    arr.push(w.options[i]);
+                    optArr.push(w.optvals[i]);
+                  }
+                } else {
+                  arr.push(w.options[i]);
+                  optArr.push(w.optvals[i]);
+                }
+              }
+              w.options = arr;
+              w.optvals = optArr;
+            }
+            
+            if(w.id == "kuttnshera_k19") {
+              var limit = 18;
+              var arr = [], thisBit, optArr = [];
+              for(var i = 0; i < w.options.length; i++) {
+                if(i < limit){
+                  thisBit = Math.floor(Math.random()*2);
+                  if(thisBit == 1) {
+                    arr.unshift(w.options[i]);
+                    optArr.unshift(w.optvals[i]);
+                  } else {
+                    arr.push(w.options[i]);
+                    optArr.push(w.optvals[i]);
+                  }
+                } else {
+                  arr.push(w.options[i]);
+                  optArr.push(w.optvals[i]);
+                }
+              }
+              w.options = arr;
+              w.optvals = optArr;
+              
+            }           
+            
             for (var rni=0;rni<w.options.length;rni++) {
                 var i=rni;
                 if (w.rotate=='yes') {
                     i=rni+rnmx;
-                    if (i>=w.options.length) {
+                    if (i>=w.options.length) { 
                         i-=w.options.length;
                     }
                 }
@@ -1364,11 +1366,6 @@ function mx_page_getseq(current,chpg) {
             return 0;
         }
         if (chpg==0) {
-//            if(pointer == "mxform316" && current <= 30) {console.log(mx_page_seq_spec[seqindex], seqindex, current, chpg);
-//              return mx_page_seq_spec[seqindex];
-//            } else {
-//              return seqindex+1; 
-//            }
           return seqindex+1;
         }
         else {
@@ -1828,7 +1825,7 @@ function mx_parent_dep_check(child,i,option_name) {
     }
     for (var j=0;j<child.parent_depids.length;j++) {   // for each parent
         var parent_id=child.parent_deptags[j];
-        var p=widget_ref[parent_id];
+        var p=widget_ref[parent_id]; 
         var index = i;                                 // check for this index if it's selected 
         if (child.parent_identify=='name') {           // find the index by name in this case
             var name_index=0;
@@ -1871,7 +1868,7 @@ function mx_parent_dep(id,remove_parts,evid) {
 		for (var i=0;i<child.parent_depids.length;i++) {
 			child.parent_value[i] = mx_getstate(child.parent_deptags[i],'',1).value;
 		}
-    }
+    } 
     if (child.type=='checkbox') {
         for (var j=0;j<child.options.length;j++) {
             if (child.parent_always.search(new RegExp(","+child.optvals[j]+",","gi"))>=0 ) {
@@ -1986,13 +1983,18 @@ function mx_parent_dep(id,remove_parts,evid) {
                     shown++;
                 } 
                 else if (remove_parts) {
-					if(child.id == "kuttnshera_p6" && k != 31){
-						find_object("rad_div_"+child.optvals[k]).style.display="none";
-					} else if(child.id == "kuttnshera_p6" && k == 31){
-						// kuttnshera_p6 && 31
-					} else {
-						find_object("rad_div_"+child.optvals[k]).style.display="none";	
-					}
+                
+        
+            find_object("rad_div_"+child.optvals[k]).style.display="none";  
+//					if(child.id == "kuttnshera_p6" && k != 31){
+//						find_object("rad_div_"+child.optvals[k]).style.display="none";
+//					} else if(child.id == "kuttnshera_p6" && k == 31){
+//					  console.log( child.optvals[k] ); console.log( child.options[k] );
+//					  //console.log( child.id ); console.log( child );
+//						// kuttnshera_p6 && 31
+//					} else {
+//						find_object("rad_div_"+child.optvals[k]).style.display="none";	
+//					}
                 }
                 j++;
             }
@@ -2266,6 +2268,11 @@ function mx_getstate(wref,cond,valueseqs) {
                 }
             }
         }
+        
+        if(w.id=='orrszivo_k9' && optselectednum > 2) {
+          ret.err+='';
+        }
+        
         if (w.max_num_answer>0 && (optselectednum>w.max_num_answer || w.id=='feminacontent_f3' && optselectednum!=2)) {
             if (mx_formlang=='cz') {
                 ret.err+=(w.type=='checkbox_matrix'?' '+osntext+' maximum ':' Vybrat maximálně ')+w.max_num_answer+' možností ('+w.question2+").";

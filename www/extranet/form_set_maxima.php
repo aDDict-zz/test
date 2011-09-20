@@ -1,5 +1,5 @@
 <?
-$linkID = mysql_connect("localhost", "root", "bartok26");
+$linkID = mysql_connect("localhost", "root", "v");
 $succDB = mysql_select_db("maxima", $linkID);
 mysql_query("set names utf8");
 

@@ -99,8 +99,15 @@ include "menugen.php";
         $chdemog="";
         echo "<tr><td $bgrnd><span class='szoveg'>$res[question]: </span></td><td $bgrnd>";
         $dvals[]=$res["id"];
-        if ($vch["$res[id]"]=="yes") 
-            $chdemog="&nbsp;<a href='members_demog_info_change.php?group_id=$group_id&demog_id=$res[id]&user_id=$user_id&filt_demog=$filt_demog'>$word[change]</a>";
+        if ($vch["$res[id]"]=="yes") {
+        
+            if(isset($_GET['mass_demog']))
+              $mass_demog_flag = "&mass_demog=1";
+            else
+              $mass_demog_flag = "";
+        
+            $chdemog="&nbsp;<a href='members_demog_info_change.php?group_id=$group_id&demog_id=$res[id]&user_id=$user_id&filt_demog=$filt_demog{$mass_demog_flag}'>$word[change]</a>";
+        }
         $value="";
         if ($scope == "user") {
             if ($res["variable_type"]=="enum" || $res["variable_type"]=="matrix") {

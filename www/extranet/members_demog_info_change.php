@@ -369,7 +369,7 @@ function VerifyDemog()
         }
     }
     if ($variable_name==$unique_col) {
-        if ($scope!="user") {
+        if ($scope!="user" && !isset($_GET["mass_demog"])) {
             $error.="Can not update unique demog for mutiple users.<br>";
         }
         else {

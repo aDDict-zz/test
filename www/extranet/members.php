@@ -86,6 +86,12 @@ if ($show_user_list=='yes' && ($_MX_filter->total_users || $_MX_filter->maxrecor
             $unique_data=$row["ui_$unique_col"];
             if ($_MX_filter->unique_addid)
                 $unique_data.=" ($row[id])";
+                
+            if(isset($hfilt_email) && $hfilt_email != "")
+              $mass_demog_flag = "&mass_demog=1";
+            else
+              $mass_demog_flag = "";
+                
             echo "<tr>
 		          <td $bgrnd align=left width=7%><span class=szoveg>$index.</span></td>
 		          <td $bgrnd align=left width=24%><span class=szoveg>$unique_data</span></td>
@@ -95,7 +101,7 @@ if ($show_user_list=='yes' && ($_MX_filter->total_users || $_MX_filter->maxrecor
                   <a href='#' onClick='window.open(\"$_MX_var->baseUrl/message_received.php?group_id=$group_id&rec_userid=$row[id]\", \"m_d_i\", \"width=710,height=500,scrollbars=yes,resizable=yes\"); return false;'>$last_sent($mess_total)</a>
                   </span></td>
 		          <td $bgrnd align=left width=9%><span class=szoveg>
-                  <a href='#' onClick='window.open(\"$_MX_var->baseUrl/members_demog_info.php?group_id=$group_id&user_id=$row[id]\", \"m_d_i\", \"width=710,height=500,scrollbars=yes,resizable=yes\"); return false;'>$word[demog_info]</a>
+                  <a href='#' onClick='window.open(\"$_MX_var->baseUrl/members_demog_info.php?group_id=$group_id&user_id=$row[id]{$mass_demog_flag}\", \"m_d_i\", \"width=710,height=500,scrollbars=yes,resizable=yes\"); return false;'>$word[demog_info]</a>
                   </span></td>
 		          <td $bgrnd align=center width=9%><span class=szoveg>
                   <input type='checkbox' name='deluser_id[$row[id]]'>

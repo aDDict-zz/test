@@ -240,7 +240,7 @@ class MxFilter
                 $joinpart=" where";
             }
             $filtres = "";
-            $filter_error="filter_ok";         
+            $filter_error="filter_ok";         //die( "$_MX_var->filter_engine " . $this->params["filt_demog"] ); 
             if ($pp=popen("$_MX_var->filter_engine " . $this->params["filt_demog"],"r")) {
                 while ($buff=fgets($pp,25000)) {
                     $filtres.=$buff;
@@ -271,7 +271,7 @@ class MxFilter
             else {
                 $distinct_qpart="distinct ";
             }
-            $this->query = "from users_$title$joinpart ($filter_qpart) $status_str $email_filt_part $filtaffpart";
+            $this->query = "from users_$title$joinpart ($filter_qpart) $status_str $email_filt_part $filtaffpart"; //die( $this->query );
             if (empty($this->params["filt_email"]) && empty($filtaffpart) && $this->params["user_status"]=='normal' && !$this->params["filt_ug"]) {
                 $this->mass_demog_change=1;
                 $this->update_query = "($filter_qpart) $status_str $email_filt_part $filtaffpart";

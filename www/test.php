@@ -3,13 +3,107 @@
 $charset = "utf-8"; //"utf-8"  //iso-8859-1
 header("Content-Type: text/html; charset={$charset}");
 
+
+  $header = array(
+    "Host"              => "192.168.0.107",
+    "private_key"       => "5d9d92e300be43a6f47fbe28c41ad215",
+    "User-Agent"        => "Mozilla/5.0 Firefox/3.6.12",
+    "Accept"            => "text/html",  //,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+    "Accept-Language"   => "en-us,en;q=0.5",
+    "Accept-Encoding"   => "deflate",
+    "Content-Type"      => "text/html; charset=iso-8859-1",
+    "Accept-Charset"    => "ISO-8859-1,utf-8;q=0.7,*;q=0.7"
+  );
+  
+  
+  $req = new HttpReq("tr.affiliate.hu","get_security_key.php",$header); // die( print_r( $req ) );  //?private_key=5d9d92e300be43a6f47fbe28c41ad215
+
+#  $req = new HttpReq("amazon.com","/",$header);
+
+  $result = $req->request("get");  die( print_r( $result ) );
+
+
+class HttpReq{
+  
+  public function __construct($ip, $route, $header) {
+    $this->ip       = $ip;
+    $this->route    = $route;
+    $this->header   = $header;
+  }
+  
+  public function request($method) {
+    $result = "bad request";
+    switch($method) {
+      case "get":
+        $result = $this->get();
+      break;
+      case "post":
+        $result = $this->post();
+      break;
+    }
+    return $result;
+  }
+  
+  private function socketOpen() {
+    return fsockopen($this->ip, 80, $errno, $errstr);
+  }
+  
+  private function setHeader($method) {
+    $out  = "";
+    $crlf = "\r\n";
+    switch($method) {
+      case "get":
+        $out .= "GET {$this->route} HTTP/1.0\r\n";
+      break;
+      case "post":
+        $out .= "POST {$this->route} HTTP/1.0\r\n";
+      break;
+    }
+    foreach($this->header as $k => $v) {
+      $out .= "{$k}: {$v}\r\n";
+    }
+    return $out."Connection: Close\r\n\r\n";
+  }
+  
+  private function get() {
+    $header = $this->setHeader("get");
+    $fp     = $this->socketOpen();
+    $out    = "";
+    if($fp) { //echo $header;
+      stream_set_timeout($fp, 0, 1000);
+      fwrite($fp, $header);
+      while (!feof($fp)) { 
+          $out .= fgets($fp, 512);
+      }
+      fclose($fp);
+    }
+    return $out;
+  }
+  
+  private function post() {
+    $header = $this->setHeader("get");
+    $fp     = $this->socketOpen();
+    $out    = "";
+    if($fp) {
+      stream_set_timeout($fp, 0, 3000);
+      fwrite($fp, $header);
+      while (!feof($fp)) {
+          $out .= fgets($fp, 512);
+      }
+      fclose($fp);
+    }
+    return $out;
+  }
+  
+}
+
 //15925
 
-$str = "";
-$str = mysql_escape_string($str);
-showResult("
-   select * from form_element where id = 15925;
- ");
+#$str = "";
+#$str = mysql_escape_string($str);
+#showResult("
+#   select * from form_element where id = 15925;
+# ");
 
 #  $str = 'A következőkben mutatunk Önnek egy TV reklámot. Látta-e Ön ezt a HÉRA TV reklámot mostanában?<br /><br /><div style="with:100;text-align:center"><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" 
 # codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,16,0" 
