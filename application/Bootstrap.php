@@ -16,18 +16,24 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
     );
     /*$router->addRoute(
         'login', new Zend_Controller_Router_Route(
-          'process/',
+          'login/process',
           array(
             'controller'  => 'login',
-            'action'      => 'process'
+            'action'      => 'processAction'
           )
         )
     );*/
   }
   
+  protected function _initSession() {
+    Zend_Session::start();
+    $sessionUser = new Zend_Session_Namespace('sessionUser');
+  }
+  
+  
   protected function _initPaths() { 
-    preg_match("/(.*)(\/index\.php)/", $_SERVER["SCRIPT_NAME"], $matches);
-    define('WEB_ROOT', "http://{$_SERVER['HTTP_HOST']}{$matches[1]}");
+    //preg_match("/(.*)(\/index\.php)/", $_SERVER["SCRIPT_NAME"], $matches);
+    //define('WEB_ROOT', "http://{$_SERVER['HTTP_HOST']}{$matches[1]}");
     $rootDir = dirname(dirname(__FILE__));
     define('ROOT_DIR', $rootDir);
     set_include_path(get_include_path()

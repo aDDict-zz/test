@@ -3,19 +3,27 @@
 class LoginForm extends FormBuilder{
   
   protected function login(){
+    // bla
+  }
+  
+  protected function createForm(){
     return array(
       "title"   => "Login",
-      "action"  => WEB_ROOT."/login/process",
+      //"action"  => WEB_ROOT."/login/process",
+      "action"  => "/login/process",
       "method"  => "post",
       "items"   => array(
         array(
           "xtype"       => 'textfield',
           "fieldLabel"  => 'username',
+          "style"       => "padding:15px;padding-bottom:0px;padding-top:7px;",
           "name"        => 'username'
         ),
         array(
           "xtype"       => 'textfield',
+          "inputType"   => 'password',
           "fieldLabel"  => 'password',
+          "style"       => "padding:15px;padding-bottom:0px;padding-top:7px;",
           "name"        => 'password'
         ),
         array(
@@ -26,71 +34,19 @@ class LoginForm extends FormBuilder{
         )
       )
     );
-  }  
+  }
+  
+  public function isValid($params){
+    if(!isset($params["username"]) || !$params["username"] != "")
+      return false;
+    
+    if(!isset($params["password"]) || !$params["password"] != "")
+      return false;
+    
+    if(!isset($params["logintoken"]) || $params["logintoken"] != $_SESSION["logintoken"])
+      return false;
+    
+    return true;
+  }
+  
 }
-
-
-
-/*
-    return array(
-      "title"      => "loginForm",
-      "action"    => "/login/process",
-      "method"    => "post",
-      "submit"    => "loginSubmit",
-      "elements"  => array(
-        array(
-          "tag"   => "div",
-          "cls"   => "formElementWrapper",
-          "style" => "",
-          "html"  => "",
-          "cn"    => array(
-            array(
-              "tag"   => "label",
-              "html"  => "user"
-            ),
-            array(
-              "tag"   => "input",
-              "id"    => "user",
-              "type"  => "text",
-              "cls"   => "formElement",
-              "name"  => "username",
-              "value" => ""
-            )
-          )
-        ),
-        array(
-          "tag"   => "div",
-          "cls"   => "formElementWrapper",
-          "style" => "",
-          "html"  => "",
-          "cn"    => array(
-            array(
-              "tag"   => "label",
-              "html"  => "password"
-            ),
-            array(
-              "tag"   => "input",
-              "id"    => "password",
-              "type"  => "password",
-              "cls"   => "formElement",
-              "name"  => "password",
-              "value" => ""
-            )
-          )
-        ),
-        array(
-          "tag"   => "input",
-          "type"  => "hidden",
-          "name"  => "{$this->form}token",
-          "value" => $this->getHash()
-        ),
-        array(
-          "tag"   => "input",
-          "type"  => "submit",
-          "id"    => "loginSubmit",
-          "name"  => "submit",
-          "value" => "login"
-        )
-      )
-    ); 
- */

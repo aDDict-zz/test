@@ -12,20 +12,23 @@ class Adapter implements Zend_Auth_Adapter_Interface {
   
   public function authenticate() {
     
-    $users=array('faheem','123456');
+    //$users=array('vvv','v');
     
-    if(in_array($this->username,$users) && !in_array($this->password,$users)) {
+    $users  = new Application_Model_User();
+    $user   = $users->getUser($this->username); die( print_r( $user ) );
+    
+    /*if(in_array($this->username,$users) && !in_array($this->password,$users)) {
       return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID,$this->password);
     }
     
     if(!in_array($this->username,$users) && in_array($this->password,$users)) {
-      return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_IDENTITY_NOT_FOUND,$this->username);
+      return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_IDENTITY_NOT_FOUND,$this->username, array( "nebassz" ));
     }
     
     if(!in_array($this->username,$users) && !in_array($this->password,$users)) {
       return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_IDENTITY_NOT_FOUND,"{$this->username},{$this->password}");
     }
     
-    return new Zend_Auth_Result(Zend_Auth_Result::SUCCESS);
+    return new Zend_Auth_Result(Zend_Auth_Result::SUCCESS,$this->username);*/
   }
 }

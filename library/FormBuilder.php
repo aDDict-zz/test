@@ -8,7 +8,7 @@ class FormBuilder {
   public function __construct($form) {
     $this->form = $form;
     if(method_exists($this, $form)) {
-      $this->cfg = $this->$form();
+      // bla $this->$form(); or sthing like this
     } else {
       //error
     }
@@ -19,6 +19,7 @@ class FormBuilder {
   }
   
   public function getJSONCfg(){
+    $this->cfg = $this->createForm();
     return Zend_Json::encode($this->cfg); 
   }
   

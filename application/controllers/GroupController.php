@@ -12,7 +12,7 @@ class GroupController extends Zend_Controller_Action {
 
     public function indexAction() {
         $groups = new Application_Model_Groups();
-        $ddd = $groups->getAll(); print_r($ddd);
+        //$ddd = $groups->getAll(); print_r($ddd);
         // disable the rendering of the view
         $this->_helper->viewRenderer->setNoRender(true);
     }
@@ -34,7 +34,7 @@ class GroupController extends Zend_Controller_Action {
       $id     = $params["stub"];
       $groups = new Application_Model_Groups();
       
-      echo  Zend_Json::encode($groups->getGroup($id)); 
+      //echo  Zend_Json::encode($groups->getGroup($id)); 
       // disable the rendering of the view
       $this->_helper->viewRenderer->setNoRender(true);
     }

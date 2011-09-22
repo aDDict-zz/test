@@ -44,7 +44,8 @@ class Application_Model_Groups extends Zend_Db_Table_Abstract {
       
     WHERE g.id = m.group_id
     AND m.user_id = '59446'
-   ")->fetchAll(); return $result;
+   ")->fetchAll(); 
+   return $result;
    
   }
   
