@@ -1115,8 +1115,12 @@ class Smarty
     {
         static $_cache_info = array();
         
-        $_smarty_old_error_level = $this->debugging ? error_reporting() : error_reporting(isset($this->error_reporting)
+        $_smarty_old_error_level = /*$this->debugging*/1 ? error_reporting() : error_reporting(isset($this->error_reporting)
                ? $this->error_reporting : error_reporting() & ~E_NOTICE);
+               
+               
+        //$_smarty_old_error_level = error_reporting();
+        //deb($this, 1);   
 
         if (!$this->debugging && $this->debugging_ctrl == 'URL') {
             $_query_string = $this->request_use_auto_globals ? $_SERVER['QUERY_STRING'] : $GLOBALS['HTTP_SERVER_VARS']['QUERY_STRING'];

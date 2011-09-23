@@ -394,7 +394,7 @@ var Box = function(obj, title, feed, contentClosed, itemsNr, type, color, editab
 			if(onRefresh) titleLink.innerHTML = title;
         }
 		
-		function parseRSS(r, onRefresh){						
+		function parseRSS(r, onRefresh){ 		
 			content.innerHTML = r.responseText;			
 			newsList = content.childNodes[0];
 			if(onRefresh) titleLink.innerHTML = title;

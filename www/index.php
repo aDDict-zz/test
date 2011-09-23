@@ -6,26 +6,29 @@
 	include_once('inc/smarty.config.php');
 	include_once('inc/page_functions.php');
 	include_once('inc/db_prop.inc.php');
-	$smarty->cache = 0; 
+	
 	//die( $smarty->cache );
+	
+	//error_reporting(E_ERROR);
+	
 	
   $connection = mysql_connect($host, $user, $psw) or die(mysql_error()); 
 	$db = mysql_select_db($data_base, $connection) or die(mysql_error());
 	mysql_query("Set names 'UTF8'") or die(mysql_error());
 	
-	$smarty = new Smarty; 
-    $smarty->assign("var", $_HI_var); //deb( $_HI_var,1 );
+	  $smarty = new Smarty; 
+    $smarty->assign("var", $_HI_var); //deb( $_HI_var );
 
     $news_id = isset($_REQUEST["news_id"]) ? intval($_REQUEST["news_id"]) : 0;
     $smarty->assign("news_id", $news_id);
     if (isset($_REQUEST["from"])) $smarty->assign("newslink_from", $_REQUEST["from"]);
     if (!$news_id) {
         if(!empty($_COOKIE['Hirek'])){
-            $user = explode(':', $_COOKIE['Hirek']);
+            $user = explode(':', $_COOKIE['Hirek']); //deb( $user );
             if(is_numeric($user[0]) && $user[0]!='' && $user[1]!=''){			
                 $_SESSION['logged'] = $_COOKIE['Hirek'];
             }
-        }
+        } //deb( $_SESSION );
         if(!isset($_SESSION["logged"]) || $_SESSION['logged']==''){
             $_SESSION['logged'] = '-1:';
             //header('Location: register.php');
@@ -63,7 +66,7 @@
 
     $smarty->assign("pages", get_pages());
     
-    if (isset($pages[$page_id])) {
+    if (isset($pages[$page_id])) { //deb( $page_id );
         $smarty->assign("PAGE_TITLE", $pages[$page_id]["page_title"]);
         $smarty->assign("PAGE_DESCRIPTION", $pages[$page_id]["page_description"]);
         $smarty->assign("PAGE_KEYWORDS", $pages[$page_id]["page_keywords"]);

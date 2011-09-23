@@ -105,7 +105,12 @@
         if ($debug) {
     		echo $query;
         } 
-		$results = search_lucene($total_results, $lib_path, $xml_path, $index_base_path, $query, (($ppage-1)*$plimit), $ppage*$plimit, $period);
+		//$results = search_lucene($total_results, $lib_path, $xml_path, $index_base_path, $query, (($ppage-1)*$plimit), $ppage*$plimit, $period);
+		
+#		if($_COOKIE["Hirek"] == "5931:robthot@gmail.com") {
+#		  die( "asd" );
+#		}
+		
         if ($debug) { 
     		echo "search_lucene executed";
         }

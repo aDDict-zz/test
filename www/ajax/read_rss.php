@@ -35,7 +35,7 @@ if (isset($_REQUEST["debug"]) && $_REQUEST["debug"] == "apro") {
             if (empty($feed) && isset($_REQUEST["feed_id"])) {
                 $feed_id = mysql_real_escape_string($_REQUEST["feed_id"]);
                 if ($feed_id) {
-                    $sql = "select * from user_feeds2 where id = '$feed_id'";
+                    $sql = "select * from user_feeds2 where id = '$feed_id'"; 
                     $r = mysql_query($sql)  or die(mysql_error());
                     if ($k = mysql_fetch_assoc($r)) {
                         if ($__user_id == $k["user_id"] || $k["user_id"] == $_HI_var->keywords_feed_user_id) {
@@ -45,7 +45,7 @@ if (isset($_REQUEST["debug"]) && $_REQUEST["debug"] == "apro") {
                     }
                 }
             }
-			if($feed != ""){													
+			if($feed != ""){			
                 header('Content-type:text/html; charset=utf-8');										
                 $smarty->cache_lifetime = 3000; 
                 $smarty->compile_check = true;

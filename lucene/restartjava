@@ -22,17 +22,17 @@ while ($child ne 0)
 {
 	++$motor;
 	print "(re)Restarting Motor for the ".$motor.". time\n";
-	system("cd /var/www/hirek.hu/www/lucene/hirek/ && java Motor");
+	system("cd /home/vvv/sites/hirekhu/ruby/ && aggregator.rb");
 	sleep(1);
 }
 $child = fork();
 while ($child ne 0)
-{
-	++$updater;
-	print "(re)Restarting Updater for the ".$updater.". time\n";
-	system("cd /var/www/hirek.hu/www/lucene/hirek/ && java Updater");
-	sleep 1;
-}
+#{
+#	++$updater;
+#	print "(re)Restarting Updater for the ".$updater.". time\n";
+#	system("cd /var/www/hirek.hu/www/lucene/hirek/ && java Updater");
+#	sleep 1;
+#}
 
 while (1) { sleep(10); }
 

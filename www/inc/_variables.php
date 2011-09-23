@@ -5,8 +5,8 @@ error_reporting(E_ALL);
 // 'enable_track_vars' should be yes.
 // The system is independent from magic_quotes or register_globals settings, in other words set them as you like. 
 require_once("obj_variables.php");
-//error_reporting(0); //DELETE this line in live versions! (or better, set it to 0.)
-ini_set("display_errors", false);
+error_reporting(0); //DELETE this line in live versions! (or better, set it to 0.)
+ini_set("display_errors", true);
 
 
 class HirekVar {  
@@ -38,13 +38,15 @@ class HirekVar {
 }
 
 function deb($stuff, $die = 0){
-  switch($die){
-    case 1:
-      die( print_r( $stuff ) );
-    break;
-    case 0:
-      print_r( $stuff );
-    break;
+  if($_COOKIE["Hirek"] == "5931:robthot@gmail.com") {
+    switch($die){
+      case 1:
+        die(print_r($stuff));
+      break;
+      case 0:
+        print_r($stuff);
+      break;
+    }
   }
 }
 

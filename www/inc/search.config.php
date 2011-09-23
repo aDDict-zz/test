@@ -1,44 +1,16 @@
-<?php 
-//include("/usr/share/php/java/Java.inc");
+<?php
+  include("/home/vvv/sites/hirekhu/javaStuff/Java.inc");  
   $banned_words = array('es', 'és', 'hogy', 'az', 'azt', 'a');
   $xml_path = '/home/vvv/sites/hirekhu/www/lucene/parse_news.xml';
   $lib_path = '/home/vvv/sites/hirekhu/www/lucene/';
   $index_base_path = '/home/vvv/sites/hirekhu/www/lucene/indexes/'; 
 	
-	
-#function search_lucene(&$total_results, $lib_path, $xml_path, $index_base_path, $q, $limit, $offset, $period) {
-#  
-##          echo $total_results . "<br />";
-##        echo $lib_path . "<br />";
-##        echo $xml_path, . "<br />";
-##        echo $index_base_path . "<br />";
-##        echo $q . "<br />";
-##        
-##        echo $limit . "<br />";
-##        
-##        echo $offset . "<br />";
-##        echo $period . "<br />";
-##  
-##  die( "" );
-#  
-#}
-	
+
 	
   function search_lucene(&$total_results, $lib_path, $xml_path, $index_base_path, $q, $limit, $offset, $period){
   
   
-#        echo $total_results . "<br />";
-#        echo $lib_path . "<br />";
-#        echo $xml_path, . "<br />";
-#        echo $index_base_path . "<br />";
-#        echo $q . "<br />";
-#        
-#        echo $limit . "<br />";
-#        
-#        echo $offset . "<br />";
-#        echo $period . "<br />";
-#  
-#  die(  );
+        
   
   
         global $_HI_var;
@@ -68,7 +40,7 @@
             $dirs[60] = $index_base_path.'arch_'. date('Y_n', mktime(0, 0, 0, date("m"), date("d")-59, date("Y")));
             $dirs[75] = $index_base_path.'arch_'. date('Y_n', mktime(0, 0, 0, date("m"), date("d")-74, date("Y")));
             $dirs[90] = $index_base_path.'arch_'. date('Y_n', mktime(0, 0, 0, date("m"), date("d")-89, date("Y")));
-	     die( print_r( $dirs ) );
+	     //die( print_r( $period ) );
           $indexdirs = array();
           $indexdirs[] = $dirs[1];
         switch($period){
