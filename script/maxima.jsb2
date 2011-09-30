@@ -1,0 +1,36 @@
+{
+    projectName: 'maxima',
+    deployDir: '../public/js/build',
+    licenseText: "Maxima Javascript Engine Built on ExtJs 4.0, @author robThot, hirekmedia",
+    pkgs: [{
+    	name: 'Maxima New Engine',
+        file: 'main.js',
+        isDebug: true,
+        fileIncludes: [{
+            text: 'classes.js',
+            path: '../public/js/src/classes/'
+        },{
+            text: 'groupController.js',
+            path: '../public/js/src/controller/'
+        },{
+            text: 'loginController.js',
+            path: '../public/js/src/controller/'
+        },{
+            text: 'groupView.js',
+            path: '../public/js/src/view/'
+        },{
+            text: 'loginView.js',
+            path: '../public/js/src/view/'
+        },{
+            text: 'groupModel.js',
+            path: '../public/js/src/model/'
+        },{
+            text: 'loginModel.js',
+            path: '../public/js/src/model/'
+        },{
+            text: 'router.js',
+            path: '../public/js/src/classes/'
+        }]   
+	}],
+	resources: []
+}

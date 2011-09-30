@@ -15,7 +15,7 @@ class Adapter implements Zend_Auth_Adapter_Interface {
     //$users=array('vvv','v');
     
     $users  = new Application_Model_User();
-    $user   = $users->getUser($this->username); die( print_r( $user ) );
+    $user   = $users->getUser($this->username); //die( print_r( $user ) );
     
     /*if(in_array($this->username,$users) && !in_array($this->password,$users)) {
       return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID,$this->password);
