@@ -10,6 +10,12 @@
             text: 'classes.js',
             path: '../public/js/src/classes/'
         },{
+            text: 'IEHH.js',
+            path: '../public/js/src/classes/'
+        },{
+            text: 'router.js',
+            path: '../public/js/src/classes/'
+        },{
             text: 'groupController.js',
             path: '../public/js/src/controller/'
         },{
