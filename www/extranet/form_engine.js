@@ -942,7 +942,7 @@ function mx_create(w,pws) {
                                   }
                                   
                               }
-                              else { if(i == 31) alert("FOKK");
+                              else { if(i == 31)
                                   z("<input type='checkbox' id='"+idname+"' name='"+idname+"' value='1' "+bact+"\">");
                               }
                               colcnt++;

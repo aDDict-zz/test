@@ -62,7 +62,7 @@ function get_proc_list($data) {
                         
       $quq="select m.id,m.group_id,m.send_plan,m.tlb_count,substring(m.create_date,12,5) cdate,g.name,m.subject,m.spool,m.tlb_queue_plan,g.important,m.send_stopped
             from messages m,groups g,members p where m.tlb_finished='no' and m.send_plan>0 
-            and m.group_id=g.id and g.id=p.group_id and p.user_id='$data[auid]' and p.membership in ('owner','moderator')";
+            and m.group_id=g.id and g.id=p.group_id and p.user_id='$data[auid]' and p.membership in ('owner','moderator')"; die( $quq );
       $qur=mysql_query($quq);
       if ($qur && mysql_num_rows($qur)) {
           while ($quk=mysql_fetch_array($qur)) {

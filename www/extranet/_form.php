@@ -563,7 +563,7 @@ var cdtn=new Date();var cdt=cdtn.getFullYear();var cdtt=cdtn.getMonth();cdt+=' '
         $mx_err="";
         for ($i=0;$i<10;$i++) { $i?$mx_err.=",":1; $mx_err.="'".$word["gen_err$i$this->megszolitas"]."'"; }
         $this->formlang="hu";
-        if ($this->form_id==195 || $this->form_id==231 || $this->form_id==234 || $this->form_id==256 || $this->form_id==274) {
+        if ($this->form_id==195 || $this->form_id==231 || $this->form_id==234 || $this->form_id==256 || $this->form_id==274 || $this->form_id==323) {
             $this->formlang="ro";
             $mname=",'ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie','anul','luna','zi'";
             $mx_err="'Nu aţi completat','câmpul.', 'Dată greşită', 'Adresă de e-mail greşită', 'Număr greşit- trebuie să conţină numai cifre', 'Parola şi confirmarea acesteia nu corespund.', 'alegeţi', 'Număr de telefon fix greşit.', 'Număr de telefon mobil greşit.','toate câmpurule solicitate. Vă rugăm bifaţi pe fiecare rând cel puţin un răspuns!'";
@@ -585,12 +585,12 @@ $word["gen_err8tegez"]="Helytelen mobil telefonszám.";
 $word["gen_err9tegez"]="mező minden sorát. Kérünk minden sorban jelölj legalább egy választ!";
 $word["gen_err9magaz"]="mező minden sorát. Kérjük minden sorban jelöljön legalább egy választ!";
 */
-        if ($this->form_id==217 || $this->form_id==176 || $this->form_id==235 || $this->form_id==253 || $this->form_id==275) {
+        if ($this->form_id==217 || $this->form_id==176 || $this->form_id==235 || $this->form_id==253 || $this->form_id==275 || $this->form_id==324) {
             $this->formlang="sl";
             $mx_err="'Vyplňte, prosím, políčko',''";
             for ($i=2;$i<10;$i++) { $i?$mx_err.=",":1; $mx_err.="'".$word["gen_err$i$this->megszolitas"]."'"; }
         }
-        if ($this->form_id==218 || $this->form_id==224 || $this->form_id==175 || $this->form_id==232 || $this->form_id==255 || $this->form_id==273) {
+        if ($this->form_id==218 || $this->form_id==224 || $this->form_id==175 || $this->form_id==232 || $this->form_id==255 || $this->form_id==273 || $this->form_id==321) {
             $this->formlang="cz";
             $mx_err="'Nevyplnili jste buňku',''";
             for ($i=2;$i<10;$i++) { $i?$mx_err.=",":1; $mx_err.="'". ($i==4?"Please type your age correctly!":$word["gen_err$i$this->megszolitas"]) ."'"; }

@@ -139,7 +139,7 @@ foreach ($application_instance_js as $js) {?>
         <?
         $quq="select count(m.id) as linecount, sum(m.send_plan) as sum_send_plan, sum(m.tlb_count) as sum_tlb_count
             from messages m,groups g,members p where m.tlb_finished='no' and m.send_plan>0 
-            and m.group_id=g.id and g.id=p.group_id and p.user_id='$active_userid' and p.membership in ('owner','moderator')";
+            and m.group_id=g.id and g.id=p.group_id and p.user_id='$active_userid' and p.membership in ('owner','moderator')"; 
         $qur=mysql_query($quq);
         if ($quk=mysql_fetch_array($qur)) {
           if ($quk["linecount"]) {
