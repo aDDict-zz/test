@@ -65,17 +65,19 @@ function cloneFormAndDemogsByGroup($group, $form_id, $new_group_id){
       
       //TODO  a beirt form_element_dep recordot vissza kell irni a form_elementbe, tobb is van !!!! 
       
+      $dependencies = array();
       foreach($res as $depIds){
         $PDO->query( getSQLInsert($depIds["id"], "form_element_dep", array("form_element_id" => $newFormElementId)) );
-        $lastInsertId = $PDO->lastInsertId();
-        $thisids = $PDO->query("select dependency from form_element where id = {$newFormElementId}")->fetchAll(PDO::FETCH_ASSOC);
+        $dependencies[] = $PDO->lastInsertId();
+        // $lastInsertId = $PDO->lastInsertId();
+        // $thisids = $PDO->query("select dependency from form_element where id = {$newFormElementId}")->fetchAll(PDO::FETCH_ASSOC);
         // just simply write to the dependency
-        $thisDependency = "{$thisids[0]["dependency"]}|{$lastInsertId}";
-        $PDO->query("update form_element set dependency = '{$thisDependency}' where id = {$newFormElementId}");
+        // $thisDependency = "{$thisids[0]["dependency"]}|{$lastInsertId}";
+        // $PDO->query("update form_element set dependency = '{$thisDependency}' where id = {$newFormElementId}");
       }
-      $depOld = $PDO->query("select dependency from form_element where id = {$formElementId["id"]}")->fetchAll(PDO::FETCH_ASSOC);
-      $depNew = $PDO->query("select dependency from form_element where id = {$newFormElementId}")->fetchAll(PDO::FETCH_ASSOC);
-      replaceOldDependencies($depOld[0]["dependency"],$depNew[0]["dependency"]);
+      $depOld         = $PDO->query("select dependency from form_element where id = {$formElementId["id"]}")->fetchAll(PDO::FETCH_ASSOC);
+      $thisDependency = replaceOldDependencies($depOld[0]["dependency"],$dependencies);
+      $PDO->query("update form_element set dependency = '{$thisDependency}' where id = {$newFormElementId}");
     }
   }
   
@@ -147,7 +149,7 @@ function cloneFormAndDemogsByGroup($group, $form_id, $new_group_id){
 * @param {Array/String} arr
 * @param {String}       query
 * @return String
-* it creates an sql query by a table structure with the given parameters
+* it creates an sql query by the table structure with the given parameters
 */
 function getSQLInsert($id, $table, $arr = "", $query = ""){
 
@@ -194,7 +196,14 @@ function getSQLInsert($id, $table, $arr = "", $query = ""){
 }
 
 function replaceOldDependencies($old, $new) {
-  echo "$old : $new\n";
+  $pattern    = "/([0-9]{3,15})/";
+  $parts      = preg_split($pattern,$old);
+  $dependency = "";
+  for($i = 0; $i < count($parts); $i++) {
+    if(isset($new[$i]))
+      $dependency .= $parts[$i] .= $new[$i];  
+  }
+  return $dependency;
 }
 
 /*
