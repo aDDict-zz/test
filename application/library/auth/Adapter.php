@@ -12,23 +12,27 @@ class Adapter implements Zend_Auth_Adapter_Interface {
   
   public function authenticate() {
     
-    //$users=array('vvv','v');
-    
     $users  = new Application_Model_User();
-    $user   = $users->getUser($this->username); //die( print_r( $user ) );
+    $user   = $users->getUser($this->username);
     
-    /*if(in_array($this->username,$users) && !in_array($this->password,$users)) {
+    if(count($user) == 0) {
+      return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_IDENTITY_NOT_FOUND,$this->username, array("nincs ilyen nevu felhasznalo"));
+    }
+    
+    if($this->username == $user[0]["username"] && $this->password != $user[0]["password"]) {
       return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID,$this->password);
     }
     
-    if(!in_array($this->username,$users) && in_array($this->password,$users)) {
-      return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_IDENTITY_NOT_FOUND,$this->username, array( "nebassz" ));
+    if($this->username != $user[0]["username"] && $this->password == $user[0]["password"]) {
+      return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_IDENTITY_NOT_FOUND,$this->username, array("nincs ilyen nevu felhasznalo"));
     }
     
-    if(!in_array($this->username,$users) && !in_array($this->password,$users)) {
+    if($this->username != $user[0]["username"] && $this->password != $user[0]["password"]) {
       return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_IDENTITY_NOT_FOUND,"{$this->username},{$this->password}");
     }
     
-    return new Zend_Auth_Result(Zend_Auth_Result::SUCCESS,$this->username);*/
+    $sessionUser = new Zend_Session_Namespace('sessionUser');
+    $sessionUser->username = $this->username;
+    return new Zend_Auth_Result(Zend_Auth_Result::SUCCESS,$this->username);
   }
 }

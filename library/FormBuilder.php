@@ -8,7 +8,7 @@ class FormBuilder {
   public function __construct($form) {
     $this->form = $form;
     if(method_exists($this, $form)) {
-      // bla $this->$form(); or sthing like this
+      // bla $this->$form(); or sThing like this
     } else {
       //error
     }

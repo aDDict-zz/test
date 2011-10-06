@@ -9,8 +9,8 @@ class LoginForm extends FormBuilder{
   protected function createForm(){
     return array(
       "title"   => "Login",
-      //"action"  => WEB_ROOT."/login/process",
-      "action"  => "/login/process",
+      "action"  => WEB_ROOT."/login/process",
+      //"action"  => "/login/process",
       "method"  => "post",
       "items"   => array(
         array(
