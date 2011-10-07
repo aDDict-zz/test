@@ -49,6 +49,17 @@ Ext.define('AJAX', {
 	},
 	constructor: function() {}
 });
+
+/**
+ * class Globals
+ */
+Ext.define('Globals', {
+  statics: {
+    DEPO   : {}    
+  },
+  constructor : function() {}
+});
+
 /**
  * class Controller
  */
@@ -84,26 +95,7 @@ Ext.define('View', {
 	
 	render 		: function() {},
 	constructor	: function() {}
-});
-
-/**
- * class FormBuilder
- */
-/*Ext.define('FormBuilder', {
-	
-	statics     : {
-		render 		: function(parent, data, scope) {
-		  var form  = data.name,
-          cfg   = data.elements;
-      
-		  Ext.core.DomHelper.append(parent, cfg);
-		  console.log(Ext.cache["ext-document"]);
-		}
-	},
-	
-	constructor	: function() {
-	}
-});*/// iframe hack for the ie history featureless
+});// iframe hack for the ie history featureless
 Ext.define('IEHH', {
 
   statics: {
@@ -155,69 +147,65 @@ Ext.define('IEHH', {
 },
   function(){}
 );
-Ext.define('$$', {
+/**
+ * static class Router
+ */
+Ext.define('Router', {
   
   statics: {
   	
-  	orders    	: ["login","logout","groups","demog"],
-    order     	: "",
-    frontPage 	: "groups",
+    frontPage 	: "Group",
+    route       : "", 
     
-    init      	: function(){
-      if($$.ie)
+    init      	: function() {
+      
+      if(Router.ie)
         IEHH.setup();
       
       Ext.TaskManager.start({
-        run: $$.getOrder,
-        interval: 1000
+        run: Router.getRoute,
+        interval: 2000
       });
     },
   
-    getOrder  	: function(){
-      var matches = window.location.href.match(/(.*)(#)(.*)/);
-      if(matches != null){
-        if(Ext.Array.indexOf($$.orders, matches[3]) == -1){
-          window.location.href = [matches[1],"#",$$.frontPage].join("");
-        } else {
-          if($$.order != matches[3]){
-            if($$.ie)
-              IEHH.changeContent(["#",matches[3]].join(""));
+    getRoute  	: function() {
+      var matches = window.location.href.match(/(.#)(.*)/)[2];
+          
+      if(matches != null)
+        if(Router.route != matches)
+          if(typeof Globals.DEPO[matches] == "undefined" && matches != "") {
+            try {
+              // init and store(its ref) the relevant controller class
+              (new Function(['Globals.DEPO["',matches,'"] = new ',matches,'Controller();'].join("")))();
               
-            $$.order = matches[3];
-            $$.doJob();
+              //set history for ie
+              if(Router.ie)
+                IEHH.changeContent(["#",matches].join(""));
+              
+              Router.route = matches;
+            } catch(err) { console.log(matches);
+              delete Globals.DEPO[matches];
+              Router.setRoute(Router.frontPage);
+            }
           }
-        }
-      } else {
-        window.location.href = [window.location.href,"#",$$.frontPage].join("");
-      }
-    },
-  	
-  	// set up the routing order
-    doJob     	: function(){
-      if($$.order != "")
-        switch($$.order){
-		  case "login":
-      	 	new LoginController();
-          break;
-          case "groups":
-      	 	new GroupController();
-          break;
-          case "demog":
-          	new DemogController();
-          break;
-        }
+        //else
+          //TODO needs refact, we dont need the controller, only the view this time 
+          //Globals.DEPO[matches].getData();
     },
     
+    setRoute    : function(route) {
+      window.location.href = [window.location.href.split("#")[0],"#",route].join("");
+    },
+  	
     constructor: function() {}
   }
 
 },
-  // initCallback
   function(){
     if(navigator.appVersion.match(/MSIE/))
-      $$.ie = 1;
+      Router.ie = 1;
       
-    $$.init();
+    Router.init();
   }
 );Ext.define('GroupController', {
 
@@ -239,8 +227,15 @@ Ext.define('$$', {
 	extend: 'Controller',
 	
 	ajaxCallback: function(scope){
-		var loginView = new LoginView();
-		loginView.render(scope.data);
+	  
+	  // "redirect" if everything is fine
+	  if(scope.data.username) {
+	    Router.setRoute(Router.frontPage);
+	  } else {
+	    // show the loginform
+	    var loginView = new LoginView();
+      loginView.render(scope.data);
+	  }
 	},
 	
 	getData : function(){
@@ -355,68 +350,4 @@ Ext.define('GroupModel', {
 		);
 	}
 	
-});Ext.define('$$', {
-  
-  statics: {
-  	
-  	orders    	: ["login","logout","groups","demog"],
-    order     	: "",
-    frontPage 	: "groups",
-    
-    init      	: function(){
-      if($$.ie)
-        IEHH.setup();
-      
-      Ext.TaskManager.start({
-        run: $$.getOrder,
-        interval: 1000
-      });
-    },
-  
-    getOrder  	: function(){
-      var matches = window.location.href.match(/(.*)(#)(.*)/);
-      if(matches != null){
-        if(Ext.Array.indexOf($$.orders, matches[3]) == -1){
-          window.location.href = [matches[1],"#",$$.frontPage].join("");
-        } else {
-          if($$.order != matches[3]){
-            if($$.ie)
-              IEHH.changeContent(["#",matches[3]].join(""));
-              
-            $$.order = matches[3];
-            $$.doJob();
-          }
-        }
-      } else {
-        window.location.href = [window.location.href,"#",$$.frontPage].join("");
-      }
-    },
-  	
-  	// set up the routing order
-    doJob     	: function(){
-      if($$.order != "")
-        switch($$.order){
-		  case "login":
-      	 	new LoginController();
-          break;
-          case "groups":
-      	 	new GroupController();
-          break;
-          case "demog":
-          	new DemogController();
-          break;
-        }
-    },
-    
-    constructor: function() {}
-  }
-
-},
-  // initCallback
-  function(){
-    if(navigator.appVersion.match(/MSIE/))
-      $$.ie = 1;
-      
-    $$.init();
-  }
-);
+});

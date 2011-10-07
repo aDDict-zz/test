@@ -13,9 +13,11 @@ class LoginController extends Zend_Controller_Action {
   }
   
   public function preDispatch() {
-    /*$auth = Zend_Auth::getInstance();
-    print_r($auth->getIdentity());  
-    die();*/
+    $auth = Zend_Auth::getInstance();
+    if($auth->getIdentity() && $auth->getIdentity() != "") {
+      echo Zend_Json::encode(array("username" => $auth->getIdentity()));
+      die();
+    }
   }
   
   public function processAction() {

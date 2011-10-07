@@ -33,9 +33,6 @@
         },{
             text: 'loginModel.js',
             path: '../public/js/src/model/'
-        },{
-            text: 'router.js',
-            path: '../public/js/src/classes/'
         }]   
 	}],
 	resources: []

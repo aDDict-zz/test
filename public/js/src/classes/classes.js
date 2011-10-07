@@ -46,6 +46,17 @@ Ext.define('AJAX', {
 	},
 	constructor: function() {}
 });
+
+/**
+ * class Globals
+ */
+Ext.define('Globals', {
+  statics: {
+    DEPO   : {}    
+  },
+  constructor : function() {}
+});
+
 /**
  * class Controller
  */
@@ -82,22 +93,3 @@ Ext.define('View', {
 	render 		: function() {},
 	constructor	: function() {}
 });
-
-/**
- * class FormBuilder
- */
-/*Ext.define('FormBuilder', {
-	
-	statics     : {
-		render 		: function(parent, data, scope) {
-		  var form  = data.name,
-          cfg   = data.elements;
-      
-		  Ext.core.DomHelper.append(parent, cfg);
-		  console.log(Ext.cache["ext-document"]);
-		}
-	},
-	
-	constructor	: function() {
-	}
-});*/
