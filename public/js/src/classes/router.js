@@ -18,31 +18,37 @@ Ext.define('Router', {
         interval: 2000
       });
     },
-  
+    
     getRoute  	: function() {
       // TODO needs refact, set up the hashmark order at the url 
-      var matches = window.location.href.match(/(.#)(.*)/)[2];
-          
-      if(matches != null)
-        if(Router.route != matches)
-          if(typeof Globals.DEPO[matches] == "undefined" && matches != "") {
+      var match = window.location.href.match(/(.#)(.*)/)[2];
+      
+      if(match != null)
+        if(Router.route != match)
+          if(typeof Globals.DEPO[[match,"Controller"].join("")] == "undefined" && match != "") {
             try {
               // init and store(its ref) the relevant controller class
-              (new Function(['Globals.DEPO["',matches,'"] = new ',matches,'Controller();'].join("")))();
+              (new Function(['Globals.DEPO["',match,'Controller"] = new ',match,'Controller();'].join("")))();
+              
+              // init and store(its ref) the relevant view class
+              (new Function(['Globals.DEPO["',match,'View"] = new ',match,'View();'].join("")))();
               
               //set history for ie
               if(Router.ie)
-                IEHH.changeContent(["#",matches].join(""));
+                IEHH.changeContent(["#",match].join(""));
               
-              Router.route = matches;
-            } catch(err) { console.log(matches);
-              delete Globals.DEPO[matches];
+              Router.route = match;
+            } catch(err) { console.log(match);
+              delete Globals.DEPO[match];
               Router.setRoute(Router.frontPage);
             }
           }
-        //else
-          //TODO needs refact, we dont need the controller, only the view this time 
-          //Globals.DEPO[matches].getData();
+        else {
+          //TODO needs refact, we dont need the controller, only the view this time, needs a value of the view state, displayed or not or sthing like this
+          //Globals.DEPO[match].getData();
+          console.log( Globals.DEPO[[match,"Controller"].join("")].data );
+          //Globals.DEPO[[match,"View"].join("")].render(Globals.DEPO[[match,"Controller"].join("")].data);
+        }
     },
     
     setRoute    : function(route) {

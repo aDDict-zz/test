@@ -67,6 +67,7 @@ Ext.define('Controller', {
 	
 	model		: {},
 	view		: {},
+	data    : {},
 	
 	constructor	: function() {
 		this.getData();
@@ -93,7 +94,7 @@ Ext.define('Model', {
  */
 Ext.define('View', {
 	
-	render 		: function() {},
+	render 		  : function() {},
 	constructor	: function() {}
 });// iframe hack for the ie history featureless
 Ext.define('IEHH', {
@@ -167,30 +168,37 @@ Ext.define('Router', {
         interval: 2000
       });
     },
-  
+    
     getRoute  	: function() {
-      var matches = window.location.href.match(/(.#)(.*)/)[2];
-          
-      if(matches != null)
-        if(Router.route != matches)
-          if(typeof Globals.DEPO[matches] == "undefined" && matches != "") {
+      // TODO needs refact, set up the hashmark order at the url 
+      var match = window.location.href.match(/(.#)(.*)/)[2];
+      
+      if(match != null)
+        if(Router.route != match)
+          if(typeof Globals.DEPO[[match,"Controller"].join("")] == "undefined" && match != "") {
             try {
               // init and store(its ref) the relevant controller class
-              (new Function(['Globals.DEPO["',matches,'"] = new ',matches,'Controller();'].join("")))();
+              (new Function(['Globals.DEPO["',match,'Controller"] = new ',match,'Controller();'].join("")))();
+              
+              // init and store(its ref) the relevant view class
+              (new Function(['Globals.DEPO["',match,'View"] = new ',match,'View();'].join("")))();
               
               //set history for ie
               if(Router.ie)
-                IEHH.changeContent(["#",matches].join(""));
+                IEHH.changeContent(["#",match].join(""));
               
-              Router.route = matches;
-            } catch(err) { console.log(matches);
-              delete Globals.DEPO[matches];
+              Router.route = match;
+            } catch(err) { console.log(match);
+              delete Globals.DEPO[match];
               Router.setRoute(Router.frontPage);
             }
           }
-        //else
+        else {
           //TODO needs refact, we dont need the controller, only the view this time 
-          //Globals.DEPO[matches].getData();
+          //Globals.DEPO[match].getData();
+          console.log( Globals.DEPO[[match,"Controller"].join("")].data );
+          //Globals.DEPO[[match,"View"].join("")].render(Globals.DEPO[[match,"Controller"].join("")].data);
+        }
     },
     
     setRoute    : function(route) {
@@ -213,8 +221,9 @@ Ext.define('Router', {
 	
 	//this time the relevant model is done with his job, all response data are stored in scope.data
 	ajaxCallback: function(scope){
+	  this.data = scope.data;
 		var groupView = new GroupView();
-		groupView.render(scope.data);
+		groupView.render(this.data);
 	},
 	
 	getData : function(){
@@ -228,13 +237,14 @@ Ext.define('Router', {
 	
 	ajaxCallback: function(scope){
 	  
+	  this.data = scope.data;
 	  // "redirect" if everything is fine
-	  if(scope.data.username) {
+	  if(this.data.username) {
 	    Router.setRoute(Router.frontPage);
 	  } else {
-	    // show the loginform
-	    var loginView = new LoginView();
-      loginView.render(scope.data);
+	    // display the loginform
+	    //var loginView = new LoginView();
+      //loginView.render(scope.data);
 	  }
 	},
 	

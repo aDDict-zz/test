@@ -4,13 +4,14 @@ Ext.define('LoginController', {
 	
 	ajaxCallback: function(scope){
 	  
+	  this.data = scope.data;
 	  // "redirect" if everything is fine
-	  if(scope.data.username) {
+	  if(this.data.username) {
 	    Router.setRoute(Router.frontPage);
 	  } else {
-	    // show the loginform
-	    var loginView = new LoginView();
-      loginView.render(scope.data);
+	    // display the loginform
+	    //var loginView = new LoginView();
+      //loginView.render(scope.data);
 	  }
 	},
 	

@@ -14,6 +14,9 @@ class GroupController extends Zend_Controller_Action {
         $groups = new Application_Model_Groups();
         //$ddd = $groups->getAll(); print_r($ddd);
         // disable the rendering of the view
+        
+        echo Zend_Json::encode(array("valamikulcs" => "masvalamiErtek"));
+        
         $this->_helper->viewRenderer->setNoRender(true);
     }
 
@@ -35,6 +38,7 @@ class GroupController extends Zend_Controller_Action {
       $groups = new Application_Model_Groups();
       
       //echo  Zend_Json::encode($groups->getGroup($id)); 
+      
       // disable the rendering of the view
       $this->_helper->viewRenderer->setNoRender(true);
     }

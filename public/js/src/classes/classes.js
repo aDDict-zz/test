@@ -64,6 +64,7 @@ Ext.define('Controller', {
 	
 	model		: {},
 	view		: {},
+	data    : {},
 	
 	constructor	: function() {
 		this.getData();
@@ -90,6 +91,6 @@ Ext.define('Model', {
  */
 Ext.define('View', {
 	
-	render 		: function() {},
+	render 		  : function() {},
 	constructor	: function() {}
 });
