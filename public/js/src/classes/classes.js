@@ -10,12 +10,14 @@ Ext.define('AJAX', {
 		 * @param {string} 			method
 		 * @param {string} (JSON) 	params
 		 * @param {reference} 		callback
-		 * @param {reference} 		scope
+		 * @param {reference} 		form
+		 * @param {reference}     scope
 		 */
-		ajax: function(url, method, params, callback, scope){
+		ajax: function(url, method, params, callback, scope, form){
 			Ext.Ajax.request({
 			    url		: url,
 			    scope 	: (typeof scope != "undefined" ? scope : null),
+			    form    : (typeof form != "undefined" ? form : null),
 			    method	: method,
 			    params	: params,
 			    success	: callback
@@ -28,9 +30,10 @@ Ext.define('AJAX', {
 		 * @param {JSON}			params
 		 * @param {reference} 		callback
 		 * @param {reference} 		scope
+		 * @param {reference}     form
 		 */
-		get : function(url, params, callback, scope){
-			this.ajax(url, "get", params, callback, scope);
+		get : function(url, params, callback, scope, form){
+			this.ajax(url, "get", params, callback, scope, form);
 		},
 		/**
 		 * @method post
@@ -39,9 +42,10 @@ Ext.define('AJAX', {
 		 * @param {JSON}		 	params
 		 * @param {reference} 		callback
 		 * @param {reference} 		scope
+		 * @param {reference}     form
 		 */
-		post: function(url, params, callback, scope){
-			this.ajax(url, "post", params, callback, scope);
+		post: function(url, params, callback, scope, form){
+			this.ajax(url, "post", params, callback, scope, form);
 		}
 	},
 	constructor: function() {}
@@ -62,9 +66,10 @@ Ext.define('Globals', {
  */
 Ext.define('Controller', {
 	
-	model		: {},
-	view		: {},
-	data    : {},
+	model		 : {},
+	view		 : {},
+	data     : {},
+	showView : true,
 	
 	constructor	: function() {
 		this.getData();
@@ -76,8 +81,11 @@ Ext.define('Controller', {
  */
 Ext.define('Model', {
 	
-	data 		: {},
+	data 		  : {},
 	router 		: {},
+	toJson      : function(str) {
+	  return Ext.decode(str);
+	},
 	
 	constructor	: function(reference) {
 		// storing the relevant controller instance reference for the ajax callback
@@ -91,6 +99,9 @@ Ext.define('Model', {
  */
 Ext.define('View', {
 	
+	scope       : {},
 	render 		  : function() {},
-	constructor	: function() {}
+	constructor	: function(controllerScope) {
+	  this.scope = controllerScope;
+	}
 });

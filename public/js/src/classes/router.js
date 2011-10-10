@@ -6,6 +6,7 @@ Ext.define('Router', {
   statics: {
   	
     frontPage 	: "Group",
+    login       : "Login",
     route       : "", 
     
     init      	: function() {
@@ -20,25 +21,34 @@ Ext.define('Router', {
     },
     
     getRoute  	: function() {
+      
       // TODO needs refact, set up the hashmark order at the url 
-      var match = window.location.href.match(/(.#)(.*)/)[2];
+      if(window.location.href.match(/(.#)(.*)/))
+        var match = window.location.href.match(/(.#)(.*)/)[2];
+      else
+        Router.setRoute(Router.frontPage);
+      
+      if(match == "")
+        Router.setRoute(Router.frontPage);
       
       if(match != null)
         if(Router.route != match)
-          if(typeof Globals.DEPO[[match,"Controller"].join("")] == "undefined" && match != "") {
+          if(typeof Globals.DEPO[[match,"Controller"].join("")] == "undefined" || Globals.DEPO[[match,"Controller"].join("")] == null) {
             try {
+              
               // init and store(its ref) the relevant controller class
               (new Function(['Globals.DEPO["',match,'Controller"] = new ',match,'Controller();'].join("")))();
               
-              // init and store(its ref) the relevant view class
-              (new Function(['Globals.DEPO["',match,'View"] = new ',match,'View();'].join("")))();
-              
+              if(Globals.DEPO[[match,'Controller'].join("")].showView)
+                // init and store(its ref) the relevant view class
+                (new Function(['Globals.DEPO["',match,'Controller"].view = new ',match,'View(Globals.DEPO["' + match + 'Controller"]);'].join("")))();
+                
               //set history for ie
               if(Router.ie)
                 IEHH.changeContent(["#",match].join(""));
               
               Router.route = match;
-            } catch(err) { console.log(match);
+            } catch(err) { console.log(err);
               delete Globals.DEPO[match];
               Router.setRoute(Router.frontPage);
             }
@@ -46,8 +56,9 @@ Ext.define('Router', {
         else {
           //TODO needs refact, we dont need the controller, only the view this time, needs a value of the view state, displayed or not or sthing like this
           //Globals.DEPO[match].getData();
-          console.log( Globals.DEPO[[match,"Controller"].join("")].data );
+          //console.log( Globals.DEPO[[match,"Controller"].join("")].data );
           //Globals.DEPO[[match,"View"].join("")].render(Globals.DEPO[[match,"Controller"].join("")].data);
+          Globals.DEPO[[match,"Controller"].join("")].getData();
         }
     },
     

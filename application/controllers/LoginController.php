@@ -12,7 +12,14 @@ class LoginController extends Zend_Controller_Action {
     return new Adapter($params);
   }
   
-  public function preDispatch() {
+  public function preDispatch() {//die("asdasdasdsad");
+    
+    $request  = $this->getRequest(); 
+    
+    if($request->getActionName() == "logout") {
+      $this->logoutAction();
+    }
+    
     $auth = Zend_Auth::getInstance();
     if($auth->getIdentity() && $auth->getIdentity() != "") {
       echo Zend_Json::encode(array("username" => $auth->getIdentity()));
@@ -38,12 +45,15 @@ class LoginController extends Zend_Controller_Action {
     $auth    = Zend_Auth::getInstance();
     $result  = $auth->authenticate($adapter);
     
-    echo Zend_Json::encode($result->isValid());
+    echo Zend_Json::encode(array("username" => $auth->getIdentity()));
   
     $this->_helper->viewRenderer->setNoRender(true);
   }
   
   public function logoutAction() {
     Zend_Auth::getInstance()->clearIdentity();
+    echo Zend_Json::encode(array("out" => 1));
+    $this->_helper->viewRenderer->setNoRender(true);
+    die();
   }
 }

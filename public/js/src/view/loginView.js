@@ -4,30 +4,27 @@ Ext.define('LoginView', {
 	
 	render: function(data){
 	  
+	  var self = this;
+	  
 	  Ext.create('Ext.window.Window', {
       title     : 'Login',
-      id        : 'loginBody',
+      id        : 'LoginBody',
       renderTo  : Ext.getBody(),
+      resizable : false,
       height    : 180,
       width     : 250,
       layout    : 'fit',
       layout    : 'column',
       items: {  
         xtype     : 'form',
+        id        : 'loginForm',
         height    : 145,
         width     : 237,
         items     : data.items,
-        url       : data.action,
+        //url       : data.action,
         buttons: [{
           text      : 'login',
-          handler   : function() {
-            var form = this.up('form').getForm();
-            form.submit({
-              success : function(form, action){
-                //console.log(form, action);
-              }
-            });
-          }
+          handler   : self.scope.auth
         }]
       }
     }).show();

@@ -22,6 +22,9 @@
             text: 'loginController.js',
             path: '../public/js/src/controller/'
         },{
+            text: 'logoutController.js',
+            path: '../public/js/src/controller/'
+        },{
             text: 'groupView.js',
             path: '../public/js/src/view/'
         },{
@@ -32,6 +35,9 @@
             path: '../public/js/src/model/'
         },{
             text: 'loginModel.js',
+            path: '../public/js/src/model/'
+        },{
+            text: 'logoutModel.js',
             path: '../public/js/src/model/'
         }]   
 	}],

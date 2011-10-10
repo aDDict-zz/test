@@ -1,4 +1,4 @@
-Ext.define('GroupsView', {
+Ext.define('GroupView', {
 
 	extend: 'View',
 	

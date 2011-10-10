@@ -3,8 +3,10 @@
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
   
 	protected function _initRoutes() {  
-    $ctrl = Zend_Controller_Front::getInstance();
+    
+    /*$ctrl = Zend_Controller_Front::getInstance();
     $router = $ctrl->getRouter();
+    
     $router->addRoute(
         'group', new Zend_Controller_Router_Route(
           'group/:stub',
@@ -13,13 +15,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
             'action'      => 'show'
           )
         )
-    );
+    );*/
+    
     /*$router->addRoute(
         'login', new Zend_Controller_Router_Route(
-          'login/process',
+          'logout/:stub',
           array(
             'controller'  => 'login',
-            'action'      => 'processAction'
+            'action'      => 'logoutAction'
           )
         )
     );*/

@@ -3,18 +3,22 @@ Ext.define('LoginModel', {
 	extend: 'Model',
 	
 	mapper: function(data){
-		
 		var self 	= this;
-		// store the data
-		self.data = Ext.JSON.decode(data.responseText);
-		// run the callback method of the relevant controller
+		self.data = self.toJson(data.responseText);
 		self.router.ajaxCallback(self);
 	},
 	
+	authentication : function(scope) {
+	  AJAX.post(
+      scope.data.action,
+      Ext.getCmp("loginForm").getValues(),
+      scope.authCallback,
+      self
+    );
+	},
+	
 	getAjaxData: function(){
-		
 		var self = this;
-		
 		AJAX.get(
 			"login/",
 			"",
