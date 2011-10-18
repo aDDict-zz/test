@@ -337,11 +337,12 @@ Ext.define('Router', {
 
 	extend: 'View',
 	
-	render: function(data){ //console.log("sadsad");
-		//console.log(data);
+	render: function(data){ //alert(data.length);
+		console.log(data);
 	}
 	
-});Ext.define('LoginView', {
+});
+Ext.define('LoginView', {
 
 	extend: 'View',
 	
@@ -387,7 +388,7 @@ Ext.define('GroupModel', {
 		
 		var self 	= this;
 		// store the data
-		self.data 	= Ext.JSON.decode(data.responseText);
+		self.data 	= self.toJson(data.responseText);
 		// call the callback method of the relevant controller
 		self.router.ajaxCallback(self);
 	},
@@ -396,17 +397,17 @@ Ext.define('GroupModel', {
 		
 		var self = this;
 		
-		var datas = {
+		/*var datas = {
 			'elso' : 'ELSO',
 			'masodik' : {
 				'valami' 	: [0,1,2,3],
 				'masvalami' : 'SEMMISEM'
 			}
-		};
+		};*/
 		
 		AJAX.post(
 			"group/",
-			['data=',Ext.JSON.encode(datas)].join(''),
+			"", //['data=',Ext.JSON.encode(datas)].join(''),
 			this.mapper,
 			self
 		);

@@ -13,6 +13,8 @@ class LoginController extends Zend_Controller_Action {
   }
   
   public function preDispatch() {//die("asdasdasdsad");
+    /*print_r( Zend_Session::getId("sessionUser") );
+    die( print_r( get_class_methods(Zend_Session) ) );*/
     
     $request  = $this->getRequest(); 
     

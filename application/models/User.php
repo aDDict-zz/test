@@ -7,7 +7,7 @@ class Application_Model_User extends Zend_Db_Table_Abstract {
   public function getUser($username){
     
     $result = $this->_db->query(
-      "select username, password from user where username = ?",
+      "select * from user where username = ?",
       array($username)
     )->fetchAll(); 
     

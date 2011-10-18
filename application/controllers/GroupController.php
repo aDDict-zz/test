@@ -15,7 +15,7 @@ class GroupController extends Zend_Controller_Action {
         //$ddd = $groups->getAll(); print_r($ddd);
         // disable the rendering of the view
         
-        echo Zend_Json::encode(array("valamikulcs" => "masvalamiErtek"));
+        echo Zend_Json::encode($groups->getAll());
         
         $this->_helper->viewRenderer->setNoRender(true);
     }

@@ -2,8 +2,8 @@ Ext.define('GroupView', {
 
 	extend: 'View',
 	
-	render: function(data){ //console.log("sadsad");
-		//console.log(data);
+	render: function(data){ //alert(data.length);
+		console.log(data);
 	}
 	
 });
