@@ -6,12 +6,12 @@ Ext.define('AJAX', {
 		/**
 		 * @method ajax
 		 * simple wrapper for the Ext.Ajax.request
-		 * @param {string} 			url
-		 * @param {string} 			method
+		 * @param {string} 			    url
+		 * @param {string} 			    method
 		 * @param {string} (JSON) 	params
-		 * @param {reference} 		callback
-		 * @param {reference} 		form
-		 * @param {reference}     scope
+		 * @param {reference} 		  callback
+		 * @param {reference} 		  form
+		 * @param {reference}       scope
 		 */
 		ajax: function(url, method, params, callback, scope, form){
 			Ext.Ajax.request({
@@ -26,8 +26,8 @@ Ext.define('AJAX', {
 		/**
 		 * @method get
 		 * ajax get method
-		 * @param {string} 			url
-		 * @param {JSON}			params
+		 * @param {string} 			  url
+		 * @param {JSON}			    params
 		 * @param {reference} 		callback
 		 * @param {reference} 		scope
 		 * @param {reference}     form
@@ -38,8 +38,8 @@ Ext.define('AJAX', {
 		/**
 		 * @method post
 		 * ajax post method
-		 * @param {string} 			url
-		 * @param {JSON}		 	params
+		 * @param {string} 			  url
+		 * @param {JSON}		 	    params
 		 * @param {reference} 		callback
 		 * @param {reference} 		scope
 		 * @param {reference}     form
@@ -104,4 +104,19 @@ Ext.define('View', {
 	constructor	: function(controllerScope) {
 	  this.scope = controllerScope;
 	}
+});
+
+/**
+ * class Debug
+ */
+Ext.define('Debug', {
+  statics: {
+    parse      : function(obj) {
+      for(var i in obj) {
+        console.log(i, obj);
+      }
+    }
+  },
+  constructor : function() {
+  }
 });

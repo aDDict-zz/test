@@ -5,7 +5,7 @@ Ext.define('Router', {
   
   statics: {
   	
-    frontPage 	: "Group",
+    frontPage 	: "Main",
     login       : "Login",
     route       : "", 
     
@@ -30,7 +30,7 @@ Ext.define('Router', {
       
       if(match == "")
         Router.setRoute(Router.frontPage);
-      
+        
       if(match != null)
         if(Router.route != match)
           if(typeof Globals.DEPO[[match,"Controller"].join("")] == "undefined" || Globals.DEPO[[match,"Controller"].join("")] == null) {

@@ -19,6 +19,9 @@
             text: 'groupController.js',
             path: '../public/js/src/controller/'
         },{
+            text: 'mainController.js',
+            path: '../public/js/src/controller/'
+        },{
             text: 'loginController.js',
             path: '../public/js/src/controller/'
         },{
@@ -31,7 +34,13 @@
             text: 'loginView.js',
             path: '../public/js/src/view/'
         },{
+            text: 'mainView.js',
+            path: '../public/js/src/view/'
+        },{
             text: 'groupModel.js',
+            path: '../public/js/src/model/'
+        },{
+            text: 'mainModel.js',
             path: '../public/js/src/model/'
         },{
             text: 'loginModel.js',

@@ -32,7 +32,7 @@ Ext.define('LoginController', {
 	  if(this.data.username) {
 	    Router.setRoute(Router.frontPage);
 	  } else {
-	    this.view.render(scope.data);
+	    this.view.render(this.data);
 	  }
 	},
 	
@@ -41,7 +41,7 @@ Ext.define('LoginController', {
       Router.setRoute(Router.frontPage);
     else {
       var self = this;
-      self.model = new LoginModel(self); 
+      Globals.DEPO["LoginModel"] = new LoginModel(self);
     }
 	}
 	

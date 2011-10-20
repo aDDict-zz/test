@@ -9,12 +9,12 @@ Ext.define('AJAX', {
 		/**
 		 * @method ajax
 		 * simple wrapper for the Ext.Ajax.request
-		 * @param {string} 			url
-		 * @param {string} 			method
+		 * @param {string} 			    url
+		 * @param {string} 			    method
 		 * @param {string} (JSON) 	params
-		 * @param {reference} 		callback
-		 * @param {reference} 		form
-		 * @param {reference}     scope
+		 * @param {reference} 		  callback
+		 * @param {reference} 		  form
+		 * @param {reference}       scope
 		 */
 		ajax: function(url, method, params, callback, scope, form){
 			Ext.Ajax.request({
@@ -29,8 +29,8 @@ Ext.define('AJAX', {
 		/**
 		 * @method get
 		 * ajax get method
-		 * @param {string} 			url
-		 * @param {JSON}			params
+		 * @param {string} 			  url
+		 * @param {JSON}			    params
 		 * @param {reference} 		callback
 		 * @param {reference} 		scope
 		 * @param {reference}     form
@@ -41,8 +41,8 @@ Ext.define('AJAX', {
 		/**
 		 * @method post
 		 * ajax post method
-		 * @param {string} 			url
-		 * @param {JSON}		 	params
+		 * @param {string} 			  url
+		 * @param {JSON}		 	    params
 		 * @param {reference} 		callback
 		 * @param {reference} 		scope
 		 * @param {reference}     form
@@ -107,6 +107,21 @@ Ext.define('View', {
 	constructor	: function(controllerScope) {
 	  this.scope = controllerScope;
 	}
+});
+
+/**
+ * class Debug
+ */
+Ext.define('Debug', {
+  statics: {
+    parse      : function(obj) {
+      for(var i in obj) {
+        console.log(i, obj);
+      }
+    }
+  },
+  constructor : function() {
+  }
 });// iframe hack for the ie history featureless
 Ext.define('IEHH', {
 
@@ -166,7 +181,7 @@ Ext.define('Router', {
   
   statics: {
   	
-    frontPage 	: "Group",
+    frontPage 	: "Main",
     login       : "Login",
     route       : "", 
     
@@ -191,7 +206,7 @@ Ext.define('Router', {
       
       if(match == "")
         Router.setRoute(Router.frontPage);
-      
+        
       if(match != null)
         if(Router.route != match)
           if(typeof Globals.DEPO[[match,"Controller"].join("")] == "undefined" || Globals.DEPO[[match,"Controller"].join("")] == null) {
@@ -244,15 +259,33 @@ Ext.define('Router', {
 	//this time the relevant model is done with his job, all response data are stored in scope.data
 	ajaxCallback: function(scope){
 	  this.data = scope.data;
-		var groupView = new GroupView();
-		groupView.render(this.data);
+    this.view.render(this.data);
 	},
 	
 	getData : function(){
 		var self = this;
-		new GroupModel(self);
+		Globals.DEPO["GroupModel"] = new GroupModel(self);
 	}
 	
+});Ext.define('MainController', {
+
+  extend: 'Controller',
+  
+  ajaxCallback: function(scope){
+    /*console.log(this);
+    console.log(Globals.DEPO);*/
+   
+    Debug.parse(Globals);
+    
+    this.data = scope.data;
+    //this.view.render(this.data);
+  },
+  
+  getData : function(){
+    var self = this;
+    Globals.DEPO["MainModel"] = new MainModel(self);
+  }
+  
 });Ext.define('LoginController', {
 
 	extend: 'Controller',
@@ -287,7 +320,7 @@ Ext.define('Router', {
 	  if(this.data.username) {
 	    Router.setRoute(Router.frontPage);
 	  } else {
-	    this.view.render(scope.data);
+	    this.view.render(this.data);
 	  }
 	},
 	
@@ -296,7 +329,7 @@ Ext.define('Router', {
       Router.setRoute(Router.frontPage);
     else {
       var self = this;
-      self.model = new LoginModel(self); 
+      Globals.DEPO["LoginModel"] = new LoginModel(self);
     }
 	}
 	
@@ -431,6 +464,15 @@ Ext.define('LoginView', {
 	
 });
 
+Ext.define('MainView', {
+
+  extend: 'View',
+  
+  render: function(data){ alert("MainView");
+  }
+   
+  
+});
 Ext.define('GroupModel', {
 
 	extend: 'Model',
@@ -465,6 +507,39 @@ Ext.define('GroupModel', {
 		);
 	}
 	
+});Ext.define('MainModel', {
+
+  extend: 'Model',
+  
+  mapper: function(data){
+    var self  = this;
+    self.data = {};
+    self.router.ajaxCallback(self);
+  },
+  
+  authentication : function(scope) {
+    /*AJAX.post(
+      scope.data.action,
+      Ext.getCmp("loginForm").getValues(),
+      scope.authCallback,
+      self
+    );*/
+  },
+  
+  getAjaxData: function(){
+    
+    this.mapper();
+    
+    /*var self = this;
+     
+    AJAX.get(
+      "login/",
+      "",
+      this.mapper,
+      self
+    );*/
+  }
+  
 });Ext.define('LoginModel', {
 
 	extend: 'Model',
