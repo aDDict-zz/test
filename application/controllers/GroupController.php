@@ -11,13 +11,16 @@ class GroupController extends Zend_Controller_Action {
     }
 
     public function indexAction() {
-        $groups = new Application_Model_Groups();
-        //$ddd = $groups->getAll(); print_r($ddd);
-        // disable the rendering of the view
-        
-        echo Zend_Json::encode($groups->getAll());
-        
-        $this->_helper->viewRenderer->setNoRender(true);
+      
+      $sessionUser = new Zend_Session_Namespace('sessionUser');
+      
+      $groups = new Application_Model_Groups();
+      //$ddd = $groups->getAll(); print_r($ddd);
+      // disable the rendering of the view
+      
+      echo Zend_Json::encode($groups->getAll($sessionUser));
+      
+      $this->_helper->viewRenderer->setNoRender(true);
     }
 
     public function addAction() {

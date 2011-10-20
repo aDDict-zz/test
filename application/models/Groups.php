@@ -19,7 +19,9 @@ class Application_Model_Groups extends Zend_Db_Table_Abstract {
     return $row->toArray();
   }
     
-  public function getAll(){
+  public function getAll($sessionUser){
+    
+   $uid = $sessionUser->profile[0]["id"];
    
    $result = $this->_db->query("
    
@@ -44,7 +46,7 @@ class Application_Model_Groups extends Zend_Db_Table_Abstract {
         (SELECT id FROM multi WHERE index_grouping='yes')
       
       WHERE g.id = m.group_id
-      AND m.user_id = '59446'
+      AND m.user_id = '{$uid}'
       
    ")->fetchAll(); 
    return $result;

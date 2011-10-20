@@ -215,7 +215,7 @@ Ext.define('Router', {
             }
           }
         else {
-          //TODO needs refact, we dont need the controller, only the view this time, needs a value of the view state, displayed or not or sthing like this
+          //TODO needs refact, we dont need the controller, only the view this time, need the rendered view, displayed or not or sthing like this
           //Globals.DEPO[match].getData();
           //console.log( Globals.DEPO[[match,"Controller"].join("")].data );
           //Globals.DEPO[[match,"View"].join("")].render(Globals.DEPO[[match,"Controller"].join("")].data);
@@ -338,7 +338,58 @@ Ext.define('Router', {
 	extend: 'View',
 	
 	render: function(data){ //alert(data.length);
-		console.log(data);
+	  
+	  Ext.create('Ext.data.Store', {
+      storeId:'groups',
+      fields:['title', 'realname'],
+      data:{'items': data},
+      proxy: {
+        type: 'memory',
+        reader: {
+          type: 'json',
+          root: 'items'
+        }
+      }
+    });
+	  
+	  Ext.create('Ext.window.Window', {
+      title     : 'Csoportok:',
+      id        : '',
+      renderTo  : Ext.getBody(),
+      resizable : true,
+      height    : 600,
+      width     : 420,
+      layout    : 'fit',
+      layout    : 'column',
+      items: {
+        xtype     : 'grid',
+        store: Ext.data.StoreManager.lookup('groups'),
+        columns: [
+          {header: 'Title',  dataIndex: 'realname'},
+          {header: 'Realname', dataIndex: 'title'}
+        ],
+        id        : '',
+        layout    : 'fit',
+        //layout    : 'column',
+        height    : 550,
+        width     : 400
+      }
+    }).show();
+    
+	  
+		/*Ext.create('Ext.grid.Panel', {
+      title: 'Csoportok: ',
+      store: Ext.data.StoreManager.lookup('groups'),
+      columns: [
+        {header: 'Title',  dataIndex: 'realname'},
+        {header: 'Realname', dataIndex: 'title'}
+      ],
+      layout    : 'fit',
+      layout    : 'column',
+      height    : 400,
+      width     : 400,
+      renderTo: Ext.getBody() //Ext.get("groupBody")
+    });*/
 	}
 	
 });
@@ -388,6 +439,7 @@ Ext.define('GroupModel', {
 		
 		var self 	= this;
 		// store the data
+		
 		self.data 	= self.toJson(data.responseText);
 		// call the callback method of the relevant controller
 		self.router.ajaxCallback(self);

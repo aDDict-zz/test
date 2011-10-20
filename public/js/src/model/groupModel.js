@@ -6,6 +6,7 @@ Ext.define('GroupModel', {
 		
 		var self 	= this;
 		// store the data
+		
 		self.data 	= self.toJson(data.responseText);
 		// call the callback method of the relevant controller
 		self.router.ajaxCallback(self);

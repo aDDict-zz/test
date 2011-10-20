@@ -54,7 +54,7 @@ Ext.define('Router', {
             }
           }
         else {
-          //TODO needs refact, we dont need the controller, only the view this time, needs a value of the view state, displayed or not or sthing like this
+          //TODO needs refact, we dont need the controller, only the view this time, need the rendered view, displayed or not or sthing like this
           //Globals.DEPO[match].getData();
           //console.log( Globals.DEPO[[match,"Controller"].join("")].data );
           //Globals.DEPO[[match,"View"].join("")].render(Globals.DEPO[[match,"Controller"].join("")].data);
