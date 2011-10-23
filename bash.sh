@@ -32,7 +32,7 @@ git config --global core.editor "medit"
 source /home/vvv/scripts/git-completion.bash
 
 
-source /usr/lib/libui.sh
+#source /usr/lib/libui.sh
 
 
 export GIT_PS1_SHOWDIRTYSTATE=true
