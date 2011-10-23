@@ -35,6 +35,7 @@ source /home/vvv/scripts/git-completion.bash
 #source /usr/lib/libui.sh
 
 
+
 export GIT_PS1_SHOWDIRTYSTATE=true
 
 # export PS1='\n\[\e[1;32m\]\h:\w\[\e[0;33m\]$(__git_ps1) \[\e[1;33m\]\n\$ \[\033[m\]'
@@ -57,3 +58,7 @@ else
 fi
 
 export EDITOR="vim"
+
+#export PATH="/opt/android-sdk/platform-tools/"
+
+PATH=$PATH:/opt/android-sdk/platform-tools/
