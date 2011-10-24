@@ -6,9 +6,9 @@ Ext.define('LoginView', {
 	  
 	  var self = this;
 	  
-	  Ext.create('Ext.window.Window', {
+	  var view = Ext.create('Ext.window.Window', {
       title     : 'Login',
-      id        : 'LoginBody',
+      id        : 'LoginForm',
       renderTo  : Ext.getBody(),
       resizable : false,
       height    : 180,
@@ -28,8 +28,9 @@ Ext.define('LoginView', {
         }]
       }
     }).show();
+    
+    return view;
 	}
-	
 	/*submit: function(){
 	  
 	}*/

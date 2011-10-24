@@ -66,12 +66,28 @@ Ext.define('Globals', {
  */
 Ext.define('Controller', {
 	
-	model		 : {},
-	view		 : {},
-	data     : {},
-	showView : true,
+	model      : {},
+	view		   : {},
+	data       : {},
+	nameSpace  : "",
+	showView   : true,
+	
+	getNameSpace: function() {
+	  var matches    = this.$className.match(/(.*)(Controller)/);
+	  this.nameSpace = matches[1];
+	},
 	
 	constructor	: function() {
+	  var self = this;
+	  self.getNameSpace();
+	  self.model  = eval(['new ',self.nameSpace,'Model()'].join(''));
+	  self.model.router = self;
+	  
+    if(this.showView == true) {
+      self.view = eval(['new ',self.nameSpace,'View()'].join(''));
+      self.view.scope = self;
+    }
+    
 		this.getData();
 	}
 });

@@ -8,27 +8,13 @@ Ext.define('LogoutController', {
     
     Globals.DEPO["LoginController"] = null;
     
-    this.data = scope.data;
-    
-    // "redirect" if everything is fine
-    /*if(this.data.username) {
-      Router.setRoute(Router.frontPage);
-    } else {
-      // display the loginform
-      //var loginView = new LoginView();
-      //loginView.render(scope.data);
-    }*/
+    Router.setRoute(Router.login);
   },
   
   getData : function(){
     
-    
     if(this.data.username)
       Router.setRoute(Router.login);
-    else {
-      var self = this;
-      new LogoutModel(self); 
-    }
   }
   
 });

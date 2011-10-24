@@ -69,12 +69,28 @@ Ext.define('Globals', {
  */
 Ext.define('Controller', {
 	
-	model		 : {},
-	view		 : {},
-	data     : {},
-	showView : true,
+	model      : {},
+	view		   : {},
+	data       : {},
+	nameSpace  : "",
+	showView   : true,
+	
+	getNameSpace: function() {
+	  var matches    = this.$className.match(/(.*)(Controller)/);
+	  this.nameSpace = matches[1];
+	},
 	
 	constructor	: function() {
+	  var self = this;
+	  self.getNameSpace();
+	  self.model  = eval(['new ',self.nameSpace,'Model()'].join(''));
+	  self.model.router = self;
+	  
+    if(this.showView == true) {
+      self.view = eval(['new ',self.nameSpace,'View()'].join(''));
+      self.view.scope = self;
+    }
+    
 		this.getData();
 	}
 });
@@ -215,10 +231,6 @@ Ext.define('Router', {
               // init and store(its ref) the relevant controller class
               (new Function(['Globals.DEPO["',match,'Controller"] = new ',match,'Controller();'].join("")))();
               
-              if(Globals.DEPO[[match,'Controller'].join("")].showView)
-                // init and store(its ref) the relevant view class
-                (new Function(['Globals.DEPO["',match,'Controller"].view = new ',match,'View(Globals.DEPO["' + match + 'Controller"]);'].join("")))();
-                
               //set history for ie
               if(Router.ie)
                 IEHH.changeContent(["#",match].join(""));
@@ -234,7 +246,7 @@ Ext.define('Router', {
           //Globals.DEPO[match].getData();
           //console.log( Globals.DEPO[[match,"Controller"].join("")].data );
           //Globals.DEPO[[match,"View"].join("")].render(Globals.DEPO[[match,"Controller"].join("")].data);
-          Globals.DEPO[[match,"Controller"].join("")].getData();
+          //Globals.DEPO[[match,"Controller"].join("")].getData();
         }
     },
     
@@ -271,19 +283,20 @@ Ext.define('Router', {
 
   extend: 'Controller',
   
-  ajaxCallback: function(scope){
-    /*console.log(this);
-    console.log(Globals.DEPO);*/
-   
-    Debug.parse(Globals);
+  ajaxCallback: function(scope){},
+  
+  main: function() { 
     
-    this.data = scope.data;
-    //this.view.render(this.data);
+    //var self = this;
+    
+    //console.log(self.view);
+    
+    //Debug.parse(this.view);
+    this.view.render();
   },
   
   getData : function(){
-    var self = this;
-    Globals.DEPO["MainModel"] = new MainModel(self);
+    this.main();
   }
   
 });Ext.define('LoginController', {
@@ -292,12 +305,12 @@ Ext.define('Router', {
 	
 	auth: function() {
     var self = Globals.DEPO["LoginController"];
-    Globals.DEPO["LoginController"].model.authentication(self);
+    self.model.authentication(self);
 	},
 	
 	authCallback : function(response, req) {
-    var self   = Globals.DEPO["LoginController"];
-    var res    = self.model.toJson(response.responseText);
+    var self      = Globals.DEPO["LoginController"],
+        res       = self.model.toJson(response.responseText);
 	  
 	  if(res.username == null) {
 	    Ext.getCmp('loginForm').getForm().setValues({
@@ -306,7 +319,7 @@ Ext.define('Router', {
       })
       Ext.Msg.alert('Login failed', 'Try again!');
 	  } else {
-	    Ext.getCmp("LoginBody").hide();
+	    Ext.getCmp("LoginForm").hide();
 	    Router.setRoute(Router.frontPage);
 	  }
 	},
@@ -316,21 +329,19 @@ Ext.define('Router', {
 	  Globals.DEPO["LogoutController"] = null;
 	  
 	  this.data = scope.data;
-	  // "redirect" if everything is fine
+	  
 	  if(this.data.username) {
 	    Router.setRoute(Router.frontPage);
 	  } else {
-	    this.view.render(this.data);
+	    if(Ext.get("LoginForm") == null) {
+	     this.view.render(this.data);
+      }
 	  }
 	},
 	
 	getData : function(){
-    if(this.data.username)
+	  if(this.data.username)
       Router.setRoute(Router.frontPage);
-    else {
-      var self = this;
-      Globals.DEPO["LoginModel"] = new LoginModel(self);
-    }
 	}
 	
 });Ext.define('LogoutController', {
@@ -343,27 +354,13 @@ Ext.define('Router', {
     
     Globals.DEPO["LoginController"] = null;
     
-    this.data = scope.data;
-    
-    // "redirect" if everything is fine
-    /*if(this.data.username) {
-      Router.setRoute(Router.frontPage);
-    } else {
-      // display the loginform
-      //var loginView = new LoginView();
-      //loginView.render(scope.data);
-    }*/
+    Router.setRoute(Router.login);
   },
   
   getData : function(){
     
-    
     if(this.data.username)
       Router.setRoute(Router.login);
-    else {
-      var self = this;
-      new LogoutModel(self); 
-    }
   }
   
 });Ext.define('GroupView', {
@@ -434,9 +431,9 @@ Ext.define('LoginView', {
 	  
 	  var self = this;
 	  
-	  Ext.create('Ext.window.Window', {
+	  var view = Ext.create('Ext.window.Window', {
       title     : 'Login',
-      id        : 'LoginBody',
+      id        : 'LoginForm',
       renderTo  : Ext.getBody(),
       resizable : false,
       height    : 180,
@@ -456,8 +453,9 @@ Ext.define('LoginView', {
         }]
       }
     }).show();
+    
+    return view;
 	}
-	
 	/*submit: function(){
 	  
 	}*/
@@ -512,32 +510,9 @@ Ext.define('GroupModel', {
   extend: 'Model',
   
   mapper: function(data){
-    var self  = this;
-    self.data = {};
-    self.router.ajaxCallback(self);
-  },
-  
-  authentication : function(scope) {
-    /*AJAX.post(
-      scope.data.action,
-      Ext.getCmp("loginForm").getValues(),
-      scope.authCallback,
-      self
-    );*/
   },
   
   getAjaxData: function(){
-    
-    this.mapper();
-    
-    /*var self = this;
-     
-    AJAX.get(
-      "login/",
-      "",
-      this.mapper,
-      self
-    );*/
   }
   
 });Ext.define('LoginModel', {
@@ -577,9 +552,9 @@ Ext.define('GroupModel', {
     
     var self  = this;
     // store the data
-    self.data = Ext.JSON.decode(data.responseText);
+    this.data = Ext.JSON.decode(data.responseText);
     // run the callback method of the relevant controller
-    self.router.ajaxCallback(self);
+    this.router.ajaxCallback(this);
   },
   
   getAjaxData: function(){

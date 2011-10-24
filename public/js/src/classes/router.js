@@ -39,10 +39,6 @@ Ext.define('Router', {
               // init and store(its ref) the relevant controller class
               (new Function(['Globals.DEPO["',match,'Controller"] = new ',match,'Controller();'].join("")))();
               
-              if(Globals.DEPO[[match,'Controller'].join("")].showView)
-                // init and store(its ref) the relevant view class
-                (new Function(['Globals.DEPO["',match,'Controller"].view = new ',match,'View(Globals.DEPO["' + match + 'Controller"]);'].join("")))();
-                
               //set history for ie
               if(Router.ie)
                 IEHH.changeContent(["#",match].join(""));
@@ -58,7 +54,7 @@ Ext.define('Router', {
           //Globals.DEPO[match].getData();
           //console.log( Globals.DEPO[[match,"Controller"].join("")].data );
           //Globals.DEPO[[match,"View"].join("")].render(Globals.DEPO[[match,"Controller"].join("")].data);
-          Globals.DEPO[[match,"Controller"].join("")].getData();
+          //Globals.DEPO[[match,"Controller"].join("")].getData();
         }
     },
     

@@ -2,19 +2,20 @@ Ext.define('MainController', {
 
   extend: 'Controller',
   
-  ajaxCallback: function(scope){
-    /*console.log(this);
-    console.log(Globals.DEPO);*/
-   
-    Debug.parse(Globals);
+  ajaxCallback: function(scope){},
+  
+  main: function() { 
     
-    this.data = scope.data;
-    //this.view.render(this.data);
+    //var self = this;
+    
+    //console.log(self.view);
+    
+    //Debug.parse(this.view);
+    this.view.render();
   },
   
   getData : function(){
-    var self = this;
-    Globals.DEPO["MainModel"] = new MainModel(self);
+    this.main();
   }
   
 });

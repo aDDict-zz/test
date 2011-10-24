@@ -6,9 +6,9 @@ Ext.define('LogoutModel', {
     
     var self  = this;
     // store the data
-    self.data = Ext.JSON.decode(data.responseText);
+    this.data = Ext.JSON.decode(data.responseText);
     // run the callback method of the relevant controller
-    self.router.ajaxCallback(self);
+    this.router.ajaxCallback(this);
   },
   
   getAjaxData: function(){

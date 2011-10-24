@@ -4,12 +4,12 @@ Ext.define('LoginController', {
 	
 	auth: function() {
     var self = Globals.DEPO["LoginController"];
-    Globals.DEPO["LoginController"].model.authentication(self);
+    self.model.authentication(self);
 	},
 	
 	authCallback : function(response, req) {
-    var self   = Globals.DEPO["LoginController"];
-    var res    = self.model.toJson(response.responseText);
+    var self      = Globals.DEPO["LoginController"],
+        res       = self.model.toJson(response.responseText);
 	  
 	  if(res.username == null) {
 	    Ext.getCmp('loginForm').getForm().setValues({
@@ -18,7 +18,7 @@ Ext.define('LoginController', {
       })
       Ext.Msg.alert('Login failed', 'Try again!');
 	  } else {
-	    Ext.getCmp("LoginBody").hide();
+	    Ext.getCmp("LoginForm").hide();
 	    Router.setRoute(Router.frontPage);
 	  }
 	},
@@ -28,21 +28,19 @@ Ext.define('LoginController', {
 	  Globals.DEPO["LogoutController"] = null;
 	  
 	  this.data = scope.data;
-	  // "redirect" if everything is fine
+	  
 	  if(this.data.username) {
 	    Router.setRoute(Router.frontPage);
 	  } else {
-	    this.view.render(this.data);
+	    if(Ext.get("LoginForm") == null) {
+	     this.view.render(this.data);
+      }
 	  }
 	},
 	
 	getData : function(){
-    if(this.data.username)
+	  if(this.data.username)
       Router.setRoute(Router.frontPage);
-    else {
-      var self = this;
-      Globals.DEPO["LoginModel"] = new LoginModel(self);
-    }
 	}
 	
 });
