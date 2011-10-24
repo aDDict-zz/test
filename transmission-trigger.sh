@@ -8,7 +8,7 @@ cd $TR_DOWNLOADED_PATH
 mkdir $targetdir
 echo $TR_DOWNLOADED_PATH >> $log
 echo $targetdir >> $log
-for i in $(find -name \*.avi | grep -v sample | grep -v Sample);
+for i in $(find -name \*.rar | grep -v sample | grep -v Sample);
 do
   unrar e $i;
   echo $i >> $log
@@ -18,7 +18,7 @@ do
   mv $i $targetdir;
   echo $i >> $log
 done;
-for i in $(find -name \*.avi | grep -v sample | grep -v Sample);
+for i in $(find -name \*.mkv | grep -v sample | grep -v Sample);
 do
   mv $i $targetdir;
   echo $i >> $log
