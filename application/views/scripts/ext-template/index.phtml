@@ -1,0 +1,710 @@
+{
+    border: 0,
+    margin: 0,
+    padding: 0,
+    style: 'background: #EBEEF2;',
+    maintainFlex: true,
+    title    : "",
+    layout   : {
+        type  : 'fit'
+    },
+    renderTo : Ext.getBody(),
+    items: [
+        {
+            xtype: 'container',
+            margin: 0,
+            minHeight: 300,
+            minWidth: 1200,
+            layout: {
+                align: 'stretch',
+                type: 'hbox'
+            },
+            items: [
+                {
+                    xtype: 'container',
+                    margin: 10,
+                    layout: {
+                        align: 'stretch',
+                        type: 'vbox'
+                    },
+                    flex: 1,
+                    items: [
+                        {
+                            xtype: 'container',
+                            height: 100,
+                            layout: {
+                                type: 'fit'
+                            },
+                            items: [
+                                {
+                                    xtype: 'toolbar',
+                                    items: [
+                                        {
+                                            xtype: 'buttongroup',
+                                            height: 90,
+                                            style: 'background: #C9DDF6;',
+                                            title: 'kérdőívek',
+                                            columns: 1,
+                                            items: [
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'kérdőívek'
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: 'buttongroup',
+                                            height: 90,
+                                            style: 'background: #C9DDF6;',
+                                            title: 'tagok',
+                                            columns: 3,
+                                            items: [
+                                                {
+                                                    xtype: 'button',
+                                                    disabled: true,
+                                                    text: 'tagok listája'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    disabled: true,
+                                                    text: 'tagok importálása'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'tagok exportálása'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'szűrők'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'alcsoportok'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'tag kereső'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'felhasználók'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'visszapattanó e-mailek'
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: 'buttongroup',
+                                            height: 90,
+                                            style: 'background: #C9DDF6;',
+                                            title: 'üzenetek',
+                                            columns: 3,
+                                            items: [
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'e-mail - keret'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    disabled: true,
+                                                    text: 'e-mail - tartalom'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    disabled: true,
+                                                    text: 'e-mail - küldő'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'e-mail - időzítő'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    disabled: true,
+                                                    text: 'e-mail - archívum'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'SMS - küldő'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    disabled: true,
+                                                    text: 'SMS - időzítő'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'SMS - archívum'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    disabled: true,
+                                                    text: 'kampányok'
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: 'buttongroup',
+                                            height: 90,
+                                            style: 'background: #C9DDF6;',
+                                            title: 'statisztikák',
+                                            columns: 3,
+                                            items: [
+                                                {
+                                                    xtype: 'button',
+                                                    disabled: true,
+                                                    text: 'tagok száma'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'új tagok'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'kérdőív statisztika'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    disabled: true,
+                                                    text: 'leiratkozott tagok'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'nem hitelesített feliratkozások'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'üzenetek'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'demográfiai'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'átkattintások'
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: 'tbseparator'
+                                        },
+                                        {
+                                            xtype: 'tbfill'
+                                        },
+                                        {
+                                            xtype: 'tbseparator'
+                                        },
+                                        {
+                                            xtype: 'buttongroup',
+                                            height: 90,
+                                            style: 'background: #d6e3f2;',
+                                            title: 'háttér feladatok',
+                                            columns: 1,
+                                            items: [
+                                                {
+                                                    xtype: 'button',
+                                                    disabled: true,
+                                                    text: 'háttér feladatok'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'live export'
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: 'buttongroup',
+                                            height: 90,
+                                            style: 'background: #d6e3f2;',
+                                            title: 'beállítások',
+                                            columns: 2,
+                                            items: [
+                                                {
+                                                    xtype: 'button',
+                                                    disabled: true,
+                                                    text: 'adatok'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'automatikus e-mailek'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'automatikus weboldalak'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    disabled: true,
+                                                    text: 'figyelmeztető e-mailek'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'adat beállítások'
+                                                },
+                                                {
+                                                    xtype: 'button',
+                                                    text: 'adat csoportok'
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            height: 22,
+                            layout: {
+                                type: 'fit'
+                            },
+                            items: [
+                                {
+                                    xtype: 'toolbar',
+                                    style: 'background: #99bce8;',
+                                    styleHtmlContent: true,
+                                    items: [
+                                        {
+                                            xtype: 'tbtext',
+                                            text: '<a href="#" style="color: #000000;">főoldal</a>'
+                                        },
+                                        {
+                                            xtype: 'tbtext',
+                                            text: '<font style="color: #000000;">&raquo</font>'
+                                        },
+                                        {
+                                            xtype: 'tbtext',
+                                            text: '<a href="#" style="color: #000000;">permission B2C</a>'
+                                        },
+                                        {
+                                            xtype: 'tbtext',
+                                            text: '<font style="color: #000000;">&raquo</font>'
+                                        },
+                                        {
+                                            xtype: 'tbtext',
+                                            text: '<a href="#" style="color: #000000;">kérdőívek</a>'
+                                        },
+                                        {
+                                            xtype: 'tbtext',
+                                            text: '<font style="color: #000000;">&raquo</font>'
+                                        },
+                                        {
+                                            xtype: 'tbtext',
+                                            text: '<font style="color: #000000; font-weight: bold;">Egyperces nyereményjáték 5.</font>'
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            height: 250,
+                            layout: {
+                                type: 'fit'
+                            },
+                            flex: 1,
+                            items: [
+                                {
+                                    xtype: 'panel',
+                                    border: 1,
+                                    layout: {
+                                        type: 'accordion'
+                                    },
+                                    frameHeader: false,
+                                    items: [
+                                        {
+                                            xtype: 'panel',
+                                            style: 'text-align: center;',
+                                            styleHtmlContent: true,
+                                            collapsed: true,
+                                            title: 'CSOPORTOK',
+                                            items: [
+                                                {
+                                                    xtype: 'gridpanel',
+                                                    border: 0,
+                                                    style: 'color: #888888;',
+                                                    styleHtmlContent: true,
+                                                    bodyStyle: 'color: #888888;',
+                                                    collapsed: false,
+                                                    title: '',
+                                                    store: 'csoportok',
+                                                    dockedItems: [
+                                                        {
+                                                            xtype: 'toolbar',
+                                                            dock: 'top',
+                                                            items: [
+                                                                {
+                                                                    xtype: 'textfield',
+                                                                    fieldLabel: 'keresés'
+                                                                },
+                                                                {
+                                                                    xtype: 'tbfill'
+                                                                },
+                                                                {
+                                                                    xtype: 'button',
+                                                                    text: '<font style="font-style: normal;">új csoport</font>'
+                                                                }
+                                                            ]
+                                                        }
+                                                    ],
+                                                    columns: [
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            style: 'color: #000000;',
+                                                            dataIndex: 'nev',
+                                                            flex: 1,
+                                                            text: 'név'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            width: 100,
+                                                            dataIndex: 'adatbazisok',
+                                                            text: 'adatbázisok'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            width: 100,
+                                                            dataIndex: 'muveletek',
+                                                            text: 'műveletek'
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: 'panel',
+                                            style: 'text-align: center;',
+                                            styleHtmlContent: true,
+                                            collapsed: false,
+                                            title: 'ADATBÁZISOK',
+                                            items: [
+                                                {
+                                                    xtype: 'gridpanel',
+                                                    border: 0,
+                                                    style: 'color: #888888;',
+                                                    styleHtmlContent: true,
+                                                    bodyStyle: 'color: #888888;',
+                                                    collapsible: true,
+                                                    title: 'kedvencek&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font style="color: #626F9F; font-weight: normal;">(5 adatbázis)</font>',
+                                                    store: 'adatbazisok-kedvencek',
+                                                    columns: [
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            width: 200,
+                                                            dataIndex: 'csoport',
+                                                            text: 'csoport'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            style: 'color: #000000;',
+                                                            styleHtmlContent: true,
+                                                            dataIndex: 'adatbazishosszu',
+                                                            flex: 1,
+                                                            text: 'adatbázis (teljes név)'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            width: 200,
+                                                            dataIndex: 'adatbazisrovid',
+                                                            text: 'adatbázis (név)'
+                                                        },
+                                                        {
+                                                            xtype: 'numbercolumn',
+                                                            style: 'color: #000000;',
+                                                            styleHtmlContent: true,
+                                                            width: 100,
+                                                            dataIndex: 'tagokszama',
+                                                            text: 'tagok száma',
+                                                            format: '0,000'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            width: 200,
+                                                            dataIndex: 'jogosultsag',
+                                                            text: 'jogosultság'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            width: 100,
+                                                            dataIndex: 'muveletek',
+                                                            text: 'műveletek'
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    xtype: 'gridpanel',
+                                                    border: 0,
+                                                    style: 'color: #888888;',
+                                                    autoScroll: true,
+                                                    bodyStyle: 'color: #888888;',
+                                                    collapsible: true,
+                                                    title: 'összes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font style="color: #626F9F; font-weight: normal;">(172 adatbázis)</font>',
+                                                    store: 'adatbazisok-osszes',
+                                                    dockedItems: [
+                                                        {
+                                                            xtype: 'pagingtoolbar',
+                                                            width: 400,
+                                                            afterPageText: 'a(z) {0}-ból/ből',
+                                                            beforePageText: 'oldal',
+                                                            displayInfo: true,
+                                                            displayMsg: 'megjelenítve {0}-{1} a {2}-ból/ből',
+                                                            emptyMsg: 'nincsenek adatok',
+                                                            firstText: 'első',
+                                                            lastText: 'utolsó',
+                                                            nextText: 'következő',
+                                                            prevText: 'előző',
+                                                            refreshText: 'frissítés',
+                                                            store: 'adatbazisok-osszes-lapozo',
+                                                            dock: 'top',
+                                                            items: [
+                                                                {
+                                                                    xtype: 'triggerfield',
+                                                                    fieldLabel: 'szűrés (csoport)'
+                                                                },
+                                                                {
+                                                                    xtype: 'textfield',
+                                                                    fieldLabel: 'keresés'
+                                                                },
+                                                                {
+                                                                    xtype: 'tbfill'
+                                                                },
+                                                                {
+                                                                    xtype: 'button',
+                                                                    text: '<font style="font-style: normal;">új adatbázis</font>'
+                                                                }
+                                                            ]
+                                                        }
+                                                    ],
+                                                    columns: [
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            width: 200,
+                                                            dataIndex: 'csoport',
+                                                            text: 'csoport'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            style: 'color: #000000;',
+                                                            styleHtmlContent: true,
+                                                            dataIndex: 'adatbazishosszu',
+                                                            flex: 1,
+                                                            text: 'adatbázis (teljes név)'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            width: 200,
+                                                            dataIndex: 'adatbazisrovid',
+                                                            text: 'adatbázis (név)'
+                                                        },
+                                                        {
+                                                            xtype: 'numbercolumn',
+                                                            style: 'color: #000000;',
+                                                            styleHtmlContent: true,
+                                                            width: 100,
+                                                            dataIndex: 'tagokszama',
+                                                            text: 'tagok száma',
+                                                            format: '0,000'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            width: 200,
+                                                            dataIndex: 'jogosultsag',
+                                                            text: 'jogosultság'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            width: 100,
+                                                            dataIndex: 'muveletek',
+                                                            text: 'műveletek'
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: 'panel',
+                                            style: 'text-align: center;',
+                                            styleHtmlContent: true,
+                                            collapsed: true,
+                                            title: 'FUTÓ FOLYAMATOK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font style="color: #7F0000;">(17 folyamat)</font>',
+                                            items: [
+                                                {
+                                                    xtype: 'gridpanel',
+                                                    border: 0,
+                                                    style: 'color: #888888;',
+                                                    styleHtmlContent: true,
+                                                    bodyStyle: 'color: #888888;',
+                                                    collapsed: false,
+                                                    title: '',
+                                                    store: 'futo-folyamatok',
+                                                    dockedItems: [
+                                                        {
+                                                            xtype: 'toolbar',
+                                                            dock: 'top',
+                                                            layout: {
+                                                                pack: 'center',
+                                                                type: 'hbox'
+                                                            },
+                                                            items: [
+                                                                {
+                                                                    xtype: 'triggerfield',
+                                                                    fieldLabel: 'szűrés (típus)'
+                                                                }
+                                                            ]
+                                                        }
+                                                    ],
+                                                    columns: [
+                                                        {
+                                                            xtype: 'datecolumn',
+                                                            width: 200,
+                                                            dataIndex: 'inditasideje',
+                                                            text: 'indítás ideje',
+                                                            format: 'yy.m.d h:m'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            style: 'color: #000000;',
+                                                            width: 200,
+                                                            dataIndex: 'adatbazis',
+                                                            text: 'adatbázis'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            style: 'color: #000000;',
+                                                            width: 100,
+                                                            dataIndex: 'tipus',
+                                                            text: 'típus'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            style: 'color: #000000;',
+                                                            dataIndex: 'megjegyzes',
+                                                            flex: 1,
+                                                            text: 'megjegyzés'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            style: 'color: #000000;',
+                                                            width: 200,
+                                                            dataIndex: 'allapot',
+                                                            text: 'állapot'
+                                                        },
+                                                        {
+                                                            xtype: 'gridcolumn',
+                                                            width: 100,
+                                                            dataIndex: 'muveletek',
+                                                            text: 'műveletek'
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    xtype: 'container',
+                    autoShow: true,
+                    margin: '10 10 10 0',
+                    width: 200,
+                    layout: {
+                        align: 'stretch',
+                        type: 'vbox'
+                    },
+                    items: [
+                        {
+                            xtype: 'container',
+                            height: 100,
+                            style: 'text-align: center;',
+                            styleHtmlContent: true,
+                            items: [
+                                {
+                                    xtype: 'image',
+                                    margin: '30 auto 0 auto',
+                                    src: 'http://demo.hirekmedia.hu/maxima/maxima-170x38.png'
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            height: 130,
+                            layout: {
+                                type: 'fit'
+                            },
+                            margins: '0 0 20 0',
+                            items: [
+                                {
+                                    xtype: 'toolbar',
+                                    vertical: true,
+                                    items: [
+                                        {
+                                            xtype: 'tbtext',
+                                            style: 'background: #C2D8F0;text-align: center;',
+                                            text: '<font style="color: #3E6AAA;">felhasználó</font>'
+                                        },
+                                        {
+                                            xtype: 'splitbutton',
+                                            height: 40,
+                                            width: 194,
+                                            text: 'Tóth Tamás<br /><font style="color: #888888;">(toth.tamas@hirekmedia.hu)</font>'
+                                        },
+                                        {
+                                            xtype: 'tbtext',
+                                            style: 'background: #C2D8F0;text-align: center;',
+                                            text: '<font style="color: #3E6AAA;">adminisztrációs felület</font>'
+                                        },
+                                        {
+                                            xtype: 'splitbutton',
+                                            text: 'magyar'
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            layout: {
+                                type: 'fit'
+                            },
+                            flex: 1,
+                            items: [
+                                {
+                                    xtype: 'fieldset',
+                                    style: 'background: #F2E9D8;',
+                                    layout: {
+                                        type: 'fit'
+                                    },
+                                    title: '<b>SÚGÓ</b>'
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            height: 28,
+                            layout: {
+                                type: 'fit'
+                            },
+                            items: [
+                                {
+                                    xtype: 'toolbar',
+                                    items: [
+                                        {
+                                            xtype: 'button',
+                                            width: 194,
+                                            text: 'szerkeszt'
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

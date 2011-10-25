@@ -3,10 +3,12 @@
 	    <title>Maxima</title>
 			<script type="text/javascript">
 			
-			if(typeof console.log == "undefined") {
-			  var console = {};
-			  console.log = function() {};
-			}
+			try {
+        console.log();
+      }catch(e){
+        if(e)
+          console.log = function() {}
+      };
 			
 			/*var head = document.getElementsByTagName("script")[0].parentNode,
 			main 			= document.createElement("script"),

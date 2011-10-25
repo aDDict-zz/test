@@ -1,6 +1,6 @@
 <?php
 
-//session_start();
+header('Content-type: text/html; charset=utf-8');
 
 // Define path to application directory
 defined('APPLICATION_PATH')

@@ -56,7 +56,7 @@ Ext.define('AJAX', {
  */
 Ext.define('Globals', {
   statics: {
-    DEPO   : {}    
+    DEPO   : {}
   },
   constructor : function() {}
 });
@@ -65,29 +65,28 @@ Ext.define('Globals', {
  * class Controller
  */
 Ext.define('Controller', {
-	
+
 	model      : {},
 	view		   : {},
 	data       : {},
 	nameSpace  : "",
 	showView   : true,
-	
+
 	getNameSpace: function() {
 	  var matches    = this.$className.match(/(.*)(Controller)/);
 	  this.nameSpace = matches[1];
 	},
-	
+
 	constructor	: function() {
 	  var self = this;
 	  self.getNameSpace();
 	  self.model  = eval(['new ',self.nameSpace,'Model()'].join(''));
 	  self.model.router = self;
-	  
+
     if(this.showView == true) {
       self.view = eval(['new ',self.nameSpace,'View()'].join(''));
       self.view.scope = self;
     }
-    
 		this.getData();
 	}
 });
@@ -96,16 +95,14 @@ Ext.define('Controller', {
  * class Model
  */
 Ext.define('Model', {
-	
+
 	data 		  : {},
 	router 		: {},
 	toJson      : function(str) {
 	  return Ext.decode(str);
 	},
-	
+
 	constructor	: function(reference) {
-		// storing the relevant controller instance reference for the ajax callback
-		this.router = reference;
 		this.getAjaxData();
 	}
 });
@@ -114,11 +111,10 @@ Ext.define('Model', {
  * class View
  */
 Ext.define('View', {
-	
+
 	scope       : {},
 	render 		  : function() {},
-	constructor	: function(controllerScope) {
-	  this.scope = controllerScope;
+	constructor	: function() {
 	}
 });
 
@@ -132,7 +128,5 @@ Ext.define('Debug', {
         console.log(i, obj);
       }
     }
-  },
-  constructor : function() {
   }
 });

@@ -2,7 +2,7 @@ Ext.define('GroupView', {
 
 	extend: 'View',
 	
-	render: function(data){ //alert(data.length);
+	render: function(data){
 	  
 	  Ext.create('Ext.data.Store', {
       storeId:'groups',
