@@ -458,13 +458,30 @@ Ext.define('MainView', {
 
   render: function(data) { //console.log(data); Ext.window.Window  //Ext.Component  Ext.container.Viewport
   
-    var maxima = Ext.create('Ext.container.Viewport', data); 
+    var maxima = Ext.create('Ext.container.Viewport', {  //Ext.container.Viewport
+      xtype: 'viewport',
+      border: 0,
+      margin: 0,
+      padding: 0,
+      style: 'background: #EBEEF2;',
+      maintainFlex: true,
+      layout: {
+          type: 'fit'
+      },
+      items : data,
+      renderTo : Ext.getBody()
+      /*initComponent: function() {
+          //this.items = data;
+          //this.superclass.initComponent.call(this, arguments);
+      }*/
+    });
     
+    //Ext.apply(maxima, data);
     //maxima.show();
     
     //Ext.apply(maxima, data);
     
-    console.log(maxima);
+    //console.log(maxima);
   
     /*var maxima = Ext.create('Ext.Component', {
       
