@@ -2,6 +2,10 @@ Ext.define('GroupModel', {
 
 	extend: 'Model',
 	
+	init: function() {
+    this.getAjaxData();
+  },
+	
 	mapper: function(data){
 		
 		var self 	= this;

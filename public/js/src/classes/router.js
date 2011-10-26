@@ -7,7 +7,11 @@ Ext.define('Router', {
   	
     frontPage 	: "Main",
     login       : "Login",
-    route       : "", 
+    route       : "",
+    routeOrders : [],
+    routeParams : {},
+    routeCache  : "",
+    lang        : "",
     
     init      	: function() {
       
@@ -22,46 +26,88 @@ Ext.define('Router', {
     
     getRoute  	: function() {
       
-      // TODO needs refact, set up the hashmark order at the url 
-      if(window.location.href.match(/(.#)(.*)/))
-        var match = window.location.href.match(/(.#)(.*)/)[2];
-      else
+      var order = Router.getOrder();
+      
+      if(order == "")
         Router.setRoute(Router.frontPage);
       
-      if(match == "")
-        Router.setRoute(Router.frontPage);
+      // setting up the language
+      if(Router.routeParams["lang"])
+        Router.lang = Router.routeParams["lang"];
+      else {
+        if(Router.lang == "")
+          Router.lang = "hu";
+      }
         
-      if(match != null)
-        if(Router.route != match)
-          if(typeof Globals.DEPO[[match,"Controller"].join("")] == "undefined" || Globals.DEPO[[match,"Controller"].join("")] == null) {
+      if(order != null)
+        if(Router.route != order)
+          if(typeof Globals.DEPO[[order,"Controller"].join("")] == "undefined" || Globals.DEPO[[order,"Controller"].join("")] == null) {
             try {
               
               // init and store(its ref) the relevant controller class
-              (new Function(['Globals.DEPO["',match,'Controller"] = new ',match,'Controller();'].join("")))();
+              (new Function(['Globals.DEPO["',order,'Controller"] = new ',order,'Controller();'].join("")))();
               
-              //set history for ie
+              // set history for ie
               if(Router.ie)
-                IEHH.changeContent(["#",match].join(""));
+                IEHH.changeContent(["#",order].join(""));
               
-              Router.route = match;
+              // hiding the previous content
+              if(Ext.get(Router.route) != null)
+                Ext.get(Router.route).hide();
+              
+              Router.route = order;
             } catch(err) { console.log(err);
-              delete Globals.DEPO[match];
-              Router.setRoute(Router.frontPage);
+              delete Globals.DEPO[order];
+              Ext.Msg.alert('Routing error', 'There is no implemented class in the namespace', function(btn){if (btn == 'ok') { Router.setRoute(Router.frontPage);}});
             }
           }
         else {
-          //TODO needs refact, we dont need the controller, only the view this time, need the rendered view, displayed or not or sthing like this
-          //Globals.DEPO[match].getData();
-          //console.log( Globals.DEPO[[match,"Controller"].join("")].data );
-          //Globals.DEPO[[match,"View"].join("")].render(Globals.DEPO[[match,"Controller"].join("")].data);
-          //Globals.DEPO[[match,"Controller"].join("")].getData();
+          if(Router.route != order) {
+            if(Ext.get(Router.route)) {
+              Ext.get(Router.route).hide();
+            }
+            if(Ext.get(order)) {
+              Ext.get(order).show();
+            }
+            Globals.DEPO[[order,"Controller"].join('')].init();
+            Router.route = order;
+          }
         }
     },
     
     setRoute    : function(route) {
       window.location.href = [window.location.href.split("#")[0],"#",route].join("");
     },
-  	
+    
+    getOrder    : function() {
+      if(Router.routeCache != window.location.href) {
+        Router.routeOrders = [];
+        Router.routeParams = {};
+        var matches = (window.location.href.match(/(.#)(.*)/) ? window.location.href.match(/(.#)(.*)/) : null);
+        if(matches == null) {
+          Router.setRoute(Router.frontPage);
+        } else {
+          route = matches[2];
+          if(route.match(/\//)) {
+            var orders = route.split('/'), arr;
+            for(var i = 0, len = orders.length;i < len; i++) {
+              if(orders[i].match(/=/)) {
+                arr = orders[i].split("=");
+                Router.routeParams[arr[0]] = arr[1];
+              } else {
+                Router.routeOrders.push(orders[i]);
+              }
+            }
+            route = Router.routeOrders[0];
+          }
+          Router.routeCache = window.location.href;
+          return route;
+        }
+      } else {
+        return Router.routeOrders[0];
+      }
+    },
+ 
     constructor: function() {}
   }
 

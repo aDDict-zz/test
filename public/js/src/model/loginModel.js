@@ -2,6 +2,10 @@ Ext.define('LoginModel', {
 
 	extend: 'Model',
 	
+	init: function() {
+	  this.getAjaxData();
+	},
+	
 	mapper: function(data){
 		var self 	= this;
 		self.data = self.toJson(data.responseText);

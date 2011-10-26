@@ -22,6 +22,12 @@
             text: 'mainController.js',
             path: '../public/js/src/controller/'
         },{
+            text: 'iddqdController.js',
+            path: '../public/js/src/controller/'
+        },{
+            text: 'iddqdTranslateController.js',
+            path: '../public/js/src/controller/'
+        },{
             text: 'loginController.js',
             path: '../public/js/src/controller/'
         },{
@@ -34,6 +40,12 @@
             text: 'loginView.js',
             path: '../public/js/src/view/'
         },{
+            text: 'iddqdView.js',
+            path: '../public/js/src/view/'
+        },{
+            text: 'iddqdTranslateView.js',
+            path: '../public/js/src/view/'
+        },{
             text: 'mainView.js',
             path: '../public/js/src/view/'
         },{
@@ -44,6 +56,12 @@
             path: '../public/js/src/model/'
         },{
             text: 'loginModel.js',
+            path: '../public/js/src/model/'
+        },{
+            text: 'iddqdModel.js',
+            path: '../public/js/src/model/'
+        },{
+            text: 'iddqdTranslateModel.js',
             path: '../public/js/src/model/'
         },{
             text: 'logoutModel.js',

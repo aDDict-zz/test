@@ -1,9 +1,8 @@
-Ext.define('MainModel', {
+Ext.define('IddqdModel', {
 
   extend: 'Model',
   
   init: function() {
-    this.getAjaxData();
   },
   
   mapper: function(data){
@@ -15,7 +14,7 @@ Ext.define('MainModel', {
   getAjaxData: function(){
     var self = this;
     AJAX.get(
-      "ext-template/",
+      "lang/",
       "",
       this.mapper,
       self

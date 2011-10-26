@@ -2,6 +2,10 @@ Ext.define('LogoutModel', {
 
   extend: 'Model',
   
+  init: function() {
+    this.getAjaxData();
+  },
+  
   mapper: function(data){
     
     var self  = this;

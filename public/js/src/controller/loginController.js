@@ -2,6 +2,10 @@ Ext.define('LoginController', {
 
 	extend: 'Controller',
 	
+	init: function() {
+	  this.getData();
+	},
+	
 	auth: function() {
     var self = Globals.DEPO["LoginController"];
     self.model.authentication(self);

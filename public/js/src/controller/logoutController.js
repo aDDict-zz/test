@@ -4,6 +4,10 @@ Ext.define('LogoutController', {
   
   showView: false,
   
+  init: function() {
+    this.getData();
+  },
+  
   ajaxCallback: function(scope){
     
     Globals.DEPO["LoginController"] = null;

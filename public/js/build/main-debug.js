@@ -16,16 +16,16 @@ Ext.define('AJAX', {
 		 * @param {reference} 		  form
 		 * @param {reference}       scope
 		 */
-		ajax: function(url, method, params, callback, scope, form){
-			Ext.Ajax.request({
-			    url		: url,
-			    scope 	: (typeof scope != "undefined" ? scope : null),
-			    form    : (typeof form != "undefined" ? form : null),
-			    method	: method,
-			    params	: params,
-			    success	: callback
-			});
-		},
+    ajax: function(url, method, params, callback, scope, form){
+    	Ext.Ajax.request({
+  	    url		: url,
+  	    scope 	: (typeof scope != "undefined" ? scope : null),
+  	    form    : (typeof form != "undefined" ? form : null),
+  	    method	: method,
+  	    params	: params,
+  	    success	: callback
+    	});
+    },
 		/**
 		 * @method get
 		 * ajax get method
@@ -69,20 +69,36 @@ Ext.define('Globals', {
  */
 Ext.define('Controller', {
 
-	model      : {},
-	view		   : {},
-	data       : {},
-	nameSpace  : "",
-	showView   : true,
+	model          : {},
+	view		       : {},
+	data           : {},
+	nameSpace      : "",
+	fullNameSpace  : "",
+	showView       : true,
 
 	getNameSpace: function() {
 	  var matches    = this.$className.match(/(.*)(Controller)/);
 	  this.nameSpace = matches[1];
 	},
+	
+	getFullNameSpace: function() {
+	  var nameSpace  = "",
+	      arr        = Router.routeOrders;
+	  
+	  if(arr.length > 0) 
+      for(var i = 0, len = arr.length; i < len; i++) {
+        nameSpace += arr[i];
+      }
+    else
+      nameSpace = this.nameSpace;
+	  
+	  this.fullNameSpace = nameSpace;
+	},
 
 	constructor	: function() {
 	  var self = this;
 	  self.getNameSpace();
+	  self.getFullNameSpace();
 	  self.model  = eval(['new ',self.nameSpace,'Model()'].join(''));
 	  self.model.router = self;
 
@@ -90,7 +106,7 @@ Ext.define('Controller', {
       self.view = eval(['new ',self.nameSpace,'View()'].join(''));
       self.view.scope = self;
     }
-		this.getData();
+		this.init();
 	}
 });
 
@@ -106,7 +122,7 @@ Ext.define('Model', {
 	},
 
 	constructor	: function(reference) {
-		this.getAjaxData();
+		this.init();
 	}
 });
 
@@ -194,7 +210,11 @@ Ext.define('Router', {
   	
     frontPage 	: "Main",
     login       : "Login",
-    route       : "", 
+    route       : "",
+    routeOrders : [],
+    routeParams : {},
+    routeCache  : "",
+    lang        : "",
     
     init      	: function() {
       
@@ -209,46 +229,88 @@ Ext.define('Router', {
     
     getRoute  	: function() {
       
-      // TODO needs refact, set up the hashmark order at the url 
-      if(window.location.href.match(/(.#)(.*)/))
-        var match = window.location.href.match(/(.#)(.*)/)[2];
-      else
+      var order = Router.getOrder();
+      
+      if(order == "")
         Router.setRoute(Router.frontPage);
       
-      if(match == "")
-        Router.setRoute(Router.frontPage);
+      // setting up the language
+      if(Router.routeParams["lang"])
+        Router.lang = Router.routeParams["lang"];
+      else {
+        if(Router.lang == "")
+          Router.lang = "hu";
+      }
         
-      if(match != null)
-        if(Router.route != match)
-          if(typeof Globals.DEPO[[match,"Controller"].join("")] == "undefined" || Globals.DEPO[[match,"Controller"].join("")] == null) {
+      if(order != null)
+        if(Router.route != order)
+          if(typeof Globals.DEPO[[order,"Controller"].join("")] == "undefined" || Globals.DEPO[[order,"Controller"].join("")] == null) {
             try {
               
               // init and store(its ref) the relevant controller class
-              (new Function(['Globals.DEPO["',match,'Controller"] = new ',match,'Controller();'].join("")))();
+              (new Function(['Globals.DEPO["',order,'Controller"] = new ',order,'Controller();'].join("")))();
               
-              //set history for ie
+              // set history for ie
               if(Router.ie)
-                IEHH.changeContent(["#",match].join(""));
+                IEHH.changeContent(["#",order].join(""));
               
-              Router.route = match;
+              // hiding the previous content
+              if(Ext.get(Router.route) != null)
+                Ext.get(Router.route).hide();
+              
+              Router.route = order;
             } catch(err) { console.log(err);
-              delete Globals.DEPO[match];
-              Router.setRoute(Router.frontPage);
+              delete Globals.DEPO[order];
+              Ext.Msg.alert('Routing error', 'There is no implemented class in the namespace', function(btn){if (btn == 'ok') { Router.setRoute(Router.frontPage);}});
             }
           }
         else {
-          //TODO needs refact, we dont need the controller, only the view this time, need the rendered view, displayed or not or sthing like this
-          //Globals.DEPO[match].getData();
-          //console.log( Globals.DEPO[[match,"Controller"].join("")].data );
-          //Globals.DEPO[[match,"View"].join("")].render(Globals.DEPO[[match,"Controller"].join("")].data);
-          //Globals.DEPO[[match,"Controller"].join("")].getData();
+          if(Router.route != order) {
+            if(Ext.get(Router.route)) {
+              Ext.get(Router.route).hide();
+            }
+            if(Ext.get(order)) {
+              Ext.get(order).show();
+            }
+            Globals.DEPO[[order,"Controller"].join('')].init();
+            Router.route = order;
+          }
         }
     },
     
     setRoute    : function(route) {
       window.location.href = [window.location.href.split("#")[0],"#",route].join("");
     },
-  	
+    
+    getOrder    : function() {
+      if(Router.routeCache != window.location.href) {
+        Router.routeOrders = [];
+        Router.routeParams = {};
+        var matches = (window.location.href.match(/(.#)(.*)/) ? window.location.href.match(/(.#)(.*)/) : null);
+        if(matches == null) {
+          Router.setRoute(Router.frontPage);
+        } else {
+          route = matches[2];
+          if(route.match(/\//)) {
+            var orders = route.split('/'), arr;
+            for(var i = 0, len = orders.length;i < len; i++) {
+              if(orders[i].match(/=/)) {
+                arr = orders[i].split("=");
+                Router.routeParams[arr[0]] = arr[1];
+              } else {
+                Router.routeOrders.push(orders[i]);
+              }
+            }
+            route = Router.routeOrders[0];
+          }
+          Router.routeCache = window.location.href;
+          return route;
+        }
+      } else {
+        return Router.routeOrders[0];
+      }
+    },
+ 
     constructor: function() {}
   }
 
@@ -262,6 +324,10 @@ Ext.define('Router', {
 );Ext.define('GroupController', {
 
 	extend: 'Controller',
+	
+	init: function() {
+    this.getData();
+  },
 	
 	//this time the relevant model is done with his job, all response data are stored in scope.data
 	ajaxCallback: function(scope){
@@ -277,7 +343,12 @@ Ext.define('Router', {
 });Ext.define('MainController', {
 
   extend: 'Controller',
-
+  
+  init: function() { //console.log(Ext.get("Main"));
+    if(Ext.get("Main") == null)
+      this.getData();
+  },
+  
   ajaxCallback: function(scope){
     this.view.render(scope.data);
   },
@@ -291,9 +362,59 @@ Ext.define('Router', {
   }
 
 });
-Ext.define('LoginController', {
+Ext.define('IddqdController', {
+
+  extend: 'Controller',
+
+  init: function() {
+    try {
+      // init and store(its ref) the relevant controller class
+      if(typeof Globals.DEPO[[this.fullNameSpace,"Controller"].join("")] == "undefined")
+        (new Function(['Globals.DEPO["',this.fullNameSpace,'Controller"] = new ',this.fullNameSpace,'Controller();'].join("")))();
+      else
+        Globals.DEPO[[this.fullNameSpace,"Controller"].join("")].init();
+    } catch(err) { console.log(err);
+      Ext.Msg.alert('Routing error', 'There is no implemented class in the namespace', function(btn){if (btn == 'ok') { Router.setRoute(Router.frontPage);}});
+    }
+  },
+
+  ajaxCallback: function(scope){
+    this.view.render(scope.data);
+  },
+
+  /*main: function() {
+    this.view.render({});
+  },*/
+
+  getData : function(){
+  }
+
+});Ext.define('IddqdTranslateController', {
+
+  extend: 'Controller',
+
+  init: function() {
+    alert("iddqdTranslateController");
+  },
+
+  ajaxCallback: function(scope){
+    this.view.render(scope.data);
+  },
+
+  /*main: function() {
+    this.view.render({});
+  },*/
+
+  getData : function(){
+  }
+
+});Ext.define('LoginController', {
 
 	extend: 'Controller',
+	
+	init: function() {
+	  this.getData();
+	},
 	
 	auth: function() {
     var self = Globals.DEPO["LoginController"];
@@ -341,6 +462,10 @@ Ext.define('LoginController', {
   extend: 'Controller',
   
   showView: false,
+  
+  init: function() {
+    this.getData();
+  },
   
   ajaxCallback: function(scope){
     
@@ -452,210 +577,53 @@ Ext.define('LoginView', {
 	
 });
 
-Ext.define('MainView', {
+Ext.define('IddqdView', {
   
   extend: 'View',
 
-  render: function(data) { //console.log(data); Ext.window.Window  //Ext.Component  Ext.container.Viewport
+  render: function(data) { //console.log(data);
+  }
+});Ext.define('IddqdTranslateView', {
   
-    var maxima = Ext.create('Ext.container.Viewport', {  //Ext.container.Viewport
+  extend: 'View',
+
+  render: function(data) { console.log(data);
+  }
+});Ext.define('MainView', {
+  
+  extend: 'View',
+
+  render: function(data) {
+    
+    Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
       xtype: 'viewport',
       border: 0,
       margin: 0,
       padding: 0,
       style: 'background: #EBEEF2;',
       maintainFlex: true,
+      renderTo : Ext.getBody(),
       layout: {
           type: 'fit'
       },
-      items : data,
-      renderTo : Ext.getBody()
-      /*initComponent: function() {
-          //this.items = data;
-          //this.superclass.initComponent.call(this, arguments);
-      }*/
-    });
-    
-    //Ext.apply(maxima, data);
-    //maxima.show();
-    
-    //Ext.apply(maxima, data);
-    
-    //console.log(maxima);
-  
-    /*var maxima = Ext.create('Ext.Component', {
-      
-      renderTo  : Ext.getBody(),
-      items : data
-      
-    });
-    
-    Ext.apply(maxima, data);
-    
-    maxima.show();
-    
-    console.log(maxima);*/
-  
-  
-  
-    //var Maxima = Ext.create('Maxima', data);
-
-    //Ext.Loader.setConfig({enabled:true});
-    
-    /*var MaximaViewport = Ext.create('ext-template', {
-        renderTo: Ext.getBody()
-    });*/
-    
-    //Ext.apply(MaximaViewport, data);
-    
-    //MaximaViewport.show();
-    
-    //console.log(MaximaViewport);
-
-
-
-    /*// viewport
-    Ext.create('Ext.container.Viewport', {
-      border: 0,
-      margin: 0,
-      padding: 0,
-      style: 'background: #EBEEF2;',
-      maintainFlex: true,
-      title    : "",
-      layout   : {
-          type  : 'fit'
-      },
-      renderTo : Ext.getBody()
-    }).show();
-
-    // wrapper container
-    Ext.create('Ext.container.Container', {
-      renderTo  : Ext.getBody(),
-      id        : "maximaContainer",
-      margin    : 0,
-      minHeight : 300,
-      minWidth  : 1200,
-      layout    : {
-        align : 'stretch',
-        type  : 'hbox'
-      }
-    });
-
-    // wrapper left container
-    Ext.create('Ext.container.Container', {
-      renderTo  : Ext.get("maximaContainer"),
-      id        : "maximaLeftContainer",
-      margin: 10,
-      layout: {
-        align : 'stretch',
-        type  : 'vbox'
-      },
-      flex: 1
-    });
-
-    // wrapper right container
-    Ext.create('Ext.container.Container', {
-      renderTo  : Ext.get("maximaContainer"),
-      id        : "maximaRightContainer",
-      autoShow  : true,
-      margin    : '10 10 10 0',
-      width     : 200,
-      layout    : {
-        align     : 'stretch',
-        type      : 'hbox'
-      }
-    });
-
-    // menu wrapper container
-    Ext.create('Ext.container.Container', {
-      renderTo  : Ext.get("maximaLeftContainer"),
-      id        : "maximaMenuWrapper",
-      height    : 100,
-      layout    : {
-        type      : 'fit'
-      }
-    });
-
-    // toolbar container
-    Ext.create('Ext.toolbar.Toolbar', {
-      height    : 90,
-      layout    : {
-        align     : 'stretch',
-        type      : 'hbox'
-      },
-      renderTo  : Ext.get("maximaMenuWrapper"),
-      id        : "maximaToolbar",
-
-      items     : [{
-        xtype   : "buttongroup",
-        text    : 'Kérdőívek',
-        id      : "maximaKerdoivCont",
-        layout  : "fit",
-        buttons : [{
-          text    : 'Kérdőívek',
-          id      : "kerdoivBtn",
-          columns   : 1,
-          flex      : 1,
-          handler : ""
-        }]
-      },{
-        xtype   : "buttongroup",
-        text    : 'Tagok',
-        id      : "maximaTagokCont",
-        buttons: [{
-          text      : 'Tagok listája',
-          id        : "memberlist",
-          columns   : 3,
-          flex      : 2,
-          disabled  : true,
-          handler   : ""
-        }]
+      items : [{
+        id: 'Main',
+        xtype: 'container',
+        layout: {
+            type: 'fit'
+        },
+        items : data
       }]
-    });*/
-
-//    // toolbar kerdoivek
-//    Ext.create('Ext.container.ButtonGroup', {
-//      height    : 90,
-//      style     : 'background: #C9DDF6;',
-//      title     : 'kérdőívek',
-//      flex      : 1,
-//      rowspan   : 1,
-//      columns   : 1,
-//      renderTo  : Ext.get("maximaToolbar"),
-//      id        : "maximaKerdoivCont",
-//      buttons: [{
-//        text    : 'Kérdőívek',
-//        id      : "kerdoivBtn",
-//        handler : ""
-//      }]
-//    });
-
-//    // toolbar tagok
-//    Ext.create('Ext.container.ButtonGroup', {
-//      height    : 90,
-//      style     : 'background: #C9DDF6;',
-//      title     : 'Tagok',
-//      flex      : 2,
-//      rowspan   : 1,
-//      columns   : 3,
-//      renderTo  : Ext.get("maximaToolbar"),
-//      id        : "maximaTagokCont",
-//      buttons: [{
-//        text      : 'Tagok listája',
-//        id        : "memberlist",
-//        disabled  : true,
-//        handler   : ""
-//      }]
-//    });
-
-
+    });
   }
-
-
 });
 Ext.define('GroupModel', {
 
 	extend: 'Model',
+	
+	init: function() {
+    this.getAjaxData();
+  },
 	
 	mapper: function(data){
 		
@@ -691,6 +659,10 @@ Ext.define('GroupModel', {
 
   extend: 'Model',
   
+  init: function() {
+    this.getAjaxData();
+  },
+  
   mapper: function(data){
     var self  = this;
     self.data = self.toJson(data.responseText);
@@ -710,6 +682,10 @@ Ext.define('GroupModel', {
 });Ext.define('LoginModel', {
 
 	extend: 'Model',
+	
+	init: function() {
+	  this.getAjaxData();
+	},
 	
 	mapper: function(data){
 		var self 	= this;
@@ -736,9 +712,60 @@ Ext.define('GroupModel', {
 		);
 	}
 	
+});Ext.define('IddqdModel', {
+
+  extend: 'Model',
+  
+  init: function() {
+  },
+  
+  mapper: function(data){
+    var self  = this;
+    self.data = self.toJson(data.responseText);
+    self.router.ajaxCallback(self);
+  },
+  
+  getAjaxData: function(){
+    var self = this;
+    AJAX.get(
+      "lang/",
+      "",
+      this.mapper,
+      self
+    );
+  }
+  
+});Ext.define('IddqdTranslateModel', {
+
+  extend: 'Model',
+  
+  init: function() {
+    this.getAjaxData();
+  },
+  
+  mapper: function(data){
+    var self  = this;
+    self.data = self.toJson(data.responseText);
+    self.router.ajaxCallback(self);
+  },
+  
+  getAjaxData: function(){
+    var self = this;
+    AJAX.get(
+      "lang/",
+      "",
+      this.mapper,
+      self
+    );
+  }
+  
 });Ext.define('LogoutModel', {
 
   extend: 'Model',
+  
+  init: function() {
+    this.getAjaxData();
+  },
   
   mapper: function(data){
     

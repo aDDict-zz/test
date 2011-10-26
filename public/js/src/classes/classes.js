@@ -13,16 +13,16 @@ Ext.define('AJAX', {
 		 * @param {reference} 		  form
 		 * @param {reference}       scope
 		 */
-		ajax: function(url, method, params, callback, scope, form){
-			Ext.Ajax.request({
-			    url		: url,
-			    scope 	: (typeof scope != "undefined" ? scope : null),
-			    form    : (typeof form != "undefined" ? form : null),
-			    method	: method,
-			    params	: params,
-			    success	: callback
-			});
-		},
+    ajax: function(url, method, params, callback, scope, form){
+    	Ext.Ajax.request({
+  	    url		: url,
+  	    scope 	: (typeof scope != "undefined" ? scope : null),
+  	    form    : (typeof form != "undefined" ? form : null),
+  	    method	: method,
+  	    params	: params,
+  	    success	: callback
+    	});
+    },
 		/**
 		 * @method get
 		 * ajax get method
@@ -66,20 +66,36 @@ Ext.define('Globals', {
  */
 Ext.define('Controller', {
 
-	model      : {},
-	view		   : {},
-	data       : {},
-	nameSpace  : "",
-	showView   : true,
+	model          : {},
+	view		       : {},
+	data           : {},
+	nameSpace      : "",
+	fullNameSpace  : "",
+	showView       : true,
 
 	getNameSpace: function() {
 	  var matches    = this.$className.match(/(.*)(Controller)/);
 	  this.nameSpace = matches[1];
 	},
+	
+	getFullNameSpace: function() {
+	  var nameSpace  = "",
+	      arr        = Router.routeOrders;
+	  
+	  if(arr.length > 0) 
+      for(var i = 0, len = arr.length; i < len; i++) {
+        nameSpace += arr[i];
+      }
+    else
+      nameSpace = this.nameSpace;
+	  
+	  this.fullNameSpace = nameSpace;
+	},
 
 	constructor	: function() {
 	  var self = this;
 	  self.getNameSpace();
+	  self.getFullNameSpace();
 	  self.model  = eval(['new ',self.nameSpace,'Model()'].join(''));
 	  self.model.router = self;
 
@@ -87,7 +103,7 @@ Ext.define('Controller', {
       self.view = eval(['new ',self.nameSpace,'View()'].join(''));
       self.view.scope = self;
     }
-		this.getData();
+		this.init();
 	}
 });
 
@@ -103,7 +119,7 @@ Ext.define('Model', {
 	},
 
 	constructor	: function(reference) {
-		this.getAjaxData();
+		this.init();
 	}
 });
 

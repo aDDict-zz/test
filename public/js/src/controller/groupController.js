@@ -2,6 +2,10 @@ Ext.define('GroupController', {
 
 	extend: 'Controller',
 	
+	init: function() {
+    this.getData();
+  },
+	
 	//this time the relevant model is done with his job, all response data are stored in scope.data
 	ajaxCallback: function(scope){
 	  this.data = scope.data;

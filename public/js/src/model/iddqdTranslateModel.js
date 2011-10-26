@@ -1,4 +1,4 @@
-Ext.define('MainModel', {
+Ext.define('IddqdTranslateModel', {
 
   extend: 'Model',
   
@@ -15,7 +15,7 @@ Ext.define('MainModel', {
   getAjaxData: function(){
     var self = this;
     AJAX.get(
-      "ext-template/",
+      "lang/",
       "",
       this.mapper,
       self
