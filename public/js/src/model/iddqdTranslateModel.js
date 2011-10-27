@@ -5,19 +5,19 @@ Ext.define('IddqdTranslateModel', {
   init: function() {
   },
   
+  updateRow: function(roweditor) {
+    AJAX.get(
+      "lang/update",
+      ['field=',roweditor.field,'&id=',roweditor.record.get('id'),'&val=',roweditor.record.get(roweditor.field)].join(''),
+      this.mapper,
+      self
+    );
+  },
+  
   mapper: function(data){
   },
   
   getAjaxData: function(){
-    /*var self = this,
-        querystr = ['?lang=',Router.lang,'&show=',this.itemsPerPage].join('');
-        
-    AJAX.get(
-      "lang/",
-      querystr,
-      this.mapper,
-      self
-    );*/
   }
   
 });

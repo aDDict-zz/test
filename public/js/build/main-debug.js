@@ -149,6 +149,7 @@ Ext.define('View', {
 
 	scope       : {},
 	render 		  : function() {},
+	
 	constructor	: function() {
 	  if(typeof Globals.DEPO["viewport"] == 'undefined' || Globals.DEPO["viewport"] == null)
   	  Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
@@ -157,19 +158,21 @@ Ext.define('View', {
         margin: 0,
         padding: 0,
         style: 'background: #EBEEF2;',
-        maintainFlex: true,
+//        maintainFlex: true,
         renderTo : Ext.getBody(),
         layout: {
             type: 'fit'
-        },
-        items : [/*{
-          id: 'Main',
+        }/*,
+        
+        items : [{
+          id: 'pageContainer',
           xtype: 'container',
           layout: {
-              type: 'fit'
+            type: 'fit'
+//            align: 'stretch',
+//            type: 'vbox'
           },
-          items : data
-        }*/]
+        }]*/
       });
 	}
 });
@@ -624,13 +627,25 @@ Ext.define('IddqdView', {
   
   extend: 'View',
 
-  render: function(data) { console.log(Globals.DEPO);
+  renderer: function(str) {
+    return ['<b>',str,'</b>'].join('');
+  },
+  
+  editor: function(str) {
+    console.log(str);
+    return str + 'FFF';
+  },
+
+  render: function(data) { //console.log(Globals.DEPO);
+    
+    //console.log(this.scope.model);
+    
+//    var thisEditor = new Ext.ux.grid.RowEditor();
     
     var itemsPerPage  = 6;
     var store         = Ext.create('Ext.data.Store', {
       storeId   : 'translate',
       fields    : ['id', 'category', 'variable', 'word', 'foreign_word'],
-      //autoLoad  : {start: 0, limit: this.itemsPerPage},
       proxy : {
         type    : 'ajax',
         url     : 'lang',
@@ -638,8 +653,6 @@ Ext.define('IddqdView', {
           type          : 'json',
           root          : 'rows',
           totalProperty : 'results',
-          limit   : itemsPerPage,
-          id: 'id'
           }
         }      
       });
@@ -647,11 +660,25 @@ Ext.define('IddqdView', {
       store.load({
         params  : {
           start   : 0,
-          show    : itemsPerPage,
+//          page    : 0,
           limit   : itemsPerPage
         }
       });
 
+    var rowEditing = Ext.create('Ext.grid.plugin.RowEditing',{
+      clicksToEdit: 1
+    });  
+      
+    rowEditing.on({
+      scope:this,
+      afteredit: function(roweditor, changes, record, rowIndex){
+//        console.log(roweditor, changes, record, rowIndex);
+//        console.log(roweditor.field);
+//        console.log(roweditor.record.get('id'));
+//        console.log(roweditor.record.get(roweditor.field));
+        this.scope.model.updateRow(roweditor);
+      }
+    }); 
     
     var Iddqd = Ext.create('Ext.grid.Panel', {
       title   : 'Translate',
@@ -659,19 +686,51 @@ Ext.define('IddqdView', {
       store   : store,
       columns : [
         {header : 'id'                , dataIndex: 'id'},
-        {header : 'Category'          , dataIndex: 'category'},
-        {header : 'Variable'          , dataIndex: 'variable'},
-        {header : 'Kifejezés'         , dataIndex: 'word'},
-        {header : 'Idegen kifejezés'  , dataIndex: 'foreign_word'}
+        {header : 'Kategória'          , dataIndex: 'category'},
+        {header : 'Változó'          , dataIndex: 'variable'},
+        {header : 'Kifejezés'         , dataIndex: 'word', renderer : this.renderer, editor : {xtype: 'textfield',allowBlank: false}},
+        {header : 'Idegen kifejezés'  , dataIndex: 'foreign_word', renderer : this.renderer, editor : {xtype: 'textfield',allowBlank: false}}
       ],
+      
+      plugins: [rowEditing],
+      
+      /*plugins: [
+        Ext.create('Ext.grid.plugin.RowEditing', {
+          saveText  : "My Save Button Text",
+          cancelText: "My Cancel Button Text",
+          clicksToEdit: 1,
+          
+          listeners: {
+            edit: function(e) { alert("asd");
+              console.log( e.record.get('id') );
+            }
+          },
+          
+//          on: function(roweditor, changes, record, rowIndex) {
+//            console.log(roweditor, changes, record, rowIndex);
+//          }, 
+//          startEdit: function(roweditor, changes, record, rowIndex) {
+//            console.log("asdasd");
+//            console.log(roweditor, changes, record, rowIndex);
+//          },
+          
+          completeEdit: function(roweditor, changes, record, rowIndex) { //obj.itemId getTargetEl
+//            console.log(roweditor,changes,record,rowIndex);
+//            
+//            console.log(roweditor.getText());
+            //console.log(obj); console.log(obj.getText());
+          },
+          on: function(roweditor, changes, record, rowIndex) {
+            console.log(record.get('id'));
+          }
+        })
+      ],*/
       height    : 400,
       width     : 700,
       dockedItems: [{
         xtype: 'pagingtoolbar',
         store: store,
         dock: 'top',
-        pageSize: itemsPerPage,
-        limit   : itemsPerPage,
         displayInfo: true
        }]
      });
@@ -680,11 +739,12 @@ Ext.define('IddqdView', {
      Globals.DEPO["viewport"].doLayout();
       
   }
-});Ext.define('MainView', {
+});
+Ext.define('MainView', {
   
   extend: 'View',
 
-  render: function(data) { console.log(Globals.DEPO);
+  render: function(data) { //console.log(data);
     //Globals.DEPO["viewport"].remove();
     
     //delete Globals.DEPO["viewport"];
@@ -715,6 +775,7 @@ Ext.define('IddqdView', {
       layout: {
           type: 'fit'
       },
+      //renderTo : Ext.get('pageContainer'),
       items : data
     });
     
@@ -848,22 +909,23 @@ Ext.define('GroupModel', {
   init: function() {
   },
   
+  updateRow: function(roweditor) {
+    AJAX.get(
+      "lang/update",
+      ['field=',roweditor.field,'&id=',roweditor.record.get('id'),'&val=',roweditor.record.get(roweditor.field)].join(''),
+      this.mapper,
+      self
+    );
+  },
+  
   mapper: function(data){
   },
   
   getAjaxData: function(){
-    /*var self = this,
-        querystr = ['?lang=',Router.lang,'&show=',this.itemsPerPage].join('');
-        
-    AJAX.get(
-      "lang/",
-      querystr,
-      this.mapper,
-      self
-    );*/
   }
   
-});Ext.define('LogoutModel', {
+});
+Ext.define('LogoutModel', {
 
   extend: 'Model',
   

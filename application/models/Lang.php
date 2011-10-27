@@ -52,7 +52,7 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
           select value from lang_values where var_id = {$item['id']} and group_id = {$langid};
         ")->fetchAll();
         
-        $item["foreign_word"] = $res[0]['value'];
+        $item["foreign_word"] = ($res[0]['value'] ? $res[0]['value'] : "");
         $items[]              = $item;
         
       }
@@ -65,6 +65,10 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
         'rows'    => $items
       );
       
+    }
+    
+    public function updateRow($params) {
+      $this->_db->query();
     }
 }
 

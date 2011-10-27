@@ -8,10 +8,14 @@ class LangController extends Zend_Controller_Action
     }
 
     public function indexAction() {
-      $params = $this->getRequest()->getParams();
       $lang   = new Application_Model_Lang();
-      echo Zend_Json::encode($lang->getData($params));
+      echo Zend_Json::encode($lang->getData($this->getRequest()->getParams()));
       die();
+    }
+    
+    public function updateAction() {
+      $lang   = new Application_Model_Lang();
+      die( print_r( $this->getRequest()->getParams() ) );
     }
 
 

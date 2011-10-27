@@ -2,7 +2,7 @@ Ext.define('MainView', {
   
   extend: 'View',
 
-  render: function(data) { console.log(Globals.DEPO);
+  render: function(data) { //console.log(data);
     //Globals.DEPO["viewport"].remove();
     
     //delete Globals.DEPO["viewport"];
@@ -33,6 +33,7 @@ Ext.define('MainView', {
       layout: {
           type: 'fit'
       },
+      //renderTo : Ext.get('pageContainer'),
       items : data
     });
     
