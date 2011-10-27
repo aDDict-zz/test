@@ -8,7 +8,9 @@ class LangController extends Zend_Controller_Action
     }
 
     public function indexAction() {
-      echo Zend_Json::encode(array("data" => array("barosag" => "yes")));
+      $params = $this->getRequest()->getParams();
+      $lang   = new Application_Model_Lang();
+      echo Zend_Json::encode($lang->getData($params));
       die();
     }
 

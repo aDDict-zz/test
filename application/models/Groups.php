@@ -26,29 +26,29 @@ class Application_Model_Groups extends Zend_Db_Table_Abstract {
    $result = $this->_db->query("
    
     SELECT
-        if( length( g.name ) >0, g.name, g.title ) realname,
-        if( length( multi.name ) >0, multi.name, multi.title ) mrealname,
-        m.membership,
-        m.group_id,
-        g.title,
-        mg.multiid
-        
-      FROM
-        members m, groups g
-        
-      LEFT JOIN
-        multigroup mg ON g.id = mg.groupid
-        
-      LEFT JOIN
-        multi ON multi.id = mg.multiid
+      if( length( g.name ) >0, g.name, g.title ) realname,
+      if( length( multi.name ) >0, multi.name, multi.title ) mrealname,
+      m.membership,
+      m.group_id,
+      g.title,
+      mg.multiid
       
-      AND mg.multiid IN
-        (SELECT id FROM multi WHERE index_grouping='yes')
+    FROM
+      members m, groups g
       
-      WHERE g.id = m.group_id
-      AND m.user_id = '{$uid}'
+    LEFT JOIN
+      multigroup mg ON g.id = mg.groupid
       
-   ")->fetchAll(); 
+    LEFT JOIN
+      multi ON multi.id = mg.multiid
+    
+    AND mg.multiid IN
+      (SELECT id FROM multi WHERE index_grouping='yes')
+    
+    WHERE g.id = m.group_id
+    AND m.user_id = ?",
+    array($uid)
+   )->fetchAll(); 
    return $result;
    
   }

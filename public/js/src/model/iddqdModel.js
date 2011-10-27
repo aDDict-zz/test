@@ -12,13 +12,13 @@ Ext.define('IddqdModel', {
   },
   
   getAjaxData: function(){
-    var self = this;
+    /*var self = this;
     AJAX.get(
       "lang/",
       "",
       this.mapper,
       self
-    );
+    );*/
   }
   
 });

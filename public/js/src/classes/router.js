@@ -58,7 +58,9 @@ Ext.define('Router', {
               Router.route = order;
             } catch(err) { console.log(err);
               delete Globals.DEPO[order];
-              Ext.Msg.alert('Routing error', 'There is no implemented class in the namespace', function(btn){if (btn == 'ok') { Router.setRoute(Router.frontPage);}});
+              Message.alert('Routing error', 'There is no implemented class in the namespace', function() {
+                Router.setRoute(Router.frontPage);
+              });
             }
           }
         else {

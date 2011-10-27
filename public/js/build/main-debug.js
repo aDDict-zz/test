@@ -55,6 +55,22 @@ Ext.define('AJAX', {
 });
 
 /**
+ * class Message
+ */
+Ext.define('Message', {
+  statics: {
+    alert: function(head, body, callback) {
+      Ext.Msg.alert(head, body, function(btn){
+        if (btn == 'ok') {
+          callback();
+        }
+      });
+    }
+  },
+  constructor : function() {}
+});
+
+/**
  * class Globals
  */
 Ext.define('Globals', {
@@ -134,6 +150,27 @@ Ext.define('View', {
 	scope       : {},
 	render 		  : function() {},
 	constructor	: function() {
+	  if(typeof Globals.DEPO["viewport"] == 'undefined' || Globals.DEPO["viewport"] == null)
+  	  Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
+        xtype: 'viewport',
+        border: 0,
+        margin: 0,
+        padding: 0,
+        style: 'background: #EBEEF2;',
+        maintainFlex: true,
+        renderTo : Ext.getBody(),
+        layout: {
+            type: 'fit'
+        },
+        items : [/*{
+          id: 'Main',
+          xtype: 'container',
+          layout: {
+              type: 'fit'
+          },
+          items : data
+        }*/]
+      });
 	}
 });
 
@@ -261,7 +298,9 @@ Ext.define('Router', {
               Router.route = order;
             } catch(err) { console.log(err);
               delete Globals.DEPO[order];
-              Ext.Msg.alert('Routing error', 'There is no implemented class in the namespace', function(btn){if (btn == 'ok') { Router.setRoute(Router.frontPage);}});
+              Message.alert('Routing error', 'There is no implemented class in the namespace', function() {
+                Router.setRoute(Router.frontPage);
+              });
             }
           }
         else {
@@ -368,13 +407,15 @@ Ext.define('IddqdController', {
 
   init: function() {
     try {
-      // init and store(its ref) the relevant controller class
       if(typeof Globals.DEPO[[this.fullNameSpace,"Controller"].join("")] == "undefined")
         (new Function(['Globals.DEPO["',this.fullNameSpace,'Controller"] = new ',this.fullNameSpace,'Controller();'].join("")))();
       else
         Globals.DEPO[[this.fullNameSpace,"Controller"].join("")].init();
-    } catch(err) { console.log(err);
-      Ext.Msg.alert('Routing error', 'There is no implemented class in the namespace', function(btn){if (btn == 'ok') { Router.setRoute(Router.frontPage);}});
+    } catch(err) {
+      Message.alert('Routing error', 'There is no implemented class in the namespace', function() {
+        Router.setRoute(Router.frontPage);
+      });
+      
     }
   },
 
@@ -394,16 +435,12 @@ Ext.define('IddqdController', {
   extend: 'Controller',
 
   init: function() {
-    alert("iddqdTranslateController");
+    this.view.render({});
   },
 
   ajaxCallback: function(scope){
     this.view.render(scope.data);
   },
-
-  /*main: function() {
-    this.view.render({});
-  },*/
 
   getData : function(){
   }
@@ -587,15 +624,71 @@ Ext.define('IddqdView', {
   
   extend: 'View',
 
-  render: function(data) { console.log(data);
+  render: function(data) { console.log(Globals.DEPO);
+    
+    var itemsPerPage  = 6;
+    var store         = Ext.create('Ext.data.Store', {
+      storeId   : 'translate',
+      fields    : ['id', 'category', 'variable', 'word', 'foreign_word'],
+      //autoLoad  : {start: 0, limit: this.itemsPerPage},
+      proxy : {
+        type    : 'ajax',
+        url     : 'lang',
+        reader  : {
+          type          : 'json',
+          root          : 'rows',
+          totalProperty : 'results',
+          limit   : itemsPerPage,
+          id: 'id'
+          }
+        }      
+      });
+      
+      store.load({
+        params  : {
+          start   : 0,
+          show    : itemsPerPage,
+          limit   : itemsPerPage
+        }
+      });
+
+    
+    var Iddqd = Ext.create('Ext.grid.Panel', {
+      title   : 'Translate',
+      id      : "Iddqd",
+      store   : store,
+      columns : [
+        {header : 'id'                , dataIndex: 'id'},
+        {header : 'Category'          , dataIndex: 'category'},
+        {header : 'Variable'          , dataIndex: 'variable'},
+        {header : 'Kifejezés'         , dataIndex: 'word'},
+        {header : 'Idegen kifejezés'  , dataIndex: 'foreign_word'}
+      ],
+      height    : 400,
+      width     : 700,
+      dockedItems: [{
+        xtype: 'pagingtoolbar',
+        store: store,
+        dock: 'top',
+        pageSize: itemsPerPage,
+        limit   : itemsPerPage,
+        displayInfo: true
+       }]
+     });
+     
+     Globals.DEPO["viewport"].add(Iddqd);
+     Globals.DEPO["viewport"].doLayout();
+      
   }
 });Ext.define('MainView', {
   
   extend: 'View',
 
-  render: function(data) {
+  render: function(data) { console.log(Globals.DEPO);
+    //Globals.DEPO["viewport"].remove();
     
-    Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
+    //delete Globals.DEPO["viewport"];
+    /*Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
       xtype: 'viewport',
       border: 0,
       margin: 0,
@@ -614,7 +707,20 @@ Ext.define('IddqdView', {
         },
         items : data
       }]
+    });*/
+    
+    var main = Ext.create('Ext.Container', {
+      id: 'Main',
+      xtype: 'container',
+      layout: {
+          type: 'fit'
+      },
+      items : data
     });
+    
+    Globals.DEPO["viewport"].add(main);
+    Globals.DEPO["viewport"].doLayout();
+    
   }
 });
 Ext.define('GroupModel', {
@@ -726,13 +832,13 @@ Ext.define('GroupModel', {
   },
   
   getAjaxData: function(){
-    var self = this;
+    /*var self = this;
     AJAX.get(
       "lang/",
       "",
       this.mapper,
       self
-    );
+    );*/
   }
   
 });Ext.define('IddqdTranslateModel', {
@@ -740,23 +846,21 @@ Ext.define('GroupModel', {
   extend: 'Model',
   
   init: function() {
-    this.getAjaxData();
   },
   
   mapper: function(data){
-    var self  = this;
-    self.data = self.toJson(data.responseText);
-    self.router.ajaxCallback(self);
   },
   
   getAjaxData: function(){
-    var self = this;
+    /*var self = this,
+        querystr = ['?lang=',Router.lang,'&show=',this.itemsPerPage].join('');
+        
     AJAX.get(
       "lang/",
-      "",
+      querystr,
       this.mapper,
       self
-    );
+    );*/
   }
   
 });Ext.define('LogoutModel', {

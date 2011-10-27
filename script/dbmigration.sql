@@ -1,14 +1,29 @@
-CREATE TABLE IF NOT EXISTS `lang` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-	`cat` int(11),
-  `var` varchar(50) DEFAULT NULL,
-	`val` varchar(255) DEFAULT NULL,
-	`flag` varchar(5) DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `lang_variables` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`cat_id` int(11),
+	`var` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0;
 
-CREATE TABLE IF NOT EXISTS `lang_cat` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `var` varchar(50) DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `lang_values` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`var_id` int(11),
+	`group_id` int(11),
+	`value` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0;
+
+CREATE TABLE IF NOT EXISTS `lang_groups` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`val` varchar(255) DEFAULT NULL,
+	`flag` varchar(5) DEFAULT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0;
+
+CREATE TABLE IF NOT EXISTS `lang_cat` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`var` varchar(50) DEFAULT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0;
+
+

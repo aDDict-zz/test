@@ -13,12 +13,6 @@ class LoginController extends Zend_Controller_Action {
   }
   
   public function preDispatch() {
-    /*$sessionUser = new Zend_Session_Namespace('sessionUser');
-    print_r( $sessionUser->profile );
-    $auth = Zend_Auth::getInstance();
-    print_r($auth->getIdentity());
-    die( print_r( $sessionUser->username ) );*/
-    
     $request  = $this->getRequest(); 
     
     if($request->getActionName() == "logout") {

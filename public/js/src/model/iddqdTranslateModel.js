@@ -3,23 +3,21 @@ Ext.define('IddqdTranslateModel', {
   extend: 'Model',
   
   init: function() {
-    this.getAjaxData();
   },
   
   mapper: function(data){
-    var self  = this;
-    self.data = self.toJson(data.responseText);
-    self.router.ajaxCallback(self);
   },
   
   getAjaxData: function(){
-    var self = this;
+    /*var self = this,
+        querystr = ['?lang=',Router.lang,'&show=',this.itemsPerPage].join('');
+        
     AJAX.get(
       "lang/",
-      "",
+      querystr,
       this.mapper,
       self
-    );
+    );*/
   }
   
 });

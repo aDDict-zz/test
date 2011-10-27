@@ -52,6 +52,22 @@ Ext.define('AJAX', {
 });
 
 /**
+ * class Message
+ */
+Ext.define('Message', {
+  statics: {
+    alert: function(head, body, callback) {
+      Ext.Msg.alert(head, body, function(btn){
+        if (btn == 'ok') {
+          callback();
+        }
+      });
+    }
+  },
+  constructor : function() {}
+});
+
+/**
  * class Globals
  */
 Ext.define('Globals', {
@@ -131,6 +147,27 @@ Ext.define('View', {
 	scope       : {},
 	render 		  : function() {},
 	constructor	: function() {
+	  if(typeof Globals.DEPO["viewport"] == 'undefined' || Globals.DEPO["viewport"] == null)
+  	  Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
+        xtype: 'viewport',
+        border: 0,
+        margin: 0,
+        padding: 0,
+        style: 'background: #EBEEF2;',
+        maintainFlex: true,
+        renderTo : Ext.getBody(),
+        layout: {
+            type: 'fit'
+        },
+        items : [/*{
+          id: 'Main',
+          xtype: 'container',
+          layout: {
+              type: 'fit'
+          },
+          items : data
+        }*/]
+      });
 	}
 });
 

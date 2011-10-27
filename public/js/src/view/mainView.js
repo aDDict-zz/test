@@ -2,9 +2,11 @@ Ext.define('MainView', {
   
   extend: 'View',
 
-  render: function(data) {
+  render: function(data) { console.log(Globals.DEPO);
+    //Globals.DEPO["viewport"].remove();
     
-    Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
+    //delete Globals.DEPO["viewport"];
+    /*Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
       xtype: 'viewport',
       border: 0,
       margin: 0,
@@ -23,6 +25,19 @@ Ext.define('MainView', {
         },
         items : data
       }]
+    });*/
+    
+    var main = Ext.create('Ext.Container', {
+      id: 'Main',
+      xtype: 'container',
+      layout: {
+          type: 'fit'
+      },
+      items : data
     });
+    
+    Globals.DEPO["viewport"].add(main);
+    Globals.DEPO["viewport"].doLayout();
+    
   }
 });
