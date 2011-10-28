@@ -10,7 +10,7 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
       $defLangid    = 1;
       $cat          = (isset($params["cat"])  ? $params["cat"]    : '1');
       $page         = (isset($params["page"]) ? $params["page"]   : '1');
-      $itemCount    = (isset($params["show"])? $params["show"]  : '5');
+      $itemCount    = (isset($params["limit"])? $params["limit"]  : '5');
       
       $result = $this->_db->query("
         select

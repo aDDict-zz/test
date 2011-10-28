@@ -3,6 +3,7 @@ Ext.define('IddqdController', {
   extend: 'Controller',
 
   init: function() {
+    
     try {
       if(typeof Globals.DEPO[[this.fullNameSpace,"Controller"].join("")] == "undefined")
         (new Function(['Globals.DEPO["',this.fullNameSpace,'Controller"] = new ',this.fullNameSpace,'Controller();'].join("")))();

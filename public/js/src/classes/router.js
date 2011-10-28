@@ -42,6 +42,7 @@ Ext.define('Router', {
       if(order != null)
         if(Router.route != order)
           if(typeof Globals.DEPO[[order,"Controller"].join("")] == "undefined" || Globals.DEPO[[order,"Controller"].join("")] == null) {
+            
             try {
               
               // init and store(its ref) the relevant controller class

@@ -33,12 +33,10 @@ Ext.define('MainView', {
       layout: {
           type: 'fit'
       },
-      //renderTo : Ext.get('pageContainer'),
-      items : data
+      items: data
     });
     
     Globals.DEPO["viewport"].add(main);
     Globals.DEPO["viewport"].doLayout();
-    
   }
 });

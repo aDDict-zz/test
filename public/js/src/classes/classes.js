@@ -134,7 +134,7 @@ Ext.define('Model', {
 	  return Ext.decode(str);
 	},
 
-	constructor	: function(reference) {
+	constructor	: function() {
 		this.init();
 	}
 });
@@ -148,14 +148,14 @@ Ext.define('View', {
 	render 		  : function() {},
 	
 	constructor	: function() {
-	  if(typeof Globals.DEPO["viewport"] == 'undefined' || Globals.DEPO["viewport"] == null)
+	  if(typeof Globals.DEPO["viewport"] == 'undefined' || Globals.DEPO["viewport"] == null) {
   	  Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
         xtype: 'viewport',
         border: 0,
         margin: 0,
         padding: 0,
         style: 'background: #EBEEF2;',
-//        maintainFlex: true,
+        maintainFlex: true,
         renderTo : Ext.getBody(),
         layout: {
             type: 'fit'
@@ -171,6 +171,21 @@ Ext.define('View', {
           },
         }]*/
       });
+      
+      /*var wrapper = Ext.create('Ext.Container', {
+        id: 'wrapper',
+        xtype: 'container',
+        layout: {
+            type: 'fit'
+        }
+      });
+      
+      Globals.DEPO["viewport"].add(wrapper);
+      Globals.DEPO["viewport"].doLayout();*/
+      
+      //Ext.get("wrapper").hide();
+    }
+    
 	}
 });
 
