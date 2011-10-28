@@ -8,7 +8,7 @@ Ext.define('IddqdController', {
         (new Function(['Globals.DEPO["',this.fullNameSpace,'Controller"] = new ',this.fullNameSpace,'Controller();'].join("")))();
       else
         Globals.DEPO[[this.fullNameSpace,"Controller"].join("")].init();
-    } catch(err) {
+    } catch(err) { console.log(err);
       Message.alert('Routing error', 'There is no implemented class in the namespace', function() {
         Router.setRoute(Router.frontPage);
       });
