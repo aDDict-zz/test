@@ -27,6 +27,19 @@ Ext.define('MainView', {
       }]
     });*/
     
+    Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
+      xtype: 'viewport',
+      border: 0,
+      margin: 0,
+      padding: 0,
+      style: 'background: #EBEEF2;',
+      maintainFlex: true,
+      renderTo : Ext.getBody(),
+      layout: {
+          type: 'fit'
+      }
+    });
+    
     var main = Ext.create('Ext.Container', {
       id: 'Main',
       xtype: 'container',

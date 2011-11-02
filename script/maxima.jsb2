@@ -1,9 +1,9 @@
 {
     projectName: 'maxima',
     deployDir: '../public/js/build',
-    licenseText: "Maxima Javascript Engine Built on ExtJs 4.0, @author robThot, hirekmedia",
+    licenceText:'Maxima Javascript Engine Built on ExtJs 4.0, @author robThot, hirekmedia',
     pkgs: [{
-    	name: 'Maxima New Engine',
+    	name: 'Maxima Engine',
         file: 'main.js',
         isDebug: true,
         fileIncludes: [{

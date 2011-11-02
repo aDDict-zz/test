@@ -148,7 +148,7 @@ Ext.define('View', {
 	render 		  : function() {},
 	
 	constructor	: function() {
-	  if(typeof Globals.DEPO["viewport"] == 'undefined' || Globals.DEPO["viewport"] == null) {
+	  /*if(typeof Globals.DEPO["viewport"] == 'undefined' || Globals.DEPO["viewport"] == null) {
   	  Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
         xtype: 'viewport',
         border: 0,
@@ -159,32 +159,9 @@ Ext.define('View', {
         renderTo : Ext.getBody(),
         layout: {
             type: 'fit'
-        }/*,
-        
-        items : [{
-          id: 'pageContainer',
-          xtype: 'container',
-          layout: {
-            type: 'fit'
-//            align: 'stretch',
-//            type: 'vbox'
-          },
-        }]*/
-      });
-      
-      /*var wrapper = Ext.create('Ext.Container', {
-        id: 'wrapper',
-        xtype: 'container',
-        layout: {
-            type: 'fit'
         }
       });
-      
-      Globals.DEPO["viewport"].add(wrapper);
-      Globals.DEPO["viewport"].doLayout();*/
-      
-      //Ext.get("wrapper").hide();
-    }
+    }*/
     
 	}
 });

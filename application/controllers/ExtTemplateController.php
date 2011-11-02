@@ -11,6 +11,12 @@ class ExtTemplateController extends Zend_Controller_Action
         // action body
         
     }
+    
+    public function translateAction() {
+      /*echo "FOKKKKKK";
+      $this->_helper->viewRenderer->setNoRender(true);
+      die();*/
+    }
 
 
 }

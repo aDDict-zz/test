@@ -3,6 +3,9 @@ Ext.define('IddqdTranslateModel', {
   extend: 'Model',
   
   init: function() {
+    if(Ext.get("Iddqd") == null)
+      this.getAjaxData();
+      
     this.loader = new Ext.LoadMask(Ext.getBody(), {msg:"loading"});
   },
   
@@ -25,9 +28,19 @@ Ext.define('IddqdTranslateModel', {
   },
   
   mapper: function(data){
+    var self  = this;
+    self.data = self.toJson(data.responseText);
+    self.router.ajaxCallback(self);
   },
   
   getAjaxData: function(){
+    var self = this;
+    AJAX.get(
+      "ext-template/translate",
+      "",
+      this.mapper,
+      self
+    );
   }
   
 });

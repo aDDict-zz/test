@@ -1,0 +1,80 @@
+{
+    xtype: 'viewport',
+    margin: 20,
+    items: [
+        {
+            xtype: 'container',
+            height: 895,
+            tpl: Ext.create('Ext.XTemplate',
+                ''
+            ),
+            width: 1299,
+            layout: {
+                align: 'stretch',
+                type: 'hbox'
+            },
+            items: [
+                {
+                    xtype: 'container',
+                    tpl: Ext.create('Ext.XTemplate',
+                        ''
+                    ),
+                    width: 535,
+                    layout: {
+                        type: 'column'
+                    },
+                    flex: 1,
+                    items: [
+                        {
+                            xtype: 'gridpanel',
+                            height: 846,
+                            width: 634,
+                            title: 'My Grid Panel',
+                            columns: [
+                                {
+                                    xtype: 'gridcolumn',
+                                    dataIndex: 'string',
+                                    text: 'String'
+                                },
+                                {
+                                    xtype: 'numbercolumn',
+                                    dataIndex: 'number',
+                                    text: 'Number'
+                                },
+                                {
+                                    xtype: 'datecolumn',
+                                    dataIndex: 'date',
+                                    text: 'Date'
+                                },
+                                {
+                                    xtype: 'booleancolumn',
+                                    dataIndex: 'bool',
+                                    text: 'Boolean'
+                                }
+                            ],
+                            viewConfig: {
+
+                            }
+                        }
+                    ]
+                },
+                {
+                    xtype: 'container',
+                    flex: 1,
+                    items: [
+                        {
+                            xtype: 'combobox',
+                            width: 538,
+                            fieldLabel: 'languages'
+                        },
+                        {
+                            xtype: 'combobox',
+                            width: 539,
+                            fieldLabel: 'lang groups'
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
