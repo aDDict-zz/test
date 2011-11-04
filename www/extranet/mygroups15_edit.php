@@ -4,7 +4,7 @@ $sgweare=19;
 $weare=19;
 if (get_http('id','')) $subweare=191;
 else $subweare=192;
-include "cookie_auth.php";  
+include "cookie_auth.php";
 include "common.php";
 $language=select_lang();
 include "./lang/$language/filter.lang";
@@ -18,25 +18,25 @@ $mres = mysql_query("select title from groups,members where groups.id=members.gr
                      and groups.id='$group_id' and (membership='owner' or membership='moderator')
                      and user_id='$active_userid'");
 if ($mres && mysql_num_rows($mres))
-    $rowg=mysql_fetch_array($mres);  
+    $rowg=mysql_fetch_array($mres);
 else {
     header("Location: $_MX_var->baseUrl/index.php"); exit; }
 $title=$rowg["title"];
-     
-$res=mysql_query("select id,name,cache_num,query_text,to_days(cache_date) as cddn,to_days(now()) as ndn 
+
+$res=mysql_query("select id,name,cache_num,query_text,to_days(cache_date) as cddn,to_days(now()) as ndn
                   from filter where id='$id'");
-logger($q,$group_id,"","filter_id=$id","filter");                  
+logger($q,$group_id,"","filter_id=$id","filter");
 if ($res && mysql_num_rows($res)) {
     $k=mysql_fetch_array($res);
     $what=$word["vf_edit"];
     $new=0;
     $filter_cache_num=$k["cache_num"];
-    $filter_cache_diff=($k["cddn"]+$_MX_var->filter_cache_expire)-$k["ndn"]; 
+    $filter_cache_diff=($k["cddn"]+$_MX_var->filter_cache_expire)-$k["ndn"];
     #so if this is>=0, cached data is not yet expired. See common.php for more.
-    $filter_cache_age=$k["ndn"]-$k["cddn"];   
+    $filter_cache_age=$k["ndn"]-$k["cddn"];
     if ($clear_filt_cache=="yes") { #force recalculate
         $name=$k["name"];
-        $filt_query=$k["query_text"];      
+        $filt_query=$k["query_text"];
         $enter=1;
     }
 }
@@ -81,21 +81,21 @@ if ($enter) {
           $filter_cache_diff=-1;
           if ($new) {
           	$query="insert into filter (name,query_text,group_id,ftype,tstamp) values
-                  ('$name','$query_text','$group_id','advanced',now())";                  
+                  ('$name','$query_text','$group_id','advanced',now())";
              mysql_query($query);
              $id=mysql_insert_id();
              $iid=$id;
 			 logger($query,$group_id,"","","filter");
              //header("Location: mygroups15_edit.php?group_id=$group_id&id=$id"); exit();
-          }          
+          }
           else {
           	 $q="update filter set name='$name',query_text='$query_text',
                           cache_date='2000-01-01 00:00:00', tstamp=now() where id='$id'";
              mysql_query($q);
-			 logger($q,$group_id,"","","filter");                          
+			 logger($q,$group_id,"","","filter");
 		  }
           unset($filtres);
-          $filter_error="filter_ok";         
+          $filter_error="filter_ok";
           if ($pp=popen("$_MX_var->filter_engine $id","r")) {
               while ($buff=fgets($pp,25000)) {
                   $filtres.=$buff;
@@ -115,32 +115,32 @@ if ($enter) {
           }
           if ($syntax_error==1) {
               $filter_error="$word[filt_syntax_error]: $syntax_error_text";
-          }      
+          }
           if ($filter_error != "filter_ok")
              $error.="$filter_error<br>";
           else {
-              $qq="select count(*) from users_$title where validated='yes' and robinson='no' 
+              $qq="select count(*) from users_$title where validated='yes' and robinson='no'
                    and ($filter_qpart)";
               // echo nl2br(htmlspecialchars("select count(*) from users_$title where validated='yes' and robinson='no' and ($filter_qpart)"))." -- $limitord -- $limitnum";
               $res=mysql_query($qq);
-              if ($res && mysql_num_rows($res)) 
+              if ($res && mysql_num_rows($res))
                   $users=mysql_result($res,0,0);
               else
                   $users=0;
-              if (!empty($limitord) && $users>$limitnum) 
-                  $users=$limitnum;      
+              if (!empty($limitord) && $users>$limitnum)
+                  $users=$limitnum;
               mysql_query("update filter set cache_num='$users',cache_date=now() where id='$id'");
               $error.="$word[total_of] $users $word[satisfies].<br>";
           }
       }
    }
    $k["name"]=$name;
-   $k["query_text"]=$filt_query;      
+   $k["query_text"]=$filt_query;
 }
 
 if ($filter_cache_diff>=0)
     $error.="$word[total_of] $filter_cache_num $word[satisfies].<br>
-             [$word[from_cache] ($filter_cache_age $word[days_old])</span> 
+             [$word[from_cache] ($filter_cache_age $word[days_old])</span>
              <a href=mygroups15_edit.php?group_id=$group_id&id=$id&clear_filt_cache=yes>
              $word[cache_refresh]</a><span class='szovegvastag'>]<br>";
 
@@ -168,7 +168,7 @@ NS4 = (document.layers) ? 1 : 0;
 IE4 = (document.all) ? 1 : 0;
 ver4 = (NS4 || IE4) ? 1 : 0;
 function storeCaret (textEl) {
-if (textEl.createTextRange) 
+if (textEl.createTextRange)
  textEl.caretPos = document.selection.createRange().duplicate();
 }
 function addBody (text) {
@@ -190,7 +190,7 @@ else
 }
 }
 function set_ff(fflt) {
-   fframe.location='mygroups15_edit_frame.php?group_id=$group_id&vgparam='+fflt; 
+   fframe.location='mygroups15_edit_frame.php?group_id=$group_id&vgparam='+fflt;
 }
 //-->
 </script>
@@ -202,7 +202,7 @@ function set_ff(fflt) {
 <tr>
 <td colspan='2' class=bgkiemelt2 valign='top' align='left'><span class='szovegvastag'>
 $what$error</span></td>
-</tr>      
+</tr>
 <form method=post name='filtform' action='mygroups15_edit.php'>
 <input type='hidden' name='enter' value='1'>
 <input type='hidden' name='group_id' value='$group_id'>

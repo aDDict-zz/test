@@ -33,7 +33,12 @@ else {
     header("Location: $_MX_var->baseUrl/index.php"); exit; }
 $title=$rowg["title"];
 $active_membership=$rowg["membership"];
-  
+
+if($active_membership == "affiliate") {
+  include "threadlist_aff_cache.php";
+  die();
+}
+
 $weare=20;
 include "menugen.php";
 include "./lang/$language/threadlist.lang";

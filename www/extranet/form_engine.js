@@ -1,6 +1,6 @@
 var mxe=new Array();
 var mxbox=new Array();
-var mxpage=new Array(); 
+var mxpage=new Array();
 var mxlastpage=-1;
 var mxlastbox='0';
 var ordnum=0;
@@ -59,7 +59,7 @@ function mx_init() {
     for(var i = 0; i < 10;i++) {
       mx_page_seq_spec.push(arr[i]);
     }
-    
+
     var arr = [];
     for(var i = 18; i < 31; i++) {
       bit = Math.floor(Math.random()*2);
@@ -106,7 +106,7 @@ function mx_init() {
     var firstrot = 0;
     for (i=0;i<mxe.length;i++) {
         // if (mx_page_in_cluster(mxe[i].page) || mxe[i].type=='hidden') {
-        var widind = i;    
+        var widind = i;
         if (mx_maxima=='mxform282' && mxe[i].id.search(new RegExp("^sakkomkekpont_13_([0-9])","gi"))>=0) {
             if (RegExp.$1 == 1) {
                 firstrot = i;
@@ -131,20 +131,20 @@ function mx_init() {
                 }
             }
         }
-        
+
 //        if (mx_maxima=='mxform316' && mxe[i].id.search(new RegExp("^kuttnshera_p8_([0-9])","gi"))>=0) {
-//        
+//
 //          bit = Math.floor(Math.random()*2);
-//			     
+//
 //          if(bit == 0)
 //            kuttnshera_p8_collector.unshift(i);
 //          else if(bit == 1)
 //            kuttnshera_p8_collector.push(i);
-//            
+//
 //          p8_counter++;
 //          widind = -1;
 //        }
-//        
+//
 //        if(p8_counter == 10 && typeof p8_listener == "undefined") {
 //          var p8_listener = 1;
 //          for(var c = 0, len = kuttnshera_p8_collector.length; c < len; c++) {
@@ -152,21 +152,21 @@ function mx_init() {
 //            mx_page_seq_spec.push( kuttnshera_p8_collector[c] );
 //          }
 //        }
-//        
-//        if (mx_maxima=='mxform316' && mxe[i].id.search(new RegExp("^kuttnshera_p9_([0-9])","gi"))>=0) { 
-//			
+//
+//        if (mx_maxima=='mxform316' && mxe[i].id.search(new RegExp("^kuttnshera_p9_([0-9])","gi"))>=0) {
+//
 //          bit = Math.floor(Math.random()*2);
-//           
+//
 //          if(bit == 0)
 //            kuttnshera_p9_collector.unshift(i);
 //          else if(bit == 1)
 //            kuttnshera_p9_collector.push(i);
-//            
+//
 //          p9_counter++;
-//          
+//
 //          widind = -1;
 //        }
-//        
+//
 //        if(p9_counter == 13 && typeof p9_listener == "undefined") {
 //          var p9_listener = 1;
 //          for(var r = 0, len = kuttnshera_p9_collector.length; r < len; r++) {
@@ -174,13 +174,13 @@ function mx_init() {
 //            mx_page_seq_spec.push( kuttnshera_p9_collector[r] );
 //          }
 //        }
-        
+
         if(widind != -1) {
 //          mx_page_seq_spec.push( widind );
           mx_create(mxe[widind],0);
         }
     }
-    
+
     if (mxlastbox!='0') {
         mx_end_box(mxlastpage,mxlastbox);
     }
@@ -250,8 +250,8 @@ function mx_init() {
         }
         //alert(mx_page_seq.join(','));
     }
-    
-    
+
+
     if (mx_maxima=='mxform316') {  // special page sequence for this form
       pointer     = "mxform316";
       for (var is=1;is<=mx_pagenum;is++){
@@ -261,7 +261,7 @@ function mx_init() {
           mx_page_seq.push(is);
       }
     }
-    
+
     if (mx_maxima=='mxform262') {  // special page sequence for this form
         ceo=0;
         if (cid.search(new RegExp("([0-9])[^0-9]*([0-9])[^0-9]*$","gi"))>=0) {
@@ -340,9 +340,9 @@ function mx_widget(id,type,mandatory,question,question2,page,box,vartype,depende
     this.vartype=vartype;
     this.dependency=dependency;
     // load from the cookies that's available, but not for the hiddens! - we must allow that for cid because of the banner thing
-    if ((this.type!='hidden' || id=='cid') && typeof(cookie_ref[id])!='undefined') { 
+    if ((this.type!='hidden' || id=='cid') && typeof(cookie_ref[id])!='undefined') {
         this.value=cookie_ref[id];
-        if (this.type!='hidden') { 
+        if (this.type!='hidden') {
             filled_num++;
         }
     }
@@ -374,7 +374,7 @@ function mx_widget(id,type,mandatory,question,question2,page,box,vartype,depende
             uszi286 = new Array('EI1.jpg','EI2.jpg','EI3.jpg','OI4.jpg','UCI5.jpg','RI6.jpg','CI7.jpg','GI8.jpg','TI9.jpg','UPI10.jpg','VI11.jpg','FI12.jpg');
         }
     }
-    this.img_name = new Array(); 
+    this.img_name = new Array();
     if (typeof(mx_ifns)!='undefined' && mx_ifns.length) {
         if (0) {   // display one by rotation instead of all, we can add this as an option in the future
             ceo=0;
@@ -383,14 +383,14 @@ function mx_widget(id,type,mandatory,question,question2,page,box,vartype,depende
                     ceo=cid.substr(cid.length-1,1) % mx_ifns.length;
                 }
             }
-            this.img_name=mx_ifns[ceo]; 
+            this.img_name=mx_ifns[ceo];
         }
         else {
             for (var imi=0;imi<mx_ifns.length;imi++) {
                 this.img_name.push(mx_ifns[imi]);
             }
         }
-    }   
+    }
     this.image_position=image_position;
     this.prv=prv;
     this.parent_dependency=parent_dependency; // logical expression connecting parents
@@ -430,7 +430,7 @@ function mx_box(page,box,before,after,title) {
 function mx_pg(prev,next,dependency,active,admeasure,parent_dependency,specvalid) {
     this.prev=prev;             // previous page button
     this.next=next;             // next page button
-    this.dependency=dependency; 
+    this.dependency=dependency;
     this.active=active;         // if this is false, the page will not be visible
     this.visible=active;        // initially the same as active, the 'true' value may become false upon dependencies
     this.admeasure=admeasure;   // call this adserver link,
@@ -474,11 +474,11 @@ function mx_create(w,pws) {
         z("<hr noshade class='mx'>");
     }
     else if (w.type=='homepage') { mx_hp(w.addt,w.question,w.errmsg); }
-    else if (w.type=='comment') { 
-        z("<div class='comment'>"+w.question+"</div>\n"); 
+    else if (w.type=='comment') {
+        z("<div class='comment'>"+w.question+"</div>\n");
         if (mx_maxima=='mxform286' && (w.page == 4 || w.page == 6 || w.page == 8)) {
             if (w.page == 4 || w.page == 6) {
-                z("<div style='display:block; margin:12px;' id='indit286" + w.page + "' class='comment'><a onclick='mx_286_play(" + w.page + ",0)' style='color:#9c141c; text-decoration:underline; cursor:pointer;'>Indít &gt;&gt;</a></div>\n"); 
+                z("<div style='display:block; margin:12px;' id='indit286" + w.page + "' class='comment'><a onclick='mx_286_play(" + w.page + ",0)' style='color:#9c141c; text-decoration:underline; cursor:pointer;'>Indít &gt;&gt;</a></div>\n");
             }
             var ceo=0;
             if (cid.search(new RegExp("([0-9])[^0-9]*([0-9])[^0-9]*([0-9])[^0-9]*([0-9])[^0-9]*$","gi"))>=0) {
@@ -500,7 +500,7 @@ function mx_create(w,pws) {
                     if (i286r == 2) {
                         z("<div style='display:none;' id='rot2868'><table border='0'><tr>");
                     }
-                    z("<td style='text-align:center;'><img style='margin:12px 0;' src='http://www.kutatocentrum.hu/kutatasok/110602_logo/images/uszi/thumb/" + uszi286[lindex] + "'></td>\n"); 
+                    z("<td style='text-align:center;'><img style='margin:12px 0;' src='http://www.kutatocentrum.hu/kutatasok/110602_logo/images/uszi/thumb/" + uszi286[lindex] + "'></td>\n");
                     if (i286r==6) {
                         z("</tr><tr>");
                     }
@@ -509,11 +509,11 @@ function mx_create(w,pws) {
                     }
                 }
                 else {
-                    z("<div style='text-align:center; display:none;' id='" + divid + "'><img style='margin:12px 0;' src='http://www.kutatocentrum.hu/kutatasok/110602_logo/images/uszi/" + uszi286[lindex] + "'></div>\n"); 
+                    z("<div style='text-align:center; display:none;' id='" + divid + "'><img style='margin:12px 0;' src='http://www.kutatocentrum.hu/kutatasok/110602_logo/images/uszi/" + uszi286[lindex] + "'></div>\n");
                 }
             }
             var divid = 'rot286' + w.page + '10';
-            z("<div style='text-align:center; clear:both;' id='" + divid + "'>&nbsp;</div>\n"); 
+            z("<div style='text-align:center; clear:both;' id='" + divid + "'>&nbsp;</div>\n");
         }
     }
     else {
@@ -548,37 +548,37 @@ function mx_create(w,pws) {
 			z("<div align='center'><img src='img"+data+"/spacer.gif' style='width:351px;height:351px; margin:12px 0;' id='"+w.id+"_img'></div>");
 		}
 //		if (w.id.search(new RegExp("^orrszivo_k8$","gi"))>=0) {
-//			z("<div align='center'><table border='0'><tr>" + 
-//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo1.argb.jpg'><br>1. termék</td>" + 
-//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo2.argb.jpg'><br>2. termék</td>" + 
-//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo3.argb.jpg'><br>3. termék</td>" + 
+//			z("<div align='center'><table border='0'><tr>" +
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo1.argb.jpg'><br>1. termék</td>" +
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo2.argb.jpg'><br>2. termék</td>" +
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo3.argb.jpg'><br>3. termék</td>" +
 //               "</tr></table></div>");
 //		}
 //		if (w.id.search(new RegExp("^orrszivo_k9$","gi"))>=0) {
-//			z("<div align='center'><table border='0'><tr>" + 
-//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo3.argb.jpg'><br>1. termék</td>" + 
-//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo6.argb.jpg'><br>2. termék</td>" + 
-//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo8.argb.jpg'><br>3. termék</td>" + 
+//			z("<div align='center'><table border='0'><tr>" +
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo3.argb.jpg'><br>1. termék</td>" +
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo6.argb.jpg'><br>2. termék</td>" +
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo8.argb.jpg'><br>3. termék</td>" +
 //               "</tr></table></div>");
 //		}
 //		if (w.id.search(new RegExp("^orrszivo_k10$","gi"))>=0) {
-//			z("<div align='center'><table border='0'><tr>" + 
-//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo2.argb.jpg'><br>1. termék</td>" + 
-//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo7.argb.jpg'><br>2. termék</td>" + 
-//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo8.argb.jpg'><br>3. termék</td>" + 
+//			z("<div align='center'><table border='0'><tr>" +
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo2.argb.jpg'><br>1. termék</td>" +
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo7.argb.jpg'><br>2. termék</td>" +
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo8.argb.jpg'><br>3. termék</td>" +
 //               "</tr></table></div>");
 //		}
 //		if (w.id.search(new RegExp("^orrszivo_k11$","gi"))>=0) {
-//			z("<div align='center'><table border='0'><tr>" + 
-//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo2_K11.argb.jpg'><br>1. termék</td>" + 
-//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo3_K11.argb.jpg'><br>2. termék</td>" + 
-//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo6_K11.argb.jpg'><br>3. termék</td>" + 
-//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo8_K11.argb.jpg'><br>4. termék</td>" + 
+//			z("<div align='center'><table border='0'><tr>" +
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo2_K11.argb.jpg'><br>1. termék</td>" +
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo3_K11.argb.jpg'><br>2. termék</td>" +
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo6_K11.argb.jpg'><br>3. termék</td>" +
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 2px; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo8_K11.argb.jpg'><br>4. termék</td>" +
 //               "</tr></table></div>");
 //		}
 //		if (w.id.search(new RegExp("^orrszivo_k12$","gi"))>=0) {
-//			z("<div align='center'><table border='0'><tr>" + 
-//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 0; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo_K12.jpg'></td>" + 
+//			z("<div align='center'><table border='0'><tr>" +
+//              "<td class='mxt' style='text-align:center; vertical-align:middle; font-weight:bold;'><img style='margin:12px 0; vertical-align:middle;' src='http://www.kutatocentrum.hu/kutatasok/110829_egeszseg/img/orrszivo_K12.jpg'></td>" +
 //               "</tr></table></div>");
 //		}
 		if (w.id.search(new RegExp("^tnserstetexas_20$","gi"))>=0) {
@@ -657,11 +657,11 @@ function mx_create(w,pws) {
         }
         if (w.type=='tel') {
             mx_tel();
-        }        
+        }
         if (w.type=='mob') {
             mx_mob();
         }
-        if (w.type=='captcha') { 
+        if (w.type=='captcha') {
             var captchaCode = "";
             for (i=0; i<5; i++) {
                 randomnumber = Math.floor(Math.random()*9)+1;
@@ -673,7 +673,7 @@ function mx_create(w,pws) {
                 }
             }
             encryptedCaptchaCode = encryptString(captchaCode);
-            z("<div class='captcha' style='margin-top:6px;'><input class='capinput' alt='"+encryptedCaptchaCode + "' style='vertical-align:top;' name='"+w.id+"'><img class='capimg' src='http://www.maxima.hu/captcha/captcha.php?action=create&id="+w.id+"&value="+encryptedCaptchaCode+"' alt='Maxima Captcha' style='vertical-align:top;'/></div>\n"); 
+            z("<div class='captcha' style='margin-top:6px;'><input class='capinput' alt='"+encryptedCaptchaCode + "' style='vertical-align:top;' name='"+w.id+"'><img class='capimg' src='http://www.maxima.hu/captcha/captcha.php?action=create&id="+w.id+"&value="+encryptedCaptchaCode+"' alt='Maxima Captcha' style='vertical-align:top;'/></div>\n");
         }
         if (w.type=='password') {
             if (pws) {
@@ -750,16 +750,16 @@ function mx_create(w,pws) {
         if (w.id=='kuttnshera_p7' || w.id=='kuttnsnivea_s3' || w.id=='mobil1103conjoint2_q32' || w.id=='sakkomkekpont_4' || w.id=='sakkomkekpont_5' || w.id =='kutlaptophu_k2') {
             staylast=2;
         }
-        
+
         if( w.id == "kuttnshera_p3" || w.id == "kuttnshera_p5"){
             staylast=3
         }
-        
+
         if (w.type=='checkbox') {
             if (w.rotate=='yes') {
                 var rnmx=Math.floor(Math.random()*(w.options.length-staylast));
             }
-            var excl=mx_optexc_onclick(w); 
+            var excl=mx_optexc_onclick(w);
             for (var rni=0;rni<w.options.length;rni++) {
                 var i=rni;
                 if (w.rotate=='yes' && rni<w.options.length-staylast) {
@@ -831,7 +831,7 @@ function mx_create(w,pws) {
                         ort==''?1:z(ort+"<br>");
                         z(orwi+'</div>');
                         if (w.optbr[i]=='yes') {
-                            tbroken=1; 
+                            tbroken=1;
                             z("</td></tr><tr>");
                         }
                     }
@@ -844,14 +844,14 @@ function mx_create(w,pws) {
                 }
             }
         }
-        if (w.type=='radio_matrix') { 
-        
+        if (w.type=='radio_matrix') {
+
           if(w.id == "kuttnshera_p6") {
-          
+
             z('&nbsp;');
               var colcnt=1;
               if (w.type=='checkbox_matrix') {
-                  var excl=mx_optexc_onclick(w); 
+                  var excl=mx_optexc_onclick(w);
               }
               for (var i=0;i<w.options.length;i++) {
                   if (w.optvert[i]=='no') {
@@ -878,14 +878,14 @@ function mx_create(w,pws) {
                       }
                   }
                   if (w.optvert[i]=='yes') {
-                  
+
                       if(i != 31){
                         z("<tr id='rad_div_"+w.optvals[i]+"'>");
                       } else if(i == 31){
                         w31 += "<tr id='rad_div_"+w.optvals[i]+"'>";
                       }
-                  
-                      
+
+
                       var htd2=htd.replace(' hcb ',' mxbord mxbordleft mxhor mxpad ');
                       if (rowcnt%2==0) {
                           htd2=htd2.replace('mxhorodd','mxhoreven');
@@ -896,14 +896,14 @@ function mx_create(w,pws) {
                       } else if(i == 31){
                         w31 += htd4;
                       }
-                      
+
                       htd2=htd2.replace(' mxbordleft ',' mxver ');
                       if(i != 31){
                         z('<div align="left" id="sq_' + w.id + '_' + i + '">'+w.options[i]+'</div>');
                       } else if(i == 31){
                         w31 += '<div align="left" id="sq_' + w.id + '_' + i + '">'+w.options[i]+'</div>';
                       }
-                      
+
                       var colcnt=1;
                       for (var j=0;j<w.options.length;j++) {
                           if (w.optvert[j]=='no') {
@@ -924,23 +924,23 @@ function mx_create(w,pws) {
                               bact=odp+bact;
                               //bact=odp+"return false;";
                               htd3=htd3.replace('<td','<td id="rad_td_'+w.optvals[i]+'_'+w.optvals[j]+'" onmouseover="mx_bgcolor('+w.optvals[i]+','+w.optvals[j]+',\'add\',new Array('+w.optvals+'));" onmouseout="mx_bgcolor('+w.optvals[i]+','+w.optvals[j]+',\'remove\',new Array('+w.optvals+'));"' + tdact + "\"");
-                              
+
                               if(i != 31){
                                 z('</td>'+htd3);
                               } else if(i == 31){
                                 w31 += '</td>'+htd3;
                               }
-                              
-                              
+
+
                               var idname=w.id+w.optvals[i]+"__"+w.optvals[j];
                               if (w.type=='radio_matrix') {
-                                  
+
                                   if(i != 31){
                                     z("<input type='radio' id='"+idname+"' name='"+w.id+w.optvals[i]+"' value='"+w.optvals[j]+"' "+bact+"\">");
                                   } else if(i == 31){
                                     w31 += "<input type='radio' id='"+idname+"' name='"+w.id+w.optvals[i]+"' value='"+w.optvals[j]+"' "+bact+"\">";
                                   }
-                                  
+
                               }
                               else { if(i == 31)
                                   z("<input type='checkbox' id='"+idname+"' name='"+idname+"' value='1' "+bact+"\">");
@@ -948,22 +948,22 @@ function mx_create(w,pws) {
                               colcnt++;
                           }
                       }
-                      
-                      
+
+
                       if(i != 31){
                         z('</td></tr>');
                       } else if(i == 31){
                         w31 += '</td></tr>';
                       }
-                      
-                      
+
+
                       rowcnt++;
                   }
-                  
+
               }
-              
+
               z( w31 );
-              
+
               if (w.possible_values=="bottom") {
                   if (rowcnt%2==0) {
                       cnc=cnc.replace('mxhorodd','mxhoreven');
@@ -987,24 +987,24 @@ function mx_create(w,pws) {
                   }
                   z('</td></tr>');
               }
-              
+
               z('</table>');
               if (w.rotate=='yes') {
                   z('<input type="hidden" name="'+w.id+'_random" value="'+rnmx+'">');
               }
           }
-        
+
         }
-        
-        
+
+
         if (w.type=='radio_matrix' || w.type=='checkbox_matrix') {
-        
+
           if(w.id != "kuttnshera_p6") {
-        
+
             z('&nbsp;');
             var colcnt=1;
             if (w.type=='checkbox_matrix') {
-                var excl=mx_optexc_onclick(w); 
+                var excl=mx_optexc_onclick(w);
             }
             for (var i=0;i<w.options.length;i++) {
                 if (w.optvert[i]=='no') {
@@ -1021,7 +1021,7 @@ function mx_create(w,pws) {
             if (w.rotate=='yes') {
                 var rnmx=Math.floor(Math.random()*w.options.length);
             }
-            
+
             if(w.id == "kuttnshera_p15") {
               var limit = 4;
               var arr = [], thisBit, optArr = [];
@@ -1043,7 +1043,7 @@ function mx_create(w,pws) {
               w.options = arr;
               w.optvals = optArr;
             }
-            
+
             if(w.id == "kuttnshera_k19") {
               var limit = 18;
               var arr = [], thisBit, optArr = [];
@@ -1064,14 +1064,14 @@ function mx_create(w,pws) {
               }
               w.options = arr;
               w.optvals = optArr;
-              
-            }           
-            
+
+            }
+
             for (var rni=0;rni<w.options.length;rni++) {
                 var i=rni;
                 if (w.rotate=='yes') {
                     i=rni+rnmx;
-                    if (i>=w.options.length) { 
+                    if (i>=w.options.length) {
                         i-=w.options.length;
                     }
                 }
@@ -1143,7 +1143,7 @@ function mx_create(w,pws) {
                 }
                 z('</td></tr>');
             }
-            
+
             z('</table>');
             if (w.rotate=='yes') {
                 z('<input type="hidden" name="'+w.id+'_random" value="'+rnmx+'">');
@@ -1183,53 +1183,53 @@ function d2h(d) {return d.toString(16);}
 function h2d(h) {return parseInt(h,16);}
 
 var Base64 = {
- 
+
 	// private property
 	_keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
- 
+
 	// public method for encoding
 	encode : function (input) {
 		var output = "";
 		var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
 		var i = 0;
- 
+
 		input = Base64._utf8_encode(input);
- 
+
 		while (i < input.length) {
- 
+
 			chr1 = input.charCodeAt(i++);
 			chr2 = input.charCodeAt(i++);
 			chr3 = input.charCodeAt(i++);
- 
+
 			enc1 = chr1 >> 2;
 			enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
 			enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
 			enc4 = chr3 & 63;
- 
+
 			if (isNaN(chr2)) {
 				enc3 = enc4 = 64;
 			} else if (isNaN(chr3)) {
 				enc4 = 64;
 			}
- 
+
 			output = output +
 			this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
 			this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
- 
+
 		}
- 
+
 		return output;
 	},
- 
+
 	// private method for UTF-8 encoding
 	_utf8_encode : function (string) {
 		string = string.replace(/\r\n/g,"\n");
 		var utftext = "";
- 
+
 		for (var n = 0; n < string.length; n++) {
- 
+
 			var c = string.charCodeAt(n);
- 
+
 			if (c < 128) {
 				utftext += String.fromCharCode(c);
 			}
@@ -1242,9 +1242,9 @@ var Base64 = {
 				utftext += String.fromCharCode(((c >> 6) & 63) | 128);
 				utftext += String.fromCharCode((c & 63) | 128);
 			}
- 
+
 		}
- 
+
 		return utftext;
 	}
 };
@@ -1371,7 +1371,7 @@ function mx_page_getseq(current,chpg) {
         else {
             return mx_page_seq[seqindex];
         }
-        
+
     }
     if (next<cluster_first_page || next>cluster_last_page) {
         return 0;
@@ -1381,14 +1381,14 @@ function mx_page_getseq(current,chpg) {
 
 function mx_printimage(w,addstr) {
     for (var imi=0;imi<w.img_name.length;imi++) {
-        z("<img onclick='click(event)' style='margin:0 10px;' src='" + (w.prv==true?'show_image.php?filename=':'./images/') + w.img_name[imi]+"'>" + addstr); 
+        z("<img onclick='click(event)' style='margin:0 10px;' src='" + (w.prv==true?'show_image.php?filename=':'./images/') + w.img_name[imi]+"'>" + addstr);
     }
 }
 
 function mx_benchmark(description) {
 
     var d = new Date();
-    var now = Math.ceil(d.getTime()/10);   
+    var now = Math.ceil(d.getTime()/10);
     if (typeof(description)=='undefined') {
         bmark = now;
         bsumm = '';
@@ -1408,9 +1408,9 @@ function mx_display(jump,chpg,init,evid) {
         alert('Összesen 10 képet mutatunk önnek, az utolsó megtekintése után lehet folytatni a kérdőív kitöltését.');
         return false;
     }
-    
+
     if (typeof(evid)=='undefined') { // we don't need all this stuff if called from clicking an object element
-        // list of pages visible by dependencies and that are active 
+        // list of pages visible by dependencies and that are active
         var next_cluster=cluster;
         for (i=cluster_first_page;i<=cluster_last_page;i++) {
             find_object('tcom_'+i).style.display="none";
@@ -1427,7 +1427,7 @@ function mx_display(jump,chpg,init,evid) {
             chpg<0 ? next_cluster-- : next_cluster++ ;
             while (checkpage = mx_page_getseq(checkpage,chpg)) {
                 if (mxpage[checkpage].visible) {
-                    mx_page=checkpage; 
+                    mx_page=checkpage;
                     sbmit=false;
                     checkpage=0;
                     break;
@@ -1504,7 +1504,7 @@ function mx_display(jump,chpg,init,evid) {
         }
         // if the page is changed, save data into a cookie
         if (chpg!=0) {
-            mx_savecookie(sbmit,next_cluster); 
+            mx_savecookie(sbmit,next_cluster);
         }
         if (sbmit) {
             if (0 && mx_page!=mx_pagenum) {
@@ -1541,8 +1541,8 @@ function mx_display(jump,chpg,init,evid) {
         else {
             dsp='none';
         }
-        if (idh) { 
-            idh.display=dsp; 
+        if (idh) {
+            idh.display=dsp;
             if (mxe[i].type=='password') {
                 idh2=find_handle('d'+mxe[i].id+'___pw');
                 idh2.display=dsp;
@@ -1591,7 +1591,7 @@ function mx_display(jump,chpg,init,evid) {
         if (first_unfilled_page>cluster_last_page) {
             first_unfilled_page=cluster_last_page;
         }
-        // find the 'next page' button, 'lastpg=true' means that the submit button should be dislayed. 
+        // find the 'next page' button, 'lastpg=true' means that the submit button should be dislayed.
         lastpg=true;
         for (i=mx_page+1;i<=mx_pagenum;i++) {
             if (mxpage[i].active) {
@@ -1609,9 +1609,9 @@ function mx_display(jump,chpg,init,evid) {
             first_unfilled_page=1;
         }
         mx_inner('navr'+nextbtn_active,netxt+" onclick='if(mx_valid()){mx_display(1,"+first_unfilled_page+",0);}else{mx_ga_track(\"oldal_"+nextbtn_active+"_sikertelen\",0);}return(false);'>");
-        for (var i=0;i<mxbox.length;i++) { 
+        for (var i=0;i<mxbox.length;i++) {
             var box=mxbox[i].page+mxbox[i].box;
-            var dsp=mxbox[i].page==mx_page?'block':'none'; 
+            var dsp=mxbox[i].page==mx_page?'block':'none';
             var idh=find_handle('b'+box);
             if (idh) { idh.display=dsp; }
             var idh=find_handle('tbb'+box);
@@ -1656,7 +1656,7 @@ function mx_ga_track(ga_event) {
 				if(typeof _gat != "undefined"){
 				  if(typeof pageTracker == "undefined")
 					  var pageTracker = _gat._getTracker("UA-21823542-2");
-				
+
           pageTracker._trackPageview(ga_track);
 				  return false;
 				}
@@ -1741,7 +1741,7 @@ function mx_getcookie() {
 // checks for dependencies if we can show a page or widget (elt is the element type, i is it's index)
 function mx_dep_check(elt,i,evid) {
     eval('var el='+elt+'['+i+']');
-    if (mx_maxima=='mxform252' && elt=='mxendlink' && i==1) {  
+    if (mx_maxima=='mxform252' && elt=='mxendlink' && i==1) {
         var s3 = mx_getstate('kuttnsnivea_s3').value.split(',');
         var selgood=0;
         for (var sg=0;sg<s3.length;sg++) {
@@ -1751,7 +1751,7 @@ function mx_dep_check(elt,i,evid) {
         }
         return mx_page>2 && selgood<2;
     }
-    if (mx_maxima=='mxform199' && (elt=='mxe' && el.id=='mpoker_13' || elt=='mxpage' && i==14)) {  
+    if (mx_maxima=='mxform199' && (elt=='mxe' && el.id=='mpoker_13' || elt=='mxpage' && i==14)) {
         var jatszott = mx_getstate('mpoker_10').value.split(',');
         var jatszik = mx_getstate('mpoker_12').value.split(',');
         res = jatszott.length > jatszik.length;
@@ -1765,7 +1765,7 @@ function mx_dep_check(elt,i,evid) {
             var vis=false;
             var depel=widget_ref[el.deptags[j]];
             // for endlinks, let it be true only if we are past the page the deptag is on so enabling negations.
-            if (elt=='mxendlink' && mx_page<=depel.page) { 
+            if (elt=='mxendlink' && mx_page<=depel.page) {
                 if (el.dependency.search(new RegExp("!D"+el.depids[j],"gi"))>=0) {
                     vis=true;
                 }
@@ -1825,8 +1825,8 @@ function mx_parent_dep_check(child,i,option_name) {
     }
     for (var j=0;j<child.parent_depids.length;j++) {   // for each parent
         var parent_id=child.parent_deptags[j];
-        var p=widget_ref[parent_id]; 
-        var index = i;                                 // check for this index if it's selected 
+        var p=widget_ref[parent_id];
+        var index = i;                                 // check for this index if it's selected
         if (child.parent_identify=='name') {           // find the index by name in this case
             var name_index=0;
             index=-1;
@@ -1868,7 +1868,7 @@ function mx_parent_dep(id,remove_parts,evid) {
 		for (var i=0;i<child.parent_depids.length;i++) {
 			child.parent_value[i] = mx_getstate(child.parent_deptags[i],'',1).value;
 		}
-    } 
+    }
     if (child.type=='checkbox') {
         for (var j=0;j<child.options.length;j++) {
             if (child.parent_always.search(new RegExp(","+child.optvals[j]+",","gi"))>=0 ) {
@@ -1981,11 +1981,11 @@ function mx_parent_dep(id,remove_parts,evid) {
                         find_object("rad_div_"+child.optvals[k]).style.display="";
                     }
                     shown++;
-                } 
+                }
                 else if (remove_parts) {
-                
-        
-            find_object("rad_div_"+child.optvals[k]).style.display="none";  
+
+
+            find_object("rad_div_"+child.optvals[k]).style.display="none";
 //					if(child.id == "kuttnshera_p6" && k != 31){
 //						find_object("rad_div_"+child.optvals[k]).style.display="none";
 //					} else if(child.id == "kuttnshera_p6" && k == 31){
@@ -1993,7 +1993,7 @@ function mx_parent_dep(id,remove_parts,evid) {
 //					  //console.log( child.id ); console.log( child );
 //						// kuttnshera_p6 && 31
 //					} else {
-//						find_object("rad_div_"+child.optvals[k]).style.display="none";	
+//						find_object("rad_div_"+child.optvals[k]).style.display="none";
 //					}
                 }
                 j++;
@@ -2249,7 +2249,7 @@ function mx_getstate(wref,cond,valueseqs) {
                     if (osn>optselectednum) {
                         optselectednum=osn;
                     }
-                    if (!tv && w.special=='fill_each_row') {  
+                    if (!tv && w.special=='fill_each_row') {
 						var isract = find_handle('rad_div_' + w.optvals[i]);
 						if (isract && isract.display != 'none') {
                             ret.filled=0;
@@ -2261,18 +2261,18 @@ function mx_getstate(wref,cond,valueseqs) {
             if (w.id=='coldrex1_k75') {
                 optselectednum=0;
                 osntext='Oszloponként';
-                for (var i=0;i<w.options.length;i++) { 
+                for (var i=0;i<w.options.length;i++) {
                     if (osncol[i]>optselectednum) {
                         optselectednum=osncol[i];
                     }
                 }
             }
         }
-        
+
         if(w.id=='orrszivo_k9' && optselectednum > 2) {
           ret.err+='';
         }
-        
+
         if (w.max_num_answer>0 && (optselectednum>w.max_num_answer || w.id=='feminacontent_f3' && optselectednum!=2)) {
             if (mx_formlang=='cz') {
                 ret.err+=(w.type=='checkbox_matrix'?' '+osntext+' maximum ':' Vybrat maximálně ')+w.max_num_answer+' možností ('+w.question2+").";
@@ -2300,24 +2300,24 @@ function mx_getstate(wref,cond,valueseqs) {
             ret.value=mx_tel_value();
             if (ret.value!='') {
                 eval('var tkorzet=mxf.'+w.type+'__tel_korzet.value');
-                eval('var tszam=mxf.'+w.type+'__tel_szam.value');     
-                if (tkorzet.length!=2 || !(tszam.length==6 || tszam.length==7)) { 
+                eval('var tszam=mxf.'+w.type+'__tel_szam.value');
+                if (tkorzet.length!=2 || !(tszam.length==6 || tszam.length==7)) {
                     if (tkorzet!='1' || !(tszam.length==6 || tszam.length==7)) {
                         ret.err=mx_err[7];
                     }
-                }                    
+                }
             }
-        }        
+        }
         if (w.type=='mob') {
             ret.value=mx_mob_value();
             if (ret.value!='') {
                 eval('var tkorzet=mxf.'+w.type+'__mobil_korzet.value');
-                eval('var tszam=mxf.'+w.type+'__mobil_szam.value');     
-                if (!(tkorzet=="20" || tkorzet=="30" || tkorzet=="70") || !(tszam.length==7)) { 
+                eval('var tszam=mxf.'+w.type+'__mobil_szam.value');
+                if (!(tkorzet=="20" || tkorzet=="30" || tkorzet=="70") || !(tszam.length==7)) {
                         ret.err=mx_err[8];
-                }                    
+                }
             }
-        }               
+        }
         if (ew) {
             ret.value=ew_vals.join(',');
             ret.textvalue=ew_textvals.join(', ');
@@ -2345,32 +2345,32 @@ function mx_getstate(wref,cond,valueseqs) {
 			ret.satisfied=0;
 		}
     }
-    else if (ret.filled && cond=='*12') {    
+    else if (ret.filled && cond=='*12') {
         ret.satisfied=(ret.value.length==12)?1:0;
     }
-    else if (ret.filled && cond=='*14') {    
+    else if (ret.filled && cond=='*14') {
         ret.satisfied=(ret.value.length==14)?1:0;
     }
-    else if (ret.filled && cond=='*8') {    
+    else if (ret.filled && cond=='*8') {
         ret.satisfied=(ret.value.length==8)?1:0;
     }
-    else if (ret.filled && cond=='*') {    
+    else if (ret.filled && cond=='*') {
         ret.satisfied=1;
     }
-    else if (ret.filled && cond=='*O') {    
+    else if (ret.filled && cond=='*O') {
         ret.satisfied=(ret.value.substring(0,1)%2==1)?1:0;
     }
-    else if (ret.filled && cond=='*E') {    
+    else if (ret.filled && cond=='*E') {
         ret.satisfied=(ret.value.substring(0,1)%2==0)?1:0;
     }
     else if (ret.filled && cond.search(new RegExp("^[<>]=?[0-9]+$","gi"))>=0) {
-        eval('ret.satisfied=(parseInt(ret.value)' + cond + ')?1:0'); 
+        eval('ret.satisfied=(parseInt(ret.value)' + cond + ')?1:0');
     }
-    else {    
+    else {
         ret.satisfied=(ret.value==cond)?1:0;
     }
     // mobil and tel: if one of them is filled in we consider the other filled in too.
-    // in future, we should use "condition to accept a widget" instead of "widget is compulsory [<==> widget condition='*']" 
+    // in future, we should use "condition to accept a widget" instead of "widget is compulsory [<==> widget condition='*']"
     // that would make possible solving situations like this without ugly hacks like below:
     if (ret.filled==0 && (w.id=='tel' || w.id=='mobil')) {
         var other=w.id=='tel'?'mobil':'tel';
@@ -2473,9 +2473,9 @@ function mx_load_defaults() {
 // ------------------------------ functions handling user actions on the form
 // handles changes in the form (onclick etc), but only when there are dependent elements within the same page
 function mx_depend(id) {
-    
+
     var el = widget_ref[id];
-    if (el.has_dependent_elements=='1' || id.search(new RegExp("kuttnsbebe_b3"))>=0) {  
+    if (el.has_dependent_elements=='1' || id.search(new RegExp("kuttnsbebe_b3"))>=0) {
         mx_display(0,0,"",id);
     }
 }
@@ -2515,7 +2515,7 @@ function mx_optexc_onclick(w) {
 }
 // handles click on a checkbox matrix item that excludes the others.
 function mx_optexc_mtx(rid,ri) {
-    
+
     var w=widget_ref[rid];
     var ch=false;
     var ischk=false;
@@ -2544,7 +2544,7 @@ function mx_optexc_mtx(rid,ri) {
 
 // handles click on a checkbox item that excludes the others.
 function mx_optexc(rid,ri) {
-    
+
     var w=widget_ref[rid];
     var ch=false;
     var ischk=false;
@@ -2565,7 +2565,7 @@ function mx_optexc(rid,ri) {
         }
     }
 }
-// set this form as homepage 
+// set this form as homepage
 function mx_hp(hp,qu,mozqu) {
     if (document.all) {
         z(qu+"</td><td class='mxr mxt' style='text-align:center;'><input type='checkbox' style='behavior:url(#default#homepage)' name='___hp' value='"+hp+"' checked>");
@@ -2592,7 +2592,7 @@ function find_handle(id) {
 function find_object(id) {
     if (typeof(pointers[id])=='undefined' || pointers[id]==false) {
         pointers[id]=false;
-        if (document.getElementById) { if (!(document.getElementById(id))) { pointers[id]=false; } else pointers[id]=document.getElementById(id); } else pointers[id]=false; 
+        if (document.getElementById) { if (!(document.getElementById(id))) { pointers[id]=false; } else pointers[id]=document.getElementById(id); } else pointers[id]=false;
     }
     return pointers[id];
 }
@@ -2638,10 +2638,10 @@ function mx_slider(w,actions) {
 }
 
 function mx_slide_click(ev) {
-    var e=ev?ev:event; 
+    var e=ev?ev:event;
     var p=e.target?e.target:e.srcElement;
     if (p.id.search(new RegExp("([a-zA-Z0-9_]+)_bar$","gi"))>=0) {
-        mx_drag=RegExp.$1; 
+        mx_drag=RegExp.$1;
         mx_cursor(e);
         mx_slide_value();
     }
@@ -2686,26 +2686,26 @@ function mx_slide_tx(id) {
     mx_put_slider(Math.floor((v-scalemin*multiplier)*mx_slidew/(scale*multiplier)));
 }
 function mx_grab(ev) {
-    var e=ev?ev:event; 
+    var e=ev?ev:event;
     var p=e.target?e.target:e.srcElement;
     if (p.id.search(new RegExp("([a-zA-Z0-9_]+)_grab$","gi"))>=0) {
-        mx_drag=RegExp.$1; 
-		document.onmousemove=mx_move; 
-		document.onmouseup=mx_up; 
+        mx_drag=RegExp.$1;
+		document.onmousemove=mx_move;
+		document.onmouseup=mx_up;
 		mx_inmove=true;
 		if (ev && typeof(ev.preventDefault)=="function") {
-			ev.preventDefault(); 
+			ev.preventDefault();
 		}
 	}
 }
 function mx_move(ev) {
     if (!mx_inmove) { return false; }
     if (ev) { ev.preventDefault(); mx_cursor(ev); }
-    else { event.cancelBubble = true; event.returnValue = false; mx_cursor(event); }   
+    else { event.cancelBubble = true; event.returnValue = false; mx_cursor(event); }
 }
-function mx_up(ev) { 
-    document.onmousemove=null; 
-    document.onmouseup=null; 
+function mx_up(ev) {
+    document.onmousemove=null;
+    document.onmouseup=null;
     mx_inmove=false;
 }
 
@@ -2714,8 +2714,8 @@ function mx_cursor(ev) {
     var box=find_object(mx_drag+'_box');
     if (box) {
         var bx=mx_ofs(box,"offsetLeft");
-		x=ev.pageX?ev.pageX:ev.x+bx; 
-		x=parseInt(x); 
+		x=ev.pageX?ev.pageX:ev.x+bx;
+		x=parseInt(x);
         mx_put_slider(x-bx);
 		mx_slide_value();
     }
@@ -2723,20 +2723,20 @@ function mx_cursor(ev) {
 
 function mx_put_slider(x) {
     var d=find_object(mx_drag+'_grab').style;
-    if (d) { 
+    if (d) {
 		x=parseInt(x);
 		if (x=='') {
 			x=0;
 		}
-        if (x<0) { x=0; } 
-        if (x>mx_slidew) { x=mx_slidew; } 
+        if (x<0) { x=0; }
+        if (x>mx_slidew) { x=mx_slidew; }
         d.left=x+"px";
     }
 }
 function mx_ofs(r,attr) {
-    var o=0; 
-    while(r) {o+=r[attr]; r=r.offsetParent; } 
-    return o;  
+    var o=0;
+    while(r) {o+=r[attr]; r=r.offsetParent; }
+    return o;
 }
 
 function mx_201_rangsor_10() {
@@ -3195,7 +3195,7 @@ function mx_261_images_2() {
 }
 
 function mx_261_layer(which,close) {
-    
+
     var lid='layer261_'+which;
     var l=find_object(lid);
     if (close) {
@@ -3288,7 +3288,7 @@ function mx_autoclear(id,text) {
 }
 
 function mx_social(link) {
-    
+
     var to = find_object('megosztotta');
     if (to) {
 		var from = mx_getstate('from_campaign_b2c','').textvalue;

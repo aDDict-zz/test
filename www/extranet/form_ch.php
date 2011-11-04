@@ -125,7 +125,7 @@ if (!$form_id && empty($error)) {
     $l["footer"]="</body></html>";
     $l["hidden_subscribe"]="yes";
     $l["pages"]="1";
-    $l["collect_page"]="http://www.maxima.hu/form_collect.php";
+    $l["collect_page"]="http://192.168.0.107/maxima/form_collect.php";
     $l["landing_page"]="$l[header]\n\n$l[footer]";
     $l["landing_page_inactive"]="$l[header]\n\n$l[footer]";
     $l["ga_virtual"]="regisztracio";

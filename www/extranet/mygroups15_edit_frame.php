@@ -118,13 +118,17 @@ else {
     while ($k7 = mysql_fetch_array($r7)) {
         $ksh .= "<option>$k7[ksh_regio]</option>";
     }
-    $v_vsel[1].="<br>$word[spec_ksh]&nbsp;<select name='q_ksh' onchange=\"javascript: addBody('[spec_ksh_'+this.form.q_ksh.options[this.form.q_ksh.selectedIndex].value+']')\">$ksh</select>";
+    $v_vsel[1].="<br>$word[spec_ksh]&nbsp;<select name='q_ksh' onchange=\"javascript: addBody('[spec_ksh_'+this.form.q_ksh.options[this.form.q_ksh.selectedIndex].value+']')\">$ksh
+
+		</select>";
     $teltip="";
     $r7=mysql_query("select distinct teltip from irsz_tabla order by teltip");
     while ($k7 = mysql_fetch_array($r7)) {
         $teltip .= "<option>$k7[teltip]</option>";
     }
-    $v_vsel[1].="<br>$word[spec_telepules_tipus]&nbsp;<select name='q_telepules_tipus' onchange=\"javascript: addBody('[spec_telepules_tipus_'+this.form.q_telepules_tipus.options[this.form.q_telepules_tipus.selectedIndex].value+']')\">$teltip</select>";
+    $v_vsel[1].="<br>$word[spec_telepules_tipus]&nbsp;<select name='q_telepules_tipus' onchange=\"javascript: addBody('[spec_telepules_tipus_'+this.form.q_telepules_tipus.options[this.form.q_telepules_tipus.selectedIndex].value+']')\">$teltip
+
+		</select>";
     $i++;
 
     /*$nest="<select name='q_enums$i' onchange=\"addBody('[spec_nest_'+this.form.q_enums$i.options[this.form.q_enums$i.selectedIndex].value+']')\"><option value=' '>$word[spec_nest]</option>";

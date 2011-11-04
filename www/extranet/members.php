@@ -6,6 +6,11 @@ include "decode.php";
 include "common.php";
 include "_filter.php";
 
+
+if($cuser_id == 81241) {
+	echo "fokk";
+}
+
 $mres = mysql_query("select groups.id,title,num_of_mess,unique_col from groups,members where groups.id=members.group_id
                      and groups.id='$group_id' and user_id='$active_userid' 
                      and (membership='owner' or membership='moderator' or membership='support' $admin_addq)");
@@ -42,7 +47,7 @@ else {
 
 printhead();
 
-// echo nl2br(htmlspecialchars($_MX_filter->query));
+ //echo nl2br(htmlspecialchars($_MX_filter->query)); die();
 
 if ($show_user_list=='yes' && ($_MX_filter->total_users || $_MX_filter->maxrecords)) {
     $rst=mysql_query($_MX_filter->query);

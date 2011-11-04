@@ -1,22 +1,17 @@
 <?php
 
 //error_reporting(E_ALL);
-ini_set("display_errors", 1);
-error_reporting(1);
 
-#echo "SDFDSF";   die();
+
 #if(isset($_GET["group"]) && isset($_GET["form"]) && isset($_GET["newgroup"]))
 #  cloneFormAndDemogsByGroup($_GET["group"], $_GET["form"], $_GET["newgroup"]);
 #else
 #  echo "need params";
 
-cloneFormAndDemogsByGroup(1487, 174, 1643);
-
+#cloneFormAndDemogsByGroup(1487, 174, 1643);
 #cloneFormAndDemogsByGroup(1488, 175, 1642);
 #cloneFormAndDemogsByGroup(1489, 176, 1645);
 #cloneFormAndDemogsByGroup(1557, 231, 1644);
-
-//cloneFormAndDemogsByGroup(1566, 243, 1641);
 
 /**
 * @method cloneFormAndDemogsByGroup
@@ -253,6 +248,7 @@ function getSQLInsert($id, $table, $arr = "", $query = ""){
       $columnVals   .= "'{$values[$i]}'";
     }
   }
+
   return "insert into {$table}({$columnlist}) values({$columnVals});";
 }
 
@@ -274,30 +270,14 @@ function replaceOldDependencies($old, $new) {
   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/
 */
 
-#class getPDO{
-#  public function &get(){
-#    static $obj;
-#    $params = array(
-#        "host"  => "localhost",
-#        "db"    => "maxima",
-#        "user"  => "roto",
-#        "psw"   => "barto2k6"
-#    );
-#    if (!is_object($obj)){
-#        $obj = new PDO("mysql:host={$params["host"]};dbname={$params["db"]}", $params["user"], $params["psw"]);
-#    }
-#    return $obj;
-#  }
-#}
-
 class getPDO{
   public function &get(){
     static $obj;
     $params = array(
         "host"  => "localhost",
         "db"    => "maxima",
-        "user"  => "root",
-        "psw"   => "v"
+        "user"  => "roto",
+        "psw"   => "barto2k6"
     );
     if (!is_object($obj)){
         $obj = new PDO("mysql:host={$params["host"]};dbname={$params["db"]}", $params["user"], $params["psw"]);
@@ -305,3 +285,19 @@ class getPDO{
     return $obj;
   }
 }
+
+#class getPDO{
+#  public function &get(){
+#    static $obj;
+#    $params = array(
+#        "host"  => "localhost",
+#        "db"    => "maxima",
+#        "user"  => "root",
+#        "psw"   => "v"
+#    );
+#    if (!is_object($obj)){
+#        $obj = new PDO("mysql:host={$params["host"]};dbname={$params["db"]}", $params["user"], $params["psw"]);
+#    }
+#    return $obj;
+#  }
+#}

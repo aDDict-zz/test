@@ -1,13 +1,68 @@
 <?php
+error_reporting(E_ALL);
 
- ini_set("display_errors", 1);
 
-//error_reporting(1);
 
-echo "ASDASDSAD";
 
 #showResult("
-#  select * from members
+#  update
+#    form_page
+#      set
+#        specvalid = 'mx_243_osszeg_4'
+#  where
+#    form_id = 332 && page_id = 4;
+
+#  select * from form_page where form_id = 332 and page_id = 4;
+#");
+
+#copyDemogs(1487, 1643);
+#copyDemogs(1488, 1642);
+#copyDemogs(1489, 1645);
+#copyDemogs(1557, 1644);
+
+#copyTableAttributes("users_ottohukerdoiv1","users_ottohukerdoiv6");
+#copyTableAttributes("users_ottorokerdoiv1","users_ottorokerdoiv6");
+#copyTableAttributes("users_ottoczkerdoiv1","users_ottoczkerdoiv6");
+#copyTableAttributes("users_ottoskkerdoiv1","users_ottoskkerdoiv6");
+
+#showResult("
+#  describe users_ottoczkerdoiv6;
+
+#");
+
+#showResult("
+#  select * from users_ottohukerdoiv6;
+
+#");
+
+#showResult("
+#  select * from users_ottohukerdoiv1 limit 50,3;
+
+#");
+
+#showResult("
+#  describe users_ottoczkerdoiv1;
+
+#");
+
+#showResult("
+#  describe users_ottorokerdoiv1;
+
+#");
+
+#showResult("
+#  describe users_ottoskkerdoiv1;
+#");
+
+#showResult("
+#  create table if not exists users_ottohukerdoiv6 like users_ottohukerdoiv1;
+#  create table if not exists users_ottoczkerdoiv6 like users_ottoczkerdoiv1;
+#  create table if not exists users_ottorokerdoiv6 like users_ottorokerdoiv1;
+#  create table if not exists users_ottoskkerdoiv6 like users_ottoskkerdoiv1;
+#");
+
+#showResult("
+#  select * from user order by  id desc limit 0,5;
 #");
 
 #showResult("
@@ -29,13 +84,13 @@ echo "ASDASDSAD";
 #showResult("
 #  select fe.id, fe.form_id, fe.dependency, fe.parent_dependency, fe.parent, fe.question
 #    FROM form_element fe
-#  WHERE fe.form_id = 243 and fe.dependency != '' order by fe.id;
+#  WHERE fe.form_id = 172 and fe.dependency != '' order by fe.id;
 #");
 
 #showResult("
 #  select fe.id, fe.form_id, fe.dependency, fe.parent_dependency, fe.parent, fe.question
 #    FROM form_element fe
-#  WHERE fe.form_id = 327 and fe.dependency != '' order by fe.id;
+#  WHERE fe.form_id = 332 and fe.dependency != '' order by fe.id;
 #");
 
 #showResult("
@@ -479,7 +534,7 @@ function update_question($id, $str){
   ")->fetchAll(PDO::FETCH_ASSOC);
   $question = mysql_escape_string($res[0]["question"]);
 
-  $str = $question . mysql_escape_string( $str ); //die( $str );
+  $str = $question . mysql_escape_string( $str );
 
   $PDO->query( "update form_element set question = '{$str}' where id = {$id}" );
 }
@@ -1057,6 +1112,138 @@ function copyTableAttributes($tableFrom, $tableTo){
   }
 }
 
+// example query: group=1554&form=230&newgroup=1629
+function cloneFormAndDemogsByGroup($group, $form_id, $new_group_id){
+  $PDO        = getPDO::get();
+
+  // step 1., table form, creating a new element with a given group_id
+  $PDO->query( getSQLInsert($form_id, "form", array("group_id" => $new_group_id)) );
+
+  $lastInsertIdArr = $PDO->query("
+    select id from form order by id desc limit 0,1
+  ")->fetchAll(PDO::FETCH_ASSOC);
+  $newFormId = $lastInsertIdArr[0]["id"];
+
+  // step 2., table form_element, cloning the relevant records with the given form ids and setting up the show properties of the form elements
+  $form_elements = $PDO->query("
+    select id from form_element where form_id = {$form_id};
+  ")->fetchAll(PDO::FETCH_ASSOC);
+
+  foreach($form_elements as $formElementId){
+    $PDO->query( getSQLInsert($formElementId["id"], "form_element", array("form_id" => $newFormId)) );
+
+    $lastInsertIdArr = $PDO->query("
+      select id from form_element order by id desc limit 0,1
+    ")->fetchAll(PDO::FETCH_ASSOC);
+    $newFormElementId = $lastInsertIdArr[0]["id"];
+
+    $resEnum = $PDO->query("
+      select count(id) as c from form_element_enumvals where form_element_id = {$formElementId["id"]};
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    $resDep = $PDO->query("
+      select count(id) as c from form_element_dep where form_element_id = {$formElementId["id"]};
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    if($resEnum[0]["c"] > 0){
+      $res = $PDO->query("
+        select * from form_element_enumvals where form_element_id = {$formElementId["id"]};
+      ")->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+      foreach($res as $enumVals){
+        $PDO->query( getSQLInsert($enumVals["id"], "form_element_enumvals", array("form_element_id" => $newFormElementId)) );
+      }
+    }
+
+    if($resDep[0]["c"] > 0){
+      $res = $PDO->query("
+        select * from form_element_dep where form_element_id = {$formElementId["id"]};
+      ")->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+      foreach($res as $depIds){
+        $PDO->query( getSQLInsert($depIds["id"], "form_element_dep", array("form_element_id" => $newFormElementId)) );
+      }
+    }
+  }
+
+  // step 3., table vip_demog, cloning the relevant records with the given group_id
+  $vip_demogs = $PDO->query("
+    select id from vip_demog where group_id = {$group};
+  ")->fetchAll(PDO::FETCH_ASSOC);
+
+  foreach($vip_demogs as $vipDemogId){
+    $PDO->query( getSQLInsert($vipDemogId["id"], "vip_demog", array("group_id" => $new_group_id)) );
+  }
+
+  // egyeb stuff
+  // form_banner
+  $banners = $PDO->query("
+    select id from form_banner where form_id = {$form_id};
+  ")->fetchAll(PDO::FETCH_ASSOC);
+  if(count($banners) > 0){
+    foreach($banners as $banner){
+      $PDO->query( getSQLInsert($banner["id"], "form_banner", array("form_id" => $newFormId)) );
+    }
+  }
+  // form_css
+  $css = $PDO->query("
+    select id from form_css where form_id = {$form_id};
+  ")->fetchAll(PDO::FETCH_ASSOC);
+  if(count($css) > 0){
+    foreach($css as $cs){
+      $PDO->query( getSQLInsert($cs["id"], "form_css", array("form_id" => $newFormId)) );
+    }
+  }
+  // form_email
+  $emails = $PDO->query("
+    select id from form_email where form_id = {$form_id};
+  ")->fetchAll(PDO::FETCH_ASSOC);
+  if(count($emails) > 0){
+    foreach($emails as $email){
+      $PDO->query( getSQLInsert($email["id"], "form_email", array("form_id" => $newFormId)) );
+    }
+  }
+
+  // form_page
+  $pages = $PDO->query("
+    select * from form_page where form_id = {$form_id} and group_id = {$group};
+  ")->fetchAll(PDO::FETCH_ASSOC);
+
+  if(count($pages) > 0){
+    foreach($pages as $page){
+      $PDO->query( "
+        insert into form_page
+(group_id,form_id,page_id,prev_button_text,next_button_text,boxes,prev_button_url,next_button_url,active,admeasure,dependency,parent_dependency,specvalid)
+        values
+({$new_group_id},{$newFormId},'{$page['page_id']}','{$page['prev_button_text']}','{$page['next_button_text']}','{$page['boxes']}','{$page['prev_button_url']}','{$page['next_button_url']}','{$page['active']}','{$page['admeasure']}','{$page['dependency']}','{$page['parent_dependency']}','{$page['specvalid']}');
+      " );
+    }
+  }
+
+  // form_page_box
+  $pages = $PDO->query("
+    select * from form_page_box where form_id = {$form_id} and group_id = {$group};
+  ")->fetchAll(PDO::FETCH_ASSOC);
+
+  if(count($pages) > 0){
+    foreach($pages as $page){
+      $PDO->query( "
+        insert into form_page
+(group_id,form_id,page_id,box_id,text_before,text_after,title,subscribe_groups,active)
+        values
+({$new_group_id},{$newFormId},'{$page['page_id']}','{$page['box_id']}','{$page['text_before']}','{$page['text_after']}','{$page['title']}','{$page['subscribe_groups']}','{$page['active']}');
+      " );
+    }
+  }
+
+
+
+}
+
 function getSQLInsert($id, $table, $arr = ""){
 
   $PDO        = getPDO::get();
@@ -1154,30 +1341,14 @@ function setuserstokuponvilag(){
   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/
 */
 
-#class getPDO{
-#  public function &get(){
-#    static $obj;
-#    $params = array(
-#        "host"  => "localhost",
-#        "db"    => "maxima", //"maxima_public",
-#        "user"  => "roto",
-#        "psw"   => "barto2k6"
-#    );
-#    if (!is_object($obj)){
-#        $obj = new PDO("mysql:host={$params["host"]};dbname={$params["db"]}", $params["user"], $params["psw"]);
-#    }
-#    return $obj;
-#  }
-#}
-
 class getPDO{
   public function &get(){
     static $obj;
     $params = array(
         "host"  => "localhost",
-        "db"    => "maxima",
-        "user"  => "root",
-        "psw"   => "v"
+        "db"    => "maxima", //"maxima_public",
+        "user"  => "roto",
+        "psw"   => "barto2k6"
     );
     if (!is_object($obj)){
         $obj = new PDO("mysql:host={$params["host"]};dbname={$params["db"]}", $params["user"], $params["psw"]);
@@ -1185,5 +1356,7 @@ class getPDO{
     return $obj;
   }
 }
+
+
 
 ?>
