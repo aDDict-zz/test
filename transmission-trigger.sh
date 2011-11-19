@@ -1,11 +1,15 @@
 #!/bin/bash
-downloads=/home/vvv/Downloads
-movies=/home/vvv/Videos
-log=$downloads/log.txt
+downloads="/home/vvv/Downloads"
+movies="/home/vvv/Videos"
+log="$downloads/log.txt"
 TR_DOWNLOADED_PATH="$TR_TORRENT_DIR/$TR_TORRENT_NAME"
 targetdir="$movies/$TR_TORRENT_NAME/"
 
+echo "$targetdir" >> $log
+echo "TR_DOWNLOADED_PATH" >> $log
+
 mkdir "$targetdir";
+cd "TR_DOWNLOADED_PATH"
 
 find "TR_DOWNLOADED_PATH" -name \*.rar -exec unrar e {} \;
 find -name \*.avi -exec mv {} "$targetdir" \;
