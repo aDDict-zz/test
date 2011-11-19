@@ -5,16 +5,19 @@ log="$downloads/log.txt"
 TR_DOWNLOADED_PATH="$TR_TORRENT_DIR/$TR_TORRENT_NAME"
 targetdir="$movies/$TR_TORRENT_NAME/"
 
+echo "$TR_TORRENT_DIR" >> $log
+echo "$TR_TORRENT_NAME" >> $log
+
 echo "$targetdir" >> $log
-echo "TR_DOWNLOADED_PATH" >> $log
+echo "$TR_DOWNLOADED_PATH" >> $log
 
 mkdir "$targetdir";
 #cd "TR_DOWNLOADED_PATH"
 
-find "TR_DOWNLOADED_PATH" -name \*.rar -exec unrar e {} \;
-find "TR_DOWNLOADED_PATH" -name \*.avi -exec mv {} "$targetdir" \;
-find "TR_DOWNLOADED_PATH" -name \*.iso -exec mv {} "$targetdir" \;
-find "TR_DOWNLOADED_PATH" -name \*.mkv -exec mv {} "$targetdir" \;
+find "$TR_DOWNLOADED_PATH" -name \*.rar -exec unrar e {} \;
+find "$TR_DOWNLOADED_PATH" -name \*.avi -exec mv {} "$targetdir" \;
+find "$TR_DOWNLOADED_PATH" -name \*.iso -exec mv {} "$targetdir" \;
+find "$TR_DOWNLOADED_PATH" -name \*.mkv -exec mv {} "$targetdir" \;
 
 # find -name \*.rar -exec unrar e {} \;
 
