@@ -8,7 +8,8 @@ Ext.define('IddqdTranslateView', {
   
   render: function(data) { console.log(data);
     
-    /*if(!Ext.get("Iddqd")) {
+    
+    if(!Ext.get("Iddqd")) {
       var self           = this;
       self.itemsPerPage  = 10;
       
@@ -24,7 +25,7 @@ Ext.define('IddqdTranslateView', {
             totalProperty : 'results',
             }
           }      
-        });
+        })
         
       self.store.on('beforeload', function() {
         this.pageSize = self.itemsPerPage;
@@ -107,7 +108,7 @@ Ext.define('IddqdTranslateView', {
               },
             }]
           }]
-      });*/
+      });
       
       /*self.Iddqd = Ext.create('Ext.grid.Panel', {
         title   : 'Translate',
@@ -136,10 +137,10 @@ Ext.define('IddqdTranslateView', {
           displayMsg  : 'Találatok: {0} - {1} of {2}',
           emptyMsg    : "Nincs találat."
         }]
-      }).show();*/
-       
-      //Ext.get('translateContainer').add(self.Iddqd);
-      //Ext.get('translateContainer').doLayout();
-    //}
+      });
+      //console.log( self.Iddqd );
+      Ext.get('translateContainer').add(self.Iddqd);
+      Ext.get('translateContainer').doLayout();*/
+    }
   }
 });

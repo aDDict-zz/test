@@ -627,7 +627,8 @@ Ext.define('IddqdView', {
   
   render: function(data) { console.log(data);
     
-    /*if(!Ext.get("Iddqd")) {
+    
+    if(!Ext.get("Iddqd")) {
       var self           = this;
       self.itemsPerPage  = 10;
       
@@ -643,7 +644,7 @@ Ext.define('IddqdView', {
             totalProperty : 'results',
             }
           }      
-        });
+        })
         
       self.store.on('beforeload', function() {
         this.pageSize = self.itemsPerPage;
@@ -726,7 +727,7 @@ Ext.define('IddqdView', {
               },
             }]
           }]
-      });*/
+      });
       
       /*self.Iddqd = Ext.create('Ext.grid.Panel', {
         title   : 'Translate',
@@ -755,11 +756,11 @@ Ext.define('IddqdView', {
           displayMsg  : 'Találatok: {0} - {1} of {2}',
           emptyMsg    : "Nincs találat."
         }]
-      }).show();*/
-       
-      //Ext.get('translateContainer').add(self.Iddqd);
-      //Ext.get('translateContainer').doLayout();
-    //}
+      });
+      //console.log( self.Iddqd );
+      Ext.get('translateContainer').add(self.Iddqd);
+      Ext.get('translateContainer').doLayout();*/
+    }
   }
 });
 Ext.define('MainView', {
@@ -954,10 +955,10 @@ Ext.define('GroupModel', {
     AJAX.get(
       "lang/update",
       ['field=',roweditor.field,'&id=',roweditor.record.get('id'),'&val=',roweditor.record.get(roweditor.field)].join(''),
-      function() {
+      function() { console.log( Globals.DEPO["IddqdTranslateController"].view );
         //self.roweditor.record.set(self.roweditor.field,"somwValue");
         self.roweditor.record.commit();
-        Globals.DEPO["IddqdTranslateController"].view.Iddqd.getView().refresh();
+        Globals.DEPO["IddqdTranslateController"].view.translateContainer.getView().refresh();
         self.loader.hide();
       },
       self

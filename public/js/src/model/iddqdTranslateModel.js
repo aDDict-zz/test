@@ -17,10 +17,10 @@ Ext.define('IddqdTranslateModel', {
     AJAX.get(
       "lang/update",
       ['field=',roweditor.field,'&id=',roweditor.record.get('id'),'&val=',roweditor.record.get(roweditor.field)].join(''),
-      function() {
+      function() { console.log( Globals.DEPO["IddqdTranslateController"].view );
         //self.roweditor.record.set(self.roweditor.field,"somwValue");
         self.roweditor.record.commit();
-        Globals.DEPO["IddqdTranslateController"].view.Iddqd.getView().refresh();
+        Globals.DEPO["IddqdTranslateController"].view.translateContainer.getView().refresh();
         self.loader.hide();
       },
       self
