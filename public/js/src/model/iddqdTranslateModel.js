@@ -17,10 +17,10 @@ Ext.define('IddqdTranslateModel', {
     AJAX.get(
       "lang/update",
       ['field=',roweditor.field,'&id=',roweditor.record.get('id'),'&val=',roweditor.record.get(roweditor.field)].join(''),
-      function() { console.log( Globals.DEPO["IddqdTranslateController"].view );
+      function() {
         //self.roweditor.record.set(self.roweditor.field,"somwValue");
-        self.roweditor.record.commit();
-        Globals.DEPO["IddqdTranslateController"].view.translateContainer.getView().refresh();
+        self.roweditor.record.commit(); console.log( Globals.DEPO["viewport"].items[0] );
+        Globals.DEPO["IddqdTranslateController"].view.Iddqd.getView().refresh();
         self.loader.hide();
       },
       self
@@ -29,7 +29,7 @@ Ext.define('IddqdTranslateModel', {
   
   mapper: function(data){
     var self  = this;
-    self.data = self.toJson(data.responseText);
+    self.data = data.responseText;  //self.toJson(data.responseText);
     self.router.ajaxCallback(self);
   },
   

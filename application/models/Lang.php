@@ -65,6 +65,42 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
       
     }
     
+    public function getGroups() {
+      $res = array();  
+      $result = $this->_db->query("
+        select * from lang_groups; 
+      ")->fetchAll();
+      foreach($result as $r) {
+        $res[] = array(
+          'lang'    => $r['val'],
+          'langval' => "{$r['id']}|{$r['flag']}"
+        );
+      }
+      
+      return array(
+        'success' => true,
+        'rows'    => $res
+      );
+    }
+    
+    public function getCats() {
+      $res = array();  
+      $result = $this->_db->query("
+        select * from lang_cat; 
+      ")->fetchAll();
+      foreach($result as $r) {
+        $res[] = array(
+          'cat'    => $r['var'],
+          'catval' => "{$r['id']}"
+        );
+      }
+      
+      return array(
+        'success' => true,
+        'rows'    => $res
+      );
+    }
+    
     public function updateRow($params) {
       $this->_db->query();
     }

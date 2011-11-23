@@ -109,14 +109,14 @@ Ext.define('Controller', {
 	},
 
 	constructor	: function() {
-	  var self = this;
+	  var self           = this;
 	  self.getNameSpace();
 	  self.getFullNameSpace();
-	  self.model  = eval(['new ',self.nameSpace,'Model()'].join(''));
-	  self.model.router = self;
+	  self.model         = eval(['new ',self.nameSpace,'Model()'].join(''));
+	  self.model.router  = self;
 
     if(this.showView == true) {
-      self.view = eval(['new ',self.nameSpace,'View()'].join(''));
+      self.view       = eval(['new ',self.nameSpace,'View()'].join(''));
       self.view.scope = self;
     }
 		this.init();
@@ -147,22 +147,32 @@ Ext.define('View', {
 	scope       : {},
 	render 		  : function() {},
 	
-	constructor	: function() {
-	  /*if(typeof Globals.DEPO["viewport"] == 'undefined' || Globals.DEPO["viewport"] == null) {
-  	  Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
-        xtype: 'viewport',
-        border: 0,
-        margin: 0,
-        padding: 0,
-        style: 'background: #EBEEF2;',
-        maintainFlex: true,
-        renderTo : Ext.getBody(),
-        layout: {
-            type: 'fit'
+	/*applyCfg    : function(reciever, source) {
+	  var type, self = this;
+	  if(Object.prototype.toString.apply(source).match(/Array/)) {
+	    reciever = [];
+	    for(var i = 0,l = source.length;i < l;i++) {
+	      type = Object.prototype.toString.apply(source[i])
+	      if (type.match(/String/) || type.match(/Number/)) {
+	        reciever[i] = source[i];
+	      } else {
+	        self.applyCfg(reciever[i],source[i]);
+	      }
+	    }
+	  } else if(Object.prototype.toString.apply(source).match(/Object Object/)){ console.log("SSSSSSSSSs");
+	    reciever = {};
+	    for(var i in source) {
+        type = Object.prototype.toString.apply(source[i])
+        if (type.match(/String/) || type.match(/Number/)) {
+          reciever[i] = source[i];
+        } else {
+          self.applyCfg(reciever[i],source[i]);
         }
-      });
-    }*/
-    
+      }
+	  }
+	},*/
+	
+	constructor	: function() {
 	}
 });
 

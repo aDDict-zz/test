@@ -1,74 +1,96 @@
 {
-            xtype: 'container',
-            height: 895,
-            tpl: Ext.create('Ext.XTemplate',
-                ''
-            ),
-            width: 1299,
-            layout: {
-                align: 'stretch',
-                type: 'hbox'
-            },
-            items: [
-                {
-                    xtype: ' ',
-                    tpl: Ext.create('Ext.XTemplate',
-                        ''
-                    ),
-                    width: 535,
-                    layout: {
-                        type: 'column'
-                    },
-                    flex: 1,
-                    items: [
-                        {
-                            xtype: 'gridpanel',
-                            height: 846,
-                            width: 634,
-                            title: 'My Grid Panel',
-                            columns: [
-                                {
-                                    xtype: 'gridcolumn',
-                                    dataIndex: 'string',
-                                    text: 'String'
-                                },
-                                {
-                                    xtype: 'numbercolumn',
-                                    dataIndex: 'number',
-                                    text: 'Number'
-                                },
-                                {
-                                    xtype: 'datecolumn',
-                                    dataIndex: 'date',
-                                    text: 'Date'
-                                },
-                                {
-                                    xtype: 'booleancolumn',
-                                    dataIndex: 'bool',
-                                    text: 'Boolean'
-                                }
-                            ],
-                            viewConfig: {
-
-                            }
-                        }
-                    ]
-                },
-                {
-                    xtype: 'container',
-                    flex: 1,
-                    items: [
-                        {
-                            xtype: 'combobox',
-                            width: 538,
-                            fieldLabel: 'languages'
-                        },
-                        {
-                            xtype: 'combobox',
-                            width: 539,
-                            fieldLabel: 'lang groups'
-                        }
-                    ]
-                }
-            ]
-}
+  xtype: 'viewport',
+  border: 0,
+  margin: 0,
+  padding: 0,
+  style: 'background: #EBEEF2;',
+  maintainFlex: true,
+  renderTo : Ext.getBody(),
+  layout: { type: 'fit'
+    /*align: 'stretch',
+    type: 'hbox'*/
+  },
+  items: [{
+    id: 'translateContainer',
+    xtype: 'container',
+    margin: 20,
+    /*height    : 600,
+    width     : 1100,*/
+    layout: {
+      align: 'stretch',
+      type: 'hbox'
+    },
+    items:[{
+      xtype   : 'grid',
+      title   : 'Translate',
+      id      : "Iddqd",
+      store   : self.store,
+      columns : [
+        {header : 'id'               , dataIndex: 'id'},
+        {header : 'Kategória'        , dataIndex: 'category'},
+        {header : 'Változó'          , dataIndex: 'variable'},
+        {header : 'Kifejezés'        , dataIndex: 'word', renderer : this.renderer, editor : {xtype: 'textfield',allowBlank: false}},
+        {header : 'Idegen kifejezés' , dataIndex: 'foreign_word', renderer : this.renderer, editor : {xtype: 'textfield',allowBlank: false}}
+      ],
+      plugins: [self.rowEditing],
+      /*height    : 400,
+      width     : 700,*/
+      layout: {
+        type: 'fit'
+      },
+      dockedItems: [{
+        xtype       : 'pagingtoolbar',
+        store       : self.store,
+        dock        : 'top',
+        displayInfo : true,
+        displayMsg  : 'Találatok: {0} - {1} of {2}',
+        emptyMsg    : "Nincs találat."
+      }]
+      }, {
+        xtype   : 'container',
+        id      : "rightside",
+        height  : 400,
+        width   : 350,
+        layout: {
+          align: 'stretch',
+          type: 'vbox'
+        },
+      items: [{
+        xtype   : 'panel',
+        title   : 'Languages',
+        height  : 100,
+        width   : 200,
+        layout  : {
+          type: 'fit'
+        },
+        items: [{
+          xtype: 'combo',
+          id: 'languages',
+          fieldLabel: 'Choose language',
+          store: self.langStore,
+          queryMode: 'local',
+          displayField: 'lang',
+          valueField: 'langval',
+          triggerAction : 'all'
+        }]
+      },{
+        xtype   : 'panel',
+        title   : 'Categories',
+        height  : 100,
+        width   : 200,
+        layout  : {
+          type: 'fit'
+        },
+        items: [{
+          xtype: 'combobox',
+          id: 'categories',
+          fieldLabel: 'Choose Categoriy',
+          store: self.catStore,
+          queryMode: 'local',
+          displayField: 'cat',
+          valueField: 'catval',
+          triggerAction : 'all'   
+        }]
+      }]
+    }]
+}]}

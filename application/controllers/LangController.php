@@ -18,6 +18,16 @@ class LangController extends Zend_Controller_Action
       die( print_r( $this->getRequest()->getParams() ) );
     }
 
-
+    public function groupsAction() {
+      $lang   = new Application_Model_Lang();
+      echo Zend_Json::encode($lang->getGroups());
+      die();
+    }
+    
+    public function catsAction() {
+      $lang   = new Application_Model_Lang();
+      echo Zend_Json::encode($lang->getCats());
+      die();
+    }
 }
 

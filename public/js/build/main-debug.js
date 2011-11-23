@@ -109,14 +109,14 @@ Ext.define('Controller', {
 	},
 
 	constructor	: function() {
-	  var self = this;
+	  var self           = this;
 	  self.getNameSpace();
 	  self.getFullNameSpace();
-	  self.model  = eval(['new ',self.nameSpace,'Model()'].join(''));
-	  self.model.router = self;
+	  self.model         = eval(['new ',self.nameSpace,'Model()'].join(''));
+	  self.model.router  = self;
 
     if(this.showView == true) {
-      self.view = eval(['new ',self.nameSpace,'View()'].join(''));
+      self.view       = eval(['new ',self.nameSpace,'View()'].join(''));
       self.view.scope = self;
     }
 		this.init();
@@ -147,22 +147,32 @@ Ext.define('View', {
 	scope       : {},
 	render 		  : function() {},
 	
-	constructor	: function() {
-	  /*if(typeof Globals.DEPO["viewport"] == 'undefined' || Globals.DEPO["viewport"] == null) {
-  	  Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
-        xtype: 'viewport',
-        border: 0,
-        margin: 0,
-        padding: 0,
-        style: 'background: #EBEEF2;',
-        maintainFlex: true,
-        renderTo : Ext.getBody(),
-        layout: {
-            type: 'fit'
+	/*applyCfg    : function(reciever, source) {
+	  var type, self = this;
+	  if(Object.prototype.toString.apply(source).match(/Array/)) {
+	    reciever = [];
+	    for(var i = 0,l = source.length;i < l;i++) {
+	      type = Object.prototype.toString.apply(source[i])
+	      if (type.match(/String/) || type.match(/Number/)) {
+	        reciever[i] = source[i];
+	      } else {
+	        self.applyCfg(reciever[i],source[i]);
+	      }
+	    }
+	  } else if(Object.prototype.toString.apply(source).match(/Object Object/)){ console.log("SSSSSSSSSs");
+	    reciever = {};
+	    for(var i in source) {
+        type = Object.prototype.toString.apply(source[i])
+        if (type.match(/String/) || type.match(/Number/)) {
+          reciever[i] = source[i];
+        } else {
+          self.applyCfg(reciever[i],source[i]);
         }
-      });
-    }*/
-    
+      }
+	  }
+	},*/
+	
+	constructor	: function() {
 	}
 });
 
@@ -622,22 +632,70 @@ Ext.define('IddqdView', {
   extend: 'View',
   
   renderer: function(str) {
-    return ['<b>',str,'</b>'].join('');
+    return ['<span style="font-weight:bold;">',str,'</span>'].join('');
   },
   
-  render: function(data) { console.log(data);
+  render: function(data) {
     
     
     if(!Ext.get("Iddqd")) {
-      var self           = this;
-      self.itemsPerPage  = 10;
       
-      self.store         = Ext.create('Ext.data.Store', {
-        storeId : 'translate',
-        fields  : ['id', 'category', 'variable', 'word', 'foreign_word'],
+      var self            = this;
+      self.itemsPerPage   = 10;
+      self.language       = 'hu';
+      self.cat            = 1;
+      
+      self.langStore      = Ext.create('Ext.data.Store', {
+        fields: ['langval', 'lang'],
+        autoLoad: true,
         proxy   : {
           type      : 'ajax',
-          url       : 'lang',
+          url       : 'lang/groups',
+          reader    : {
+            type          : 'json',
+            root          : 'rows',
+            totalProperty : 'results'
+          }
+        },
+        listeners      : {
+          load      : function(store,records,options) {
+            self.langCombo.setValue(self.langStore.getAt(0).data['langval']);
+          }
+        }
+      });
+
+      self.catStore      = Ext.create('Ext.data.Store', {
+        fields: ['catval', 'cat'],
+        autoLoad: true,
+        value: 0,
+        proxy   : {
+          type      : 'ajax',
+          url       : 'lang/cats',
+          reader    : {
+            type          : 'json',
+            root          : 'rows',
+            totalProperty : 'results'
+            }
+        },
+        listeners      : {
+          load      : function(store,records,options) {
+            self.catCombo.setValue(self.catStore.getAt(0).data['catval']);
+          }
+        }
+      });
+       
+      self.store         = Ext.create('Ext.data.Store', {
+        storeId : 'translate',
+        fields  : [
+          'id',
+          'category',
+          'variable',
+          'word',
+          'foreign_word'
+        ],
+        proxy   : {
+          type      : 'ajax',
+          url       : ['lang?lang=',self.language,'&cat=',self.cat].join(''),
           reader    : {
             type          : 'json',
             root          : 'rows',
@@ -667,73 +725,33 @@ Ext.define('IddqdView', {
         }
       });
       
-      Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
-        xtype: 'viewport',
-        border: 0,
-        margin: 0,
-        padding: 0,
-        style: 'background: #EBEEF2;',
-        maintainFlex: true,
-        renderTo : Ext.getBody(),
-        layout: {
-          align: 'stretch',
-          type: 'hbox'
-        },
-        items: [{
-          id: 'translateContainer',
-          xtype: 'container',
-          margin: 20,
-          height    : 600,
-          width     : 1100,
-          layout: {
-            align: 'stretch',
-            type: 'hbox'
-          },
-          items: [{
-            xtype   : 'grid',
-            title   : 'Translate',
-            id      : "Iddqd",
-            store   : self.store,
-            columns : [
-              {header : 'id'               , dataIndex: 'id'},
-              {header : 'Kategória'        , dataIndex: 'category'},
-              {header : 'Változó'          , dataIndex: 'variable'},
-              {header : 'Kifejezés'        , dataIndex: 'word', renderer : this.renderer, editor : {xtype: 'textfield',allowBlank: false}},
-              {header : 'Idegen kifejezés' , dataIndex: 'foreign_word', renderer : this.renderer, editor : {xtype: 'textfield',allowBlank: false}}
-            ],
-            plugins: [self.rowEditing],
-              height    : 400,
-              width     : 700,      
-              layout: {
-                type: 'fit'
-              },
-              dockedItems: [{
-                xtype       : 'pagingtoolbar',
-                store       : self.store,
-                dock        : 'top',
-                displayInfo : true,
-                displayMsg  : 'Találatok: {0} - {1} of {2}',
-                emptyMsg    : "Nincs találat."
-              }]
-            
-            }, {
-              xtype   : 'panel',
-              title   : 'Valami',
-              height  : 400,
-              width   : 350,
-              layout: {
-                align: 'stretch',
-                type: 'vbox'
-              },
-            }]
-          }]
+      // ext.apply & Ext.decode arent workin well, we need a simple eval
+      Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', eval("("+data+")"));
+      
+      // fuck this lookup
+      self.langCombo  = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[0].items.items[0];
+      self.catCombo   = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[1].items.items[0];
+      
+      self.langCombo.addListener({
+          select: function() {
+            self.language         = this.getValue().split('|')[1];
+            self.store.proxy.url  = ['lang?lang=',self.language,'&cat=',self.cat].join('');
+            self.store.load();
+          }
+      });
+      self.catCombo.addListener({
+          select: function() {
+            self.cat = this.getValue();
+            self.store.proxy.url  = ['lang?lang=',self.language,'&cat=',self.cat].join('');
+            self.store.load();
+          }
       });
       
-      /*self.Iddqd = Ext.create('Ext.grid.Panel', {
+      self.Iddqd = Ext.create('Ext.grid.Panel', {
         title   : 'Translate',
         id      : "Iddqd",
         store   : self.store,
-        //renderTo: Ext.get('translateContainer'),
+        renderTo: Ext.get('translateContainer'),
         columns : [
           {header : 'id'               , dataIndex: 'id'},
           {header : 'Kategória'        , dataIndex: 'category'},
@@ -745,7 +763,7 @@ Ext.define('IddqdView', {
         height    : 400,
         width     : 800,
         layout: {
-          //align: 'stretch',
+          align: 'stretch',
           type: 'fit'
         },
         dockedItems: [{
@@ -757,9 +775,6 @@ Ext.define('IddqdView', {
           emptyMsg    : "Nincs találat."
         }]
       });
-      //console.log( self.Iddqd );
-      Ext.get('translateContainer').add(self.Iddqd);
-      Ext.get('translateContainer').doLayout();*/
     }
   }
 });
@@ -955,10 +970,10 @@ Ext.define('GroupModel', {
     AJAX.get(
       "lang/update",
       ['field=',roweditor.field,'&id=',roweditor.record.get('id'),'&val=',roweditor.record.get(roweditor.field)].join(''),
-      function() { console.log( Globals.DEPO["IddqdTranslateController"].view );
+      function() {
         //self.roweditor.record.set(self.roweditor.field,"somwValue");
-        self.roweditor.record.commit();
-        Globals.DEPO["IddqdTranslateController"].view.translateContainer.getView().refresh();
+        self.roweditor.record.commit(); console.log( Globals.DEPO["viewport"].items[0] );
+        Globals.DEPO["IddqdTranslateController"].view.Iddqd.getView().refresh();
         self.loader.hide();
       },
       self
@@ -967,7 +982,7 @@ Ext.define('GroupModel', {
   
   mapper: function(data){
     var self  = this;
-    self.data = self.toJson(data.responseText);
+    self.data = data.responseText;  //self.toJson(data.responseText);
     self.router.ajaxCallback(self);
   },
   
