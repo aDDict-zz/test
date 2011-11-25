@@ -12,7 +12,38 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
       $page         = (isset($params["page"]) ? $params["page"]   : '1');
       $itemCount    = (isset($params["limit"])? $params["limit"]  : '5');
       
-      $result = $this->_db->query("
+      $vars = $this->_db->query("
+        select
+          lv.id     as id,
+          lv.var    as variable,
+          lc.var    as category
+        from
+          lang_variables lv
+        left join
+          lang_cat lc
+            on lv.cat_id = lc.id
+        where cat_id = ?;
+        ",
+        array($cat)
+      )->fetchAll();
+      
+      foreach($vars as $i => $v) {
+        $r = $this->_db->query("
+          select
+            value
+          from
+            lang_values
+          where
+            group_id = ?
+          and
+            var_id = ?;
+          ",
+          array($defLangid,$v['id'])
+        )->fetchAll();   
+        $vars[$i]['word'] = (isset($r[0]) ? $r[0]['value'] : "");
+      }
+      
+      /*$result = $this->_db->query("
         select
           l_var.id     as id,
           l_var.var    as variable,
@@ -21,12 +52,12 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
         from
           lang_variables l_var
           
-        left join
+        join
           lang_values l_val
         on
           l_var.id = l_val.var_id
           
-        left join
+        join
           lang_cat l_cat
         on
           l_cat.id = l_var.cat_id
@@ -40,9 +71,9 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
             asc
         ",
         array($cat,$defLangid)
-      )->fetchAll();
+      )->fetchAll();*/
       
-      $paginator = Zend_Paginator::factory($result);
+      $paginator = Zend_Paginator::factory($vars);
       $paginator->setItemCountPerPage($itemCount);
       $paginator->setCurrentPageNumber($page);
      
@@ -52,7 +83,9 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
           select value from lang_values where var_id = {$item['id']} and group_id = {$langid};
         ")->fetchAll();
         
-        $item["foreign_word"] = ($res[0]['value'] ? $res[0]['value'] : "");
+
+        
+        $item["foreign_word"] = (isset($res[0]) ? $res[0]['value'] : "");
         $items[]              = $item;
         
       }
@@ -103,6 +136,39 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
     
     public function updateRow($params) {
       $this->_db->query();
+    }
+    
+    public function deleteCategory($id) {
+      $this->_db->query("
+        delete from lang_cat where id = ?;
+      ",
+      array($id)
+      );
+    }
+    
+    public function addCategory($cat) {
+      $this->_db->query("
+        insert into lang_cat(var) values(?);
+      ",
+      array($cat)
+      );
+    }
+    
+    public function addLanguage($lang) {
+      $flag = substr($lang, 0, 2);
+      $this->_db->query("
+        insert into lang_groups(val,flag) values(?,?);
+      ",
+      array($lang,$flag)
+      );
+    }
+    
+    public function deleteLanguage($id) {
+      $this->_db->query("
+        delete from lang_groups where id = ?;
+      ",
+      array($id)
+      );
     }
 }
 

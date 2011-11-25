@@ -1,96 +1,136 @@
 {
   xtype: 'viewport',
-  border: 0,
-  margin: 0,
-  padding: 0,
   style: 'background: #EBEEF2;',
   maintainFlex: true,
   renderTo : Ext.getBody(),
-  layout: { type: 'fit'
-    /*align: 'stretch',
-    type: 'hbox'*/
-  },
+  layout: 'auto',
   items: [{
     id: 'translateContainer',
     xtype: 'container',
-    margin: 20,
+    margin: 10,
     /*height    : 600,
     width     : 1100,*/
     layout: {
-      align: 'stretch',
+      align: 'center',
       type: 'hbox'
     },
     items:[{
-      xtype   : 'grid',
-      title   : 'Translate',
-      id      : "Iddqd",
-      store   : self.store,
-      columns : [
-        {header : 'id'               , dataIndex: 'id'},
-        {header : 'Kategória'        , dataIndex: 'category'},
-        {header : 'Változó'          , dataIndex: 'variable'},
-        {header : 'Kifejezés'        , dataIndex: 'word', renderer : this.renderer, editor : {xtype: 'textfield',allowBlank: false}},
-        {header : 'Idegen kifejezés' , dataIndex: 'foreign_word', renderer : this.renderer, editor : {xtype: 'textfield',allowBlank: false}}
-      ],
-      plugins: [self.rowEditing],
-      /*height    : 400,
-      width     : 700,*/
-      layout: {
-        type: 'fit'
-      },
-      dockedItems: [{
-        xtype       : 'pagingtoolbar',
-        store       : self.store,
-        dock        : 'top',
-        displayInfo : true,
-        displayMsg  : 'Találatok: {0} - {1} of {2}',
-        emptyMsg    : "Nincs találat."
-      }]
-      }, {
-        xtype   : 'container',
-        id      : "rightside",
-        height  : 400,
-        width   : 350,
+        
+        xtype: 'container',
+        margin: 5,
         layout: {
-          align: 'stretch',
-          type: 'vbox'
-        },
-      items: [{
-        xtype   : 'panel',
-        title   : 'Languages',
-        height  : 100,
-        width   : 200,
-        layout  : {
+          align: 'center',
           type: 'fit'
         },
-        items: [{
-          xtype: 'combo',
-          id: 'languages',
-          fieldLabel: 'Choose language',
-          store: self.langStore,
-          queryMode: 'local',
-          displayField: 'lang',
-          valueField: 'langval',
-          triggerAction : 'all'
-        }]
-      },{
-        xtype   : 'panel',
-        title   : 'Categories',
-        height  : 100,
-        width   : 200,
-        layout  : {
-          type: 'fit'
-        },
-        items: [{
-          xtype: 'combobox',
-          id: 'categories',
-          fieldLabel: 'Choose Categoriy',
-          store: self.catStore,
-          queryMode: 'local',
-          displayField: 'cat',
-          valueField: 'catval',
-          triggerAction : 'all'   
+        items : [{
+            xtype   : 'grid',
+            title   : 'Translate',
+            id      : "Iddqd",
+            store   : self.scope.model.store,
+            columns : [
+              {header : 'id'               , dataIndex: 'id'},
+              {header : 'Kategória'        , dataIndex: 'category'},
+              {header : 'Változó'          , dataIndex: 'variable'},
+              {header : 'Kifejezés'        , dataIndex: 'word', renderer : this.renderer, editor : {xtype: 'textfield',allowBlank: false}},
+              {header : 'Idegen kifejezés' , dataIndex: 'foreign_word', renderer : this.renderer, editor : {xtype: 'textfield',allowBlank: false}}
+            ],
+            plugins: [self.scope.model.rowEditing],
+            /*height: 400,
+            width: 700,*/
+            flex: 1,
+            layout: {
+              align: 'center',
+              type: 'fit'
+            },
+            dockedItems: [{
+              xtype       : 'pagingtoolbar',
+              store       : self.scope.model.store,
+              dock        : 'top',
+              displayInfo : true,
+              displayMsg  : 'Találatok: {0} - {1} of {2}',
+              emptyMsg    : "Nincs találat."
+            }]    
+          },{
+              xtype :'buttongroup',
+              columns:2,
+              layout:{ align:'right',type: 'fit' },
+              items: [{
+                xtype :'button',
+                text: 'add'
+              },{
+                xtype :'button',
+                text:'delete'
+              }]
+            }]
+        }, {
+          xtype   : 'container',
+          id      : "rightside",
+          height  : 400,
+          width   : 350,
+          margin: 5,
+          layout: {
+            align: 'right',
+            type: 'vbox'
+          },
+          items: [{
+            xtype   : 'panel',
+            title   : 'Languages',
+            height  : 200,
+            width   : 300,
+            flex    : 1,
+            layout  : {
+              type: 'vbox'
+            },
+            items: [{
+              xtype: 'combo',
+              id: 'languages',
+              fieldLabel: 'Choose language',
+              store: self.scope.model.langStore,
+              queryMode: 'local',
+              displayField: 'lang',
+              valueField: 'langval',
+              triggerAction : 'all'
+            },{
+              xtype :'buttongroup',
+              columns:2,
+              items: [{
+                xtype :'button',
+                text: 'add'
+              },{
+                xtype :'button',
+                text:'delete'
+              }]
+            }]
+          },{
+          xtype   : 'panel',
+          title   : 'Categories',
+          height  : 200,
+          width   : 300,
+          flex    : 2,
+          layout  : {
+            type    : 'vbox'
+          },
+          columns : 2,
+          items: [{
+            xtype: 'combo',
+            id: 'categories',
+            fieldLabel: 'Choose category',
+            store: self.scope.model.catStore,
+            queryMode: 'local',
+            displayField: 'cat',
+            valueField: 'catval',
+            triggerAction : 'all'  
+          },{
+            xtype :'buttongroup',
+            columns:2,
+            items: [{
+              xtype :'button',
+              text: 'add'
+            },{
+              xtype :'button',
+              text:'delete'
+            }]
+          }]
         }]
       }]
-    }]
 }]}
