@@ -224,6 +224,11 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
       ",
       array($id)
       );
+      $this->_db->query("
+        delete from lang_values where var_id = ?;
+      ",
+      array($id)
+      );
     }
 }
 
