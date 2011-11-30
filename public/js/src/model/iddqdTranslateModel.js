@@ -11,9 +11,10 @@ Ext.define('IddqdTranslateModel', {
       
     self.loader         = new Ext.LoadMask(Ext.getBody(), {msg:"loading"});
     
-    self.itemsPerPage   = 10;
-    self.language       = 'hu';
-    self.cat            = 1;
+    self.itemsPerPage     = 10;
+    self.language         = 'hu';
+    self.cat              = 1;
+    self.variableStoreCat = 1;
     
     self.store          = Ext.create('Ext.data.Store', {
       storeId : 'translate',
@@ -70,6 +71,27 @@ Ext.define('IddqdTranslateModel', {
       listeners      : {
         load      : function(store,records,options) {
           self.router.view.catCombo.setValue(self.catStore.getAt(0).data['catval']);
+          self.router.view.varCombo.setValue(self.catStore.getAt(0).data['catval']);
+        }
+      }
+    });
+    
+    self.variableStore = Ext.create('Ext.data.Store', {
+      fields: ['varval', 'var'],
+      autoLoad: true,
+      value: 0,
+      proxy   : {
+        type      : 'ajax',
+        url       : ['lang/vars?cat=',self.variableStoreCat].join(''),
+        reader    : {
+          type          : 'json',
+          root          : 'rows',
+          totalProperty : 'results'
+          }
+      },
+      listeners      : {
+        load      : function(store,records,options) {
+          //self.router.view.catCombo.setValue(self.catStore.getAt(0).data['catval']);
         }
       }
     });
@@ -101,9 +123,9 @@ Ext.define('IddqdTranslateModel', {
     self.roweditor = roweditor;
     self.scope = scope;
     this.loader.show();
-    AJAX.get(
+    AJAX.post(
       "lang/update",
-      ['field=',roweditor.field,'&id=',roweditor.record.get('id'),'&val=',roweditor.record.get(roweditor.field)].join(''),
+      ['field=',roweditor.field,'&id=',roweditor.record.get('id'),'&val=',roweditor.record.get(roweditor.field),'&lang=',self.language].join(''),
       function() {
         self.roweditor.record.commit();  
         self.store.load();
@@ -152,6 +174,26 @@ Ext.define('IddqdTranslateModel', {
       self
     );
   },
+  
+  addVariable: function(variable,expression) {
+    var self = this;
+    AJAX.post(
+      ['lang/addvariable'].join(''),
+      ['var=',variable,'&cat=',self.variableStoreCat,'&expr=',expression].join(''),
+      function(resp) { /*alert('Success');*/ },
+      self
+    );
+  },
+  
+  deleteVariable: function(id) {
+    var self = this;
+    AJAX.post(
+      ['lang/deletevariable'].join(''),
+      ['id=',id].join(''),
+      function(resp) { /*alert('Success');*/ },
+      self
+    );
+  }, 
   
   mapper: function(data){
     var self  = this;

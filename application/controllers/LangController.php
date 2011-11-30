@@ -15,7 +15,9 @@ class LangController extends Zend_Controller_Action
     
     public function updateAction() {
       $lang   = new Application_Model_Lang();
-      die( print_r( $this->getRequest()->getParams() ) );
+      $res    = $lang->updateRow($this->getRequest()->getParams());
+      echo Zend_Json::encode($res);
+      die();
     }
 
     public function groupsAction() {
@@ -55,6 +57,27 @@ class LangController extends Zend_Controller_Action
       $params = $this->getRequest()->getParams();
       $lang   = new Application_Model_Lang();
       $lang->deleteLanguage($params['id']);
+      die();
+    }
+    
+    public function varsAction() {
+      $params = $this->getRequest()->getParams();
+      $lang   = new Application_Model_Lang();
+      echo Zend_Json::encode($lang->getVariables($params['cat']));
+      die();
+    }
+    
+    public function addvariableAction() {
+      $params = $this->getRequest()->getParams();
+      $lang   = new Application_Model_Lang();
+      echo Zend_Json::encode($lang->addVariable($params));
+      die();
+    }
+    
+    public function deletevariableAction() {
+      $params = $this->getRequest()->getParams();
+      $lang   = new Application_Model_Lang();
+      $lang->delVariable($params['id']);
       die();
     }
 }

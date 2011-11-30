@@ -135,7 +135,19 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
     }
     
     public function updateRow($params) {
-      $this->_db->query();
+      $result   = $this->_db->query("
+        select id from lang_groups where flag = '{$params['lang']}'; 
+      ")->fetchAll();
+      $lang_id  = $result[0]['id'];
+      $result   = $this->_db->query("
+        select count(id) as c from lang_values where var_id = {$params['id']} and group_id = {$lang_id}; 
+      ")->fetchAll();
+      if($result[0]['c'] > 0)
+        $sql = "update lang_values set value = '{$params['val']}' where var_id = {$params['id']} and group_id = {$lang_id}";
+      else
+        $sql = "insert into lang_values(var_id,group_id,value) values({$params['id']},{$lang_id},'{$params['val']}');";
+      $res      = $this->_db->query($sql);
+      return ($res != null ? 'success' : -1);
     }
     
     public function deleteCategory($id) {
@@ -166,6 +178,49 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
     public function deleteLanguage($id) {
       $this->_db->query("
         delete from lang_groups where id = ?;
+      ",
+      array($id)
+      );
+    }
+    
+    public function getVariables($cat) {
+      $res = array();  
+      $result = $this->_db->query("
+        select * from lang_variables where cat_id = {$cat};
+      ")->fetchAll();
+      foreach($result as $r) {
+        $res[] = array(
+          'var'    => $r['var'],
+          'varval' => "{$r['id']}"
+        );
+      }
+      
+      return array(
+        'success' => true,
+        'rows'    => $res
+      );
+    }
+    
+    public function addVariable($params) {
+      $res = $this->_db->query("
+        insert into lang_variables(cat_id,var) values(?,?);
+      ",
+      array($params['cat'],$params['var'])
+      );
+      if($res != null) {
+        $lastInsertId = $this->_db->lastInsertId();
+        $res = $this->_db->query("
+            insert into lang_values(var_id,group_id,value) values(?,1,?);
+          ",
+          array($lastInsertId,$params['expr'])
+        );
+      }
+      return ($res != null ? 'success' : -1);
+    }
+    
+    public function delVariable($id) {
+      $this->_db->query("
+        delete from lang_variables where id = ?;
       ",
       array($id)
       );
