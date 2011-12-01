@@ -2,6 +2,21 @@ Ext.define('IddqdTranslateModel', {
 
   extend: 'Model',
   
+  reload: function() {
+    var self              = this;
+    self.router.view.modalWindow.destroy();
+    self.cat              = self.variableStoreCat;
+    self.store.proxy.url  = ['lang?lang=',self.language,'&cat=',self.cat].join('');
+    self.store.load();
+    self.langStore.load();
+    self.catStore.load();
+    self.variableStore.load();
+    
+    self.router.view.langCombo.setValue(self.language);
+    self.router.view.catCombo.setValue(self.cat);
+    self.router.view.varCombo.setValue(self.cat);
+  },
+  
   init: function() {
     
     var self = this;
@@ -13,8 +28,8 @@ Ext.define('IddqdTranslateModel', {
     
     self.itemsPerPage     = 10;
     self.language         = 'hu';
-    self.cat              = 1;
-    self.variableStoreCat = 1;
+    self.cat              = '1';
+    self.variableStoreCat = '1';
     
     self.store          = Ext.create('Ext.data.Store', {
       storeId : 'translate',
@@ -50,7 +65,7 @@ Ext.define('IddqdTranslateModel', {
       },
       listeners      : {
         load      : function(store,records,options) {
-          self.router.view.langCombo.setValue(self.langStore.getAt(0).data['langval']);
+          self.router.view.langCombo.setValue(/*self.langStore.getAt(0).data['langval']*/ self.language);
         }
       }
     });
@@ -69,9 +84,9 @@ Ext.define('IddqdTranslateModel', {
           }
       },
       listeners      : {
-        load      : function(store,records,options) {
-          self.router.view.catCombo.setValue(self.catStore.getAt(0).data['catval']);
-          self.router.view.varCombo.setValue(self.catStore.getAt(0).data['catval']);
+        load      : function(store,records,options) { //alert( self.catStore.getAt(0).data['catval'] );
+          self.router.view.catCombo.setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
+          self.router.view.varCombo.setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
         }
       }
     });
@@ -140,7 +155,10 @@ Ext.define('IddqdTranslateModel', {
     AJAX.post(
       ['lang/addlanguage'].join(''),
       ['lang=',newLang].join(''),
-      function(resp) {self.langStore.load();},
+      function(resp) {
+        self.language = newLang.substring(0, 2);
+        self.reload();
+      },
       self
     );
   },
@@ -150,7 +168,9 @@ Ext.define('IddqdTranslateModel', {
     AJAX.get(
       ['lang/deletelanguage?id=',id].join(''),
       '',
-      function(resp) {self.langStore.load();},
+      function(resp) {
+        self.reload();
+      },
       self
     );
   },
@@ -160,7 +180,9 @@ Ext.define('IddqdTranslateModel', {
     AJAX.get(
       ['lang/deletecategory?id=',id].join(''),
       '',
-      function(resp) {self.catStore.load();},
+      function(resp) {
+        self.reload();
+      },
       self
     );
   },
@@ -170,7 +192,9 @@ Ext.define('IddqdTranslateModel', {
     AJAX.post(
       ['lang/addcategory'].join(''),
       ['cat=',category].join(''),
-      function(resp) {self.catStore.load();},
+      function(resp) {
+        self.reload();
+      },
       self
     );
   },
@@ -180,7 +204,9 @@ Ext.define('IddqdTranslateModel', {
     AJAX.post(
       ['lang/addvariable'].join(''),
       ['var=',variable,'&cat=',self.variableStoreCat,'&expr=',expression].join(''),
-      function(resp) { /*alert('Success');*/ },
+      function(resp) {
+        self.reload();
+      },
       self
     );
   },
@@ -190,7 +216,9 @@ Ext.define('IddqdTranslateModel', {
     AJAX.post(
       ['lang/deletevariable'].join(''),
       ['id=',id].join(''),
-      function(resp) { /*alert('Success');*/ },
+      function(resp) {
+        self.reload();
+      },
       self
     );
   }, 

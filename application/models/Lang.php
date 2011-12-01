@@ -106,7 +106,7 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
       foreach($result as $r) {
         $res[] = array(
           'lang'    => $r['val'],
-          'langval' => "{$r['id']}|{$r['flag']}"
+          'langval' => "{$r['flag']}"
         );
       }
       
@@ -142,10 +142,12 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
       $result   = $this->_db->query("
         select count(id) as c from lang_values where var_id = {$params['id']} and group_id = {$lang_id}; 
       ")->fetchAll();
+      
       if($result[0]['c'] > 0)
         $sql = "update lang_values set value = '{$params['val']}' where var_id = {$params['id']} and group_id = {$lang_id}";
       else
         $sql = "insert into lang_values(var_id,group_id,value) values({$params['id']},{$lang_id},'{$params['val']}');";
+      
       $res      = $this->_db->query($sql);
       return ($res != null ? 'success' : -1);
     }

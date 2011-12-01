@@ -150,7 +150,7 @@ Ext.define('IddqdTranslateView', {
     
     if(!Ext.get("Iddqd")) {
       
-      var self            = this;
+      var self          = this;
       
       // ext.apply & Ext.decode arent workin well, we need a simple eval
       Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', eval("("+data+")"));
@@ -202,7 +202,7 @@ Ext.define('IddqdTranslateView', {
       
       self.langCombo.addListener({
         select: function() {
-          self.scope.model.language         = this.getValue().split('|')[1];
+          self.scope.model.language         = this.getValue();
           self.scope.model.store.proxy.url  = ['lang?lang=',self.scope.model.language,'&cat=',self.scope.model.cat].join('');
           self.scope.model.store.load();
         }

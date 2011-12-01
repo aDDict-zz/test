@@ -143,34 +143,78 @@ Ext.define('Model', {
  * class View
  */
 Ext.define('View', {
-
+  xtypes      : {
+    'button'         : 'Ext.button.Button',
+    'buttongroup'    : 'Ext.container.ButtonGroup',
+    'colorpalette'   : 'Ext.picker.Color',
+    'component'      : 'Ext.Component',
+    'container'      : 'Ext.container.Container',
+    'cycle'          : 'Ext.button.Cycle',
+    'dataview'       : 'Ext.view.View',
+    'datepicker'     : 'Ext.picker.Date',
+    'editor'         : 'Ext.Editor',
+    'editorgrid'     : 'Ext.grid.plugin.Editing',
+    'grid'           : 'Ext.grid.Panel',
+    'multislider'    : 'Ext.slider.Multi',
+    'panel'          : 'Ext.panel.Panel',
+    'progress'       : 'Ext.ProgressBar',
+    'slider'         : 'Ext.slider.Single',
+    'spacer'         : 'Ext.toolbar.Spacer',
+    'splitbutton'    : 'Ext.button.Split',
+    'tabpanel'       : 'Ext.tab.Panel',
+    'treepanel'      : 'Ext.tree.Panel',
+    'viewport'       : 'Ext.container.Viewport',
+    'window'         : 'Ext.window.Window',
+    'paging'         : 'Ext.toolbar.Paging',
+    'toolbar'        : 'Ext.toolbar.Toolbar',
+    'tbfill'         : 'Ext.toolbar.Fill',
+    'tbitem'         : 'Ext.toolbar.Item',
+    'tbseparator'    : 'Ext.toolbar.Separator',
+    'tbspacer'       : 'Ext.toolbar.Spacer',
+    'tbtext'         : 'Ext.toolbar.TextItem',
+    'menu'           : 'Ext.menu.Menu',
+    'menucheckitem'  : 'Ext.menu.CheckItem',
+    'menuitem'       : 'Ext.menu.Item',
+    'menuseparator'  : 'Ext.menu.Separator',
+    'menutextitem'   : 'Ext.menu.Item',
+    'form'           : 'Ext.form.Panel',
+    'checkbox'       : 'Ext.form.field.Checkbox',
+    'combo'          : 'Ext.form.field.ComboBox',
+    'datefield'      : 'Ext.form.field.Date',
+    'displayfield'   : 'Ext.form.field.Display',
+    'field'          : 'Ext.form.field.Base',
+    'fieldset'       : 'Ext.form.FieldSet',
+    'hidden'         : 'Ext.form.field.Hidden',
+    'htmleditor'     : 'Ext.form.field.HtmlEditor',
+    'label'          : 'Ext.form.Label',
+    'numberfield'    : 'Ext.form.field.Number',
+    'radio'          : 'Ext.form.field.Radio',
+    'radiogroup'     : 'Ext.form.RadioGroup',
+    'textarea'       : 'Ext.form.field.TextArea',
+    'textfield'      : 'Ext.form.field.Text',
+    'timefield'      : 'Ext.form.field.Time',
+    'trigger'        : 'Ext.form.field.Trigger'
+  },
 	scope       : {},
 	render 		  : function() {},
-	
-	/*applyCfg    : function(reciever, source) {
-	  var type, self = this;
-	  if(Object.prototype.toString.apply(source).match(/Array/)) {
-	    reciever = [];
-	    for(var i = 0,l = source.length;i < l;i++) {
-	      type = Object.prototype.toString.apply(source[i])
-	      if (type.match(/String/) || type.match(/Number/)) {
-	        reciever[i] = source[i];
-	      } else {
-	        self.applyCfg(reciever[i],source[i]);
-	      }
+	build       : function(cfg, parent) { //console.log(cfg);
+	  
+	  var  self      = this,
+	       rootcfg   = cfg,
+	       thisItems = (cfg.items ? cfg.items : null);
+	       
+	  rootcfg.items = []; 
+	  if(cfg.xtype == 'viewport') {
+	    Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', cfg);
+	    Globals.DEPO["viewport"].add(thisItems);
+	  } else {
+	    if(cfg.id) {
+	      Globals.DEPO[cfg.id] = Ext.create(self.xtypes[cfg.xtype], cfg);
+	    } else {
+	      Globals.DEPO[[parent,'_1'].join('')] = Ext.create(self.xtypes[cfg.xtype], cfg);
 	    }
-	  } else if(Object.prototype.toString.apply(source).match(/Object Object/)){ console.log("SSSSSSSSSs");
-	    reciever = {};
-	    for(var i in source) {
-        type = Object.prototype.toString.apply(source[i])
-        if (type.match(/String/) || type.match(/Number/)) {
-          reciever[i] = source[i];
-        } else {
-          self.applyCfg(reciever[i],source[i]);
-        }
-      }
 	  }
-	},*/
+	},
 	
 	constructor	: function() {
 	}
