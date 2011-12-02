@@ -143,7 +143,7 @@ Ext.define('Model', {
  * class View
  */
 Ext.define('View', {
-
+  
   xtypes      : {
     'button'         : 'Ext.button.Button',
     'buttongroup'    : 'Ext.container.ButtonGroup',
@@ -194,30 +194,50 @@ Ext.define('View', {
     'textarea'       : 'Ext.form.field.TextArea',
     'textfield'      : 'Ext.form.field.Text',
     'timefield'      : 'Ext.form.field.Time',
-    'trigger'        : 'Ext.form.field.Trigger'
+    'trigger'        : 'Ext.form.field.Trigger',
+    
+    'image'          : 'Ext.Img'
   },
   
 	scope       : {},
+	
 	render 		  : function() {},
-	build       : function(cfg) { //console.log(cfg);
+	
+	// recursive iter on cfg to build and store the component referencies
+	build       : function(cfg, parent) {
 	  
 	  var  self      = this,
-	       rootcfg   = cfg,
+	       thisCfg   = cfg,
+	       ref       = '',
+	       globalId  = '',
+	       hash      = (self.date.getTime()*Math.random()).toString().substr(0,2), 
 	       thisItems = (cfg.items ? cfg.items : null);
 	       
-	  rootcfg.items = []; 
+	  thisCfg.items = [];
+	  
 	  if(cfg.xtype == 'viewport') {
-	    //Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', cfg);
-	    Globals.DEPO["viewport"] = Ext.create(self.xtypes[cfg.xtype], cfg);
-	    Globals.DEPO["viewport"].add(thisItems);
+	    globalId = 'viewport';
+	    Globals.DEPO[globalId] = Ext.create('Ext.container.Viewport', thisCfg);
 	  } else {
+	    ref = Ext.create(self.xtypes[cfg.xtype], thisCfg);
 	    if(cfg.id) {
-	      Globals.DEPO[cfg.id] = Ext.create(self.xtypes[cfg.xtype], cfg);
+	      globalId = cfg.id;
+	    } else {
+	      globalId = [parent,hash].join('');
+	    }
+	    Globals.DEPO[parent].add(ref);
+	    Globals.DEPO[globalId] = ref;
+	  }
+
+	  if(thisItems != null && thisItems.length != 0) {
+	    for(var i = 0,l = thisItems.length; i < l; i++) {
+	      self.build(thisItems[i],globalId);
 	    }
 	  }
 	},
 	
 	constructor	: function() {
+	  this.date = new Date();
 	}
 });
 
@@ -232,8 +252,7 @@ Ext.define('Debug', {
       }
     }
   }
-});
-// iframe hack for the ie history featureless
+});// iframe hack for the ie history featureless
 Ext.define('IEHH', {
 
   statics: {
@@ -855,23 +874,22 @@ Ext.define('IddqdView', {
     
     if(!Ext.get("Iddqd")) {
       
-      var self          = this;
+      var self          = this
+          cfg           = eval("("+data+")");
       
-      // ext.apply & Ext.decode arent workin well, we need a simple eval
-      Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', eval("("+data+")"));
+      self.build(cfg);
       
-      // fuck this lookup TODO need  a spec own init method to store the referencies in a better way
-      self.langCombo    = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[0].items.items[0];
-      self.langComboAdd = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[0].items.items[1].items.items[0];
-      self.langComboDel = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[0].items.items[1].items.items[1];
+      self.langCombo    = Globals.DEPO["langCombo"];
+      self.langComboAdd = Globals.DEPO["langComboAdd"];
+      self.langComboDel = Globals.DEPO["langComboDel"];
       
-      self.catCombo     = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[1].items.items[0];
-      self.catComboAdd  = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[1].items.items[1].items.items[0];
-      self.catComboDel  = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[1].items.items[1].items.items[1];
+      self.catCombo     = Globals.DEPO["catCombo"];
+      self.catComboAdd  = Globals.DEPO["catComboAdd"];
+      self.catComboDel  = Globals.DEPO["catComboDel"];
       
-      self.varCombo     = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[2].items.items[0];
-      self.varComboAdd  = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[2].items.items[1].items.items[0];
-      self.varComboDel  = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[2].items.items[1].items.items[1];
+      self.varCombo     = Globals.DEPO["varCombo"];
+      self.varComboAdd  = Globals.DEPO["varComboAdd"];
+      self.varComboDel  = Globals.DEPO["varComboDel"];
       
       self.varComboAdd.addListener({
         click: function() {
@@ -931,55 +949,26 @@ Ext.define('MainView', {
   
   extend: 'View',
 
-  render: function(data) { //console.log(data);
-    //Globals.DEPO["viewport"].remove();
+  /*langChooser: function() {
+    //alert('FOKKK');
+  },*/
+
+  render: function(data) { 
     
-    //delete Globals.DEPO["viewport"];
-    /*Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
-      xtype: 'viewport',
-      border: 0,
-      margin: 0,
-      padding: 0,
-      style: 'background: #EBEEF2;',
-      maintainFlex: true,
-      renderTo : Ext.getBody(),
-      layout: {
-          type: 'fit'
-      },
-      items : [{
-        id: 'Main',
-        xtype: 'container',
-        layout: {
-            type: 'fit'
-        },
-        items : data
-      }]
-    });*/
+    var self = this;
+    self.cfg = eval("("+data+")");
     
-    Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', {
-      xtype: 'viewport',
-      border: 0,
-      margin: 0,
-      padding: 0,
-      style: 'background: #EBEEF2;',
-      maintainFlex: true,
-      renderTo : Ext.getBody(),
-      layout: {
-          type: 'fit'
+    self.build(self.cfg);
+    
+    self.languageChooser = Globals.DEPO['languages']; //console.log(languageChooser);
+    
+    self.languageChooser.addListener({
+      arrowclick: function() { console.log(this.getState()); alert('asdad');
+        //self.scope.model.language         = this.getValue();
+        //self.scope.model.store.proxy.url  = ['lang?lang=',self.scope.model.language,'&cat=',self.scope.model.cat].join('');
+        //self.scope.model.store.load();
       }
     });
-    
-    var main = Ext.create('Ext.Container', {
-      id: 'Main',
-      xtype: 'container',
-      layout: {
-          type: 'fit'
-      },
-      items: data
-    });
-    
-    Globals.DEPO["viewport"].add(main);
-    Globals.DEPO["viewport"].doLayout();
   }
 });
 Ext.define('GroupModel', {
@@ -1052,20 +1041,22 @@ Ext.define('GroupModel', {
 
   extend: 'Model',
   
+  language: 'hu',
+  
   init: function() {
     this.getAjaxData();
   },
   
   mapper: function(data){
     var self  = this;
-    self.data = self.toJson(data.responseText);
+    self.data = data.responseText; //self.toJson(data.responseText);
     self.router.ajaxCallback(self);
   },
   
   getAjaxData: function(){
     var self = this;
     AJAX.get(
-      "ext-template/",
+      ["ext-template?lang=",self.language].join(''),
       "",
       this.mapper,
       self
@@ -1158,8 +1149,8 @@ Ext.define('GroupModel', {
     
     self.itemsPerPage     = 10;
     self.language         = 'hu';
-    self.cat              = '1';
-    self.variableStoreCat = '1';
+    self.cat              = '8';
+    self.variableStoreCat = '8';
     
     self.store          = Ext.create('Ext.data.Store', {
       storeId : 'translate',
@@ -1214,7 +1205,7 @@ Ext.define('GroupModel', {
           }
       },
       listeners      : {
-        load      : function(store,records,options) { //alert( self.catStore.getAt(0).data['catval'] );
+        load      : function(store,records,options) {
           self.router.view.catCombo.setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
           self.router.view.varCombo.setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
         }

@@ -28,8 +28,8 @@ Ext.define('IddqdTranslateModel', {
     
     self.itemsPerPage     = 10;
     self.language         = 'hu';
-    self.cat              = '1';
-    self.variableStoreCat = '1';
+    self.cat              = '8';
+    self.variableStoreCat = '8';
     
     self.store          = Ext.create('Ext.data.Store', {
       storeId : 'translate',
@@ -84,7 +84,7 @@ Ext.define('IddqdTranslateModel', {
           }
       },
       listeners      : {
-        load      : function(store,records,options) { //alert( self.catStore.getAt(0).data['catval'] );
+        load      : function(store,records,options) {
           self.router.view.catCombo.setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
           self.router.view.varCombo.setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
         }

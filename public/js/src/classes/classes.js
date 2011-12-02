@@ -143,6 +143,7 @@ Ext.define('Model', {
  * class View
  */
 Ext.define('View', {
+  
   xtypes      : {
     'button'         : 'Ext.button.Button',
     'buttongroup'    : 'Ext.container.ButtonGroup',
@@ -193,30 +194,50 @@ Ext.define('View', {
     'textarea'       : 'Ext.form.field.TextArea',
     'textfield'      : 'Ext.form.field.Text',
     'timefield'      : 'Ext.form.field.Time',
-    'trigger'        : 'Ext.form.field.Trigger'
+    'trigger'        : 'Ext.form.field.Trigger',
+    
+    'image'          : 'Ext.Img'
   },
+  
 	scope       : {},
+	
 	render 		  : function() {},
-	build       : function(cfg, parent) { //console.log(cfg);
+	
+	// recursive iter on cfg to build and store the component referencies
+	build       : function(cfg, parent) {
 	  
 	  var  self      = this,
-	       rootcfg   = cfg,
+	       thisCfg   = cfg,
+	       ref       = '',
+	       globalId  = '',
+	       hash      = (self.date.getTime()*Math.random()).toString().substr(0,2), 
 	       thisItems = (cfg.items ? cfg.items : null);
 	       
-	  rootcfg.items = []; 
+	  thisCfg.items = [];
+	  
 	  if(cfg.xtype == 'viewport') {
-	    Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', cfg);
-	    Globals.DEPO["viewport"].add(thisItems);
+	    globalId = 'viewport';
+	    Globals.DEPO[globalId] = Ext.create('Ext.container.Viewport', thisCfg);
 	  } else {
+	    ref = Ext.create(self.xtypes[cfg.xtype], thisCfg);
 	    if(cfg.id) {
-	      Globals.DEPO[cfg.id] = Ext.create(self.xtypes[cfg.xtype], cfg);
+	      globalId = cfg.id;
 	    } else {
-	      Globals.DEPO[[parent,'_1'].join('')] = Ext.create(self.xtypes[cfg.xtype], cfg);
+	      globalId = [parent,hash].join('');
+	    }
+	    Globals.DEPO[parent].add(ref);
+	    Globals.DEPO[globalId] = ref;
+	  }
+
+	  if(thisItems != null && thisItems.length != 0) {
+	    for(var i = 0,l = thisItems.length; i < l; i++) {
+	      self.build(thisItems[i],globalId);
 	    }
 	  }
 	},
 	
 	constructor	: function() {
+	  this.date = new Date();
 	}
 });
 

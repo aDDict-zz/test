@@ -350,6 +350,7 @@
                 
                 },{
             xtype: 'container',
+            id:'rigthSide',
             autoShow: true,
             margin: '10 10 10 0',
             width: 200,
@@ -361,11 +362,13 @@
                 {
                     xtype: 'container',
                     height: 100,
+                    id:'rightSideInnerWrapper',
                     style: 'text-align: center;',
                     styleHtmlContent: true,
                     items: [
                         {
                             xtype: 'image',
+                            id:'imageHold',
                             margin: '30 auto 0 auto',
                             src: 'http://demo.hirekmedia.hu/maxima/maxima-170x38.png'
                         }
@@ -373,6 +376,7 @@
                 },
                 {
                     xtype: 'container',
+                    id:'rightSideInnerWrapperDowner',
                     height: 130,
                     layout: {
                         type: 'fit'

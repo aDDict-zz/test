@@ -150,23 +150,22 @@ Ext.define('IddqdTranslateView', {
     
     if(!Ext.get("Iddqd")) {
       
-      var self          = this;
+      var self          = this
+          cfg           = eval("("+data+")");
       
-      // ext.apply & Ext.decode arent workin well, we need a simple eval
-      Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', eval("("+data+")"));
+      self.build(cfg);
       
-      // fuck this lookup TODO need  a spec own init method to store the referencies in a better way
-      self.langCombo    = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[0].items.items[0];
-      self.langComboAdd = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[0].items.items[1].items.items[0];
-      self.langComboDel = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[0].items.items[1].items.items[1];
+      self.langCombo    = Globals.DEPO["langCombo"];
+      self.langComboAdd = Globals.DEPO["langComboAdd"];
+      self.langComboDel = Globals.DEPO["langComboDel"];
       
-      self.catCombo     = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[1].items.items[0];
-      self.catComboAdd  = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[1].items.items[1].items.items[0];
-      self.catComboDel  = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[1].items.items[1].items.items[1];
+      self.catCombo     = Globals.DEPO["catCombo"];
+      self.catComboAdd  = Globals.DEPO["catComboAdd"];
+      self.catComboDel  = Globals.DEPO["catComboDel"];
       
-      self.varCombo     = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[2].items.items[0];
-      self.varComboAdd  = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[2].items.items[1].items.items[0];
-      self.varComboDel  = Globals.DEPO["viewport"].items.items[0].items.items[1].items.items[2].items.items[1].items.items[1];
+      self.varCombo     = Globals.DEPO["varCombo"];
+      self.varComboAdd  = Globals.DEPO["varComboAdd"];
+      self.varComboDel  = Globals.DEPO["varComboDel"];
       
       self.varComboAdd.addListener({
         click: function() {

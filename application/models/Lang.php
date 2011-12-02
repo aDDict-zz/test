@@ -232,5 +232,36 @@ class Application_Model_Lang extends Zend_Db_Table_Abstract {
       array($id)
       );
     }
+    
+    public function getLanguageItems($lang_cat,$lang) {
+      $res    = array();  
+      $result = $this->_db->query("
+        select
+        
+          lval.value as value,
+          lvar.var as variable
+          
+        from
+          lang_values lval
+        left join
+          lang_variables lvar on lval.var_id = lvar.id
+        left join
+          lang_groups lgroup on lgroup.id = lval.group_id
+        left join
+          lang_cat lcat on lcat.id = lvar.cat_id
+          
+        where
+          lcat.id = ?
+        and
+          lgroup.flag = ?;
+        ",
+        array($lang_cat,$lang)
+      )->fetchAll();
+      
+      foreach($result as $r) {
+        $res[$r['variable']] = $r['value'];
+      }
+      return $res;
+    }
 }
 

@@ -12,9 +12,21 @@ class ExtTemplateController extends Zend_Controller_Action
         
     }
 
-    public function indexAction() { 
-        // action body
-        
+    public function indexAction() {
+      
+      $params = $this->getRequest()->getParams();
+      
+      $language_elements = array();  
+      $lang_cats = array(8,17);
+      $lang   = new Application_Model_Lang();
+      
+      $res = array(); 
+      for($i = $lang_cats[0]; $i <= $lang_cats[1]; $i++) {
+        $res = $lang->getLanguageItems($i,$params['lang']);
+        $language_elements = array_merge_recursive($language_elements,$res);
+      }
+      
+      $this->view->lang_items = $language_elements;
     }
     
     public function translateAction() {
