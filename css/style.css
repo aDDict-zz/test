@@ -1,0 +1,272 @@
+
+body {
+  margin        : 0;
+  padding       : 0;
+  font-family   : Arial,sans-serif;
+  font-size     : 11px;
+  text-align    : center;
+}
+.menuHolder{
+  float         : left;
+  font-size     : 13px;
+  width         : 150px;
+  margin        : 0 auto;
+}
+#logoWrapper{
+  width         : 110px;
+  height        : 150px;
+  position      : relative;
+/*  background    : #333;*/
+}
+#Container{
+  margin        : 0 auto;
+  padding       : 0;
+  width         : 1001px;
+}
+#left{
+  float         : left;
+  width         : 85%;
+  margin        : 0;
+  padding       : 0;
+}
+#right{
+  float         : left;
+  width         : 15%;
+  margin        : 0;
+  padding       : 0;
+}
+#c{
+  width         : 800px;
+  height        : 670px;
+  background    : red;
+  margin        : 0;
+  padding       : 0;
+  overflow      : hidden;
+  position      : relative;
+}
+
+#pages{
+  top           : -400px;
+  left          : 0px;
+  width         : 800px;
+  position      : absolute;
+  margin        : 0;
+  padding       : 0;
+}
+
+#rozitiv_page{
+  width         : 800px;
+  height        : 900px;
+  background    : purple;
+}
+#collection_page{
+  
+  width         : 800px;
+  height        : 1200px;
+  background    : orange;
+}
+#order_page{
+  width         : 800px;
+  height        : 600px;
+  background    : green;
+}
+#contact_page{
+  width         : 800px;
+  height        : 1100px;
+  background    : yellow;
+}
+
+/*
+  |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\
+  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\
+  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /
+  |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/
+*/
+
+/**
+* default layout
+*/
+.defContainer {
+/*  background    : #669966;*/
+}
+.defContainer .left {
+/*  border-radius : 20px 0px 0px 20px;*/
+  background    : #fff;
+}
+.defContainer #rozitiv-R{
+  left          : -6px;
+  top           : 10px;
+  font-weight   : bold;
+  font-size     : 100px;
+  position      : absolute;
+  color         : #333333;
+  width         : 30px;
+  height        : 30px;
+}
+.defContainer #rozitiv-plus{
+  left          : 30px;
+  top           : 5px;
+  font-weight   : bold;
+  font-size     : 55px;
+  position      : absolute;
+  color         : #333333;
+  width         : 30px;
+  height        : 30px;
+}
+.defContainer .right {
+/*  border-radius : 0px 20px 20px 0px;*/
+  background    : #fff;
+}
+.defContainer .menuItem{
+  border-radius : 12px 12px 12px 12px;
+  background    : #669966;
+  font-weight   : bold;
+  line-height   : 29px; 
+  cursor        : pointer; 
+  text-align    : center;
+  height        : 30px;
+  width         : 110px;/*#CDFFFF*/
+  margin-top    : 20px;
+  color         : #fff;
+}
+.defContainer .menuItemHover{
+  border-radius : 12px 12px 12px 12px;
+  background    : #FFCC00;
+  font-weight   : bold;
+  line-height   : 29px; 
+  cursor        : pointer; 
+  text-align    : center;
+  height        : 30px;
+  width         : 110px;
+  margin-top    : 20px;
+  color         : #fff;
+}
+
+/*
+  |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\
+  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\
+  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /
+  |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/
+*/
+
+/** scheme35 */
+.scheme35Container {
+/*  background    : #400D12;*/
+}
+.scheme35Container .left {/*#CDFFFF*/
+/*  border-radius : 20px 0px 0px 20px;*/
+  background    : #FFF; /*#CDFFFF*/
+}
+.scheme35Container .right {
+/*  border-radius : 0px 20px 20px 0px;*/
+  background    : #FFF;
+}
+.scheme35Container #rozitiv-R{
+  left          : -6px;
+  top           : 10px;
+  font-weight   : bold;
+  font-size     : 100px;
+  position      : absolute;
+  color         : #400D12;
+  width         : 30px;
+  height        : 30px;
+}
+.scheme35Container #rozitiv-plus{
+  left          : 30px;
+  top           : 5px;
+  font-weight   : bold;
+  font-size     : 55px;
+  position      : absolute;
+  color         : #400D12;
+  width         : 30px;
+  height        : 30px;
+}
+.scheme35Container .menuItem{
+  border-collapse: collapse;
+  border-radius : 15px 15px 15px 15px;
+  background    : #FF0000;
+  font-weight   : bold;
+  line-height   : 29px; 
+  cursor        : pointer; 
+  text-align    : center;
+  height        : 30px;
+  width         : 110px;
+  margin-top    : 20px;
+  color         : #fff;
+}
+.scheme35Container .menuItemHover{
+  border-collapse: collapse;
+  border-radius : 15px 15px 15px 15px;
+  background    : #4FD5D6;
+  font-weight   : bold;
+  line-height   : 29px; 
+  cursor        : pointer; 
+  text-align    : center;
+  height        : 30px;
+  width         : 110px;
+  margin-top    : 20px;
+  color         : #fff;
+}
+
+/*
+  |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\   |\_____|\
+  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\  |       0\
+  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /  | A____  /
+  |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/   |/|/ |/\/
+*/
+
+/** scheme121 */
+.scheme121Container {
+/*  background    : #8C8984;*/
+}
+.scheme121Container .left {
+  background    : #fff; 
+}
+.scheme121Container .right {
+  background    : #fff;
+}
+.scheme121Container #rozitiv-R{
+  left          : -6px;
+  top           : 10px;
+  font-weight   : bold;
+  font-size     : 100px;
+  position      : absolute;
+  color         : #8C8984;
+  width         : 30px;
+  height        : 30px;
+}
+.scheme121Container #rozitiv-plus{
+  left          : 30px;
+  top           : 5px;
+  font-weight   : bold;
+  font-size     : 55px;
+  position      : absolute;
+  color         : #8C8984;
+  width         : 30px;
+  height        : 30px;
+}
+.scheme121Container .menuItem{
+  border-radius : 15px 15px 15px 15px;
+  background    : #0191C8;
+  font-weight   : bold;
+  line-height   : 29px; 
+  cursor        : pointer; 
+  text-align    : center;
+  height        : 30px;
+  width         : 110px;
+  margin-top    : 20px;
+  color         : #fff;
+}
+.scheme121Container .menuItemHover{
+  border-radius : 15px 15px 15px 15px;
+  background    : #74C2E1;
+  font-weight   : bold;
+  line-height   : 29px; 
+  cursor        : pointer; 
+  text-align    : center;
+  height        : 30px;
+  width         : 110px;
+  margin-top    : 20px;
+  color         : #fff;
+}
+
