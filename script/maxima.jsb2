@@ -10,16 +10,13 @@
             text: 'classes.js',
             path: '../public/js/src/classes/'
         },{
-            text: 'IEHH.js',
-            path: '../public/js/src/classes/'
-        },{
-            text: 'router.js',
-            path: '../public/js/src/classes/'
-        },{
             text: 'groupController.js',
             path: '../public/js/src/controller/'
         },{
             text: 'testController.js',
+            path: '../public/js/src/controller/'
+        },{
+            text: 'profileController.js',
             path: '../public/js/src/controller/'
         },{
             text: 'mainController.js',
@@ -43,6 +40,9 @@
             text: 'testView.js',
             path: '../public/js/src/view/'
         },{
+            text: 'profileView.js',
+            path: '../public/js/src/view/'
+        },{
             text: 'loginView.js',
             path: '../public/js/src/view/'
         },{
@@ -56,6 +56,9 @@
             path: '../public/js/src/view/'
         },{
             text: 'groupModel.js',
+            path: '../public/js/src/model/'
+        },{
+            text: 'profileModel.js',
             path: '../public/js/src/model/'
         },{
             text: 'testModel.js',
@@ -75,6 +78,12 @@
         },{
             text: 'logoutModel.js',
             path: '../public/js/src/model/'
+        },{
+            text: 'IEHH.js',
+            path: '../public/js/src/classes/'
+        },{
+            text: 'router.js',
+            path: '../public/js/src/classes/'
         }]   
 	}],
 	resources: []

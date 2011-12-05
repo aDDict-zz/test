@@ -203,7 +203,7 @@ Ext.define('View', {
 	
 	render 		  : function() {},
 	
-	// recursive iter on cfg to build and store the component referencies
+	// recursive iter on cfg to build components and store the component referencies
 	build       : function(cfg, parent) {
 	  
 	  var  self      = this,
@@ -252,182 +252,7 @@ Ext.define('Debug', {
       }
     }
   }
-});// iframe hack for the ie history featureless
-Ext.define('IEHH', {
-
-  statics: {
-
-    DEPO: "",
-    
-    init: function(){
-      navigator.appName.match("Microsoft") != null ? this.setup() : "";
-    },
-  
-    setup: function(){
-  
-      var thisIframe  = document.createElement('<iframe id="thisIframe" style="display:none;" src="about:blank" />'),
-          thisBody  = document.getElementsByTagName("body")[0];
-        
-      document.appendChild(thisIframe);
-    
-      Ext.TaskManager.start({
-        run: IEHH.checkIframeContent,
-        interval: 1000
-      });
-    },
-  
-    changeContent: function(urlPart){
-      var thisIframe    = document.getElementById("thisIframe"),
-          thisIframeDoc = thisIframe.contentWindow.document;
-
-      thisIframeDoc.open();
-      thisIframeDoc.write(urlPart);
-      thisIframeDoc.close();
-      IEHH.DEPO = urlPart;
-    },
-  
-    checkIframeContent: function(){
-      var thisIframe        = document.getElementById("thisIframe"),
-          thisIframContent  = thisIframe.contentWindow.document.body.innerHTML;
-
-      if (window.location.href.match("#") && thisIframContent != "") {
-        var thisArr = window.location.href.split("#"),
-          thisUrlPart = ["#",thisArr[1]].join("");
-        if (thisUrlPart != thisIframContent) {
-          window.location.href = [thisArr[0],thisIframContent].join("");
-        }
-      }
-    },
-    
-    constructor: function() {}
-  }
-},
-  function(){}
-);
-/**
- * static class Router
- */
-Ext.define('Router', {
-  
-  statics: {
-  	
-    frontPage 	: "Main",
-    login       : "Login",
-    route       : "",
-    routeOrders : [],
-    routeParams : {},
-    routeCache  : "",
-    lang        : "",
-    
-    init      	: function() {
-      
-      if(Router.ie)
-        IEHH.setup();
-      
-      Ext.TaskManager.start({
-        run: Router.getRoute,
-        interval: 2000
-      });
-    },
-    
-    getRoute  	: function() {
-      
-      var order = Router.getOrder();
-      
-      if(order == "")
-        Router.setRoute(Router.frontPage);
-      
-      // setting up the language
-      if(Router.routeParams["lang"])
-        Router.lang = Router.routeParams["lang"];
-      else {
-        if(Router.lang == "")
-          Router.lang = "hu";
-      }
-        
-      if(order != null)
-        if(Router.route != order)
-          if(typeof Globals.DEPO[[order,"Controller"].join("")] == "undefined" || Globals.DEPO[[order,"Controller"].join("")] == null) {
-            
-            try {
-              
-              // init and store(its ref) the relevant controller class
-              (new Function(['Globals.DEPO["',order,'Controller"] = new ',order,'Controller();'].join("")))();
-              
-              // set history for ie
-              if(Router.ie)
-                IEHH.changeContent(["#",order].join(""));
-              
-              // hiding the previous content
-              if(Ext.get(Router.route) != null)
-                Ext.get(Router.route).hide();
-              
-              Router.route = order;
-            } catch(err) { console.log(err);
-              delete Globals.DEPO[order];
-              Message.alert('Routing error', 'There is no implemented class with this namespace', function() {
-                Router.setRoute(Router.frontPage);
-              });
-            }
-          }
-        else {
-          if(Router.route != order) {
-            if(Ext.get(Router.route)) {
-              Ext.get(Router.route).hide();
-            }
-            if(Ext.get(order)) {
-              Ext.get(order).show();
-            }
-            Globals.DEPO[[order,"Controller"].join('')].init();
-            Router.route = order;
-          }
-        }
-    },
-    
-    setRoute    : function(route) {
-      window.location.href = [window.location.href.split("#")[0],"#",route].join("");
-    },
-    
-    getOrder    : function() {
-      if(Router.routeCache != window.location.href) {
-        Router.routeOrders = [];
-        Router.routeParams = {};
-        var matches = (window.location.href.match(/(.#)(.*)/) ? window.location.href.match(/(.#)(.*)/) : null);
-        if(matches == null) {
-          Router.setRoute(Router.frontPage);
-        } else {
-          route = matches[2];
-          if(route.match(/\//)) {
-            var orders = route.split('/'), arr;
-            for(var i = 0, len = orders.length;i < len; i++) {
-              if(orders[i].match(/=/)) {
-                arr = orders[i].split("=");
-                Router.routeParams[arr[0]] = arr[1];
-              } else {
-                Router.routeOrders.push(orders[i]);
-              }
-            }
-            route = Router.routeOrders[0];
-          }
-          Router.routeCache = window.location.href;
-          return route;
-        }
-      } else {
-        return Router.routeOrders[0];
-      }
-    },
- 
-    constructor: function() {}
-  }
-
-},
-  function(){
-    if(navigator.appVersion.match(/MSIE/))
-      Router.ie = 1;
-      
-    Router.init();
-  }
-);Ext.define('GroupController', {
+});Ext.define('GroupController', {
 
 	extend: 'Controller',
 	
@@ -463,25 +288,41 @@ Ext.define('Router', {
   getData : function(){
   }
 
+});Ext.define('ProfileController', {
+
+  extend: 'Controller',
+  
+  init: function() {
+    if(typeof this.session == 'undefined')
+      this.getData();
+  },
+  
+  ajaxCallback: function(scope){
+    
+  },
+
+  getData : function(){
+    this.model.getAjaxData();
+  }
+
 });Ext.define('MainController', {
 
   extend: 'Controller',
   
-  init: function() { //console.log(Ext.get("Main"));
-    if(Ext.get("Main") == null)
-      this.getData();
+  init: function() {
+    this.getData();
   },
   
   ajaxCallback: function(scope){
     this.view.render(scope.data);
   },
 
-  main: function() {
+  /*main: function() {
     this.view.render({});
-  },
+  },*/
 
   getData : function(){
-    //this.main();
+    this.model.getAjaxData();
   }
 
 });
@@ -521,9 +362,7 @@ Ext.define('IddqdTranslateController', {
   extend: 'Controller',
 
   init: function() {
-    /*if(Ext.get("Iddqd") == null)
-      this.getData();*/
-    //this.view.render({});
+    this.getData();
   },
 
   ajaxCallback: function(scope){
@@ -531,6 +370,7 @@ Ext.define('IddqdTranslateController', {
   },
 
   getData : function(){
+    this.model.getAjaxData();
   }
 
 });Ext.define('LoginController', {
@@ -679,7 +519,16 @@ Ext.define('TestView', {
     
   }
   
-});Ext.define('LoginView', {
+});Ext.define('ProfileView', {
+  
+  extend: 'View',
+
+  render: function(data) {
+    //var self = this;
+    //self.cfg = eval("("+data+")");
+  }
+});
+Ext.define('LoginView', {
 
 	extend: 'View',
 	
@@ -874,6 +723,11 @@ Ext.define('IddqdView', {
     
     if(!Ext.get("Iddqd")) {
       
+      try {
+        Globals.DEPO['viewport'].destroy();
+        Globals.DEPO = {};
+      } catch(err) {}
+      
       var self          = this
           cfg           = eval("("+data+")");
       
@@ -949,26 +803,38 @@ Ext.define('MainView', {
   
   extend: 'View',
 
-  /*langChooser: function() {
-    //alert('FOKKK');
-  },*/
+  getLang: function(options,e) {
+    var self      = Globals.DEPO['MainController'].view,
+        thisLang  = self.scope.model.languages[this.getText()];
+        
+    // TODO need refact
+    if(thisLang == 'hu') {
+      self.setLang('magyar', this);
+    } else {
+      self.setLang('english', this);
+    }
+  },
+  
+  setLang: function(lang, scope) {
+    var self                          = this;
+    self.scope.model.language         = self.scope.model.languages[lang];
+    
+    Globals.DEPO['viewport'].destroy();
+        
+    self.scope.model.getAjaxData();
+  },
 
-  render: function(data) { 
+  render: function(data) {
+    
+    try {
+      Globals.DEPO['viewport'].destroy();
+      Globals.DEPO = {};
+    } catch(err) {}
     
     var self = this;
     self.cfg = eval("("+data+")");
-    
     self.build(self.cfg);
-    
-    self.languageChooser = Globals.DEPO['languages']; //console.log(languageChooser);
-    
-    self.languageChooser.addListener({
-      arrowclick: function() { console.log(this.getState()); alert('asdad');
-        //self.scope.model.language         = this.getValue();
-        //self.scope.model.store.proxy.url  = ['lang?lang=',self.scope.model.language,'&cat=',self.scope.model.cat].join('');
-        //self.scope.model.store.load();
-      }
-    });
+    Globals.DEPO['languages'].setText(self.scope.model.languagesInv[self.scope.model.language]);
   }
 });
 Ext.define('GroupModel', {
@@ -1009,6 +875,30 @@ Ext.define('GroupModel', {
 		);
 	}
 	
+});Ext.define('ProfileModel', {
+
+  extend: 'Model',
+  
+  init: function() {
+    
+  },
+  
+  mapper: function(data){ console.log( data );
+    var self  = this;
+    //self.data = data.responseText; //self.toJson(data.responseText);
+    //self.router.ajaxCallback(self);
+  },
+  
+  getAjaxData: function(){
+    var self = this;
+    AJAX.get(
+      "login/",
+      "",
+      this.mapper,
+      self
+    );
+  }
+  
 });Ext.define('TestModel', {
 
   extend: 'Model',
@@ -1043,8 +933,18 @@ Ext.define('GroupModel', {
   
   language: 'hu',
   
+  languages: {
+    'english'  : 'hu',
+    'magyar'   : 'en'
+  },
+  
+  languagesInv: {
+    'hu'  : 'english',
+    'en'  : 'magyar'
+  },
+  
   init: function() {
-    this.getAjaxData();
+    //this.getAjaxData();
   },
   
   mapper: function(data){
@@ -1058,7 +958,7 @@ Ext.define('GroupModel', {
     AJAX.get(
       ["ext-template?lang=",self.language].join(''),
       "",
-      this.mapper,
+      self.mapper,
       self
     );
   }
@@ -1142,8 +1042,8 @@ Ext.define('GroupModel', {
     
     var self = this;
     
-    if(Ext.get("Iddqd") == null)
-      self.getAjaxData();
+    /*if(Ext.get("Iddqd") == null)
+      self.getAjaxData();*/
       
     self.loader         = new Ext.LoadMask(Ext.getBody(), {msg:"loading"});
     
@@ -1186,7 +1086,7 @@ Ext.define('GroupModel', {
       },
       listeners      : {
         load      : function(store,records,options) {
-          self.router.view.langCombo.setValue(/*self.langStore.getAt(0).data['langval']*/ self.language);
+          Globals.DEPO["langCombo"].setValue(/*self.langStore.getAt(0).data['langval']*/ self.language);
         }
       }
     });
@@ -1206,8 +1106,8 @@ Ext.define('GroupModel', {
       },
       listeners      : {
         load      : function(store,records,options) {
-          self.router.view.catCombo.setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
-          self.router.view.varCombo.setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
+          Globals.DEPO["catCombo"].setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
+          Globals.DEPO["varCombo"].setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
         }
       }
     });
@@ -1390,4 +1290,191 @@ Ext.define('LogoutModel', {
     );
   }
   
-});
+});// iframe hack for the ie history featureless
+Ext.define('IEHH', {
+
+  statics: {
+
+    DEPO: "",
+    
+    init: function(){
+      navigator.appName.match("Microsoft") != null ? this.setup() : "";
+    },
+  
+    setup: function(){
+  
+      var thisIframe  = document.createElement('<iframe id="thisIframe" style="display:none;" src="about:blank" />'),
+          thisBody  = document.getElementsByTagName("body")[0];
+        
+      document.appendChild(thisIframe);
+    
+      Ext.TaskManager.start({
+        run: IEHH.checkIframeContent,
+        interval: 1000
+      });
+    },
+  
+    changeContent: function(urlPart){
+      var thisIframe    = document.getElementById("thisIframe"),
+          thisIframeDoc = thisIframe.contentWindow.document;
+
+      thisIframeDoc.open();
+      thisIframeDoc.write(urlPart);
+      thisIframeDoc.close();
+      IEHH.DEPO = urlPart;
+    },
+  
+    checkIframeContent: function(){
+      var thisIframe        = document.getElementById("thisIframe"),
+          thisIframContent  = thisIframe.contentWindow.document.body.innerHTML;
+
+      if (window.location.href.match("#") && thisIframContent != "") {
+        var thisArr = window.location.href.split("#"),
+          thisUrlPart = ["#",thisArr[1]].join("");
+        if (thisUrlPart != thisIframContent) {
+          window.location.href = [thisArr[0],thisIframContent].join("");
+        }
+      }
+    },
+    
+    constructor: function() {}
+  }
+},
+  function(){}
+);
+/**
+ * static class Router
+ */
+Ext.define('Router', {
+  
+  statics: {
+  	
+    frontPage 	: "Main",
+    login       : "Login",
+    route       : "",
+    routeOrders : [],
+    routeParams : {},
+    routeCache  : "",
+    lang        : "",
+    
+    init      	: function() {
+      
+      try {
+        console.log();
+      }catch(e){
+        if(e)
+          console.log = function() {}
+      };
+      
+      if(Router.ie)
+        IEHH.setup();
+        
+      Globals.profile = new ProfileController();
+      
+      Ext.TaskManager.start({
+        run: Router.getRoute,
+        interval: 2000
+      });
+    },
+    
+    getRoute  	: function() {
+      
+      var order = Router.getOrder();
+      
+      if(order == "")
+        Router.setRoute(Router.frontPage);
+      
+      // setting up the language
+      if(Router.routeParams["lang"])
+        Router.lang = Router.routeParams["lang"];
+      else {
+        if(Router.lang == "")
+          Router.lang = "hu";
+      }
+      
+      if(order != null)
+        if(Router.route != order)
+          if(typeof Globals.DEPO[[order,"Controller"].join("")] == "undefined" || Globals.DEPO[[order,"Controller"].join("")] == null) {
+            
+            try {
+              
+              // init and store(its ref) the relevant controller class
+              (new Function(['Globals.DEPO["',order,'Controller"] = new ',order,'Controller();'].join("")))();
+              
+              // set history for ie
+              if(Router.ie)
+                IEHH.changeContent(["#",order].join(""));
+              
+              // hiding the previous content
+              if(Ext.get(Router.route) != null)
+                Ext.get(Router.route).hide();
+              
+              Router.route = order;
+            } catch(err) { console.log(err);
+              delete Globals.DEPO[order];
+              Message.alert('Routing error', 'There is no implemented class with this namespace', function() {
+                Router.setRoute(Router.frontPage);
+              });
+            }
+          } else {
+            Globals.DEPO[ [order,'Controller'].join('') ].init();
+            Router.route = order;
+          }
+        else {
+          if(Router.route != order) {
+            if(Ext.get(Router.route)) {
+              Ext.get(Router.route).hide();
+            }
+            if(Ext.get(order)) {
+              Ext.get(order).show();
+            }
+            Globals.DEPO[[order,"Controller"].join('')].init();
+            Router.route = order;
+          }
+        }
+    },
+    
+    setRoute    : function(route) {
+      window.location.href = [window.location.href.split("#")[0],"#",route].join("");
+    },
+    
+    getOrder    : function() {
+      if(Router.routeCache != window.location.href) {
+        Router.routeOrders = [];
+        Router.routeParams = {};
+        var matches = (window.location.href.match(/(.#)(.*)/) ? window.location.href.match(/(.#)(.*)/) : null);
+        if(matches == null) {
+          Router.setRoute(Router.frontPage);
+        } else {
+          route = matches[2];
+          if(route.match(/\//)) {
+            var orders = route.split('/'), arr;
+            for(var i = 0, len = orders.length;i < len; i++) {
+              if(orders[i].match(/=/)) {
+                arr = orders[i].split("=");
+                Router.routeParams[arr[0]] = arr[1];
+              } else {
+                Router.routeOrders.push(orders[i]);
+              }
+            }
+            route = Router.routeOrders[0];
+          }
+          Router.routeCache = window.location.href;
+          return route;
+        }
+      } else {
+        return Router.routeOrders[0];
+      }
+    },
+ 
+    constructor: function() {}
+  }
+
+},
+  function(){
+    if(navigator.appVersion.match(/MSIE/))
+      Router.ie = 1;
+      
+    Router.init();
+  }
+);

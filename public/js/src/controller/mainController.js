@@ -2,21 +2,20 @@ Ext.define('MainController', {
 
   extend: 'Controller',
   
-  init: function() { //console.log(Ext.get("Main"));
-    if(Ext.get("Main") == null)
-      this.getData();
+  init: function() {
+    this.getData();
   },
   
   ajaxCallback: function(scope){
     this.view.render(scope.data);
   },
 
-  main: function() {
+  /*main: function() {
     this.view.render({});
-  },
+  },*/
 
   getData : function(){
-    //this.main();
+    this.model.getAjaxData();
   }
 
 });

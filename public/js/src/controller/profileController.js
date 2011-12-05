@@ -1,13 +1,14 @@
-Ext.define('IddqdTranslateController', {
+Ext.define('ProfileController', {
 
   extend: 'Controller',
-
+  
   init: function() {
-    this.getData();
+    if(typeof this.session == 'undefined')
+      this.getData();
   },
-
+  
   ajaxCallback: function(scope){
-    this.view.render(scope.data);
+    
   },
 
   getData : function(){

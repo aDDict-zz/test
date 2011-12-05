@@ -4,8 +4,18 @@ Ext.define('MainModel', {
   
   language: 'hu',
   
+  languages: {
+    'english'  : 'hu',
+    'magyar'   : 'en'
+  },
+  
+  languagesInv: {
+    'hu'  : 'english',
+    'en'  : 'magyar'
+  },
+  
   init: function() {
-    this.getAjaxData();
+    //this.getAjaxData();
   },
   
   mapper: function(data){
@@ -19,7 +29,7 @@ Ext.define('MainModel', {
     AJAX.get(
       ["ext-template?lang=",self.language].join(''),
       "",
-      this.mapper,
+      self.mapper,
       self
     );
   }

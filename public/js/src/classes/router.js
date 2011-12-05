@@ -15,8 +15,17 @@ Ext.define('Router', {
     
     init      	: function() {
       
+      try {
+        console.log();
+      }catch(e){
+        if(e)
+          console.log = function() {}
+      };
+      
       if(Router.ie)
         IEHH.setup();
+        
+      Globals.profile = new ProfileController();
       
       Ext.TaskManager.start({
         run: Router.getRoute,
@@ -38,7 +47,7 @@ Ext.define('Router', {
         if(Router.lang == "")
           Router.lang = "hu";
       }
-        
+      
       if(order != null)
         if(Router.route != order)
           if(typeof Globals.DEPO[[order,"Controller"].join("")] == "undefined" || Globals.DEPO[[order,"Controller"].join("")] == null) {
@@ -63,6 +72,9 @@ Ext.define('Router', {
                 Router.setRoute(Router.frontPage);
               });
             }
+          } else {
+            Globals.DEPO[ [order,'Controller'].join('') ].init();
+            Router.route = order;
           }
         else {
           if(Router.route != order) {

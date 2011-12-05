@@ -21,8 +21,8 @@ Ext.define('IddqdTranslateModel', {
     
     var self = this;
     
-    if(Ext.get("Iddqd") == null)
-      self.getAjaxData();
+    /*if(Ext.get("Iddqd") == null)
+      self.getAjaxData();*/
       
     self.loader         = new Ext.LoadMask(Ext.getBody(), {msg:"loading"});
     
@@ -65,7 +65,7 @@ Ext.define('IddqdTranslateModel', {
       },
       listeners      : {
         load      : function(store,records,options) {
-          self.router.view.langCombo.setValue(/*self.langStore.getAt(0).data['langval']*/ self.language);
+          Globals.DEPO["langCombo"].setValue(/*self.langStore.getAt(0).data['langval']*/ self.language);
         }
       }
     });
@@ -85,8 +85,8 @@ Ext.define('IddqdTranslateModel', {
       },
       listeners      : {
         load      : function(store,records,options) {
-          self.router.view.catCombo.setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
-          self.router.view.varCombo.setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
+          Globals.DEPO["catCombo"].setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
+          Globals.DEPO["varCombo"].setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
         }
       }
     });

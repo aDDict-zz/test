@@ -203,7 +203,7 @@ Ext.define('View', {
 	
 	render 		  : function() {},
 	
-	// recursive iter on cfg to build and store the component referencies
+	// recursive iter on cfg to build components and store the component referencies
 	build       : function(cfg, parent) {
 	  
 	  var  self      = this,

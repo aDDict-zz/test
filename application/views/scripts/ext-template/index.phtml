@@ -8,12 +8,14 @@
   style: 'background: #EBEEF2;',
   maintainFlex: true,
   renderTo : Ext.getBody(),
+  style: 'text-align:center;',
   layout: {
       type: 'fit'
   },
   items: [{
     id: 'Main',
     xtype: 'container',
+    style: 'background: #EBEEF2;',
     layout: {
         type: 'fit'
     },
@@ -22,6 +24,7 @@
     margin: 0,
     minHeight: 300,
     minWidth: 1200,
+    style:'margin: 0 auto;',
     layout: {
         align: 'stretch',
         type: 'hbox'
@@ -377,7 +380,7 @@
                 },
                 {
                     xtype: 'container',
-                    id:'rightSideInnerWrapperDowner',
+                    id:'userProfile',
                     height: 130,
                     layout: {
                         type: 'fit'
@@ -407,12 +410,8 @@
                                 {
                                     xtype: 'splitbutton',
                                     id: 'languages',
-                                    
-                                    menu: [
-                                      {text: 'magyar'/*,  handler: self.langChooser*/},
-                                      {text: 'angol'/*,   handler: self.langChooser*/}
-
-                                    ]
+                                    /*text: '<?php echo $this->lang_items['current_nyelv'] ?>',*/
+                                    handler: self.getLang
                                 }
                             ]
                         }

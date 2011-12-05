@@ -150,6 +150,11 @@ Ext.define('IddqdTranslateView', {
     
     if(!Ext.get("Iddqd")) {
       
+      try {
+        Globals.DEPO['viewport'].destroy();
+        Globals.DEPO = {};
+      } catch(err) {}
+      
       var self          = this
           cfg           = eval("("+data+")");
       
