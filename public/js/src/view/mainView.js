@@ -18,7 +18,7 @@ Ext.define('MainView', {
     var self                          = this;
     self.scope.model.language         = self.scope.model.languages[lang];
     
-    Globals.DEPO['viewport'].destroy();
+    Globals.DEPO['components']['viewport'].destroy();
         
     self.scope.model.getAjaxData();
   },
@@ -28,14 +28,12 @@ Ext.define('MainView', {
     var self = this;
     
     try {
-      Globals.DEPO['viewport'].destroy();
-      Globals.DEPO = {};
+      Globals.DEPO['components']['viewport'].destroy();
+      Globals.DEPO['components'] = {};
     } catch(err) {}
-    
-    self.profileCheck();
     
     self.cfg = eval("("+data+")");
     self.build(self.cfg);
-    Globals.DEPO['languages'].setText(self.scope.model.languagesInv[self.scope.model.language]);
+    Globals.DEPO['components']['languages'].setText(self.scope.model.languagesInv[self.scope.model.language]);
   }
 });

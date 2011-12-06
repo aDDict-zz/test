@@ -151,8 +151,8 @@ Ext.define('IddqdTranslateView', {
     if(!Ext.get("Iddqd")) {
       
       try {
-        Globals.DEPO['viewport'].destroy();
-        Globals.DEPO = {};
+        Globals.DEPO['components']['viewport'].destroy();
+        Globals.DEPO['components'] = {};
       } catch(err) {}
       
       var self          = this
@@ -160,17 +160,17 @@ Ext.define('IddqdTranslateView', {
       
       self.build(cfg);
       
-      self.langCombo    = Globals.DEPO["langCombo"];
-      self.langComboAdd = Globals.DEPO["langComboAdd"];
-      self.langComboDel = Globals.DEPO["langComboDel"];
+      self.langCombo    = Globals.DEPO['components']["langCombo"];
+      self.langComboAdd = Globals.DEPO['components']["langComboAdd"];
+      self.langComboDel = Globals.DEPO['components']["langComboDel"];
       
-      self.catCombo     = Globals.DEPO["catCombo"];
-      self.catComboAdd  = Globals.DEPO["catComboAdd"];
-      self.catComboDel  = Globals.DEPO["catComboDel"];
+      self.catCombo     = Globals.DEPO['components']["catCombo"];
+      self.catComboAdd  = Globals.DEPO['components']["catComboAdd"];
+      self.catComboDel  = Globals.DEPO['components']["catComboDel"];
       
-      self.varCombo     = Globals.DEPO["varCombo"];
-      self.varComboAdd  = Globals.DEPO["varComboAdd"];
-      self.varComboDel  = Globals.DEPO["varComboDel"];
+      self.varCombo     = Globals.DEPO['components']["varCombo"];
+      self.varComboAdd  = Globals.DEPO['components']["varComboAdd"];
+      self.varComboDel  = Globals.DEPO['components']["varComboDel"];
       
       self.varComboAdd.addListener({
         click: function() {

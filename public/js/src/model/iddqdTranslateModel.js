@@ -65,7 +65,7 @@ Ext.define('IddqdTranslateModel', {
       },
       listeners      : {
         load      : function(store,records,options) {
-          Globals.DEPO["langCombo"].setValue(/*self.langStore.getAt(0).data['langval']*/ self.language);
+          Globals.DEPO['components']["langCombo"].setValue(/*self.langStore.getAt(0).data['langval']*/ self.language);
         }
       }
     });
@@ -85,8 +85,8 @@ Ext.define('IddqdTranslateModel', {
       },
       listeners      : {
         load      : function(store,records,options) {
-          Globals.DEPO["catCombo"].setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
-          Globals.DEPO["varCombo"].setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
+          Globals.DEPO['components']["catCombo"].setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
+          Globals.DEPO['components']["varCombo"].setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
         }
       }
     });

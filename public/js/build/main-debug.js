@@ -88,7 +88,14 @@ Ext.define('Controller', {
 	nameSpace      : "",
 	fullNameSpace  : "",
 	showView       : true,
-
+  
+  profileCheck: function() {
+    if(Globals.profile.model.session)
+      return true;
+    else
+      Globals.profile.view.render(Globals.profile.model.data);
+  },
+  
 	getNameSpace: function() {
 	  var matches    = this.$className.match(/(.*)(Controller)/);
 	  this.nameSpace = matches[1];
@@ -215,9 +222,12 @@ Ext.define('View', {
 	       
 	  thisCfg.items = [];
 	  
+	  if(!Globals.DEPO['components'])
+	   Globals.DEPO['components'] = {};
+	  
 	  if(cfg.xtype == 'viewport') {
 	    globalId = 'viewport';
-	    Globals.DEPO[globalId] = Ext.create('Ext.container.Viewport', thisCfg);
+	    Globals.DEPO['components'][globalId] = Ext.create('Ext.container.Viewport', thisCfg);
 	  } else {
 	    ref = Ext.create(self.xtypes[cfg.xtype], thisCfg);
 	    if(cfg.id) {
@@ -225,8 +235,8 @@ Ext.define('View', {
 	    } else {
 	      globalId = [parent,hash].join('');
 	    }
-	    Globals.DEPO[parent].add(ref);
-	    Globals.DEPO[globalId] = ref;
+	    Globals.DEPO['components'][parent].add(ref);
+	    Globals.DEPO['components'][globalId] = ref;
 	  }
 
 	  if(thisItems != null && thisItems.length != 0) {
@@ -292,13 +302,34 @@ Ext.define('Debug', {
 
   extend: 'Controller',
   
+  auth: function() {
+    var self = Globals.profile;
+    self.model.authentication(self);
+  },
+  
+  authCallback : function(response, req) {
+    var self      = Globals.profile,
+        res       = self.model.toJson(response.responseText);
+    
+    if(res.username == null) {
+      Ext.getCmp('loginForm').getForm().setValues({
+        username: "", 
+        password: "" 
+      })
+      Ext.Msg.alert('Login failed', 'Try again!');
+    } else {
+      Ext.getCmp("LoginForm").hide();
+      Router.setRoute(Router.frontPage);
+    }
+  },
+  
   init: function() {
     if(typeof this.session == 'undefined')
       this.getData();
   },
   
-  ajaxCallback: function(scope){
-    
+  ajaxCallback: function(){
+    //console.log( this );
   },
 
   getData : function(){
@@ -314,7 +345,13 @@ Ext.define('Debug', {
   },
   
   ajaxCallback: function(scope){
-    this.view.render(scope.data);
+    
+    var self = this;
+    
+    //self.profileCheck();
+    
+    if(self.profileCheck())
+      this.view.render(scope.data);
   },
 
   /*main: function() {
@@ -523,9 +560,33 @@ Ext.define('TestView', {
   
   extend: 'View',
 
-  render: function(data) {
-    //var self = this;
-    //self.cfg = eval("("+data+")");
+  render: function(data) { //console.log( data );
+    var self = this;
+    //self.cfg = eval("("+ data +")");
+    
+    Ext.create('Ext.window.Window', {
+      title     : 'Login',
+      id        : 'LoginForm',
+      renderTo  : Ext.getBody(),
+      resizable : false,
+      height    : 180,
+      width     : 250,
+      layout    : 'fit',
+      layout    : 'column',
+      items: {  
+        xtype     : 'form',
+        id        : 'loginForm',
+        height    : 145,
+        width     : 237,
+        items     : data.items,
+        url       : data.action,
+        buttons: [{
+          text      : 'login',
+          handler   : self.scope.auth
+        }]
+      }
+    }).show();
+    
   }
 });
 Ext.define('LoginView', {
@@ -724,8 +785,8 @@ Ext.define('IddqdView', {
     if(!Ext.get("Iddqd")) {
       
       try {
-        Globals.DEPO['viewport'].destroy();
-        Globals.DEPO = {};
+        Globals.DEPO['components']['viewport'].destroy();
+        Globals.DEPO['components'] = {};
       } catch(err) {}
       
       var self          = this
@@ -733,17 +794,17 @@ Ext.define('IddqdView', {
       
       self.build(cfg);
       
-      self.langCombo    = Globals.DEPO["langCombo"];
-      self.langComboAdd = Globals.DEPO["langComboAdd"];
-      self.langComboDel = Globals.DEPO["langComboDel"];
+      self.langCombo    = Globals.DEPO['components']["langCombo"];
+      self.langComboAdd = Globals.DEPO['components']["langComboAdd"];
+      self.langComboDel = Globals.DEPO['components']["langComboDel"];
       
-      self.catCombo     = Globals.DEPO["catCombo"];
-      self.catComboAdd  = Globals.DEPO["catComboAdd"];
-      self.catComboDel  = Globals.DEPO["catComboDel"];
+      self.catCombo     = Globals.DEPO['components']["catCombo"];
+      self.catComboAdd  = Globals.DEPO['components']["catComboAdd"];
+      self.catComboDel  = Globals.DEPO['components']["catComboDel"];
       
-      self.varCombo     = Globals.DEPO["varCombo"];
-      self.varComboAdd  = Globals.DEPO["varComboAdd"];
-      self.varComboDel  = Globals.DEPO["varComboDel"];
+      self.varCombo     = Globals.DEPO['components']["varCombo"];
+      self.varComboAdd  = Globals.DEPO['components']["varComboAdd"];
+      self.varComboDel  = Globals.DEPO['components']["varComboDel"];
       
       self.varComboAdd.addListener({
         click: function() {
@@ -819,22 +880,23 @@ Ext.define('MainView', {
     var self                          = this;
     self.scope.model.language         = self.scope.model.languages[lang];
     
-    Globals.DEPO['viewport'].destroy();
+    Globals.DEPO['components']['viewport'].destroy();
         
     self.scope.model.getAjaxData();
   },
 
   render: function(data) {
     
+    var self = this;
+    
     try {
-      Globals.DEPO['viewport'].destroy();
-      Globals.DEPO = {};
+      Globals.DEPO['components']['viewport'].destroy();
+      Globals.DEPO['components'] = {};
     } catch(err) {}
     
-    var self = this;
     self.cfg = eval("("+data+")");
     self.build(self.cfg);
-    Globals.DEPO['languages'].setText(self.scope.model.languagesInv[self.scope.model.language]);
+    Globals.DEPO['components']['languages'].setText(self.scope.model.languagesInv[self.scope.model.language]);
   }
 });
 Ext.define('GroupModel', {
@@ -883,10 +945,22 @@ Ext.define('GroupModel', {
     
   },
   
-  mapper: function(data){ console.log( data );
+  /*
+   * @scope {Object} the relevant controller - (ProfileController)
+   */
+  authentication : function(scope) {
+    AJAX.post(
+      scope.model.data.action,
+      Ext.getCmp("loginForm").getValues(),
+      scope.authCallback,
+      self
+    );
+  },
+  
+  mapper: function(data){
     var self  = this;
-    //self.data = data.responseText; //self.toJson(data.responseText);
-    //self.router.ajaxCallback(self);
+    self.data = self.toJson(data.responseText);
+    self.router.ajaxCallback();
   },
   
   getAjaxData: function(){
@@ -1086,7 +1160,7 @@ Ext.define('GroupModel', {
       },
       listeners      : {
         load      : function(store,records,options) {
-          Globals.DEPO["langCombo"].setValue(/*self.langStore.getAt(0).data['langval']*/ self.language);
+          Globals.DEPO['components']["langCombo"].setValue(/*self.langStore.getAt(0).data['langval']*/ self.language);
         }
       }
     });
@@ -1106,8 +1180,8 @@ Ext.define('GroupModel', {
       },
       listeners      : {
         load      : function(store,records,options) {
-          Globals.DEPO["catCombo"].setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
-          Globals.DEPO["varCombo"].setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
+          Globals.DEPO['components']["catCombo"].setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
+          Globals.DEPO['components']["varCombo"].setValue(/*self.catStore.getAt(0).data['catval']*/ self.cat);
         }
       }
     });

@@ -88,7 +88,14 @@ Ext.define('Controller', {
 	nameSpace      : "",
 	fullNameSpace  : "",
 	showView       : true,
-
+  
+  profileCheck: function() {
+    if(Globals.profile.model.session)
+      return true;
+    else
+      Globals.profile.view.render(Globals.profile.model.data);
+  },
+  
 	getNameSpace: function() {
 	  var matches    = this.$className.match(/(.*)(Controller)/);
 	  this.nameSpace = matches[1];
@@ -215,9 +222,12 @@ Ext.define('View', {
 	       
 	  thisCfg.items = [];
 	  
+	  if(!Globals.DEPO['components'])
+	   Globals.DEPO['components'] = {};
+	  
 	  if(cfg.xtype == 'viewport') {
 	    globalId = 'viewport';
-	    Globals.DEPO[globalId] = Ext.create('Ext.container.Viewport', thisCfg);
+	    Globals.DEPO['components'][globalId] = Ext.create('Ext.container.Viewport', thisCfg);
 	  } else {
 	    ref = Ext.create(self.xtypes[cfg.xtype], thisCfg);
 	    if(cfg.id) {
@@ -225,8 +235,8 @@ Ext.define('View', {
 	    } else {
 	      globalId = [parent,hash].join('');
 	    }
-	    Globals.DEPO[parent].add(ref);
-	    Globals.DEPO[globalId] = ref;
+	    Globals.DEPO['components'][parent].add(ref);
+	    Globals.DEPO['components'][globalId] = ref;
 	  }
 
 	  if(thisItems != null && thisItems.length != 0) {
