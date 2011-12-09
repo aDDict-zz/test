@@ -18,7 +18,7 @@ Ext.define('IddqdController', {
   },
 
   ajaxCallback: function(scope){
-    this.view.render(scope.data);
+    //this.view.render(scope.data);
   },
 
   /*main: function() {

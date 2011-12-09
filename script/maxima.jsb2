@@ -7,6 +7,9 @@
         file: 'main.js',
         isDebug: true,
         fileIncludes: [{
+            text: 'ext-all.js',
+            path: '../public/js/lib/'
+        },{
             text: 'classes.js',
             path: '../public/js/src/classes/'
         },{

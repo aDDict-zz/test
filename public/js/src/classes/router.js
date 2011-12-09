@@ -73,7 +73,7 @@ Ext.define('Router', {
               });
             }
           } else {
-            Globals.DEPO[ [order,'Controller'].join('') ].init();
+            Globals.DEPO[[order,'Controller'].join('')].init();
             Router.route = order;
           }
         else {
@@ -90,8 +90,13 @@ Ext.define('Router', {
         }
     },
     
+    // its a simple redirect
     setRoute    : function(route) {
       window.location.href = [window.location.href.split("#")[0],"#",route].join("");
+    },
+    
+    reload: function() {
+      window.location.reload(true)
     },
     
     getOrder    : function() {

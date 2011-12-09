@@ -3,7 +3,7 @@ Ext.define('GroupModel', {
 	extend: 'Model',
 	
 	init: function() {
-    this.getAjaxData();
+    //this.getAjaxData();
   },
 	
 	mapper: function(data){
@@ -17,23 +17,23 @@ Ext.define('GroupModel', {
 	},
 	
 	getAjaxData: function(){
-		
 		var self = this;
-		
-		/*var datas = {
-			'elso' : 'ELSO',
-			'masodik' : {
-				'valami' 	: [0,1,2,3],
-				'masvalami' : 'SEMMISEM'
-			}
-		};*/
-		
 		AJAX.post(
 			"group/",
 			"", //['data=',Ext.JSON.encode(datas)].join(''),
 			this.mapper,
 			self
 		);
+	},
+	
+	getGroups: function(scope) {
+	  //console.log(Globals.profile.model.data.user);
+	  AJAX.post(
+      "group/",
+      "", //['data=',Ext.JSON.encode(datas)].join(''),
+      scope.groupMapper,
+      scope
+    );
 	}
 	
 });

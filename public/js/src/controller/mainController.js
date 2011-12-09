@@ -10,17 +10,23 @@ Ext.define('MainController', {
     
     var self = this;
     
-    //self.profileCheck();
-    
-    if(self.profileCheck())
-      this.view.render(scope.data);
+    if(self.profileCheck()) {
+      this.view.render(self.model.data);
+      this.model.postInit(self);
+    }
+  },
+  
+  groupCallback: function() {
+    var self = this;
+    self.view.initGroupsGrid();
+    //console.log(self.model.group.data);
   },
 
   /*main: function() {
     this.view.render({});
   },*/
 
-  getData : function(){
+  getData : function() {
     this.model.getAjaxData();
   }
 

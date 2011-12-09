@@ -7,7 +7,15 @@ Ext.define('IddqdTranslateController', {
   },
 
   ajaxCallback: function(scope){
-    this.view.render(scope.data);
+    
+    var self = this;
+    
+    if(self.profileCheck()) {
+      self.model.setup();
+      self.view.render(self.model.data);
+    }
+    
+    //this.view.render(scope.data);
   },
 
   getData : function(){

@@ -2,25 +2,28 @@ Ext.define('ProfileController', {
 
   extend: 'Controller',
   
+  cache: {},
+  
   auth: function() {
     var self = Globals.profile;
     self.model.authentication(self);
   },
   
   authCallback : function(response, req) {
-    var self      = Globals.profile,
-        res       = self.model.toJson(response.responseText);
+    var self      = Globals.profile;
+        
+    self.model.data = self.model.toJson(response.responseText);
     
-    if(res.username == null) {
+    if(!self.model.data.user || !self.model.data.user.id) {
+      Ext.Msg.alert('Login failed', 'Try again!');
       Ext.getCmp('loginForm').getForm().setValues({
         username: "", 
         password: "" 
       })
-      Ext.Msg.alert('Login failed', 'Try again!');
-    } else {
-      Ext.getCmp("LoginForm").hide();
-      Router.setRoute(Router.frontPage);
+      return;
     }
+    
+    Router.reload();
   },
   
   init: function() {

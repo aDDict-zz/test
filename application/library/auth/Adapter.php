@@ -19,15 +19,15 @@ class Adapter implements Zend_Auth_Adapter_Interface {
       return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_IDENTITY_NOT_FOUND,$this->username, array("nincs ilyen nevu felhasznalo"));
     }
     
-    if($this->username == $user[0]["username"] && $this->password != $user[0]["password"]) {
+    if($this->username == $user["username"] && $this->password != $user["password"]) {
       return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID,$this->password);
     }
     
-    if($this->username != $user[0]["username"] && $this->password == $user[0]["password"]) {
+    if($this->username != $user["username"] && $this->password == $user["password"]) {
       return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_IDENTITY_NOT_FOUND,$this->username, array("nincs ilyen nevu felhasznalo"));
     }
     
-    if($this->username != $user[0]["username"] && $this->password != $user[0]["password"]) {
+    if($this->username != $user["username"] && $this->password != $user["password"]) {
       return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_IDENTITY_NOT_FOUND,"{$this->username},{$this->password}");
     }
     

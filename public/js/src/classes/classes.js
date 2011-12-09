@@ -90,10 +90,13 @@ Ext.define('Controller', {
 	showView       : true,
   
   profileCheck: function() {
-    if(Globals.profile.model.session)
+    var self = this;
+    if(Globals.profile.model.data.user) {
       return true;
-    else
+    } else {
       Globals.profile.view.render(Globals.profile.model.data);
+      //Router.setRoute(Router.route);
+    }
   },
   
 	getNameSpace: function() {
@@ -202,7 +205,6 @@ Ext.define('View', {
     'textfield'      : 'Ext.form.field.Text',
     'timefield'      : 'Ext.form.field.Time',
     'trigger'        : 'Ext.form.field.Trigger',
-    
     'image'          : 'Ext.Img'
   },
   
@@ -226,7 +228,7 @@ Ext.define('View', {
 	   Globals.DEPO['components'] = {};
 	  
 	  if(cfg.xtype == 'viewport') {
-	    globalId = 'viewport';
+	    globalId                             = 'viewport';
 	    Globals.DEPO['components'][globalId] = Ext.create('Ext.container.Viewport', thisCfg);
 	  } else {
 	    ref = Ext.create(self.xtypes[cfg.xtype], thisCfg);

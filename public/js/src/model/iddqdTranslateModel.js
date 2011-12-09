@@ -17,14 +17,18 @@ Ext.define('IddqdTranslateModel', {
     self.router.view.varCombo.setValue(self.cat);
   },
   
+  // its empty, because the model and view init must start together in the same time - IddqdTranslateController::ajaxCallbBack
   init: function() {
+  },
+  
+  setup: function() {
     
     var self = this;
     
     /*if(Ext.get("Iddqd") == null)
       self.getAjaxData();*/
       
-    self.loader         = new Ext.LoadMask(Ext.getBody(), {msg:"loading"});
+    self.loader           = new Ext.LoadMask(Ext.getBody(), {msg:"loading"});
     
     self.itemsPerPage     = 10;
     self.language         = 'hu';

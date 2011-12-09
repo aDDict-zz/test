@@ -318,13 +318,16 @@
                             items: [
                                 {
                                     xtype: 'panel',
+                                    id:'groupsGridContainer',
                                     style: 'text-align: center;',
                                     styleHtmlContent: true,
                                     collapsed: true,
                                     title: '<?php echo $this->lang_items['csoportok'] ?>',
-                                    items: [
-                                        
-                                    ]
+                                    layout: {
+                                      align: 'stretch',
+                                      type: 'hbox'
+                                    },
+                                    items: []
                                 },
                                 {
                                     xtype: 'panel',
@@ -332,9 +335,7 @@
                                     styleHtmlContent: true,
                                     collapsed: false,
                                     title: '<?php echo $this->lang_items['adatbazisok'] ?>',
-                                    items: [
-                                        
-                                    ]
+                                    items: []
                                 },
                                 {
                                     xtype: 'panel',
@@ -342,9 +343,7 @@
                                     styleHtmlContent: true,
                                     collapsed: true,
                                     title: '<?php echo $this->lang_items['futo_folyamatok'] ?>',
-                                    items: [
-                                        
-                                    ]
+                                    items: []
                                 }
                             ]
                         }
@@ -389,15 +388,17 @@
                     items: [
                         {
                             xtype: 'toolbar',
+                            id: 'profileToolbar',
                             vertical: true,
                             items: [
                                 {
                                     xtype: 'tbtext',
                                     style: 'background: #C2D8F0;\ntext-align: center;',
-                                    text: '<font style="color: #3E6AAA;"><?php echo $this->lang_items['felhasznalo'] ?></font>'
+                                    text: '<font style="color: #3E6AAA;"><?php echo $this->lang_items['felhasznalo'] ?>:</font>'
                                 },
                                 {
                                     xtype: 'splitbutton',
+                                    id: 'profileName',
                                     height: 40,
                                     width: 194,
                                     text: 'Tóth Tamás<br /><font style="color: #888888;">(toth.tamas@hirekmedia.hu)</font>'

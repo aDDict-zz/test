@@ -21,36 +21,74 @@ class Application_Model_Groups extends Zend_Db_Table_Abstract {
     
   public function getAll($sessionUser){
     
-   $uid = $sessionUser->profile[0]["id"];
+    $resultSet  = array();
+    $multiids   = array();
+    $multis     = array() ;
+    $uid = $sessionUser->profile["id"];
    
-   $result = $this->_db->query("
+    $gRes = $this->_db->query("
+      select id,if(length(name)>0,name,title) realname from multi where index_grouping='yes' order by realname;
+    ")->fetchAll();
    
-    SELECT
-      if( length( g.name ) >0, g.name, g.title ) realname,
-      if( length( multi.name ) >0, multi.name, multi.title ) mrealname,
-      m.membership,
-      m.group_id,
-      g.title,
-      mg.multiid
+    foreach($gRes as $r) {
+      $multiids[] = $r['id'];
+      $multis[$r['id']] = $r['realname'];
+    } //die(print_r( $multis ));
+   
+    $thisIds = implode(",",$multiids);
+   
+    $result = $this->_db->query("
+      select
+        if(length(g.name)>0,g.name,g.title) realname,
+        m.membership as membership,
+        m.group_id,
+        g.title,
+        mg.multiid,
+        'single' as grouptype
+      from
+        members m,
+        groups g
+      left join
+          multigroup mg on g.id=mg.groupid
+        and
+          mg.multiid in ({$thisIds})
+          
+      where
+        g.id=m.group_id
+      and
+        m.user_id = ?
       
-    FROM
-      members m, groups g
+      union all
       
-    LEFT JOIN
-      multigroup mg ON g.id = mg.groupid
-      
-    LEFT JOIN
-      multi ON multi.id = mg.multiid
+      select
+        if(length(g.name)>0,g.name,g.title) realname,
+        m.membership as membership,
+        m.group_id,
+        g.title,
+        'multis' as multiid,
+        'multi' as grouptype
+      from
+        multi_members m,multi g
+      where
+        g.id=m.group_id
+      and
+        m.user_id = ?
+      and
+        m.membership='affiliate'
+      order by realname
+    ",
+      array($uid,$uid)
+    )->fetchAll();
     
-    AND mg.multiid IN
-      (SELECT id FROM multi WHERE index_grouping='yes')
-    
-    WHERE g.id = m.group_id
-    AND m.user_id = ?",
-    array($uid)
-   )->fetchAll(); 
-   return $result;
+    for($i = 0;$i < count($result); $i++) {
+      $resultSet[$i] = $result[$i];
+      if($result[$i]['multiid'] != null)
+        $resultSet[$i]['group'] = $multis[$result[$i]['multiid']];
+      else
+        $resultSet[$i]['group'] = 'Egyéb csoport';
+    }
    
+    return $resultSet;
   }
   
 }
