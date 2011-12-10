@@ -57,23 +57,23 @@ body {
 #rozitiv_page{
   width         : 800px;
   height        : 900px;
-  background    : purple;
+  background    : #CDFFFF;
 }
 #collection_page{
   
   width         : 800px;
   height        : 1200px;
-  background    : orange;
+  background    : #FF0000;
 }
 #order_page{
   width         : 800px;
   height        : 600px;
-  background    : green;
+  background    : #400D12;
 }
 #contact_page{
   width         : 800px;
   height        : 1100px;
-  background    : yellow;
+  background    : #4FD5D6;
 }
 
 /*

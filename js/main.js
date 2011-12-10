@@ -98,24 +98,6 @@ var o = {
     }
   },
 
-  // TODO we need a getParent method
-  getParent: function(el, type, prop, name) {
-  
-    var target,
-        stopCondition = 10,
-        current = el;
-    
-    if(!type) return el.parentNode;
-    
-    for(var i = 0; i < stopCondition; i++) { console.log("asdsad");
-      var current = current.parentNode; // current.tagName == type'
-      
-      console.log( /*current.tagName*/ current.getAttribute('class') );
-    }
-  
-    
-  }, 
-
   createEl: function(cfg,thisParent) {
 
     var parent = thisParent || document.body,
@@ -429,13 +411,20 @@ var o = {
       ["top:",-thisHeight,"px"].join(""),
       {duration: 400},
       function() {
-        o.anim([
+        /*o.anim([
           "c",
           ["height:",currentHeight,"px"].join(""),
           {duration: 400},
           function() {}
-        ]);
+        ]);*/
       }
+    ]);
+    
+    this.anim([
+      "c",
+      ["height:",currentHeight,"px"].join(""),
+      {duration: 400},
+      function() {}
     ]);
   },
 
@@ -480,6 +469,39 @@ var o = {
     cfg[2].duration ? dur = cfg[2] : dur = {duration: 800};
     typeof cfg[3] != "undefined" ? callback = cfg[3] : callback = "";
     emile(el, css, dur, callback);
+  },
+  
+  getParent: function(el,type,prop,name,stopCondition) {
+  
+    var self 					= this,
+        stopCondition = stopCondition || 10,
+        current 			= el;
+    
+    if(typeof self.getAttrib == 'undefined')
+    	self.getAttrib = function(el, prop) {
+    		if(prop == 'class')
+  				return (el.className ? el.className : el.getAttribute(prop))
+  			else
+  				return el.getAttribute(prop)
+    	};
+    
+    if(!type) return el.parentNode;
+    
+    for(var i = 0; i < stopCondition; i++) {
+      if(current.tagName != 'HTML') {
+	      if(!prop && type == current.tagName) {
+	      	return current
+		  	} else if(typeof self.getAttrib(current,prop) != 'undefined') {
+	        if(self.getAttrib(current,prop) == name) {
+	      	  return current
+      	 	}
+  	  	}
+  	  } else {
+  	  	return null;
+  	  }
+  	  var current = current.parentNode;
+    }
+    return null;
   }
 
 };
@@ -514,7 +536,7 @@ var Gallery = {
         tag     : "div",
         id      : "",
         rel     : i,
-        cls     : "",
+        cls     : "imageWrapper",
         style   : "",
         arr     : [{
           tag   : "img",
@@ -525,8 +547,11 @@ var Gallery = {
         }],
         command : ["click", function(e) {
           e = e || window.event;
-          var target = e.target || e.srcElement;
-          o.getParent(target, 'div');
+          var target = e.target || e.srcElement; //console.log(target);
+          var currentTarget = o.getParent(target, 'DIV', 'class', 'imageWrapper');
+          if(currentTarget != null) {
+          	console.log(currentTarget.getAttribute('rel'));
+          }
         }]
       },o.cache.galleryCont);  
     }
