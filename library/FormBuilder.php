@@ -20,7 +20,7 @@ class FormBuilder {
   
   public function getJSONCfg(){
     $this->cfg = $this->createForm();
-    return Zend_Json::encode($this->cfg); 
+    return Zend_Json::encode($this->cfg,false,array('enableJsonExprFinder' => true)); 
   }
   
   protected function setHash(){

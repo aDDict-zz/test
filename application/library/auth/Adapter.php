@@ -31,9 +31,10 @@ class Adapter implements Zend_Auth_Adapter_Interface {
       return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_IDENTITY_NOT_FOUND,"{$this->username},{$this->password}");
     }
     
-    $sessionUser            = new Zend_Session_Namespace('sessionUser');
-    $sessionUser->username  = $this->username;
-    $sessionUser->profile    = $user;
+    $sessionUser              = new Zend_Session_Namespace('sessionUser');
+    $sessionUser->username          = $this->username;
+    $sessionUser->profile = $user;
+    
     return new Zend_Auth_Result(Zend_Auth_Result::SUCCESS,$this->username);
   }
 }

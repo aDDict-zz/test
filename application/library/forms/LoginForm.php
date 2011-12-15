@@ -6,7 +6,7 @@ class LoginForm extends FormBuilder{
     // bla
   }
   
-  protected function createForm(){
+  protected function createForm(){ 
     return array(
       "title"   => "Login",
       "action"  => WEB_ROOT."/login/process",
@@ -14,8 +14,12 @@ class LoginForm extends FormBuilder{
       "method"  => "post",
       "items"   => array(
         array(
-          "xtype"       => 'textfield',
+          "xtype"       => 'combo',  /*textfield*/
+          "id"          => 'username',
           "fieldLabel"  => 'username',
+          "store"       => new Zend_Json_Expr('self.usernameStore'),
+          'displayField'=> 'username',
+          'valueField'  => 'username',
           "style"       => "padding:15px;padding-bottom:0px;padding-top:7px;",
           "name"        => 'username'
         ),

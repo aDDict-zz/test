@@ -21,8 +21,10 @@ class LoginController extends Zend_Controller_Action {
     
     $auth = Zend_Auth::getInstance();
     if($auth->getIdentity() && $auth->getIdentity() != "") {
-      $sessionUser = new Zend_Session_Namespace('sessionUser');
-      echo Zend_Json::encode(array("user" => $sessionUser->profile));
+      $sessionUser          = new Zend_Session_Namespace('sessionUser');
+      $thisUser             = $sessionUser->profile;
+      $thisUser['password'] = '';
+      echo Zend_Json::encode(array("user" => $thisUser));
       die();
     }
   }
@@ -38,7 +40,9 @@ class LoginController extends Zend_Controller_Action {
 
     if (!$form->isValid($request->getPost())) {
         $this->view->form = $form;
-        return $this->render('index'); // re-render the login form
+        echo  $form->getJSONCfg();
+        $this->_helper->viewRenderer->setNoRender(true);
+        die();
     }
 
     $adapter = $this->getAuthAdapter($request->getPost());
@@ -48,10 +52,13 @@ class LoginController extends Zend_Controller_Action {
     //$user = new Application_Model_User();
     //echo Zend_Json::encode(array("user" => $user->getUser($auth->getIdentity())));
   
-    $sessionUser = new Zend_Session_Namespace('sessionUser');
-    echo Zend_Json::encode(array("user" => $sessionUser->profile));
+    $sessionUser          = new Zend_Session_Namespace('sessionUser'); //die( print_r( $sessionUser->profile ) );
+    $thisUser             = $sessionUser->profile;
+    $thisUser['password'] = '';
+    echo Zend_Json::encode(array("user" => $thisUser));
   
     $this->_helper->viewRenderer->setNoRender(true);
+    die();
   }
   
   public function logoutAction() {

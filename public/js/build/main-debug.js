@@ -211,6 +211,7 @@ Ext.define('View', {
     'field'          : 'Ext.form.field.Base',
     'fieldset'       : 'Ext.form.FieldSet',
     'hidden'         : 'Ext.form.field.Hidden',
+    'hiddenfield'    : 'Ext.form.field.Hidden',
     'htmleditor'     : 'Ext.form.field.HtmlEditor',
     'label'          : 'Ext.form.Label',
     'numberfield'    : 'Ext.form.field.Number',
@@ -383,6 +384,16 @@ Ext.define('Debug', {
   /*main: function() {
     this.view.render({});
   },*/
+ 
+  logout: function() {
+    var self = this;
+    AJAX.get(
+      'login/logout',
+      "",
+      Router.reload,
+      self
+    );
+  },
 
   getData : function() {
     this.model.getAjaxData();
@@ -617,6 +628,9 @@ Ext.define('TestView', {
             items     : data.items,
             url       : data.action,
             buttons: [{
+              text      : 'clear cookies',
+              handler   : self.scope.model.setCookie
+            },{
               text      : 'login',
               handler   : self.scope.auth
             }]
@@ -939,7 +953,9 @@ Ext.define('MainView', {
   },
   
   setup: function() {
-    var self  = this;
+    var self          = this
+        lang_elements  = self.scope.model.toJson(Globals.DEPO['components']['lang_elements'].value);
+        
     self.user = Globals.profile.model.data.user;
     
     Globals.DEPO['components']['profileName'].setText([self.user.name,'<br /><font style="color: #888888;">(',self.user.email,')</font>'].join(''));
@@ -961,11 +977,11 @@ Ext.define('MainView', {
       style     : 'text-align: center;',
       layout    : 'fit',
       columns   : [
-        {header   : 'Id',           dataIndex: 'group_id', width: 100},
-        {header   : 'Title',        dataIndex: 'realname', width: 350,  renderer : self.titleRenderer},
-        {header   : 'Realname',     dataIndex: 'title'},
-        {header   : 'Membership',   dataIndex: 'membership'},
-        {header   : 'Group',        dataIndex: 'group',    width: 350, renderer : self.titleRenderer}
+        {header   : 'Id',                     dataIndex: 'group_id', width: 100},
+        {header   : lang_elements['cim'],     dataIndex: 'realname', width: 350,  renderer : self.titleRenderer},
+        {header   : lang_elements['nev'],     dataIndex: 'title'},
+        {header   : lang_elements['tagsag'],  dataIndex: 'membership'},
+        {header   : lang_elements['csoport'], dataIndex: 'group',    width: 350, renderer : self.titleRenderer}
       ]
     }).show();
     
@@ -1021,13 +1037,57 @@ Ext.define('GroupModel', {
   extend: 'Model',
   
   init: function() {
+    var self      = this,
+        arr       = [],
+        usernames = self.getCookie();
     
+    for(var i = 0, l = usernames.length;i < l;i++) {
+      arr.push({"username":usernames[i]});
+    }
+    
+    self.usernameStore = Ext.create('Ext.data.Store', {
+      fields: ['username'],
+      data : arr
+    });
+  },
+  
+  getCookie: function() {
+    var arr     = [],
+        i       = 0,
+        cookies = Ext.decode(Ext.util.Cookies.get('usernames'));
+        
+    for(var i in cookies) {
+      if(cookies[i]['email']) {
+        arr.push(cookies[i]['email'])
+      }
+  }
+    return arr;
+  },
+  
+  setCookie: function(arr) {console.log(arr);
+    var obj = {}
+        arr = arr || [];
+    
+    for(var i = 0, l = arr.length;i < l;i++) {
+      obj[i] = {'email' : arr[i]};
+    }
+    Ext.util.Cookies.set('usernames', Ext.encode(obj));
   },
   
   /*
    * @scope {Object} the relevant controller - (ProfileController)
    */
   authentication : function(scope) {
+    
+    var usernames     = scope.model.getCookie(),
+        thisUserName  = Ext.getCmp("loginForm").getValues()['username'];
+    
+    // handling cookies
+    if(usernames.indexOf(thisUserName) == -1) {
+      usernames.push(thisUserName);
+      scope.model.setCookie(usernames);
+    }
+    
     AJAX.post(
       scope.model.data.action,
       Ext.getCmp("loginForm").getValues(),
@@ -1038,7 +1098,7 @@ Ext.define('GroupModel', {
   
   mapper: function(data){
     var self  = this;
-    self.data = self.toJson(data.responseText);
+    self.data = eval("("+data.responseText+")");
     self.router.ajaxCallback();
   },
   
@@ -1101,8 +1161,9 @@ Ext.define('GroupModel', {
   },
   
   mapper: function(data){
-    var self  = this;
-    self.data = data.responseText;
+    var self            = this;
+    self.data           = data.responseText;
+    self.lang_elements  =
     self.router.ajaxCallback(self);
   },
   
@@ -1117,8 +1178,13 @@ Ext.define('GroupModel', {
   },
   
   groupMapper: function(response) {
-    var self          = Globals.DEPO['MainController'].model;
-    self.group.data   = self.toJson(response.responseText);
+    var self                = Globals.DEPO['MainController'].model;
+    self.group.data         = self.toJson(response.responseText);
+    
+    // group_id must be an integer(number) to be sortable in the grid
+    for(var i in self.group.data) { ///group_id
+      self.group.data[i].group_id = parseInt(self.group.data[i].group_id,10);
+    }
     self.group.groupsStore  = Ext.create('Ext.data.Store', {
       storeId:'groups',
       fields:['group_id','title', 'realname', 'membership','group'],
@@ -1542,10 +1608,10 @@ Ext.define('Router', {
     init      	: function() {
       
       try {
-        console.log();
+        window.console.log();
       }catch(e){
         if(e)
-          console.log = function() {}
+          window.console.log = function() {}
       };
       
       if(Router.ie)
@@ -1621,6 +1687,7 @@ Ext.define('Router', {
       window.location.href = [window.location.href.split("#")[0],"#",route].join("");
     },
     
+    // reload on the same url
     reload: function() {
       window.location.reload(true)
     },

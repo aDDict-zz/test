@@ -38,7 +38,9 @@ Ext.define('MainView', {
   },
   
   setup: function() {
-    var self  = this;
+    var self          = this
+        lang_elements  = self.scope.model.toJson(Globals.DEPO['components']['lang_elements'].value);
+        
     self.user = Globals.profile.model.data.user;
     
     Globals.DEPO['components']['profileName'].setText([self.user.name,'<br /><font style="color: #888888;">(',self.user.email,')</font>'].join(''));
@@ -60,11 +62,11 @@ Ext.define('MainView', {
       style     : 'text-align: center;',
       layout    : 'fit',
       columns   : [
-        {header   : 'Id',         dataIndex: 'group_id', width: 100},
-        {header   : 'Title',      dataIndex: 'realname', width: 350,  renderer : self.titleRenderer},
-        {header   : 'Realname',   dataIndex: 'title'},
-        {header   : 'Membership', dataIndex: 'membership'},
-        {header   : 'Group',      dataIndex: 'group',    width: 350, renderer : self.titleRenderer}
+        {header   : 'Id',                     dataIndex: 'group_id', width: 100},
+        {header   : lang_elements['cim'],     dataIndex: 'realname', width: 350,  renderer : self.titleRenderer},
+        {header   : lang_elements['nev'],     dataIndex: 'title'},
+        {header   : lang_elements['tagsag'],  dataIndex: 'membership'},
+        {header   : lang_elements['csoport'], dataIndex: 'group',    width: 350, renderer : self.titleRenderer}
       ]
     }).show();
     

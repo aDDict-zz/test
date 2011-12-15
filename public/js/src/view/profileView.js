@@ -25,6 +25,9 @@ Ext.define('ProfileView', {
             items     : data.items,
             url       : data.action,
             buttons: [{
+              text      : 'clear cookies',
+              handler   : self.scope.model.setCookie
+            },{
               text      : 'login',
               handler   : self.scope.auth
             }]

@@ -8,8 +8,12 @@ class Application_Model_User extends Zend_Db_Table_Abstract {
     $result = $this->_db->query(
       "select * from user where username = ?",
       array($username)
-    )->fetchAll(); //die( print_r( $result[0] ) );
-    return $result[0];
+    )->fetchAll();
+    
+    if(count($result) > 0)
+      return $result[0];
+    else
+      return 0;
     
     /*$row  = $this->fetchRow('username = ' . $username);
     if (!$row) {

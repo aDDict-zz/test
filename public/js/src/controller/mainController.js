@@ -19,12 +19,21 @@ Ext.define('MainController', {
   groupCallback: function() {
     var self = this;
     self.view.initGroupsGrid();
-    //console.log(self.model.group.data);
   },
 
   /*main: function() {
     this.view.render({});
   },*/
+ 
+  logout: function() {
+    var self = this;
+    AJAX.get(
+      'login/logout',
+      "",
+      Router.reload,
+      self
+    );
+  },
 
   getData : function() {
     this.model.getAjaxData();

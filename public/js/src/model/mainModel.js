@@ -19,8 +19,9 @@ Ext.define('MainModel', {
   },
   
   mapper: function(data){
-    var self  = this;
-    self.data = data.responseText;
+    var self            = this;
+    self.data           = data.responseText;
+    self.lang_elements  =
     self.router.ajaxCallback(self);
   },
   
@@ -35,8 +36,13 @@ Ext.define('MainModel', {
   },
   
   groupMapper: function(response) {
-    var self          = Globals.DEPO['MainController'].model;
-    self.group.data   = self.toJson(response.responseText);
+    var self                = Globals.DEPO['MainController'].model;
+    self.group.data         = self.toJson(response.responseText);
+    
+    // group_id must be an integer(number) to be sortable in the grid
+    for(var i in self.group.data) { ///group_id
+      self.group.data[i].group_id = parseInt(self.group.data[i].group_id,10);
+    }
     self.group.groupsStore  = Ext.create('Ext.data.Store', {
       storeId:'groups',
       fields:['group_id','title', 'realname', 'membership','group'],

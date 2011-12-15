@@ -380,7 +380,7 @@
                 {
                     xtype: 'container',
                     id:'userProfile',
-                    height: 130,
+                    height: 170,
                     layout: {
                         type: 'fit'
                     },
@@ -395,13 +395,23 @@
                                     xtype: 'tbtext',
                                     style: 'background: #C2D8F0;\ntext-align: center;',
                                     text: '<font style="color: #3E6AAA;"><?php echo $this->lang_items['felhasznalo'] ?>:</font>'
-                                },
-                                {
+                                },{
+								    xtype: 'hiddenfield',
+								    id: 'lang_elements',
+								    name:'lang_elements',
+								    style:'display:none;',
+								    value:'<?php echo $this->lang_items['json'] ?>'
+							    },{
                                     xtype: 'splitbutton',
                                     id: 'profileName',
                                     height: 40,
                                     width: 194,
                                     text: 'Tóth Tamás<br /><font style="color: #888888;">(toth.tamas@hirekmedia.hu)</font>'
+                                },{
+                                    xtype: 'splitbutton',
+                                    id: 'logout',
+                                    text: '<?php echo $this->lang_items['kilepes'] ?>',
+                                    handler: self.scope.logout
                                 },
                                 {
                                     xtype: 'tbtext',

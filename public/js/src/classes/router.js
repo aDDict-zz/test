@@ -16,10 +16,10 @@ Ext.define('Router', {
     init      	: function() {
       
       try {
-        console.log();
+        window.console.log();
       }catch(e){
         if(e)
-          console.log = function() {}
+          window.console.log = function() {}
       };
       
       if(Router.ie)
@@ -95,6 +95,7 @@ Ext.define('Router', {
       window.location.href = [window.location.href.split("#")[0],"#",route].join("");
     },
     
+    // reload on the same url
     reload: function() {
       window.location.reload(true)
     },

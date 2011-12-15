@@ -196,6 +196,7 @@ Ext.define('View', {
     'field'          : 'Ext.form.field.Base',
     'fieldset'       : 'Ext.form.FieldSet',
     'hidden'         : 'Ext.form.field.Hidden',
+    'hiddenfield'    : 'Ext.form.field.Hidden',
     'htmleditor'     : 'Ext.form.field.HtmlEditor',
     'label'          : 'Ext.form.Label',
     'numberfield'    : 'Ext.form.field.Number',

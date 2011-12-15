@@ -26,8 +26,8 @@ class ExtTemplateController extends Zend_Controller_Action
         $language_elements = array_merge_recursive($language_elements,$res);
       }
       
-      $this->view->lang_items         = $language_elements;
-      $this->view->lang_items['json'] = Zend_Json::encode($language_elements); die(print_r($this->view->lang_items));
+      $this->view->lang_items         = $language_elements; //die(print_r( $this->view->lang_items ));
+      $this->view->lang_items['json'] = Zend_Json::encode($language_elements); //die(print_r($this->view->lang_items));
     }
     
     public function translateAction() {
