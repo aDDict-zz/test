@@ -5,15 +5,18 @@ Ext.define('Router', {
   
   statics: {
   	
-    frontPage 	: "Main",
-    login       : "Login",
-    route       : "",
-    routeOrders : [],
-    routeParams : {},
-    routeCache  : "",
-    lang        : "",
+    frontPage 	      : "Main",
+    login             : "Login",
+    route             : "",
+    routeOrders       : [],
+    routeParams       : {},
+    routeCache        : "",
+    routeOrdersCache  : [],
+    lang              : "",
     
-    init      	: function() {
+    ENVIRONMENT       : 'devel', //production 
+    
+    init      	      : function() {
       
       try {
         window.console.log();
@@ -88,6 +91,14 @@ Ext.define('Router', {
             Router.route = order;
           }
         }
+        
+        // if the route has many parts and they are changing we drop the prompt to the root controller again
+        if(Router.routeOrders != Router.routeOrdersCache) {
+          if(Router.routeOrders.length > 0)
+            Globals.DEPO[[Router.routeOrders[0],"Controller"].join('')].init();
+            
+          Router.routeOrders = Router.routeOrdersCache;
+        }
     },
     
     // its a simple redirect
@@ -128,7 +139,6 @@ Ext.define('Router', {
         return Router.routeOrders[0];
       }
     },
- 
     constructor: function() {}
   }
 
@@ -136,7 +146,7 @@ Ext.define('Router', {
   function(){
     if(navigator.appVersion.match(/MSIE/))
       Router.ie = 1;
-      
+    // this is the application init
     Router.init();
   }
 );

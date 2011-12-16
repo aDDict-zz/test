@@ -21,7 +21,7 @@ Ext.define('MainModel', {
   mapper: function(data){
     var self            = this;
     self.data           = data.responseText;
-    self.lang_elements  =
+    //self.lang_elements  =
     self.router.ajaxCallback(self);
   },
   

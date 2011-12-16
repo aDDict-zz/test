@@ -38,10 +38,9 @@ Ext.define('MainView', {
   },
   
   setup: function() {
-    var self          = this
-        lang_elements  = self.scope.model.toJson(Globals.DEPO['components']['lang_elements'].value);
-        
-    self.user = Globals.profile.model.data.user;
+    var self            = this;
+    self.lang_elements  = self.scope.model.toJson(Globals.DEPO['components']['lang_elements'].value);
+    self.user           = Globals.profile.model.data.user;
     
     Globals.DEPO['components']['profileName'].setText([self.user.name,'<br /><font style="color: #888888;">(',self.user.email,')</font>'].join(''));
     Globals.DEPO['components']['languages'].setText(self.scope.model.languagesInv[self.scope.model.language]);
@@ -63,10 +62,10 @@ Ext.define('MainView', {
       layout    : 'fit',
       columns   : [
         {header   : 'Id',                     dataIndex: 'group_id', width: 100},
-        {header   : lang_elements['cim'],     dataIndex: 'realname', width: 350,  renderer : self.titleRenderer},
-        {header   : lang_elements['nev'],     dataIndex: 'title'},
-        {header   : lang_elements['tagsag'],  dataIndex: 'membership'},
-        {header   : lang_elements['csoport'], dataIndex: 'group',    width: 350, renderer : self.titleRenderer}
+        {header   : self.lang_elements['cim'],     dataIndex: 'realname', width: 350,  renderer : self.titleRenderer},
+        {header   : self.lang_elements['nev'],     dataIndex: 'title'},
+        {header   : self.lang_elements['tagsag'],  dataIndex: 'membership'},
+        {header   : self.lang_elements['csoport'], dataIndex: 'group',    width: 350, renderer : self.titleRenderer}
       ]
     }).show();
     
@@ -75,6 +74,7 @@ Ext.define('MainView', {
     Globals.DEPO['components']['groupsGrid'].addListener({
       cellclick: function(grid,rowIndex,columnIndex,e) {
         Globals.DEPO['MainController'].model.group_id = rowIndex.parentNode.firstChild.firstChild.innerHTML; //console.log(Globals.DEPO['MainController']);
+        Router.setRoute('Main/Messages');
       }  
     });   
   }

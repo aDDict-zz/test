@@ -24,7 +24,7 @@ class Application_Model_Groups extends Zend_Db_Table_Abstract {
     $resultSet  = array();
     $multiids   = array();
     $multis     = array() ;
-    $uid = $sessionUser->profile["id"];
+    $uid        = $sessionUser->profile["id"];
    
     $gRes = $this->_db->query("
       select id,if(length(name)>0,name,title) realname from multi where index_grouping='yes' order by realname;
@@ -33,7 +33,7 @@ class Application_Model_Groups extends Zend_Db_Table_Abstract {
     foreach($gRes as $r) {
       $multiids[] = $r['id'];
       $multis[$r['id']] = $r['realname'];
-    } //die(print_r( $multis ));
+    }
    
     $thisIds = implode(",",$multiids);
    

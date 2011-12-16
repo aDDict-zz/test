@@ -155,7 +155,7 @@ Ext.define('IddqdTranslateView', {
         Globals.DEPO['components'] = {};
       } catch(err) {}
       
-      var self          = this
+      var self          = this,
           cfg           = eval("("+data+")");
       
       self.build(cfg);

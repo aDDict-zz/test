@@ -3,7 +3,13 @@ Ext.define('IddqdTranslateController', {
   extend: 'Controller',
 
   init: function() {
-    this.getData();
+    
+    var self = this;
+    
+    if(!self.inited) {
+      this.getData();
+      self.inited = true;
+    }
   },
 
   ajaxCallback: function(scope){

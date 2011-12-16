@@ -1,7 +1,6 @@
 <?php
 
-class LangController extends Zend_Controller_Action
-{
+class LangController extends Zend_Controller_Action {
 
     public function init() {
         /* Initialize action controller here */

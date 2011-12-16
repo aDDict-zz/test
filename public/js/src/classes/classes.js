@@ -1,5 +1,10 @@
 /**
+ * written by robThot (robthot@gmail.com)
+ * a simple mvc routed framework working with extjs 4.0
+ * licensed under the terms of WFTPL (http://en.wikipedia.org/wiki/WTFPL)
+ 
  * static class AJAX
+ * wrapper for Ext.Ajax.request
  */
 Ext.define('AJAX', {
 	statics: {
@@ -213,7 +218,9 @@ Ext.define('View', {
 	
 	render 		  : function() {},
 	
-	// recursive iter on cfg to build components and store the component referencies
+	/*
+    recursive iter on cfg to build components and store the component referencies
+  */
 	build       : function(cfg, parent) {
 	  
 	  var  self      = this,
