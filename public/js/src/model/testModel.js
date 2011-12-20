@@ -6,8 +6,8 @@ Ext.define('TestModel', {
     
     var self = this;
     
-    if(Ext.get("Iddqd") == null)
-      self.getAjaxData();
+    if(Ext.get("Iddqd") == null) {}
+      //self.getAjaxData();
   },
   
   mapper: function(data){

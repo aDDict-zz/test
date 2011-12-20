@@ -46,9 +46,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
   
   protected function _initPaths() { 
     preg_match("/(.*)(\/index\.php)/", $_SERVER["SCRIPT_NAME"], $matches);
-    define('WEB_ROOT', "http://{$_SERVER['HTTP_HOST']}{$matches[1]}");
+    
+    define('WEB_ROOT',  "http://{$_SERVER['HTTP_HOST']}{$matches[1]}");
+    
     $rootDir = dirname(dirname(__FILE__));
-    define('ROOT_DIR', $rootDir);
+    define('ROOT_DIR',  $rootDir);
+    define('EXTRA_DIR', "{$rootDir}/application/library/extra/");
+    
     set_include_path(get_include_path()
       . PATH_SEPARATOR . ROOT_DIR . '/application/library/forms/'
       . PATH_SEPARATOR . ROOT_DIR . '/library/'

@@ -4,10 +4,9 @@ Ext.define('TestView', {
   
   render: function(data){
     
-    var self  = this
-        cfg   = eval("("+data+")");
+    var self  = this;
     
-    self.build(cfg);
+    //self.build(cfg);
     //Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', cfg);
     
   }

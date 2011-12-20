@@ -57,10 +57,126 @@ Ext.define('AJAX', {
 });
 
 /**
+ * class Proxy
+ * Accessing the maxima server from localhost, Router.ENVIRONMENT = 'devel'
+ */
+Ext.define('Proxy',{
+  statics: {
+    
+    /*
+      @params mixed {Object/String}
+      @callback 
+      @scope
+     */
+    query: function(params,callback,scope) {
+      var self        = this,
+          queryString = (typeof params == 'object' ? Ext.encode(params) : Ext.encode(self.getHashByQStr(params))),
+          thisScope   = scope || self;
+        
+      AJAX.post(
+        ['proxy/dorequest'].join(''),
+        "json=" + queryString,
+        function(resp) {
+          if(typeof callback != 'undefined')
+            callback(resp);
+        },
+        thisScope
+      );
+    },
+    
+    /*
+      @queryStr {String}
+     */
+    getHashByQStr: function(queryStr) {
+      var hash = {}, strSplit = queryStr.split('&'), thisSplit = [];
+      for(var i in strSplit) {
+        thisSplit           = strSplit[i].split('=');
+        hash[thisSplit[0]]  = thisSplit[1];
+      }
+      return hash;
+    },
+    
+    /*
+      @obj {Object}
+     */
+    getQueryStr: function(obj) {
+      var str = '';
+      for(var i in obj) {
+        str = [str,'&',i,'=',obj[i]].join('');
+      }
+      return str.substring(1,str.length);
+    }
+  }
+});
+
+Ext.define('UTF8', {
+  statics: {
+    
+    /*
+       url decode
+     */
+    decode : function (utftext) {
+      var string = "";
+      var i = 0;
+      var c = c1 = c2 = 0;
+      while ( i < utftext.length ) {
+        c = utftext.charCodeAt(i);
+        if (c < 128) {
+          string += String.fromCharCode(c);
+          i++;
+        }
+        else if((c > 191) && (c < 224)) {
+          c2 = utftext.charCodeAt(i+1);
+          string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+          i += 2;
+        }
+        else {
+          c2 = utftext.charCodeAt(i+1);
+          c3 = utftext.charCodeAt(i+2);
+          string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+          i += 3;
+        }
+      }
+      return string;
+    },
+    
+    /*
+       url encode
+     */
+    encode : function (string) {
+      string = string.replace(/\r\n/g,"\n");
+      var utftext = "";
+      for (var n = 0; n < string.length; n++) {
+        var c = string.charCodeAt(n);
+        if (c < 128) {
+          utftext += String.fromCharCode(c);
+        }
+        else if((c > 127) && (c < 2048)) {
+          utftext += String.fromCharCode((c >> 6) | 192);
+          utftext += String.fromCharCode((c & 63) | 128);
+        }
+        else {
+          utftext += String.fromCharCode((c >> 12) | 224);
+          utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+          utftext += String.fromCharCode((c & 63) | 128);
+        }
+      }
+      return utftext;
+    }
+  }
+});
+
+/**
  * class Message
  */
 Ext.define('Message', {
   statics: {
+    
+    /*
+      @head {String}
+      @body {String}
+      @callback
+     */
     alert: function(head, body, callback) {
       Ext.Msg.alert(head, body, function(btn){
         if (btn == 'ok') {
@@ -263,6 +379,7 @@ Ext.define('View', {
 
 /**
  * class Debug
+ * @obj {Object}
  */
 Ext.define('Debug', {
   statics: {
