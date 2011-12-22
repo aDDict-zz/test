@@ -12,7 +12,12 @@ Ext.define('TestController', {
     var object = {
       "valami": "dehatmi",
       "masvalami": "milehetmég",
-      "egyeb": "42"
+      "egyeb": 42,
+      'get': {
+        'param1': 'valami',
+        'param2': 'masvalami',
+        'param3': 'egyeb'
+      }
     };
     
     //{\"valami\":\"dehatmi?\",\"masvalami\":\"mi lehet meg\",\"egyeb\":42}

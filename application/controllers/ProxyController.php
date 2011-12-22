@@ -19,9 +19,6 @@ class ProxyController extends Zend_Controller_Action {
       /*$h->rawpost = HTTP_RAW_POST_DATA;*/
      
       $h->fetch($h->url);
- 
-      //die( print_r( $h->postvars ) );
- 
       echo $h->body;
       
       /*if (!$h->fetch($h->url)) {
