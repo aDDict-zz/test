@@ -20,6 +20,7 @@ mkdir "$targetdir";
 find "$TR_DOWNLOADED_PATH" -name \*.rar -exec unrar e {} \;
 find "$TR_DOWNLOADED_PATH" -name \*.avi -exec mv {} "$targetdir" \;
 find "$TR_DOWNLOADED_PATH" -name \*.iso -exec mv {} "$targetdir" \;
+find "$TR_DOWNLOADED_PATH" -name \*.ISO -exec mv {} "$targetdir" \;
 find "$TR_DOWNLOADED_PATH" -name \*.mkv -exec mv {} "$targetdir" \;
 
 # find -name \*.rar -exec unrar e {} \;
