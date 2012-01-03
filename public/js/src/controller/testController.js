@@ -3,13 +3,13 @@ Ext.define('TestController', {
   extend: 'Controller',
 
   init: function() { //alert('asdsads');
-    /*if(Ext.get("Iddqd") == null)
-      this.getData();*/
-    //this.view.render({});
+    if(Ext.get("Iddqd") == null)
+      this.getData();
+    this.view.render({});
     
     var self = this;
     
-    var object = {
+    /*var object = {
       "valami": "dehatmi",
       "masvalami": "milehetmég",
       "egyeb": 42,
@@ -22,7 +22,7 @@ Ext.define('TestController', {
     
     //{\"valami\":\"dehatmi?\",\"masvalami\":\"mi lehet meg\",\"egyeb\":42}
     
-    Proxy.query(object,self.thisCallback);
+    Proxy.query(object,self.thisCallback);*/
     
   },
   

@@ -32,7 +32,7 @@ Ext.define('MainView', {
       Globals.DEPO['components'] = {};
     } catch(err) {}
     
-    self.cfg = eval("("+data+")");
+    self.cfg = eval('('+data+')');
     self.build(self.cfg);
     self.setup();
   },
@@ -79,3 +79,4 @@ Ext.define('MainView', {
     });   
   }
 });
+

@@ -25,6 +25,17 @@ Ext.define('Router', {
           window.console.log = function() {}
       };
       
+      if(!Array.indexOf) {
+        Array.prototype.indexOf = function(obj) {
+          for(var i=0,l=this.length; i<l; i++) {
+            if(this[i]==obj) {
+              return i;
+            }
+          }
+        return -1;
+        }
+      }
+      
       if(Router.ie)
         IEHH.setup();
         
@@ -38,7 +49,9 @@ Ext.define('Router', {
     
     getRoute  	: function() {
       
-      var order = Router.getOrder();
+      var order = Router.getOrder(); //console.log(Router.routeOrders,Router.routeParams);
+      
+      Router.setLoader();
       
       if(order == "")
         Router.setRoute(Router.frontPage);
@@ -111,6 +124,27 @@ Ext.define('Router', {
       window.location.reload(true)
     },
     
+    setLoader: function() {
+      var matches = (window.location.href.match(/(.*)(\s)(.*)/) ? window.location.href.match(/(.*)(\s)(.*)/) : null)
+          steps   = ['|','/','--','\\'],
+          index = -1;
+          
+      if(matches != null) {
+        if(steps.indexOf(matches[3]) != -1) {
+          index = steps.indexOf(matches[3]);
+          if(index != -1) {
+            if(index == 3)
+              index = 0;
+            else
+              index += 1;
+            window.location.href = [matches[1],' ',steps[index]].join('');
+          }
+        }
+      } else {
+        window.location.href = [window.location.href,' |'].join('')
+      }
+    },
+    
     getOrder    : function() {
       if(Router.routeCache != window.location.href) {
         Router.routeOrders = [];
@@ -120,6 +154,10 @@ Ext.define('Router', {
           Router.setRoute(Router.frontPage);
         } else {
           route = matches[2];
+          
+          if(route.match(/\s/))
+            route = route.split(' ')[0];
+            
           if(route.match(/\//)) {
             var orders = route.split('/'), arr;
             for(var i = 0, len = orders.length;i < len; i++) {

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PWD="/home/vvv/sites/newStuff/script/"
+PWD="/home/vvv/sites/newStufff/script/"
 
 JAVA=""
 if [ -z "$1" ]

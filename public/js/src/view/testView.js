@@ -2,12 +2,13 @@ Ext.define('TestView', {
 
   extend: 'View',
   
-  render: function(data){
+  render: function(data){ //console.log(data);
     
     var self  = this;
     
-    //self.build(cfg);
-    //Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', cfg);
+    self.cfg = eval("("+data+")");
+    self.build(self.cfg);
+    Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', cfg);
     
   }
   
