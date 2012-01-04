@@ -54,12 +54,13 @@ Ext.define('ProfileModel', {
       scope.model.setCookie(usernames);
     }
     
-    AJAX.post(
-      scope.model.data.action,
-      Ext.getCmp("loginForm").getValues(),
-      scope.authCallback,
-      self
-    );
+    Ext.Ajax.request({
+	    url		  : scope.model.data.action,
+	    method	: 'post',
+	    scope   : scope,
+	    params	: Ext.getCmp("loginForm").getValues(),
+	    success	: scope.authCallback
+  	});
   },
   
   mapper: function(data){
@@ -70,12 +71,14 @@ Ext.define('ProfileModel', {
   
   getAjaxData: function(){
     var self = this;
-    AJAX.get(
-      "login/",
-      "",
-      this.mapper,
-      self
-    );
+    
+    Ext.Ajax.request({
+	    url		  : "login/",
+	    method	: 'get',
+	    scope   : self,
+	    params	: "",
+	    success	: self.mapper
+  	});
   }
   
 });

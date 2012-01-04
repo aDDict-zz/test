@@ -8,9 +8,10 @@ Ext.define('MainController', {
     if(!self.inited) {
       self.getData();
       self.inited = true;
-    } else
+    } else {
       if(Router.routeOrders[1])
         self.subPageInit(Router.routeOrders[1]);
+    }
   },
   
   subPageInit: function(subPage) {

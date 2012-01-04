@@ -18,19 +18,19 @@ Ext.define('GroupModel', {
 	
 	getAjaxData: function(){
 		var self = this;
-		AJAX.post(
+		AJAX.get(
 			"group/",
-			"", //['data=',Ext.JSON.encode(datas)].join(''),
+			'',
 			this.mapper,
 			self
 		);
 	},
 	
 	getGroups: function(scope) {
-	  //console.log(Globals.profile.model.data.user);
-	  AJAX.post(
+	
+	  AJAX.get(
       "group/",
-      "", //['data=',Ext.JSON.encode(datas)].join(''),
+      '',
       scope.groupMapper,
       scope
     );

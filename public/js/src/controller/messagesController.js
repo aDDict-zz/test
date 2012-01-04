@@ -2,7 +2,7 @@ Ext.define('MessagesController', {
 
   extend: 'Controller',
   
-  init: function() { alert( 'its inited' );
+  init: function() { console.log( 'its inited' );
     var self = this;
     
     //self.getData();

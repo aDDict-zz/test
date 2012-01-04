@@ -27,12 +27,20 @@ Ext.define('MainModel', {
   
   getAjaxData: function(){
     var self = this;
-    AJAX.get(
+    /*AJAX.get(
       ["ext-template?lang=",self.language].join(''),
       "",
       self.mapper,
       self
-    );
+    );*/
+    
+    Ext.Ajax.request({
+	    url		  : ["ext-template?lang=",self.language].join(''),
+	    method	: 'get',
+	    scope   : self,
+	    params	: "",
+	    success	: self.mapper
+  	});
   },
   
   groupMapper: function(response) {

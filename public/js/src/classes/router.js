@@ -106,11 +106,12 @@ Ext.define('Router', {
         }
         
         // if the route has many parts and they are changing we drop the prompt to the root controller again
-        if(Router.routeOrders != Router.routeOrdersCache) {
+        if(Router.routeOrders != Router.routeOrdersCache) { console.log(Router.routeOrders,Router.routeOrdersCache);
           if(Router.routeOrders.length > 0)
             Globals.DEPO[[Router.routeOrders[0],"Controller"].join('')].init();
             
-          Router.routeOrders = Router.routeOrdersCache;
+          //Router.routeOrders = Router.routeOrdersCache;
+          Router.routeOrdersCache = Router.routeOrders;
         }
     },
     
@@ -125,7 +126,8 @@ Ext.define('Router', {
     },
     
     setLoader: function() {
-      var matches = (window.location.href.match(/(.*)(\s)(.*)/) ? window.location.href.match(/(.*)(\s)(.*)/) : null)
+    
+      var matches = (window.location.hash.match(/(.*)(\s)(.*)/) ? window.location.hash.match(/(.*)(\s)(.*)/) : null)
           steps   = ['|','/','--','\\'],
           index = -1;
           
@@ -149,14 +151,18 @@ Ext.define('Router', {
       if(Router.routeCache != window.location.href) {
         Router.routeOrders = [];
         Router.routeParams = {};
-        var matches = (window.location.href.match(/(.#)(.*)/) ? window.location.href.match(/(.#)(.*)/) : null);
+        var matches = (window.location.href.match(/(.#)(.*)/) ? window.location.href.match(/(.#)(.*)/) : null), hashes;
         if(matches == null) {
           Router.setRoute(Router.frontPage);
         } else {
           route = matches[2];
           
-          if(route.match(/\s/))
+          if(window.location.hash.match(/(.*)(\s)(.*)/)) {
+            // fuckin chromium
             route = route.split(' ')[0];
+            // fuckin firefox
+            route = route.split('%')[0];
+          }
             
           if(route.match(/\//)) {
             var orders = route.split('/'), arr;
@@ -184,7 +190,10 @@ Ext.define('Router', {
   function(){
     if(navigator.appVersion.match(/MSIE/))
       Router.ie = 1;
-    // this is the application init
+      
+    /*
+      this is the application init
+    */
     Router.init();
   }
 );

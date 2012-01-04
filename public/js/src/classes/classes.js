@@ -10,7 +10,8 @@ Ext.define('AJAX', {
 	statics: {
 		/**
 		 * @method ajax
-		 * simple wrapper for the Ext.Ajax.request
+		 * wrapper for the Ext.Ajax.request
+		 *
 		 * @param {string} 			    url
 		 * @param {string} 			    method
 		 * @param {string} (JSON) 	params
@@ -19,6 +20,30 @@ Ext.define('AJAX', {
 		 * @param {reference}       scope
 		 */
     ajax: function(url, method, params, callback, scope, form){
+    
+      // every single query must get the original token to validate itself
+      switch(method) {
+    	  case 'get':
+    	    params = [params,'&token=',Globals.profile.model.data.user.token].join('');
+    	  break;
+    	  case 'post':
+    	    params['token'] = Globals.profile.model.data.user.token;
+    	  break;
+    	}
+      
+    	/*if(typeof Globals.profile != 'undefined') {
+      	if(typeof Globals.profile.model.data.user != 'undefined')
+        	if(typeof Globals.profile.model.data.user.token != 'undefined')
+          	switch(method) {
+          	  case 'get':
+          	    params = [params,'&token=',Globals.profile.model.data.user.token].join('');
+          	  break;
+          	  case 'post':
+          	    params['token'] = Globals.profile.model.data.user.token;
+          	  break;
+          	}
+    	}*/
+    	
     	Ext.Ajax.request({
   	    url		: url,
   	    scope 	: (typeof scope != "undefined" ? scope : null),
