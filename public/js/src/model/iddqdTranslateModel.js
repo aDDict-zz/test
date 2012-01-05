@@ -235,12 +235,14 @@ Ext.define('IddqdTranslateModel', {
   
   getAjaxData: function(){
     var self = this;
-    AJAX.get(
-      "ext-template/translate",
-      "",
-      this.mapper,
-      self
-    );
+    
+    Ext.Ajax.request({
+	    url		  : "ext-template/translate",
+	    method	: 'get',
+	    scope   : self,
+	    params	: "",
+	    success	: self.mapper
+  	});
   }
   
 });

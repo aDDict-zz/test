@@ -24,14 +24,19 @@ class FormBuilder {
   }
   
   protected function setHash(){
-    $_SESSION["{$this->form}token"] = md5($this->form.rand(time(),true));
+    $thisStr          = "{$this->form}token";
+    $token            = new Zend_Session_Namespace('token');
+    $token->$thisStr  = md5($this->form.rand(time(),true));
+    //$_SESSION["{$this->form}token"] = md5($this->form.rand(time(),true));
   }
   
   protected function getHash(){
-    if(!isset($_SESSION["{$this->form}token"]))
+    $token    = new Zend_Session_Namespace('token');
+    $thisStr  = "{$this->form}token";
+    if(!isset($token->$thisStr))
       $this->setHash();
     
-    return $_SESSION["{$this->form}token"];
+    return $token->$thisStr;
   }
   
 }

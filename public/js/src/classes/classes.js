@@ -20,7 +20,7 @@ Ext.define('AJAX', {
 		 * @param {reference}       scope
 		 */
     ajax: function(url, method, params, callback, scope, form){
-    
+
       // every single query must get the original token to validate itself
       switch(method) {
     	  case 'get':

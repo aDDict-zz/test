@@ -36,6 +36,16 @@ Ext.define('Router', {
         }
       }
       
+      Array.prototype.isEqual = function(arr) {
+        if(this.length != arr.length)
+          return false
+        for (var i = 0, l = this.length; i < l; i++) {
+          if(this[i] != arr[i])
+            return false;
+        }
+        return true;
+      }
+      
       if(Router.ie)
         IEHH.setup();
         
@@ -106,7 +116,7 @@ Ext.define('Router', {
         }
         
         // if the route has many parts and they are changing we drop the prompt to the root controller again
-        if(Router.routeOrders != Router.routeOrdersCache) { console.log(Router.routeOrders,Router.routeOrdersCache);
+        if(!Router.routeOrders.isEqual(Router.routeOrdersCache)) { //console.log(Router.routeOrders,Router.routeOrdersCache);
           if(Router.routeOrders.length > 0)
             Globals.DEPO[[Router.routeOrders[0],"Controller"].join('')].init();
             
@@ -131,7 +141,7 @@ Ext.define('Router', {
           steps   = ['|','/','--','\\'],
           index = -1;
           
-      if(matches != null) {
+      /*if(matches != null) {
         if(steps.indexOf(matches[3]) != -1) {
           index = steps.indexOf(matches[3]);
           if(index != -1) {
@@ -144,7 +154,7 @@ Ext.define('Router', {
         }
       } else {
         window.location.href = [window.location.href,' |'].join('')
-      }
+      }*/
     },
     
     getOrder    : function() {

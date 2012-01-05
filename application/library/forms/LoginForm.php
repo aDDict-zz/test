@@ -41,13 +41,16 @@ class LoginForm extends FormBuilder{
   }
   
   public function isValid($params){
+  
+    $token = new Zend_Session_Namespace('token');
+  
     if(!isset($params["username"]) || !$params["username"] != "")
       return false;
     
     if(!isset($params["password"]) || !$params["password"] != "")
       return false;
     
-    if(!isset($params["logintoken"]) || $params["logintoken"] != $_SESSION["logintoken"])
+    if(!isset($params["logintoken"]) || $params["logintoken"] != $token->logintoken)
       return false;
     
     return true;

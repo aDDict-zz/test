@@ -1,13 +1,18 @@
 <?php
 
-class GroupController extends Zend_Controller_Action {
+class GroupController extends MaximaBaseController {
 
     public function init() {
-        /* Initialize action controller here */
+      $params = $this->getRequest()->getParams();
+      if(isset($params['token'])) {
+        if(!$this->isValidRequest($params['token']))
+          die('false');
+      } else {
+        die('false');
+      }
     }
 
     public function indexAction() {
-      
       $sessionUser = new Zend_Session_Namespace('sessionUser');
       $groups = new Application_Model_Groups();
       echo Zend_Json::encode($groups->getAll($sessionUser));

@@ -25,7 +25,8 @@ Ext.define('AJAX', {
 	statics: {
 		/**
 		 * @method ajax
-		 * simple wrapper for the Ext.Ajax.request
+		 * wrapper for the Ext.Ajax.request
+		 *
 		 * @param {string} 			    url
 		 * @param {string} 			    method
 		 * @param {string} (JSON) 	params
@@ -34,6 +35,30 @@ Ext.define('AJAX', {
 		 * @param {reference}       scope
 		 */
     ajax: function(url, method, params, callback, scope, form){
+
+      // every single query must get the original token to validate itself
+      switch(method) {
+    	  case 'get':
+    	    params = [params,'&token=',Globals.profile.model.data.user.token].join('');
+    	  break;
+    	  case 'post':
+    	    params['token'] = Globals.profile.model.data.user.token;
+    	  break;
+    	}
+      
+    	/*if(typeof Globals.profile != 'undefined') {
+      	if(typeof Globals.profile.model.data.user != 'undefined')
+        	if(typeof Globals.profile.model.data.user.token != 'undefined')
+          	switch(method) {
+          	  case 'get':
+          	    params = [params,'&token=',Globals.profile.model.data.user.token].join('');
+          	  break;
+          	  case 'post':
+          	    params['token'] = Globals.profile.model.data.user.token;
+          	  break;
+          	}
+    	}*/
+    	
     	Ext.Ajax.request({
   	    url		: url,
   	    scope 	: (typeof scope != "undefined" ? scope : null),
@@ -429,13 +454,13 @@ Ext.define('GroupController', {
   extend: 'Controller',
 
   init: function() { //alert('asdsads');
-    /*if(Ext.get("Iddqd") == null)
-      this.getData();*/
-    //this.view.render({});
+    if(Ext.get("Iddqd") == null)
+      this.getData();
+    this.view.render({});
     
     var self = this;
     
-    var object = {
+    /*var object = {
       "valami": "dehatmi",
       "masvalami": "milehetmég",
       "egyeb": 42,
@@ -448,7 +473,7 @@ Ext.define('GroupController', {
     
     //{\"valami\":\"dehatmi?\",\"masvalami\":\"mi lehet meg\",\"egyeb\":42}
     
-    Proxy.query(object,self.thisCallback);
+    Proxy.query(object,self.thisCallback);*/
     
   },
   
@@ -504,7 +529,8 @@ Ext.define('GroupController', {
     this.model.getAjaxData();
   }
 
-});Ext.define('MainController', {
+});
+Ext.define('MainController', {
 
   extend: 'Controller',
   
@@ -514,9 +540,10 @@ Ext.define('GroupController', {
     if(!self.inited) {
       self.getData();
       self.inited = true;
-    } else
+    } else {
       if(Router.routeOrders[1])
         self.subPageInit(Router.routeOrders[1]);
+    }
   },
   
   subPageInit: function(subPage) {
@@ -571,7 +598,7 @@ Ext.define('MessagesController', {
 
   extend: 'Controller',
   
-  init: function() { alert( 'its inited' );
+  init: function() { console.log( 'its inited' );
     var self = this;
     
     //self.getData();
@@ -650,7 +677,8 @@ Ext.define('IddqdTranslateController', {
     this.model.getAjaxData();
   }
 
-});Ext.define('LoginController', {
+});
+Ext.define('LoginController', {
 
 	extend: 'Controller',
 	
@@ -786,12 +814,13 @@ Ext.define('TestView', {
 
   extend: 'View',
   
-  render: function(data){
+  render: function(data){ //console.log(data);
     
     var self  = this;
     
-    //self.build(cfg);
-    //Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', cfg);
+    self.cfg = eval("("+data+")");
+    self.build(self.cfg);
+    Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', cfg);
     
   }
   
@@ -1141,7 +1170,7 @@ Ext.define('MainView', {
       Globals.DEPO['components'] = {};
     } catch(err) {}
     
-    self.cfg = eval("("+data+")");
+    self.cfg = eval('('+data+')');
     self.build(self.cfg);
     self.setup();
   },
@@ -1188,6 +1217,7 @@ Ext.define('MainView', {
     });   
   }
 });
+
 Ext.define('MessagesView', {
   
   extend: 'View',
@@ -1216,25 +1246,26 @@ Ext.define('GroupModel', {
 	
 	getAjaxData: function(){
 		var self = this;
-		AJAX.post(
+		AJAX.get(
 			"group/",
-			"", //['data=',Ext.JSON.encode(datas)].join(''),
+			'',
 			this.mapper,
 			self
 		);
 	},
 	
 	getGroups: function(scope) {
-	  //console.log(Globals.profile.model.data.user);
-	  AJAX.post(
+	
+	  AJAX.get(
       "group/",
-      "", //['data=',Ext.JSON.encode(datas)].join(''),
+      '',
       scope.groupMapper,
       scope
     );
 	}
 	
-});Ext.define('ProfileModel', {
+});
+Ext.define('ProfileModel', {
 
   extend: 'Model',
   
@@ -1290,12 +1321,13 @@ Ext.define('GroupModel', {
       scope.model.setCookie(usernames);
     }
     
-    AJAX.post(
-      scope.model.data.action,
-      Ext.getCmp("loginForm").getValues(),
-      scope.authCallback,
-      self
-    );
+    Ext.Ajax.request({
+	    url		  : scope.model.data.action,
+	    method	: 'post',
+	    scope   : scope,
+	    params	: Ext.getCmp("loginForm").getValues(),
+	    success	: scope.authCallback
+  	});
   },
   
   mapper: function(data){
@@ -1306,15 +1338,18 @@ Ext.define('GroupModel', {
   
   getAjaxData: function(){
     var self = this;
-    AJAX.get(
-      "login/",
-      "",
-      this.mapper,
-      self
-    );
+    
+    Ext.Ajax.request({
+	    url		  : "login/",
+	    method	: 'get',
+	    scope   : self,
+	    params	: "",
+	    success	: self.mapper
+  	});
   }
   
-});Ext.define('TestModel', {
+});
+Ext.define('TestModel', {
 
   extend: 'Model',
   
@@ -1323,7 +1358,7 @@ Ext.define('GroupModel', {
     var self = this;
     
     if(Ext.get("Iddqd") == null) {}
-      //self.getAjaxData();
+      self.getAjaxData();
   },
   
   mapper: function(data){
@@ -1371,12 +1406,20 @@ Ext.define('GroupModel', {
   
   getAjaxData: function(){
     var self = this;
-    AJAX.get(
+    /*AJAX.get(
       ["ext-template?lang=",self.language].join(''),
       "",
       self.mapper,
       self
-    );
+    );*/
+    
+    Ext.Ajax.request({
+	    url		  : ["ext-template?lang=",self.language].join(''),
+	    method	: 'get',
+	    scope   : self,
+	    params	: "",
+	    success	: self.mapper
+  	});
   },
   
   groupMapper: function(response) {
@@ -1409,7 +1452,8 @@ Ext.define('GroupModel', {
     self.group.getGroups(self);
   }
   
-});Ext.define('MessagesModel', {
+});
+Ext.define('MessagesModel', {
 
   extend: 'Model',
   
@@ -1718,12 +1762,14 @@ Ext.define('GroupModel', {
   
   getAjaxData: function(){
     var self = this;
-    AJAX.get(
-      "ext-template/translate",
-      "",
-      this.mapper,
-      self
-    );
+    
+    Ext.Ajax.request({
+	    url		  : "ext-template/translate",
+	    method	: 'get',
+	    scope   : self,
+	    params	: "",
+	    success	: self.mapper
+  	});
   }
   
 });
@@ -1835,6 +1881,27 @@ Ext.define('Router', {
           window.console.log = function() {}
       };
       
+      if(!Array.indexOf) {
+        Array.prototype.indexOf = function(obj) {
+          for(var i=0,l=this.length; i<l; i++) {
+            if(this[i]==obj) {
+              return i;
+            }
+          }
+        return -1;
+        }
+      }
+      
+      Array.prototype.isEqual = function(arr) {
+        if(this.length != arr.length)
+          return false
+        for (var i = 0, l = this.length; i < l; i++) {
+          if(this[i] != arr[i])
+            return false;
+        }
+        return true;
+      }
+      
       if(Router.ie)
         IEHH.setup();
         
@@ -1848,7 +1915,9 @@ Ext.define('Router', {
     
     getRoute  	: function() {
       
-      var order = Router.getOrder();
+      var order = Router.getOrder(); //console.log(Router.routeOrders,Router.routeParams);
+      
+      Router.setLoader();
       
       if(order == "")
         Router.setRoute(Router.frontPage);
@@ -1903,11 +1972,12 @@ Ext.define('Router', {
         }
         
         // if the route has many parts and they are changing we drop the prompt to the root controller again
-        if(Router.routeOrders != Router.routeOrdersCache) {
+        if(/*Router.routeOrders != Router.routeOrdersCache*/  !Router.routeOrders.isEqual(Router.routeOrdersCache)) { //console.log(Router.routeOrders,Router.routeOrdersCache);
           if(Router.routeOrders.length > 0)
             Globals.DEPO[[Router.routeOrders[0],"Controller"].join('')].init();
             
-          Router.routeOrders = Router.routeOrdersCache;
+          //Router.routeOrders = Router.routeOrdersCache;
+          Router.routeOrdersCache = Router.routeOrders;
         }
     },
     
@@ -1921,15 +1991,45 @@ Ext.define('Router', {
       window.location.reload(true)
     },
     
+    setLoader: function() {
+    
+      var matches = (window.location.hash.match(/(.*)(\s)(.*)/) ? window.location.hash.match(/(.*)(\s)(.*)/) : null)
+          steps   = ['|','/','--','\\'],
+          index = -1;
+          
+      /*if(matches != null) {
+        if(steps.indexOf(matches[3]) != -1) {
+          index = steps.indexOf(matches[3]);
+          if(index != -1) {
+            if(index == 3)
+              index = 0;
+            else
+              index += 1;
+            window.location.href = [matches[1],' ',steps[index]].join('');
+          }
+        }
+      } else {
+        window.location.href = [window.location.href,' |'].join('')
+      }*/
+    },
+    
     getOrder    : function() {
       if(Router.routeCache != window.location.href) {
         Router.routeOrders = [];
         Router.routeParams = {};
-        var matches = (window.location.href.match(/(.#)(.*)/) ? window.location.href.match(/(.#)(.*)/) : null);
+        var matches = (window.location.href.match(/(.#)(.*)/) ? window.location.href.match(/(.#)(.*)/) : null), hashes;
         if(matches == null) {
           Router.setRoute(Router.frontPage);
         } else {
           route = matches[2];
+          
+          if(window.location.hash.match(/(.*)(\s)(.*)/)) {
+            // fuckin chromium
+            route = route.split(' ')[0];
+            // fuckin firefox
+            route = route.split('%')[0];
+          }
+            
           if(route.match(/\//)) {
             var orders = route.split('/'), arr;
             for(var i = 0, len = orders.length;i < len; i++) {
@@ -1956,7 +2056,10 @@ Ext.define('Router', {
   function(){
     if(navigator.appVersion.match(/MSIE/))
       Router.ie = 1;
-    // this is the application init
+      
+    /*
+      this is the application init
+    */
     Router.init();
   }
 );

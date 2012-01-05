@@ -1,6 +1,6 @@
 <?php
 
-class ExtTemplateController extends Zend_Controller_Action
+class ExtTemplateController extends MaximaBaseController
 {
 
     public function init() {

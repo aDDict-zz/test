@@ -21,9 +21,11 @@ class LoginController extends Zend_Controller_Action {
     
     $auth = Zend_Auth::getInstance();
     if($auth->getIdentity() && $auth->getIdentity() != "") {
+      $token                = new Zend_Session_Namespace('token');
       $sessionUser          = new Zend_Session_Namespace('sessionUser');
       $thisUser             = $sessionUser->profile;
       $thisUser['password'] = '';
+      $thisUser['token']    = $token->logintoken;
       echo Zend_Json::encode(array("user" => $thisUser));
       die();
     }
@@ -51,10 +53,12 @@ class LoginController extends Zend_Controller_Action {
     
     //$user = new Application_Model_User();
     //echo Zend_Json::encode(array("user" => $user->getUser($auth->getIdentity())));
-  
+    
+    $token                = new Zend_Session_Namespace('token');
     $sessionUser          = new Zend_Session_Namespace('sessionUser'); //die( print_r( $sessionUser->profile ) );
     $thisUser             = $sessionUser->profile;
     $thisUser['password'] = '';
+    $thisUser['token']    = $token->logintoken;
     echo Zend_Json::encode(array("user" => $thisUser));
   
     $this->_helper->viewRenderer->setNoRender(true);
