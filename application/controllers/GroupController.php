@@ -13,8 +13,8 @@ class GroupController extends MaximaBaseController {
     }
 
     public function indexAction() {
-      $sessionUser = new Zend_Session_Namespace('sessionUser');
-      $groups = new Application_Model_Groups();
+      $sessionUser  = new Zend_Session_Namespace('sessionUser');
+      $groups       = new Application_Model_Groups();
       echo Zend_Json::encode($groups->getAll($sessionUser));
       $this->_helper->viewRenderer->setNoRender(true);
       die();

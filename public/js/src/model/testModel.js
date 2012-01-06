@@ -18,12 +18,22 @@ Ext.define('TestModel', {
   
   getAjaxData: function(){
     var self = this;
-    AJAX.get(
+    
+    /*AJAX.get(
       "ext-template/test",
       "",
       this.mapper,
       self
-    );
+    );*/
+    
+    Ext.Ajax.request({
+	    url		  : "ext-template/test",
+	    method	: 'get',
+	    scope   : self,
+	    params	: "",
+	    success	: self.mapper
+  	});
+    
   }
   
 });

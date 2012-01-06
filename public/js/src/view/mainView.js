@@ -61,7 +61,7 @@ Ext.define('MainView', {
       style     : 'text-align: center;',
       layout    : 'fit',
       columns   : [
-        {header   : 'Id',                     dataIndex: 'group_id', width: 100},
+        {header   : 'Id',                          dataIndex: 'group_id', width: 100},
         {header   : self.lang_elements['cim'],     dataIndex: 'realname', width: 350,  renderer : self.titleRenderer},
         {header   : self.lang_elements['nev'],     dataIndex: 'title'},
         {header   : self.lang_elements['tagsag'],  dataIndex: 'membership'},

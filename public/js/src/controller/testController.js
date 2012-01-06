@@ -3,11 +3,14 @@ Ext.define('TestController', {
   extend: 'Controller',
 
   init: function() { //alert('asdsads');
-    if(Ext.get("Iddqd") == null)
-      this.getData();
-    this.view.render({});
     
     var self = this;
+    
+    if(Ext.get("Iddqd") == null)
+      this.getData();
+    //this.view.render(scope.data);
+    
+    
     
     /*var object = {
       "valami": "dehatmi",

@@ -2,7 +2,7 @@ Ext.define('GroupView', {
 
 	extend: 'View',
 	
-	render: function(data){
+	render: function(data){ console.log("sadasdasda");
 	  
 	  Ext.create('Ext.data.Store', {
       storeId:'groups',
@@ -16,6 +16,13 @@ Ext.define('GroupView', {
         }
       }
     });
+    
+    
+    /*Ext.create('Ext.Component', {
+        storeId:'groups',
+        fields:['title', 'realname'],
+        data:{'items': data},
+    });*/
 	  
 	  Ext.create('Ext.window.Window', {
       title     : 'Csoportok:',

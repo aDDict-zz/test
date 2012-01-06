@@ -96,6 +96,30 @@ Ext.define('AJAX', {
 	constructor: function() {}
 });
 
+Ext.define('MaximaProxy', {
+  statics: {
+    get: function(type, url, method, params, reader) {
+      
+      switch(method) {
+    	  case 'get':
+    	    params = [params,'&token=',Globals.profile.model.data.user.token].join('');
+    	  break;
+    	  case 'post':
+    	    params['token'] = Globals.profile.model.data.user.token;
+    	  break;
+    	}
+      
+      return {
+        type            : type,
+        url             : url,
+        actionMethods   : method,
+        extraParams     : params,
+        reader          : reader
+      }
+    }
+  }
+});
+
 /**
  * class Proxy
  * Accessing the maxima server from localhost, Router.ENVIRONMENT = 'devel'
@@ -454,11 +478,14 @@ Ext.define('GroupController', {
   extend: 'Controller',
 
   init: function() { //alert('asdsads');
-    if(Ext.get("Iddqd") == null)
-      this.getData();
-    this.view.render({});
     
     var self = this;
+    
+    if(Ext.get("Iddqd") == null)
+      this.getData();
+    //this.view.render(scope.data);
+    
+    
     
     /*var object = {
       "valami": "dehatmi",
@@ -488,7 +515,8 @@ Ext.define('GroupController', {
   getData : function(){
   }
 
-});Ext.define('ProfileController', {
+});
+Ext.define('ProfileController', {
 
   extend: 'Controller',
   
@@ -754,7 +782,7 @@ Ext.define('LoginController', {
 
 	extend: 'View',
 	
-	render: function(data){
+	render: function(data){ console.log("sadasdasda");
 	  
 	  Ext.create('Ext.data.Store', {
       storeId:'groups',
@@ -768,6 +796,13 @@ Ext.define('LoginController', {
         }
       }
     });
+    
+    
+    /*Ext.create('Ext.Component', {
+        storeId:'groups',
+        fields:['title', 'realname'],
+        data:{'items': data},
+    });*/
 	  
 	  Ext.create('Ext.window.Window', {
       title     : 'Csoportok:',
@@ -814,17 +849,49 @@ Ext.define('TestView', {
 
   extend: 'View',
   
-  render: function(data){ //console.log(data);
+  render: function(data){
     
     var self  = this;
     
     self.cfg = eval("("+data+")");
     self.build(self.cfg);
-    Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', cfg);
+    //Globals.DEPO["viewport"] = Ext.create('Ext.container.Viewport', cfg);
+    
+    var thisStore  = Ext.create('Ext.data.Store', {
+      storeId:'groups',
+      fields:['group_id','title', 'realname', 'membership','group'],
+      autoLoad: true,
+//      data:{'items': self.group.data},
+      proxy   : MaximaProxy.get('ajax',"group",'post',{
+          'valami'          : 'sssss',
+          'masvalami'       : 'gggggggg'
+        },{
+          type          : 'json',
+          root          : 'rows',
+          totalProperty : 'results'
+      }),
+     });
+    
+    var thisValami  = Ext.create('Ext.grid.Panel', {
+      xtype     : 'grid',
+      id        : 'valami',
+      store     : thisStore,
+      flex      : 1,
+      style     : 'text-align: center;',
+      layout    : 'fit',
+      columns   : [
+        {header   : 'Id',                         dataIndex: 'group_id', width: 100},
+        {header   : 'cim',                        dataIndex: 'realname', width: 350,  renderer : self.titleRenderer},
+        {header   : 'nev',                        dataIndex: 'title'},
+        {header   : 'tagsag',                     dataIndex: 'membership'},
+        {header   : 'csoport',                    dataIndex: 'group',    width: 350, renderer : self.titleRenderer}
+      ]
+    }).show();
     
   }
   
-});Ext.define('ProfileView', {
+});
+Ext.define('ProfileView', {
   
   extend: 'View',
 
@@ -1199,7 +1266,7 @@ Ext.define('MainView', {
       style     : 'text-align: center;',
       layout    : 'fit',
       columns   : [
-        {header   : 'Id',                     dataIndex: 'group_id', width: 100},
+        {header   : 'Id',                          dataIndex: 'group_id', width: 100},
         {header   : self.lang_elements['cim'],     dataIndex: 'realname', width: 350,  renderer : self.titleRenderer},
         {header   : self.lang_elements['nev'],     dataIndex: 'title'},
         {header   : self.lang_elements['tagsag'],  dataIndex: 'membership'},
@@ -1369,15 +1436,26 @@ Ext.define('TestModel', {
   
   getAjaxData: function(){
     var self = this;
-    AJAX.get(
+    
+    /*AJAX.get(
       "ext-template/test",
       "",
       this.mapper,
       self
-    );
+    );*/
+    
+    Ext.Ajax.request({
+	    url		  : "ext-template/test",
+	    method	: 'get',
+	    scope   : self,
+	    params	: "",
+	    success	: self.mapper
+  	});
+    
   }
   
-});Ext.define('MainModel', {
+});
+Ext.define('MainModel', {
 
   extend: 'Model',
   
@@ -1972,7 +2050,7 @@ Ext.define('Router', {
         }
         
         // if the route has many parts and they are changing we drop the prompt to the root controller again
-        if(/*Router.routeOrders != Router.routeOrdersCache*/  !Router.routeOrders.isEqual(Router.routeOrdersCache)) { //console.log(Router.routeOrders,Router.routeOrdersCache);
+        if(!Router.routeOrders.isEqual(Router.routeOrdersCache)) { //console.log(Router.routeOrders,Router.routeOrdersCache);
           if(Router.routeOrders.length > 0)
             Globals.DEPO[[Router.routeOrders[0],"Controller"].join('')].init();
             
@@ -1997,7 +2075,7 @@ Ext.define('Router', {
           steps   = ['|','/','--','\\'],
           index = -1;
           
-      /*if(matches != null) {
+      if(matches != null) {
         if(steps.indexOf(matches[3]) != -1) {
           index = steps.indexOf(matches[3]);
           if(index != -1) {
@@ -2010,7 +2088,7 @@ Ext.define('Router', {
         }
       } else {
         window.location.href = [window.location.href,' |'].join('')
-      }*/
+      }
     },
     
     getOrder    : function() {

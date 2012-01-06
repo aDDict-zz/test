@@ -81,6 +81,30 @@ Ext.define('AJAX', {
 	constructor: function() {}
 });
 
+Ext.define('MaximaProxy', {
+  statics: {
+    get: function(type, url, method, params, reader) {
+      
+      switch(method) {
+    	  case 'get':
+    	    params = [params,'&token=',Globals.profile.model.data.user.token].join('');
+    	  break;
+    	  case 'post':
+    	    params['token'] = Globals.profile.model.data.user.token;
+    	  break;
+    	}
+      
+      return {
+        type            : type,
+        url             : url,
+        actionMethods   : method,
+        extraParams     : params,
+        reader          : reader
+      }
+    }
+  }
+});
+
 /**
  * class Proxy
  * Accessing the maxima server from localhost, Router.ENVIRONMENT = 'devel'

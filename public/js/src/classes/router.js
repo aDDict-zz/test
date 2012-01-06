@@ -141,7 +141,7 @@ Ext.define('Router', {
           steps   = ['|','/','--','\\'],
           index = -1;
           
-      /*if(matches != null) {
+      if(matches != null) {
         if(steps.indexOf(matches[3]) != -1) {
           index = steps.indexOf(matches[3]);
           if(index != -1) {
@@ -154,7 +154,7 @@ Ext.define('Router', {
         }
       } else {
         window.location.href = [window.location.href,' |'].join('')
-      }*/
+      }
     },
     
     getOrder    : function() {
