@@ -55,6 +55,8 @@ class LoginController extends Zend_Controller_Action {
     //echo Zend_Json::encode(array("user" => $user->getUser($auth->getIdentity())));
     
     $token                = new Zend_Session_Namespace('token');
+    // generating a new token after the auth, it will be the session token to access the models
+    $token->logintoken    = md5(rand(time(),true));
     $sessionUser          = new Zend_Session_Namespace('sessionUser'); //die( print_r( $sessionUser->profile ) );
     $thisUser             = $sessionUser->profile;
     $thisUser['password'] = '';

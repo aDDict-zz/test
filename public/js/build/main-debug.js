@@ -96,23 +96,38 @@ Ext.define('AJAX', {
 	constructor: function() {}
 });
 
+/**
+ * static class MaximaProxy
+ */
 Ext.define('MaximaProxy', {
   statics: {
+    /**
+     * @method get
+     * @param {string}          type
+     * @param {string}          url
+     * @param {string}          method
+     * @param {object/string}   params
+     * @param {object}          reader
+     */
     get: function(type, url, method, params, reader) {
+      
+      var actionMethods = {};
       
       switch(method) {
     	  case 'get':
-    	    params = [params,'&token=',Globals.profile.model.data.user.token].join('');
+    	    url           = [url,'&token=',Globals.profile.model.data.user.token].join('');
+    	    actionMethods = {read: 'GET'};
     	  break;
     	  case 'post':
     	    params['token'] = Globals.profile.model.data.user.token;
+    	    actionMethods   = {read: 'POST'};
     	  break;
     	}
-      
-      return {
+    	
+    	return {
         type            : type,
         url             : url,
-        actionMethods   : method,
+        actionMethods   : actionMethods,
         extraParams     : params,
         reader          : reader
       }
@@ -121,7 +136,7 @@ Ext.define('MaximaProxy', {
 });
 
 /**
- * class Proxy
+ * static class Proxy
  * Accessing the maxima server from localhost, Router.ENVIRONMENT = 'devel'
  */
 Ext.define('Proxy',{
@@ -1649,15 +1664,19 @@ Ext.define('MessagesModel', {
         'word',
         'foreign_word'
       ],
-      proxy   : {
-        type      : 'ajax',
-        url       : ['lang?lang=',self.language,'&cat=',self.cat].join(''),
-        reader    : {
+        
+      proxy: MaximaProxy.get(
+        'ajax',
+        ['lang?lang=',self.language,'&cat=',self.cat].join(''),
+        'get',
+        {},
+        {
           type          : 'json',
           root          : 'rows',
           totalProperty : 'results',
-          }
-        }      
+        }
+      )
+             
     });
     
     self.langStore      = Ext.create('Ext.data.Store', {

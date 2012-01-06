@@ -44,15 +44,19 @@ Ext.define('IddqdTranslateModel', {
         'word',
         'foreign_word'
       ],
-      proxy   : {
-        type      : 'ajax',
-        url       : ['lang?lang=',self.language,'&cat=',self.cat].join(''),
-        reader    : {
+        
+      proxy: MaximaProxy.get(
+        'ajax',
+        ['lang?lang=',self.language,'&cat=',self.cat].join(''),
+        'get',
+        {},
+        {
           type          : 'json',
           root          : 'rows',
           totalProperty : 'results',
-          }
-        }      
+        }
+      )
+             
     });
     
     self.langStore      = Ext.create('Ext.data.Store', {
